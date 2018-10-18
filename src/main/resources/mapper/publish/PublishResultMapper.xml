@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.publish.dao.PublishResultDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.publish.model.PublishResult">
+        <id column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="OPERATEDATATYPE" jdbcType="VARCHAR" property="operateDataType"/>
+        <result column="METAID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="OPERATOR" jdbcType="VARCHAR" property="operator"/>
+        <result column="OPERATETIME" jdbcType="TIMESTAMP" property="operateTime"/>
+        <result column="OPERATERESULT" jdbcType="VARCHAR" property="operateResult"/>
+        <result column="PRECONTENT" jdbcType="CLOB" property="preContent"/>
+        <result column="POSTCONTENT" jdbcType="CLOB" property="postContent"/>
+        <result column="DATASOURCE" jdbcType="VARCHAR" property="dataSource"/>
+        <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="HASSYNC" jdbcType="INTEGER" property="hasSync"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      ID, OPERATEDATATYPE, METAID, OPERATOR, OPERATETIME, OPERATERESULT, PRECONTENT, POSTCONTENT, DATASOURCE, UPDATETIME, CREATETIME, HASSYNC
+    </sql>
+
+    <sql id="Base_Value_List">
+        <if test="operateDataType != null">
+            #{operateDataType,jdbcType=VARCHAR},
+        </if>
+        <if test="metaId != null">
+            #{metaId,jdbcType=VARCHAR},
+        </if>
+        <if test="operator != null">
+            #{operator,jdbcType=VARCHAR},
+        </if>
+        <if test="operateTime != null">
+            #{operateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="operateResult != null">
+            #{operateResult,jdbcType=VARCHAR},
+        </if>
+        <if test="dataSource != null">
+            #{dataSource,jdbcType=VARCHAR},
+        </if>
+        <if test="preContent != null">
+            #{preContent,jdbcType=CLOB},
+        </if>
+        <if test="postContent != null">
+            #{postContent,jdbcType=CLOB},
+        </if>
+        <if test="updateTime != null">
+            #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="createTime != null">
+            #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="hasSync != null">
+            #{hasSync,jdbcType=INTEGER},
+        </if>
+    </sql>
+    <!-- 查询发布记录 -->
+    <select id="findPublishResultByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM APABI_BOOK_METADATA_PUB_RECORD
+        WHERE 1=1
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="operateDataType != null and operateDataType != ''">
+            AND OPERATEDATATYPE = #{operateDataType,jdbcType=VARCHAR}
+        </if>
+        <if test="metaId != null and metaId != ''">
+            AND METAID = #{metaId,jdbcType=VARCHAR}
+        </if>
+        <if test="operator != null and operator != ''">
+            AND OPERATOR = #{operator,jdbcType=VARCHAR}
+        </if>
+        <if test="operateTime != null and operateTime != ''">
+            AND OPERATETIME = #{operateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="preContent != null and preContent != ''">
+            AND PRECONTENT = #{preContent,jdbcType=CLOB}
+        </if>
+        <if test="postContent != null and postContent != ''">
+            AND POSTCONTENT = #{postContent,jdbcType=CLOB}
+        </if>
+        <if test="dataSource != null and dataSource != ''">
+            AND DATASOURCE = #{dataSource,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND CREATETIME = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND UPDATETIME = #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="hasSync != null and hasSync != ''">
+            AND HASSYNC = #{hasSync,jdbcType=INTEGER}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <!-- 根据id查询数据 -->
+    <select id="findPublishResultById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM APABI_BOOK_METADATA_PUB_RECORD
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据id删除数据 -->
+    <delete id="deletePublishResultById" parameterType="java.lang.String">
+        DELETE FROM APABI_BOOK_METADATA_PUB_RECORD
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insertPublishResult" parameterType="com.apabi.flow.publish.model.PublishResult">
+        INSERT INTO APABI_BOOK_METADATA_PUB_RECORD
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="operateDataType != null">
+                OPERATEDATATYPE,
+            </if>
+            <if test="metaId != null">
+                METAID,
+            </if>
+            <if test="operator != null">
+                OPERATOR,
+            </if>
+            <if test="operateTime != null">
+                OPERATETIME,
+            </if>
+            <if test="operateResult != null">
+                OPERATERESULT,
+            </if>
+            <if test="dataSource != null">
+                DATASOURCE,
+            </if>
+            <if test="preContent != null">
+                PRECONTENT,
+            </if>
+            <if test="postContent != null">
+                POSTCONTENT,
+            </if>
+            <if test="updateTime != null">
+                UPDATETIME,
+            </if>
+            <if test="createTime != null">
+                CREATETIME,
+            </if>
+            <if test="hasSync != null">
+                HASSYNC,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <include refid="Base_Value_List"/>
+        </trim>
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="updatePublishResult" parameterType="com.apabi.flow.publish.model.PublishResult">
+        UPDATE APABI_BOOK_METADATA_PUB_RECORD
+        <set>
+            <include refid="Base_Value_List"/>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

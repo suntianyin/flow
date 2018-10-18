@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.admin.dao.AuthRoleGroupDao">
+    <resultMap id="authRoleGroupResult" type="com.apabi.flow.admin.model.AuthRoleGroup">
+        <result property="id" column="id" />
+        <result property="groupId" column="group_id" />
+        <result property="roleId" column="role_id" />
+        <result property="crtDate" column="crt_date" />
+        <result property="crtUserId" column="crt_user_id" />
+    </resultMap>
+
+    <resultMap id="groupIdRoleCodeResult" type="com.apabi.flow.admin.model.AuthRoleGroup">
+        <result property="groupId" column="group_id" />
+        <result property="roleCode" column="role_code" />
+    </resultMap>
+
+    <select id="getGroupRoleCode" resultMap="groupIdRoleCodeResult">
+		select ag.id group_id, ar.role_code role_code
+		  from auth_group ag, auth_role ar, auth_role_group arg
+		 where ag.enabled = 1
+		   and ar.enabled = 1
+		   and ag.id = arg.group_id
+		   and ar.id = arg.role_id
+	</select>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="commonColumns">
+	    <![CDATA[
+        	id ,
+        	group_id ,
+        	role_id ,
+        	crt_date ,
+        	crt_user_id
+	    ]]>
+	</sql>
+
+    <sql id="dynamicWhere">
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="groupId != null">
+                AND group_id = #{groupId}
+            </if>
+            <if test="roleId != null">
+                AND role_id = #{roleId}
+            </if>
+            <if test="crtDate != null">
+                AND crt_date = #{crtDate}
+            </if>
+            <if test="crtUserId != null">
+                AND crt_user_id = #{crtUserId}
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 根据GroupId删除 -->
+    <delete id="deleteByGroupId" parameterType="long">
+        <![CDATA[
+        delete from auth_role_group
+    ]]>
+        <where>
+            group_id = #{id}
+        </where>
+    </delete>
+
+    <insert id="save" parameterType="com.apabi.flow.admin.model.AuthRoleGroup">
+        insert into auth_role_group (id , group_id , role_id ,
+		crt_date , crt_user_id
+		)
+		values (#{id,jdbcType=NUMERIC}, #{groupId,jdbcType=NUMERIC}, #{roleId,jdbcType=NUMERIC},
+		#{crtDate,jdbcType=TIMESTAMP}, #{crtUserId,jdbcType=NUMERIC}
+		)
+	</insert>
+    <!-- 删除之前需要先检查关联性 -->
+    <select id="getCountByGroupId" resultType="int">
+		select count(*) from auth_role_group
+		where group_id = #{groupId}
+	</select>
+    <select id="getCountByRoleId" resultType="int">
+		select count(*) from auth_role_group
+		where role_id = #{roleId}
+	</select>
+
+</mapper>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.admin.dao.AuthUserDao">
+    <resultMap id="authUserResult" type="com.apabi.flow.admin.model.AuthUser">
+        <result property="id" column="id" />
+        <result property="userName" column="user_name" />
+        <result property="password" column="password" />
+        <result property="orgId" column="org_id" />
+        <result property="realName" column="real_name" />
+        <result property="gender" column="gender" />
+        <result property="birthdate" column="birthdate" />
+        <result property="telephone" column="telephone" />
+        <result property="email" column="email" />
+        <result property="modifyPasswordDate" column="modify_password_date" />
+        <result property="crtDate" column="crt_date" />
+        <result property="crtUserId" column="crt_user_id" />
+        <result property="modifyDate" column="modify_date" />
+        <result property="modifyUserId" column="modify_user_id" />
+        <result property="enabled" column="enabled" />
+    </resultMap>
+
+    <resultMap id="UserRoleCodeResult" type="com.apabi.flow.admin.model.AuthUser">
+        <id property="id" column="id" />
+        <result property="userName" column="user_name" />
+        <result property="password" column="password" />
+        <result property="orgId" column="org_id" />
+        <result property="realName" column="real_name" />
+        <result property="gender" column="gender" />
+        <result property="birthdate" column="birthdate" />
+        <result property="telephone" column="telephone" />
+        <result property="email" column="email" />
+        <result property="modifyPasswordDate" column="modify_password_date" />
+        <result property="crtDate" column="crt_date" />
+        <result property="crtUserId" column="crt_user_id" />
+        <result property="modifyDate" column="modify_date" />
+        <result property="modifyUserId" column="modify_user_id" />
+        <result property="enabled" column="enabled" />
+        <collection property="groupIds" ofType="java.lang.Integer">
+            <result column="group_id" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="getUserRole" type="com.apabi.flow.admin.model.AuthRole">
+        <result property="id" column="id" />
+        <result property="roleCode" column="role_code" />
+        <result property="orgId" column="org_id" />
+        <result property="name" column="name" />
+    </resultMap>
+
+    <resultMap id="getUserRes" type="com.apabi.flow.admin.model.AuthRes">
+        <result property="id" column="id" />
+        <result property="menuId" column="menu_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="url" column="url" />
+        <result property="type" column="type" />
+    </resultMap>
+
+    <resultMap id="authGroupResult" type="com.apabi.flow.admin.model.AuthGroup">
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="orgId" column="org_id" />
+        <result property="parentId" column="parent_id" />
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="commonColumns">
+	    <![CDATA[
+        	id ,
+        	user_name ,
+        	password ,
+        	org_id ,
+        	real_name ,
+        	gender ,
+        	birthdate ,
+        	telephone ,
+        	email ,
+        	modify_password_date ,
+        	crt_date ,
+        	crt_user_id ,
+        	modify_date ,
+        	modify_user_id ,
+        	enabled
+	    ]]>
+	</sql>
+
+    <sql id="dynamicWhere">
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="userName != null">
+                AND user_name = #{userName}
+            </if>
+            <if test="password != null">
+                AND password = #{password}
+            </if>
+            <if test="orgId != null">
+                AND org_id = #{orgId}
+            </if>
+            <if test="realName != null">
+                AND real_name = #{realName}
+            </if>
+            <if test="gender != null">
+                AND gender = #{gender}
+            </if>
+            <if test="birthdate != null">
+                AND birthdate = #{birthdate}
+            </if>
+            <if test="telephone != null">
+                AND telephone = #{telephone}
+            </if>
+            <if test="email != null">
+                AND email = #{email}
+            </if>
+            <if test="modifyPasswordDate != null">
+                AND modify_password_date = #{modifyPasswordDate}
+            </if>
+            <if test="crtDate != null">
+                AND crt_date = #{crtDate}
+            </if>
+            <if test="crtUserId != null">
+                AND crt_user_id = #{crtUserId}
+            </if>
+            <if test="modifyDate != null">
+                AND modify_date = #{modifyDate}
+            </if>
+            <if test="modifyUserId != null">
+                AND modify_user_id = #{modifyUserId}
+            </if>
+            <if test="enabled != null">
+                AND enabled = #{enabled}
+            </if>
+            <if test="keywords != null">
+                AND user_name like '%'||#{keywords}||'%'
+            </if>
+        </trim>
+    </sql>
+    <!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 #offset#,#pageSize#,#lastRows#
+		三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+    <select id="findByPage" resultMap="authUserResult">
+        select
+        <include refid="commonColumns" />
+        <![CDATA[
+	        from auth_user
+	    ]]>
+        <include refid="dynamicWhere" />
+        <if test="sortColumns != null">
+            ORDER BY ${sortColumns}
+        </if>
+    </select>
+
+    <select id="findByUserName" resultMap="authUserResult">
+        SELECT *
+        FROM auth_user
+        WHERE user_name = #{username}
+    </select>
+
+    <!-- 根据用户名查询用户具有的权限-->
+    <select id="getUserResByUserName" resultMap="getUserRes">
+        select DISTINCT ar.id,ar.name,ar.type,ar.url
+        from  auth_user au,
+			  auth_user_group aug,
+			  auth_role_group arg,
+              auth_res_role arr,
+              auth_res ar
+        where ar.id = arr.res_id and arr.role_id = arg.role_id and arg.group_id = aug.group_id and aug.user_id = au.id and au.user_name = #{name}
+	</select>
+
+    <!-- 通过用户名获取用户Id -->
+    <select id="getUserIdByUserName" resultType="int">
+		select id
+		from auth_user
+		where user_name = #{name}
+	</select>
+
+    <!-- 通过用户名获取用户Id -->
+    <select id="findUserIdByUserName" resultType="java.lang.Integer">
+        select id
+        from auth_user
+        where user_name = #{name}
+    </select>
+
+    <!-- 通过用户名获取用户Id -->
+    <select id="getByName" resultType="int">
+		select id
+		from auth_user
+		where user_name = #{name}
+	</select>
+
+    <select id="getCountByUserName" resultType="int">
+		select count(*) from auth_user
+		where user_name = #{name}
+	</select>
+
+
+    <insert id="save" parameterType="com.apabi.flow.admin.model.AuthUser">
+		insert into auth_user (id , user_name , password ,
+		org_id , real_name , gender ,
+		birthdate , telephone , email ,
+		modify_password_date , crt_date , crt_user_id ,
+		modify_date , modify_user_id , enabled
+		)
+		values (#{id,jdbcType=NUMERIC}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		#{orgId,jdbcType=NUMERIC}, #{realName,jdbcType=VARCHAR}, #{gender,jdbcType=NUMERIC},
+		#{birthdate,jdbcType=TIMESTAMP}, #{telephone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+		#{modifyPasswordDate,jdbcType=TIMESTAMP}, #{crtDate,jdbcType=TIMESTAMP}, #{crtUserId,jdbcType=NUMERIC},
+		#{modifyDate,jdbcType=TIMESTAMP},#{modifyUserId,jdbcType=NUMERIC}, #{enabled,jdbcType=NUMERIC}
+		)
+	</insert>
+
+    <select id="getById" resultMap="authUserResult">
+        select
+        <include refid="commonColumns" />
+        <![CDATA[
+	        from auth_user
+	        where
+		        id = #{id}
+	    ]]>
+    </select>
+
+    <update id="update" parameterType="com.apabi.flow.admin.model.AuthUser">
+        UPDATE auth_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId},
+            </if>
+            <if test="realName != null">
+                real_name = #{realName},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="birthdate != null">
+                birthdate = #{birthdate},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="modifyPasswordDate != null">
+                modify_password_date = #{modifyPasswordDate},
+            </if>
+            <if test="crtDate != null">
+                crt_date = #{crtDate},
+            </if>
+            <if test="crtUserId != null">
+                crt_user_id = #{crtUserId},
+            </if>
+            <if test="modifyDate != null">
+                modify_date = #{modifyDate},
+            </if>
+            <if test="modifyUserId != null">
+                modify_user_id = #{modifyUserId},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+        </trim>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <!-- 查询用户具有的角色-->
+    <select id="getUserRoleById" resultMap="getUserRole">
+        select ar.id,ar.name,ar.role_code
+		from auth_user au,
+			 auth_user_group aug,
+             auth_role_group arg,
+             auth_role ar
+        where ar.id = arg.role_id and arg.group_id = aug.group_id and aug.user_id = au.id and au.id = #{id}
+	</select>
+
+    <!-- 删除之前需要先检查关联性 -->
+    <select id="getCountByCrtId" resultType="int">
+		select count(*) from auth_user
+		where crt_user_id = #{id}
+	</select>
+
+    <delete id="batchDelete" parameterType="java.util.List">
+        <![CDATA[
+        delete from auth_user
+    	]]>
+        <where>
+            id in
+            <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+    <!-- 查询用户具有的权限-->
+    <select id="getUserResById" resultMap="getUserRes">
+        select DISTINCT ar.id,ar.name,ar.type,ar.url
+        from  auth_user au,
+			  auth_user_group aug,
+			  auth_role_group arg,
+              auth_res_role arr,
+              auth_res ar
+        where ar.id = arr.res_id and arr.role_id = arg.role_id and arg.group_id = aug.group_id and aug.user_id = au.id and au.id = #{id}
+	</select>
+
+    <!-- 通过用户ID查询用户组信息-->
+    <select id="getGroupByUserId" resultMap="authGroupResult">
+		select ag.id,ag.name
+		from auth_group ag,
+			 auth_user_group aug
+		where ag.id = aug.group_id and aug.user_id = #{id}
+	</select>
+
+    <!-- 通过用户名查询用户的模块权限-->
+    <select id="getUserModuleResByUserName" resultMap="getUserRes">
+        select DISTINCT ar.id,ar.name,ar.type,ar.url,ar.parent_id,ar.menu_id
+        from  auth_user au,
+			  auth_user_group aug,
+			  auth_role_group arg,
+              auth_res_role arr,
+              auth_res ar
+        where ar.id = arr.res_id and arr.role_id = arg.role_id and arg.group_id = aug.group_id and aug.user_id = au.id and ar.type = 1 and au.user_name = #{name}
+	</select>
+
+</mapper>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.apabi.flow.admin.dao.AuthResDao">
+
+    <resultMap id="authResResult" type="com.apabi.flow.admin.model.AuthRes">
+        <result property="id" column="id" />
+        <result property="menuId" column="menu_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="url" column="url" />
+        <result property="type" column="type" />
+        <result property="viewOrder" column="view_order" />
+        <result property="description" column="description" />
+        <result property="crtDate" column="crt_date" />
+        <result property="crtUserId" column="crt_user_id" />
+        <result property="modifyDate" column="modify_date" />
+        <result property="modifyUserId" column="modify_user_id" />
+        <result property="enabled" column="enabled" />
+    </resultMap>
+
+    <resultMap id="urlRoleResult" type="com.apabi.flow.admin.model.AuthRes">
+        <result property="url" column="url" />
+        <result property="roleCode" column="role_code" />
+    </resultMap>
+
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="commonColumns">
+	    <![CDATA[
+        	id ,
+        	menu_id ,
+        	parent_id ,
+        	code ,
+        	name ,
+        	url ,
+        	type ,
+        	view_order ,
+        	description ,
+        	crt_date ,
+        	crt_user_id ,
+        	modify_date ,
+        	modify_user_id ,
+        	enabled
+	    ]]>
+	</sql>
+
+    <sql id="dynamicWhere">
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="menuId != null">
+                AND menu_id = #{menuId}
+            </if>
+            <if test="parentId != null">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="code != null">
+                AND code = #{code}
+            </if>
+            <if test="name != null">
+                AND name = #{name}
+            </if>
+            <if test="url != null">
+                AND url = #{url}
+            </if>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+            <if test="viewOrder != null">
+                AND view_order = #{viewOrder}
+            </if>
+            <if test="description != null">
+                AND description = #{description}
+            </if>
+            <if test="crtDate != null">
+                AND crt_date = #{crtDate}
+            </if>
+            <if test="crtUserId != null">
+                AND crt_user_id = #{crtUserId}
+            </if>
+            <if test="modifyDate != null">
+                AND modify_date = #{modifyDate}
+            </if>
+            <if test="modifyUserId != null">
+                AND modify_user_id = #{modifyUserId}
+            </if>
+            <if test="enabled != null">
+                AND enabled = #{enabled}
+            </if>
+            <if test="keywords != null">
+                AND name like '%'||#{keywords}||'%'
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="orderBy">
+        <if test="orderColumn != null">
+            order by #{orderColumn}
+        </if>
+    </sql>
+
+    <!--<select id="findAll" resultMap="authResResult">-->
+        <!--select-->
+        <!--<include refid="commonColumns"/>-->
+        <!--from auth_res-->
+        <!--<include refid="orderBy"/>-->
+    <!--</select>-->
+    <!-- 查询所有的资源 -->
+    <select id="findAll" resultMap="authResResult">
+        select
+        <include refid="commonColumns" />
+        <![CDATA[
+	        from auth_res
+	    ]]>
+    </select>
+
+    <select id="findByPage" resultMap="authResResult">
+        select
+        <include refid="commonColumns"/>
+        from auth_res
+        <include refid="dynamicWhere" />
+    </select>
+
+    <select id="findByUserId" resultMap="authResResult">
+        SELECT ar.*
+        FROM auth_res ar
+        LEFT JOIN auth_res_role arr ON ar.id = arr.res_id
+        LEFT JOIN auth_role r ON arr.role_id = r.id
+        LEFT JOIN auth_role_group rg ON r.id = rg.role_id
+        LEFT JOIN auth_group g ON g.id = rg.group_id
+        LEFT JOIN auth_user_group ug ON ug.group_id = g.id
+        LEFT JOIN auth_user u ON u.id = ug.user_id
+        WHERE u.id = #{userId} and ar.enabled = 1
+    </select>
+
+    <insert id="save" parameterType="com.apabi.flow.admin.model.AuthRes">
+    insert into auth_res (id , menu_id  , parent_id  ,
+		code  , name  , url  ,
+		type  , view_order  , description  ,
+		crt_date  , crt_user_id  , modify_date  ,
+		modify_user_id  , enabled
+		)
+		values (#{id,jdbcType=NUMERIC}, #{menuId,jdbcType=NUMERIC}, #{parentId,jdbcType=NUMERIC},
+		#{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+	    #{type,jdbcType=NUMERIC}, #{viewOrder,jdbcType=NUMERIC},
+		#{description,jdbcType=VARCHAR}, #{crtDate,jdbcType=TIMESTAMP}, #{crtUserId,jdbcType=NUMERIC},
+		#{modifyDate,jdbcType=TIMESTAMP},#{modifyUserId,jdbcType=NUMERIC}, #{enabled,jdbcType=NUMERIC}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.apabi.flow.admin.model.AuthRes">
+        UPDATE auth_res
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="menuId != null">
+                menu_id = #{menuId},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="viewOrder != null">
+                view_order = #{viewOrder},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="crtDate != null">
+                crt_date = #{crtDate},
+            </if>
+            <if test="crtUserId != null">
+                crt_user_id = #{crtUserId},
+            </if>
+            <if test="modifyDate != null">
+                modify_date = #{modifyDate},
+            </if>
+            <if test="modifyUserId != null">
+                modify_user_id = #{modifyUserId},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+        </trim>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <select id="getById" resultMap="authResResult">
+        select
+        <include refid="commonColumns" />
+        <![CDATA[
+	        from auth_res
+	        where
+		        id = #{id}
+	    ]]>
+    </select>
+
+    <delete id="batchDelete" parameterType="java.util.List">
+        <![CDATA[
+        delete from auth_res
+    	]]>
+        <where>
+            id in
+            <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+    <select id="getUrlRole" resultMap="urlRoleResult">
+		SELECT ar.url, role.role_code
+		  FROM auth_res ar, auth_res_role arr, auth_role role
+		 WHERE ar.enabled = 1
+		   and role.enabled = 1
+		   and ar.id = arr.res_id
+		   AND arr.role_id = role.id
+	</select>
+
+    <!-- 删除之前需要先检查关联性 -->
+    <select id="getCountByMenuId" resultType="int">
+		select count(*) from auth_res
+		where menu_id = #{menuId}
+	</select>
+
+</mapper>
