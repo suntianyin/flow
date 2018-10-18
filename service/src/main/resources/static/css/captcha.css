@@ -1,0 +1,33 @@
+@charset "utf-8";
+.captchaTitle,.captchaValue {
+    display: none;
+}
+#captcha {
+    width: 50%;
+}
+.captcha-btn-box {
+    border-left: 1px solid #ccc;
+    width: 49%;
+    height: 100%;
+    float: right;
+    line-height: 1.9rem;
+}
+.captcha-btn-box a {
+    display: none;
+    cursor: pointer;
+    /*font-size: 0.14rem;*/
+    color: #000;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+#countdown-btn {
+    cursor: no-drop;
+}
+#countdown-btn span{
+    color: red;
+}
+.captcha-btn-box .active{
+    display: block;
+}

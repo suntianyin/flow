@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.apabi.flow.publisher.dao.PublisherDao">
+
+    <resultMap id="publisherResult" type="com.apabi.flow.publisher.model.Publisher">
+        <result property="id" column="ID" />
+        <result property="relatePublisherID;" column="RELATEPUBLISHERID" />
+        <result property="isbn" column="ISBN" />
+        <result property="title" column="TITLE" />
+        <result property="titleType" column="TITLETYPE" />
+        <result property="startDate" column="STARTDATE" />
+        <result property="endDate" column="ENDDATE" />
+        <result property="nationalityCode" column="NATIONALITYCODE" />
+        <result property="founderDate" column="FOUNDERDATE" />
+        <result property="classCode" column="CLASSCODE" />
+        <result property="resourceType" column="RESOURCETYPE" />
+        <result property="publishingGroup" column="PUBLISHINGGROUP" />
+        <result property="publishingGroupID" column="PUBLISHINGGROUPID" />
+        <result property="president" column="PRESIDENT" />
+        <result property="vicePresident" column="VICEPRESIDENT" />
+        <result property="qualityLevel" column="QUALITYLEVEL" />
+        <result property="summary" column="SUMMARY" />
+        <result property="place" column="PLACE" />
+        <result property="operator" column="OPERATOR" />
+        <result property="createTime" column="CREATETIME" />
+        <result property="updateTime" column="UPDATETIME" />
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="commonColumns">
+    ID, RELATEPUBLISHERID, ISBN, TITLE, TITLETYPE, STARTDATE, ENDDATE, NATIONALITYCODE, FOUNDERDATE,
+    CLASSCODE, RESOURCETYPE, PUBLISHINGGROUP, PUBLISHINGGROUPID, PRESIDENT, VICEPRESIDENT, QUALITYLEVEL,
+    SUMMARY,PLACE,OPERATOR,CREATETIME,UPDATETIME
+    </sql>
+
+    <insert id="addPubliser" parameterType="com.apabi.flow.publisher.model.Publisher">
+        insert into APABI_PUBLISHER_INFO
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">
+                ID,
+            </if>
+            <if test="relatePublisherID != null">
+                RELATEPUBLISHERID,
+            </if>
+            <if test="isbn != null ">
+                ISBN,
+            </if>
+            <if test="title != null ">
+                TITLE,
+            </if>
+            <if test="titleType != null ">
+                TITLETYPE,
+            </if>
+            <if test="startDate != null ">
+                STARTDATE,
+            </if>
+            <if test="endDate != null ">
+                ENDDATE,
+            </if>
+            <if test="nationalityCode != null ">
+                NATIONALITYCODE,
+            </if>
+            <if test="founderDate != null ">
+                FOUNDERDATE,
+            </if>
+            <if test="classCode != null ">
+                CLASSCODE,
+            </if>
+            <if test="resourceType != null ">
+                RESOURCETYPE,
+            </if>
+            <if test="publishingGroup != null ">
+                PUBLISHINGGROUP,
+            </if>
+            <if test="publishingGroupID != null ">
+                PUBLISHINGGROUPID,
+            </if>
+            <if test="president != null ">
+                PRESIDENT,
+            </if>
+            <if test="vicePresident != null ">
+                VICEPRESIDENT,
+            </if>
+            <if test="qualityLevel != null ">
+                QUALITYLEVEL,
+            </if>
+            <if test="summary != null ">
+                SUMMARY,
+            </if>
+            <if test="place != null ">
+                PLACE,
+            </if>
+            <if test="operator != null ">
+                OPERATOR,
+            </if>
+            <if test="createTime != null ">
+                CREATETIME,
+            </if>
+            <if test="updateTime != null ">
+                UPDATETIME,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="relatePublisherID != null ">
+                #{relatePublisherID,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null ">
+                #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null ">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="titleType != null ">
+                #{titleType,jdbcType=VARCHAR},
+            </if>
+            <if test="startDate != null ">
+                #{startDate,jdbcType=VARCHAR},
+            </if>
+            <if test="endDate != null ">
+                #{endDate,jdbcType=VARCHAR},
+            </if>
+            <if test="nationalityCode != null ">
+                #{nationalityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="founderDate != null ">
+                #{founderDate,jdbcType=VARCHAR},
+            </if>
+            <if test="classCode != null ">
+                #{classCode,jdbcType=VARCHAR},
+            </if>
+            <if test="resourceType != null ">
+                #{resourceType,jdbcType=VARCHAR},
+            </if>
+            <if test="publishingGroup != null ">
+                #{publishingGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="publishingGroupID != null ">
+                #{publishingGroupID,jdbcType=VARCHAR},
+            </if>
+            <if test="president != null ">
+                #{president,jdbcType=VARCHAR},
+            </if>
+            <if test="vicePresident != null ">
+                #{vicePresident,jdbcType=VARCHAR},
+            </if>
+            <if test="qualityLevel != null ">
+                #{qualityLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="summary != null ">
+                #{summary,jdbcType=NCLOB},
+            </if>
+            <if test="place != null ">
+                #{place,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null ">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null ">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            </trim>
+    </insert>
+
+    <!-- 根据Id查询resId -->
+    <select id="selectdataById" resultMap="publisherResult">
+        select
+        <include refid="commonColumns" />
+        <![CDATA[
+	        from APABI_PUBLISHER_INFO
+	    ]]>
+        where id = #{ID}
+    </select>
+
+    <update id="editPublisher" parameterType="com.apabi.flow.publisher.model.Publisher">
+        update APABI_PUBLISHER_INFO
+        <set>
+            <if test="id != null ">
+                ID = #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="relatePublisherID != null ">
+                RELATEPUBLISHERID = #{relatePublisherID,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null ">
+                ISBN = #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null ">
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="titleType != null ">
+                TITLETYPE = #{titleType,jdbcType=VARCHAR},
+            </if>
+            <if test="startDate != null ">
+                STARTDATE = #{startDate,jdbcType=VARCHAR},
+            </if>
+            <if test="endDate != null ">
+                ENDDATE = #{endDate,jdbcType=VARCHAR},
+            </if>
+            <if test="nationalityCode != null">
+                NATIONALITYCODE = #{nationalityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="founderDate != null">
+                FOUNDERDATE = #{founderDate,jdbcType=VARCHAR},
+            </if>
+            <if test="classCode != null ">
+                CLASSCODE = #{classCode,jdbcType=VARCHAR},
+            </if>
+            <if test="resourceType != null ">
+                RESOURCETYPE = #{resourceType,jdbcType=VARCHAR},
+            </if>
+            <if test="publishingGroup != null ">
+                PUBLISHINGGROUP = #{publishingGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="publishingGroupID != null ">
+                PUBLISHINGGROUPID = #{publishingGroupID,jdbcType=VARCHAR},
+            </if>
+            <if test="president != null">
+                PRESIDENT = #{president,jdbcType=VARCHAR},
+            </if>
+            <if test="vicePresident != null ">
+                VICEPRESIDENT = #{vicePresident,jdbcType=VARCHAR},
+            </if>
+            <if test="qualityLevel != null ">
+                QUALITYLEVEL = #{qualityLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="summary != null">
+                SUMMARY = #{summary,jdbcType=NCLOB},
+            </if>
+            <if test="place != null ">
+                PLACE = #{place,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null ">
+                OPERATOR = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null ">
+                CREATETIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null ">
+                UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="queryPage" resultMap="publisherResult">
+        select
+        <include refid="commonColumns" />
+        <![CDATA[
+	        from APABI_PUBLISHER_INFO
+	    ]]>
+    </select>
+
+    <select id="findAll" resultMap="publisherResult">
+        select
+        <include refid="commonColumns" />
+	    from APABI_PUBLISHER_INFO
+    </select>
+
+</mapper>

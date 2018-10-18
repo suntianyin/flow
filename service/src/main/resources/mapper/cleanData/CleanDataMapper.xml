@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.cleanData.dao.CleanDataDao">
+    <resultMap id="CleanDataMapper" type="com.apabi.flow.cleanData.model.CleanData">
+        <id column="METAID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="IDTYPE" jdbcType="VARCHAR" property="idType"/>
+        <result column="SALESTATUS" jdbcType="INTEGER" property="saleStatus"/>
+        <result column="LANGUAGE" jdbcType="VARCHAR" property="language"/>
+        <result column="TITLE" jdbcType="VARCHAR" property="title"/>
+        <result column="SUBTITLE" jdbcType="VARCHAR" property="subTitle"/>
+        <result column="CREATOR" jdbcType="VARCHAR" property="creator"/>
+        <result column="AUTHORINTRO" jdbcType="VARCHAR" property="authorIntro"/>
+        <result column="CREATORWORD" jdbcType="VARCHAR" property="creatorWord"/>
+        <result column="CREATORID" jdbcType="VARCHAR" property="creatorId"/>
+        <result column="CONTRIBUTOR" jdbcType="VARCHAR" property="contributor"/>
+        <result column="CONTRIBUTORWORD" jdbcType="VARCHAR" property="contributorWord"/>
+        <result column="CONTRIBUTORID" jdbcType="VARCHAR" property="contributorId"/>
+        <result column="TRANSLATOR" jdbcType="VARCHAR" property="translator"/>
+        <result column="TRANSLATORID" jdbcType="VARCHAR" property="translatorId"/>
+        <result column="ORIGINTITLE" jdbcType="VARCHAR" property="originTitle"/>
+        <result column="ALTERNATIVETITLE" jdbcType="VARCHAR" property="alternativeTitle"/>
+        <result column="EDITIONORDER" jdbcType="VARCHAR" property="editionOrder"/>
+        <result column="EDITIONNOTE" jdbcType="VARCHAR" property="editionNote"/>
+        <result column="PLACE" jdbcType="VARCHAR" property="place"/>
+        <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher"/>
+        <result column="PUBLISHERID" jdbcType="VARCHAR" property="publisherId"/>
+        <result column="ISSUEDDATE" jdbcType="VARCHAR" property="issuedDate"/>
+        <result column="ENDISSUEDDATE" jdbcType="VARCHAR" property="endIssuedDate"/>
+        <result column="ISSUEDDATEDESC" jdbcType="VARCHAR" property="issuedDateDesc"/>
+        <result column="ABSTRACT" jdbcType="CLOB" property="abstract_"/>
+        <result column="SUBJECT" jdbcType="VARCHAR" property="subject"/>
+        <result column="PREFACE" jdbcType="VARCHAR" property="preface"/>
+        <result column="READER" jdbcType="VARCHAR" property="reader"/>
+        <result column="CLASSCODE" jdbcType="VARCHAR" property="classCode"/>
+        <result column="APABICLASS" jdbcType="VARCHAR" property="apabiClass"/>
+        <result column="TYPE" jdbcType="VARCHAR" property="type"/>
+        <result column="ISBN" jdbcType="VARCHAR" property="isbn"/>
+        <result column="ISBN10" jdbcType="VARCHAR" property="isbn10"/>
+        <result column="ISBN13" jdbcType="VARCHAR" property="isbn13"/>
+        <result column="PAPERPRICE" jdbcType="VARCHAR" property="paperPrice"/>
+        <result column="EBOOKPRICE" jdbcType="VARCHAR" property="ebookPrice"/>
+        <result column="FOREIGNPRICE" jdbcType="VARCHAR" property="foreignPrice"/>
+        <result column="FOREIGNPRICETYPE" jdbcType="VARCHAR" property="foreignPriceType"/>
+        <result column="PAPERPRICEDESC" jdbcType="VARCHAR" property="paperPriceDesc"/>
+        <result column="BINDING" jdbcType="VARCHAR" property="binding"/>
+        <result column="ILLUSTRATION" jdbcType="VARCHAR" property="illustration"/>
+        <result column="PRESSORDER" jdbcType="VARCHAR" property="pressOrder"/>
+        <result column="EDITOR" jdbcType="VARCHAR" property="editor"/>
+        <result column="RELATION" jdbcType="VARCHAR" property="relation"/>
+        <result column="RELATIONID" jdbcType="VARCHAR" property="relationId"/>
+        <result column="VOLUME" jdbcType="VARCHAR" property="volume"/>
+        <result column="ISSERIES" jdbcType="INTEGER" property="isSeries"/>
+        <result column="VOLUMESCOUNT" jdbcType="VARCHAR" property="volumesCount"/>
+        <result column="ISALLUBLISHED" jdbcType="VARCHAR" property="isAllublished"/>
+        <result column="NOTES" jdbcType="VARCHAR" property="notes"/>
+        <result column="PODPRICE" jdbcType="VARCHAR" property="podPrice"/>
+        <result column="PODPRICETYPE" jdbcType="VARCHAR" property="podPriceType"/>
+        <result column="PODPRICEPAGEUNIT" jdbcType="VARCHAR" property="podPricePageUnit"/>
+        <result column="DRID" jdbcType="VARCHAR" property="drId"/>
+        <result column="DOUBANID" jdbcType="VARCHAR" property="doubanId"/>
+        <result column="AMAZONID" jdbcType="VARCHAR" property="amazonId"/>
+        <result column="CALISID" jdbcType="VARCHAR" property="calisId"/>
+        <result column="NLIBRARYID" jdbcType="VARCHAR" property="nlibraryId"/>
+        <result column="DATASOURCE" jdbcType="VARCHAR" property="dataSource"/>
+        <result column="QUALITYRATING" jdbcType="VARCHAR" property="qualityRating"/>
+        <result column="QRTYPE" jdbcType="VARCHAR" property="qrType"/>
+        <result column="CEBXOBJID" jdbcType="VARCHAR" property="cebxObjId"/>
+        <result column="CEBXFILESIZE" jdbcType="VARCHAR" property="cebxFileSize"/>
+        <result column="HASCEBX" jdbcType="INTEGER" property="hasCebx"/>
+        <result column="CEBXPAGE" jdbcType="VARCHAR" property="cebxPage"/>
+        <result column="COMPLEXOID" jdbcType="VARCHAR" property="complexOid"/>
+        <result column="REDITOR" jdbcType="VARCHAR" property="reditor"/>
+        <result column="DEPARTMENTID" jdbcType="VARCHAR" property="departmentId"/>
+        <result column="COVERURL" jdbcType="VARCHAR" property="coverUrl"/>
+        <result column="IMGHEIGTH" jdbcType="VARCHAR" property="imgHeigth"/>
+        <result column="IMGWIDTH" jdbcType="VARCHAR" property="imgWidth"/>
+        <result column="COVOBJID" jdbcType="VARCHAR" property="covObjId"/>
+        <result column="THUMIMGURL" jdbcType="VARCHAR" property="thumImgUrl"/>
+        <result column="THUMIMGSIZE" jdbcType="VARCHAR" property="thumImgsize"/>
+        <result column="MEDIUMCOVER" jdbcType="VARCHAR" property="mediumCover"/>
+        <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog"/>
+        <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog"/>
+        <result column="HASFLOW" jdbcType="INTEGER" property="hasFlow"/>
+        <result column="ISOPTIMIZE" jdbcType="INTEGER" property="isOptimize"/>
+        <result column="DONOR" jdbcType="VARCHAR" property="donor"/>
+        <result column="LIBRARYID" jdbcType="VARCHAR" property="libraryId"/>
+        <result column="BOOKID" jdbcType="VARCHAR" property="bookId"/>
+        <result column="STYLECLASS" jdbcType="VARCHAR" property="styleClass"/>
+        <result column="STYLEURL" jdbcType="VARCHAR" property="styleUrl"/>
+        <result column="CHAPTERNUM" jdbcType="INTEGER" property="chapterNum"/>
+        <result column="BOOKPAGES" jdbcType="VARCHAR" property="bookPages"/>
+        <result column="TAGS" jdbcType="VARCHAR" property="tags"/>
+        <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="CONTENTNUM" jdbcType="INTEGER" property="contentNum"/>
+        <result column="HASPUBLISH" jdbcType="INTEGER" property="hasPublish"/>
+        <result column="ISPUBLICCOPYRIGHT" jdbcType="INTEGER" property="isPublicCopyRight"/>
+        <result column="POSTSCRIPT" jdbcType="VARCHAR" property="postScript"/>
+        <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+      METAID,
+      IDTYPE,
+      SALESTATUS,
+      LANGUAGE,
+      TITLE,
+      SUBTITLE,
+      CREATOR,
+      AUTHORINTRO
+      CREATORWORD,
+      CREATORID,
+      CONTRIBUTOR,
+      CONTRIBUTORWORD,
+      CONTRIBUTORID,
+      TRANSLATOR,
+      TRANSLATORID,
+      ORIGINTITLE,
+      ALTERNATIVETITLE,
+      EDITIONORDER,
+      EDITIONNOTE,
+      PLACE,
+      PUBLISHER,
+      PUBLISHERID,
+      ISSUEDDATE,
+      ENDISSUEDDATE,
+      ISSUEDDATEDESC,
+      ABSTRACT,
+      SUBJECT,
+      PREFACE,
+      READER,
+      CLASSCODE,
+      APABICLASS,
+      TYPE,
+      ISBN,
+      ISBN10,
+      ISBN13,
+      PAPERPRICE,
+      EBOOKPRICE,
+      FOREIGNPRICE,
+      FOREIGNPRICETYPE,
+      PAPERPRICEDESC,
+      BINDING,
+      ILLUSTRATION,
+      PRESSORDER,
+      EDITOR,
+      RELATION,
+      RELATIONID,
+      VOLUME,
+      ISSERIES,
+      VOLUMESCOUNT,
+      ISALLUBLISHED,
+      NOTES,
+      PODPRICE,
+      PODPRICETYPE,
+      PODPRICEPAGEUNIT,
+      DRID,
+      DOUBANID,
+      AMAZONID,
+      CALISID,
+      NLIBRARYID,
+      DATASOURCE,
+      QUALITYRATING,
+      QRTYPE,
+      CEBXOBJID,
+      CEBXFILESIZE,
+      HASCEBX,
+      CEBXPAGE,
+      COMPLEXOID,
+      REDITOR,
+      DEPARTMENTID,
+      COVERURL,
+      IMGHEIGTH,
+      IMGWIDTH,
+      COVOBJID,
+      THUMIMGURL,
+      THUMIMGSIZE,
+      MEDIUMCOVER,
+      FOAMATCATALOG,
+      STREAMCATALOG,
+      HASFLOW,
+      ISOPTIMIZE,
+      DONOR,
+      LIBRARYID,
+      BOOKID,
+      STYLECLASS,
+      STYLEURL,
+      CHAPTERNUM,
+      BOOKPAGES,
+      TAGS,
+      CREATETIME,
+      UPDATETIME,
+      CONTENTNUM,
+      HASPUBLISH,
+      ISPUBLICCOPYRIGHT,
+      POSTSCRIPT,
+      RELATIONTYPE
+    </sql>
+    <sql id="Base_Value_List">
+      #{metaId,jdbcType=VARCHAR},
+      #{idType,jdbcType=VARCHAR},
+      #{saleStatus,jdbcType=INTEGER},
+      #{language,jdbcType=VARCHAR},
+      #{title,jdbcType=VARCHAR},
+      #{subTitle,jdbcType=VARCHAR},
+      #{creator,jdbcType=VARCHAR},
+      #{authorIntro,jdbcType=CLOB},
+      #{creatorWord,jdbcType=VARCHAR},
+      #{creatorId,jdbcType=VARCHAR},
+      #{contributor,jdbcType=VARCHAR},
+      #{contributorWord,jdbcType=VARCHAR},
+      #{contributorId,jdbcType=VARCHAR},
+      #{translator,jdbcType=VARCHAR},
+      #{translatorId,jdbcType=VARCHAR},
+      #{originTitle,jdbcType=VARCHAR},
+      #{alternativeTitle,jdbcType=VARCHAR},
+      #{editionOrder,jdbcType=VARCHAR},
+      #{editionNote,jdbcType=VARCHAR},
+      #{place,jdbcType=VARCHAR},
+      #{publisher,jdbcType=VARCHAR},
+      #{publisherId,jdbcType=VARCHAR},
+      #{issuedDate,jdbcType=VARCHAR},
+      #{endIssuedDate,jdbcType=VARCHAR},
+      #{issuedDateDesc,jdbcType=VARCHAR},
+      #{abstract_,jdbcType=CLOB},
+      #{subject,jdbcType=VARCHAR},
+      #{preface,jdbcType=VARCHAR},
+      #{reader,jdbcType=VARCHAR},
+      #{classCode,jdbcType=VARCHAR},
+      #{apabiClass,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR},
+      #{isbn,jdbcType=VARCHAR},
+      #{isbn10,jdbcType=VARCHAR},
+      #{isbn13,jdbcType=VARCHAR},
+      #{paperPrice,jdbcType=VARCHAR},
+      #{ebookPrice,jdbcType=VARCHAR},
+      #{foreignPrice,jdbcType=VARCHAR},
+      #{foreignPriceType,jdbcType=VARCHAR},
+      #{paperPriceDesc,jdbcType=VARCHAR},
+      #{binding,jdbcType=VARCHAR},
+      #{illustration,jdbcType=VARCHAR},
+      #{pressOrder,jdbcType=VARCHAR},
+      #{editor,jdbcType=VARCHAR},
+      #{relation,jdbcType=VARCHAR},
+      #{relationId,jdbcType=VARCHAR},
+      #{volume,jdbcType=VARCHAR},
+      #{isSeries,jdbcType=INTEGER},
+      #{volumesCount,jdbcType=VARCHAR},
+      #{isAllublished,jdbcType=VARCHAR},
+      #{notes,jdbcType=VARCHAR},
+      #{podPrice,jdbcType=VARCHAR},
+      #{podPriceType,jdbcType=VARCHAR},
+      #{podPricePageUnit,jdbcType=VARCHAR},
+      #{drId,jdbcType=VARCHAR},
+      #{doubanId,jdbcType=VARCHAR},
+      #{amazonId,jdbcType=VARCHAR},
+      #{calisId,jdbcType=VARCHAR},
+      #{nlibraryId,jdbcType=VARCHAR},
+      #{dataSource,jdbcType=VARCHAR},
+      #{qualityRating,jdbcType=VARCHAR},
+      #{qrType,jdbcType=VARCHAR},
+      #{cebxObjId,jdbcType=VARCHAR},
+      #{cebxFileSize,jdbcType=VARCHAR},
+      #{hasCebx,jdbcType=INTEGER},
+      #{cebxPage,jdbcType=VARCHAR},
+      #{complexOid,jdbcType=VARCHAR},
+      #{reditor,jdbcType=VARCHAR},
+      #{departmentId,jdbcType=VARCHAR},
+      #{coverUrl,jdbcType=VARCHAR},
+      #{imgHeigth,jdbcType=VARCHAR},
+      #{imgWidth,jdbcType=VARCHAR},
+      #{covObjId,jdbcType=VARCHAR},
+      #{thumImgUrl,jdbcType=VARCHAR},
+      #{thumImgSize,jdbcType=VARCHAR},
+      #{mediumCover,jdbcType=VARCHAR},
+      #{foamatCatalog,jdbcType=CLOB},
+      #{streamCatalog,jdbcType=CLOB},
+      #{hasFlow,jdbcType=INTEGER},
+      #{isOptimize,jdbcType=INTEGER},
+      #{donor,jdbcType=VARCHAR},
+      #{libraryId,jdbcType=VARCHAR},
+      #{bookId,jdbcType=VARCHAR},
+      #{styleClass,jdbcType=VARCHAR},
+      #{styleUrl,jdbcType=VARCHAR},
+      #{chapterNum,jdbcType=INTEGER},
+      #{bookPages,jdbcType=VARCHAR},
+      #{tags,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP},
+      #{contentNum,jdbcType=INTEGER},
+      #{hasPublish,jdbcType=INTEGER},
+      #{isPublicCopyRight,jdbcType=INTEGER},
+      #{postScript,jdbcType=VARCHAR},
+      #{relationType,jdbcType=VARCHAR}
+    </sql>
+    <!-- 向apabi_temp库插入数据 -->
+    <insert id="saveAndFlush" parameterType="com.apabi.flow.cleanData.model.CleanData">
+        INSERT INTO APABI_BOOK_METADATA_TEMP (<include refid="Base_Column_List"/>)
+        VALUES (<include refid="Base_Value_List"/>)
+    </insert>
+    <!-- 根据metaId查找 -->
+    <select id="findApabiBookMetaTempPublishByMetaIdIs" parameterType="java.lang.String" resultMap="CleanDataMapper">
+        SELECT <include refid="Base_Column_List"/> FROM APABI_BOOK_METADATA_TEMP WHERE METAID = #{metaId}
+    </select>
+    <!-- 查找所有数据的metaId -->
+    <select id="findMetaIdsByPage" resultType="java.lang.String">
+        SELECT METAID FROM APABI_BOOK_METADATA_TEMP
+    </select>
+    <!-- 根据出版时间查找所有未清洗的数据的metaId -->
+    <select id="findMetaIdsByPageWithoutClean" resultType="java.lang.String">
+        SELECT METAID FROM APABI_BOOK_METADATA_TEMP WHERE LENGTH(ISSUEDDATE) != 10
+    </select>
+    <!-- 获得APABI_BOOK_METADATA_TEMP表中未清洗数据的个数 -->
+    <select id="getTotalCountWithoutClean" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM APABI_BOOK_METADATA_TEMP WHERE LENGTH(ISSUEDDATE) != 10
+    </select>
+    <!-- 获得APABI_BOOK_METADATA_TEMP表中数据的个数 -->
+    <select id="getTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM APABI_BOOK_METADATA_TEMP
+    </select>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.cleanData.model.CleanData">
+    UPDATE APABI_BOOK_METADATA_TEMP
+    SET
+      IDTYPE = #{idType,jdbcType=VARCHAR},
+      SALESTATUS = #{saleStatus,jdbcType=INTEGER},
+      LANGUAGE = #{language,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      SUBTITLE = #{subTitle,jdbcType=VARCHAR},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      CREATORWORD = #{creatorWord,jdbcType=VARCHAR},
+      CREATORID = #{creatorId,jdbcType=VARCHAR},
+      CONTRIBUTOR = #{contributor,jdbcType=VARCHAR},
+      CONTRIBUTORWORD = #{contributorWord,jdbcType=VARCHAR},
+      CONTRIBUTORID = #{contributorId,jdbcType=VARCHAR},
+      TRANSLATOR = #{translator,jdbcType=VARCHAR},
+      TRANSLATORID = #{translatorId,jdbcType=VARCHAR},
+      ORIGINTITLE = #{originTitle,jdbcType=VARCHAR},
+      ALTERNATIVETITLE = #{alternativeTitle,jdbcType=VARCHAR},
+      EDITIONORDER = #{editionOrder,jdbcType=VARCHAR},
+      EDITIONNOTE = #{editionNote,jdbcType=VARCHAR},
+      PLACE = #{place,jdbcType=VARCHAR},
+      PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      PUBLISHERID = #{publisherId,jdbcType=VARCHAR},
+      ISSUEDDATE = #{issuedDate,jdbcType=VARCHAR},
+      ENDISSUEDDATE = #{endIssuedDate,jdbcType=VARCHAR},
+      ISSUEDDATEDESC = #{issuedDateDesc,jdbcType=VARCHAR},
+      SUBJECT = #{subject,jdbcType=VARCHAR},
+      READER = #{reader,jdbcType=VARCHAR},
+      CLASSCODE = #{classCode,jdbcType=VARCHAR},
+      APABICLASS = #{apabiClass,jdbcType=VARCHAR},
+      TYPE = #{type,jdbcType=VARCHAR},
+      ISBN = #{isbn,jdbcType=VARCHAR},
+      ISBN10 = #{isbn10,jdbcType=VARCHAR},
+      ISBN13 = #{isbn13,jdbcType=VARCHAR},
+      PAPERPRICE = #{paperPrice,jdbcType=VARCHAR},
+      EBOOKPRICE = #{ebookPrice,jdbcType=VARCHAR},
+      FOREIGNPRICE = #{foreignPrice,jdbcType=VARCHAR},
+      FOREIGNPRICETYPE = #{foreignPriceType,jdbcType=VARCHAR},
+      PAPERPRICEDESC = #{paperPriceDesc,jdbcType=VARCHAR},
+      BINDING = #{binding,jdbcType=VARCHAR},
+      ILLUSTRATION = #{illustration,jdbcType=VARCHAR},
+      PRESSORDER = #{pressOrder,jdbcType=VARCHAR},
+      EDITOR = #{editor,jdbcType=VARCHAR},
+      RELATION = #{relation,jdbcType=VARCHAR},
+      RELATIONID = #{relationId,jdbcType=VARCHAR},
+      VOLUME = #{volume,jdbcType=VARCHAR},
+      ISSERIES = #{isSeries,jdbcType=INTEGER},
+      VOLUMESCOUNT = #{volumesCount,jdbcType=VARCHAR},
+      ISALLUBLISHED = #{isAllublished,jdbcType=VARCHAR},
+      NOTES = #{notes,jdbcType=VARCHAR},
+      PODPRICE = #{podPrice,jdbcType=VARCHAR},
+      PODPRICETYPE = #{podPriceType,jdbcType=VARCHAR},
+      PODPRICEPAGEUNIT = #{podPricePageUnit,jdbcType=VARCHAR},
+      DRID = #{drId,jdbcType=VARCHAR},
+      DOUBANID = #{doubanId,jdbcType=VARCHAR},
+      AMAZONID = #{amazonId,jdbcType=VARCHAR},
+      CALISID = #{calisId,jdbcType=VARCHAR},
+      NLIBRARYID = #{nlibraryId,jdbcType=VARCHAR},
+      DATASOURCE = #{dataSource,jdbcType=VARCHAR},
+      QUALITYRATING = #{qualityRating,jdbcType=VARCHAR},
+      QRTYPE = #{qrType,jdbcType=VARCHAR},
+      CEBXOBJID = #{cebxObjId,jdbcType=VARCHAR},
+      CEBXFILESIZE = #{cebxFileSize,jdbcType=VARCHAR},
+      HASCEBX = #{hasCebx,jdbcType=INTEGER},
+      CEBXPAGE = #{cebxPage,jdbcType=VARCHAR},
+      COMPLEXOID = #{complexOid,jdbcType=VARCHAR},
+      REDITOR = #{reditor,jdbcType=VARCHAR},
+      DEPARTMENTID = #{departmentId,jdbcType=VARCHAR},
+      COVERURL = #{coverUrl,jdbcType=VARCHAR},
+      IMGHEIGTH = #{imgHeigth,jdbcType=VARCHAR},
+      IMGWIDTH = #{imgWidth,jdbcType=VARCHAR},
+      COVOBJID = #{covObjId,jdbcType=VARCHAR},
+      THUMIMGURL = #{thumImgUrl,jdbcType=VARCHAR},
+      THUMIMGSIZE = #{thumImgSize,jdbcType=VARCHAR},
+      MEDIUMCOVER = #{mediumCover,jdbcType=VARCHAR},
+      HASFLOW = #{hasFlow,jdbcType=INTEGER},
+      ISOPTIMIZE = #{isOptimize,jdbcType=INTEGER},
+      DONOR = #{donor,jdbcType=VARCHAR},
+      LIBRARYID = #{libraryId,jdbcType=VARCHAR},
+      BOOKID = #{bookId,jdbcType=VARCHAR},
+      STYLECLASS = #{styleClass,jdbcType=VARCHAR},
+      CHAPTERNUM = #{chapterNum,jdbcType=INTEGER},
+      BOOKPAGES = #{bookPages,jdbcType=VARCHAR},
+      TAGS = #{tags,jdbcType=VARCHAR},
+      CREATETIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
+      CONTENTNUM = #{contentNum,jdbcType=INTEGER},
+      FOAMATCATALOG = #{foamatCatalog,jdbcType=OTHER},
+      STREAMCATALOG = #{streamCatalog,jdbcType=OTHER},
+      HASPUBLISH = #{hasPublish,jdbcType=INTEGER},
+      ISPUBLICCOPYRIGHT = #{isPublicCopyRight,jdbcType=INTEGER},
+      AUTHORINTRO = #{authorIntro,jdbcType=CLOB},
+      ABSTRACT = #{abstract_,jdbcType=CLOB},
+      PREFACE = #{preface,jdbcType=CLOB},
+      STYLEURL = #{styleUrl,jdbcType=CLOB},
+      POSTSCRIPT = #{postScript,jdbcType=CLOB}
+      RELATIONTYPE = #{relationType,jdbcType=VARCHAR}
+    WHERE METAID = #{metaId,jdbcType=VARCHAR}
+  </update>
+
+
+    <!-- 更新数据 -->
+    <update id="updateIssuedDateAndIsbn" parameterType="java.lang.String">
+    UPDATE APABI_BOOK_METADATA_TEMP
+    SET
+      ISSUEDDATE = #{issuedDate,jdbcType=VARCHAR},
+      ISBN = #{isbn,jdbcType=VARCHAR}
+    WHERE METAID = #{metaId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

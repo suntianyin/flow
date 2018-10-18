@@ -1,0 +1,177 @@
+﻿/********/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video { 
+	margin: 0; padding: 0; border: 0; font-size: 100%; vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+li{ list-style:none;}
+
+.clearboth { 
+	clear: both; 
+}
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+a { 
+	text-decoration: none; 
+	outline: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+select, 
+select:focus, 
+a:focus, input:focus, select:focus, textarea:focus, 
+a, input, select, textarea, button, 
+a::-moz-focus-inner, input::-moz-focus-inner, select::-moz-focus-inner, textarea::-moz-focus-inner, button::-moz-focus-inner { 
+	outline: none; 
+    outline-width: 0; 
+}
+p { line-height:1.5; }
+a { color:#333; font-size: 1.6em; }
+h1 { font-size: 3em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.6em; }
+h4 { font-size: 1.4em; }
+small { font-size: 0.6em;}
+html, body { 
+	height: 100%;
+}
+
+
+/**************** BEGIN STYLES BELOW ****************/ 
+html {font-size: 62.5%;/*10 ÷ 16 × 100% = 62.5%*/}
+body { background:url(../images/bg_body.jpg) no-repeat center #333; background-size:auto 100%; font: normal 1.6rem/1.2 arial, helvetica, sans-serif,"微软雅黑"; color: #fff;}
+
+.wrap-area{ margin:0 auto; overflow:hidden; }
+.wrap-area >div { height:100%;}
+.wrap-area >div > div{ width:100%; height:100%;}
+.wrap-area .size1{ height:49%; overflow:hidden; }
+.wrap-area .size1 dl{ height:100%;}
+.wrap-area .size1 dt{clear:both; vertical-align:bottom; height:49%; background:rgba(101,197,211,0.8);}
+.wrap-area .size1 dt img{ float:left; height:100%;}
+.wrap-area .size1 dt span{ display:block;  margin-left:4px; margin-bottom:4px; line-height:1.5;}/****/
+.wrap-area .size1 dt table td{ vertical-align: bottom;}/****/
+
+.wrap-area .size1 dd{ height:51%; background:rgba(255,178,48,0.6);}
+.wrap-area .size1 dd p{ padding:4% 4%; line-height:1.5; text-indent:2em; text-align:justify;}/****/
+
+
+.wrap-area .size-blank{clear:both; height:1%;}
+.wrap-area .size-blank2{ float:left; width:1.5%; height:24.5%;}
+.wrap-area .size-blank3{ float:left; width:23%; height:1%;}
+.wrap-area .size2{ position: relative;float:left; width:75%; height:24.5%; background:rgba(146,95,166,0.6);overflow:hidden; z-index:1;}
+.wrap-area .size3{ float:left; width:23.5%; height:12%; text-align:center; overflow:hidden; }
+.wrap-area .color1{ background:rgba(222,85,69,0.6);}
+.wrap-area .color2{ background:rgba(146,95,166,0.6);}
+.wrap-area .color3{ background:rgba(54,183,202,0.6);}
+.wrap-area .color4{ background:rgba(102,191,102,0.6);}
+
+.wrap-area .size2 img{ width:100%;}
+.wrap-area .size2 > p{ margin:2% 6% 0 6%;}
+.wrap-area .size2 ul{height:80%; }
+.wrap-area .size2 li{ padding:1% 6%; height:100%; overflow:hidden;}
+.wrap-area .size3 .table{ display:table; width:100%; height:100%;}
+
+.wrap-area .size3 .table p{  height:100%; display:table-cell; vertical-align:middle; line-height:1.2;}
+
+.swiper-container2{ height:100%; }
+.pagination2{position: absolute; z-index: 100; left: 10px; bottom: 6px;}
+.swiper-pagination-switch {display: block; float:left; width: 6px; height: 6px; border-radius: 6px; background: #555; box-shadow: 0px 1px 2px #555 ; margin: 0 3px;}
+.swiper-active-switch { background: #fdca00;}
+
+.pagination {position: absolute; z-index: 100; left: 10px; bottom: 3%;}
+.pagination .swiper-pagination-switch {width: 10px; height: 10px; margin: 0 5px }
+
+.scenter{ width:100%; height:80%;}
+.scenter td{ vertical-align: middle; text-align:center; width:100%;  height:100%; line-height:2; }
+.wrap-area .size3 p{ padding:0 20%; }
+
+.bottom{position: absolute; bottom:0; left:0; padding:4% 0 0 2%; width:98%; z-index: 2; height:9%; background:rgba(235,125,66,0.8); text-align:center; overflow:hidden;}
+.art-img{ position:relative; width:100%; text-align:center; overflow:hidden;}
+.art-img img{ max-width:100%; max-height:100%;}
+.art-cont{ margin-top:2%; height:58%; overflow:auto;  line-height:1.5; text-indent:2em;}
+.art-cont p{ margin-bottom:0.5em;}
+.bottom .goback{ position: absolute; left:0; margin:0% 0 0 5%; width:10%; height:100%; background:url(../images/icon_back2.png) no-repeat; background-size:100% auto; }
+#blackFlr{position: absolute; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; text-align:center;}
+#blackFlr img{ width:90%; max-height:90%; margin-top:35%;}
+
+
+/*adjust*/
+@media screen and (min-width: 1081px){	
+	.wrap-area .size1 dt span{ font-size:3.6rem;}
+	.wrap-area .size1 dd p{font-size:2.8rem;}
+	.wrap-area .size2 > p{ font-size:3.6rem;}
+	.wrap-area .size2 li{ font-size:2.4rem;}
+	.wrap-area .size3 p{ font-size:3.6rem;}
+	.scenter td{ font-size: 4.6rem;}
+	.art-cont{font-size:4rem;}
+}
+@media screen and (min-width: 981px) and (max-width:1080px){	
+	.wrap-area .size1 dt span{ font-size:3.6rem;}
+	.wrap-area .size1 dd p{font-size:2.8rem;}
+	.wrap-area .size2 > p{ font-size:3.6rem;}
+	.wrap-area .size2 li{ font-size:2.4rem;}
+	.wrap-area .size3 p{ font-size:3.6rem;}
+	.scenter td{ font-size: 4.6rem;}
+	.bottom h2{font-size: 4rem;}
+	.art-cont{font-size:3.6rem;}
+	.pagination .swiper-pagination-switch {width: 14px; height: 14px; border-radius: 8px; }
+	.pagination2 .swiper-pagination-switch {width: 10px; height: 10px;  }
+}
+@media screen and (min-width: 701px) and (max-width:980px){
+	
+}
+@media screen and (min-width: 501px) and (max-width:700px){
+	
+}
+@media screen and (min-width: 300px) and (max-width:500px){
+	.wrap-area .size1 dt span{ font-size:1.1rem;}
+	.wrap-area .size1 dd p{font-size:0.8rem; }
+	.wrap-area .size2 > p{ font-size:1.2rem;}
+	.wrap-area .size2 li{ font-size:0.7rem;}
+	.wrap-area .size3 p{ padding:0 20%;  font-size:1.2rem;}
+	.scenter td{ font-size: 1.8rem;}
+	.bottom h2{font-size: 2rem;}
+	.art-cont{font-size:1.6rem;}
+}
+@media screen and (min-width: 150px) and (max-width:300px){
+	
+}
+
+@media screen and (min-width: 1281px) and (max-width:1920px) and (-webkit-min-device-pixel-ratio:1){
+}
+
+
+
+
+
+

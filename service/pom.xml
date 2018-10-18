@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.apabi</groupId>
-    <artifactId>flowApi</artifactId>
+    <artifactId>flow</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>flowApi</name>
+    <name>flowAdmin</name>
     <description>flow project for Spring Boot</description>
 
     <parent>
@@ -36,6 +36,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
@@ -44,8 +55,17 @@
         <!-- springboot-pagehelper插件 -->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
             <version>1.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <!-- <dependency>
              <groupId>org.springframework.boot</groupId>
@@ -128,11 +148,6 @@
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.38</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/oracle/ojdbc6 -->
         <dependency>
@@ -226,6 +241,20 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.2.5</version>
+        </dependency>
 
         <!-- *.csv -->
         <!-- https://mvnrepository.com/artifact/net.sourceforge.javacsv/javacsv -->
@@ -240,6 +269,14 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.49</version>
         </dependency>
+
+        <!-- 时间操作 -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10</version>
+        </dependency>
+
 
 
     </dependencies>
@@ -280,23 +317,7 @@
             </plugin>
 
         </plugins>
-        <!--<resources>
-            <resource>
-                <directory>src/main/resource</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/webapp</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
-        -->
+
     </build>
     <repositories><!-- 代码库 -->
         <repository>

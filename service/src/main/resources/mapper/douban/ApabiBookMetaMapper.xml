@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.flow.douban.dao.ApabiBookMetaDao" >
+    <resultMap id="apabiBookMetaMapper" type="com.apabi.flow.douban.model.ApabiBookMeta2" >
+        <id column="METAID" property="metaId" jdbcType="VARCHAR" />
+        <result column="METAID" property="metaId" jdbcType="VARCHAR" />
+        <result column="DOUBANID" property="doubanId" jdbcType="VARCHAR" />
+        <result column="ISBN13" property="isbn13" jdbcType="VARCHAR" />
+        <result column="ISBN10" property="isbn10" jdbcType="VARCHAR" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+        <result column="PUBLISHER" property="publisher" jdbcType="VARCHAR" />
+        <result column="ALTERNATIVETITLE" property="alternativeTitle" jdbcType="VARCHAR" />
+        <result column="SUBTITLE" property="subTitle" jdbcType="VARCHAR" />
+        <result column="ORIGINTITLE" property="originTitle" jdbcType="VARCHAR" />
+        <result column="TRANSLATOR" property="translator" jdbcType="VARCHAR" />
+        <result column="ISSUEDDATE" property="issueddate" jdbcType="DATE" />
+        <result column="BOOKPAGES" property="bookPages" jdbcType="VARCHAR" />
+        <result column="PAPERPRICE" property="paperPrice" jdbcType="VARCHAR" />
+        <result column="EBOOKPRICE" property="ebookPrice" jdbcType="VARCHAR" />
+        <result column="BINDING" property="binding" jdbcType="VARCHAR" />
+        <result column="RELATION" property="relation" jdbcType="VARCHAR" />
+        <result column="ABSTRACT" property="abstract_" jdbcType="VARCHAR" />
+        <result column="AUTHORINTRO" property="authorIntro" jdbcType="VARCHAR" />
+        <result column="FOAMATCATALOG" property="foamatCatalog" jdbcType="VARCHAR" />
+        <result column="TAGS" property="tags" jdbcType="VARCHAR" />
+        <result column="THUMIMGURL" property="thumImgUrl" jdbcType="VARCHAR" />
+        <result column="MEDIUMCOVER" property="mediumCover" jdbcType="VARCHAR" />
+        <result column="COVERURL" property="coverUrl" jdbcType="VARCHAR" />
+        <result column="DATASOURCE" property="douban" jdbcType="VARCHAR" />
+        <result column="CREATETIME" property="createTime" jdbcType="DATE" />
+    </resultMap>
+</mapper>

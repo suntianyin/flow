@@ -1,0 +1,45 @@
+﻿
+.ver_topic{ width:75%; height:70%;}
+
+
+/*for example:pad*/
+@media screen and (min-height: 1601px){	
+
+	.topic_area h5{ font-size:3.8rem;}
+	.topic_area h3{ font-size:4.6rem;}
+	.topic_area > div{font-size:2rem;}
+	.topic_area .text p{font-size:2.4rem;}
+}
+@media screen and (min-height: 1301px) and (max-height:1600px){
+
+	.topic_area h5{ font-size:3.2rem;}
+	.topic_area h3{ font-size:4rem;}
+	.topic_area > div{font-size:1.8rem;}
+	.topic_area .text p{font-size:2rem;}
+}
+@media screen and (min-height: 1001px) and (max-height:1300px){
+
+	.topic_area h5{ font-size:2.4rem;}
+	.topic_area h3{ font-size:2.8rem;}
+	.topic_area > div{font-size:1.2rem;}
+	.topic_area .text p{font-size:1.4rem;}
+}
+
+@media screen and (min-height: 601px) and (max-height:1000px){
+
+	.topic_area h5{ font-size:1.6rem;}
+	.topic_area h3{ font-size:2rem;}
+	.topic_area > div{font-size:1.2rem;}
+	.topic_area .text p{font-size:1.2rem;}
+}
+
+@media screen and (min-height:200px) and (max-height:600px){
+	.topic_area h5{ font-size:1.2rem;}
+	.topic_area h3{ font-size:1.4rem;}
+	.topic_area > div{font-size:0.8rem;}
+	.top_block1 .blankh{height: 24%;}
+	.top_block2 .blankh { height: 30%;}
+	.top_block3 .blankh,.top_block4 .blankh,.top_block6 .blankh { height:8%;}
+	.topic_area .text p {font-size:0.7rem;}
+}
+

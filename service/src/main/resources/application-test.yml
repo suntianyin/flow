@@ -1,0 +1,7 @@
+ctx: http://172.18.89.115:8084/flowadmin
+cebxHtmlExe: E:\cebxTool\Cebx2Html.exe
+targetCebxDir: F:\cebxHtml
+styleUrl: /apabi/flow/webapps/file/book
+uploadXml: /upload/flow/xml
+uploadEpub: /upload/flow/epub
+uploadCebx: /upload/flow/cebx

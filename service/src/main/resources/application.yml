@@ -1,0 +1,82 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /flowadmin
+
+spring:
+  profiles:
+    active: dev
+  data:
+      mongodb:
+        uri: mongodb://172.18.89.101:40000/books
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@172.18.89.115:1521:orcl
+    password: book
+    username: book
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/nr2k?useUnicode=true&characterEncoding=utf-8
+#    password: root
+#    username: root
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 下面为连接池的补充设置，应用到上面所有数据源中
+    # 初始化大小，最小，最大
+    initialSize: 3
+    # 连接池最小空闲
+    minIdle: 0
+    maxActive: 5
+    # 配置获取连接等待超时的时间
+    maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 25200000
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    # 打开removeAbandoned功能
+    removeAbandoned: true
+    removeAbandonedTimeout: 1800
+    #关闭abanded连接时输出错误日志
+    logAbandoned: true
+    filters: mergeStat
+
+  jpa:
+    hibernate:
+      show-sql: true
+    properties:
+          hibernate:
+            dialect : org.hibernate.dialect.Oracle10gDialect
+    database: oracle
+
+  freemarker:
+    cache: false
+    charset: utf-8
+    check-template-location: true
+    content-type: text/html
+    enabled: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates
+#  resources:
+#    static-locations: classpath:/static/*
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 300MB
+
+mybatis:
+  type-aliases-package: com.apabi.flow.*.model
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    cache-enabled: false
+#  configuration:
+#    default-enum-type-handler: com.apabi.flow.common.UniversalEnumHandler
+
+pagehelper:
+  helperDialect: oracle
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+logging:
+  config: classpath:properties/logging-config.xml

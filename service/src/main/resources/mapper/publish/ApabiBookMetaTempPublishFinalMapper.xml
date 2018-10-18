@@ -1,0 +1,1001 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.publish.dao.ApabiBookMetaTempPublishFinalDao">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.publish.model.ApabiBookMetaTempPublishFinal">
+    <id column="METAID" jdbcType="VARCHAR" property="metaId" />
+    <result column="IDTYPE" jdbcType="VARCHAR" property="idType" />
+    <result column="SALESTATUS" jdbcType="INTEGER" property="saleStatus" />
+    <result column="LANGUAGE" jdbcType="VARCHAR" property="language" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="SUBTITLE" jdbcType="VARCHAR" property="subTitle" />
+    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+    <result column="CREATORWORD" jdbcType="VARCHAR" property="creatorWord" />
+    <result column="CREATORID" jdbcType="VARCHAR" property="creatorId" />
+    <result column="CONTRIBUTOR" jdbcType="VARCHAR" property="contributor" />
+    <result column="CONTRIBUTORWORD" jdbcType="VARCHAR" property="contributorWord" />
+    <result column="CONTRIBUTORID" jdbcType="VARCHAR" property="contributorId" />
+    <result column="TRANSLATOR" jdbcType="VARCHAR" property="translator" />
+    <result column="TRANSLATORID" jdbcType="VARCHAR" property="translatorId" />
+    <result column="ORIGINTITLE" jdbcType="VARCHAR" property="originTitle" />
+    <result column="ALTERNATIVETITLE" jdbcType="VARCHAR" property="alternativeTitle" />
+    <result column="EDITIONORDER" jdbcType="VARCHAR" property="editionOrder" />
+    <result column="EDITIONNOTE" jdbcType="VARCHAR" property="editionNote" />
+    <result column="PLACE" jdbcType="VARCHAR" property="place" />
+    <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher" />
+    <result column="PUBLISHERID" jdbcType="VARCHAR" property="publisherId" />
+    <result column="ISSUEDDATE" jdbcType="VARCHAR" property="issuedDate" />
+    <result column="ENDISSUEDDATE" jdbcType="VARCHAR" property="endIssuedDate" />
+    <result column="ISSUEDDATEDESC" jdbcType="VARCHAR" property="issuedDateDesc" />
+    <result column="SUBJECT" jdbcType="VARCHAR" property="subject" />
+    <result column="READER" jdbcType="VARCHAR" property="reader" />
+    <result column="CLASSCODE" jdbcType="VARCHAR" property="classCode" />
+    <result column="APABICLASS" jdbcType="VARCHAR" property="apabiClass" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+    <result column="ISBN" jdbcType="VARCHAR" property="isbn" />
+    <result column="ISBN10" jdbcType="VARCHAR" property="isbn10" />
+    <result column="ISBN13" jdbcType="VARCHAR" property="isbn13" />
+    <result column="PAPERPRICE" jdbcType="VARCHAR" property="paperPrice" />
+    <result column="EBOOKPRICE" jdbcType="VARCHAR" property="ebookPrice" />
+    <result column="FOREIGNPRICE" jdbcType="VARCHAR" property="foreignPrice" />
+    <result column="FOREIGNPRICETYPE" jdbcType="VARCHAR" property="foreignPriceType" />
+    <result column="PAPERPRICEDESC" jdbcType="VARCHAR" property="paperPriceDesc" />
+    <result column="BINDING" jdbcType="VARCHAR" property="binding" />
+    <result column="ILLUSTRATION" jdbcType="VARCHAR" property="illustration" />
+    <result column="PRESSORDER" jdbcType="VARCHAR" property="pressOrder" />
+    <result column="EDITOR" jdbcType="VARCHAR" property="editor" />
+    <result column="RELATION" jdbcType="VARCHAR" property="relation" />
+    <result column="RELATIONID" jdbcType="VARCHAR" property="relationId" />
+    <result column="VOLUME" jdbcType="VARCHAR" property="volume" />
+    <result column="ISSERIES" jdbcType="INTEGER" property="isSeries" />
+    <result column="VOLUMESCOUNT" jdbcType="VARCHAR" property="volumesCount" />
+    <result column="ISALLUBLISHED" jdbcType="VARCHAR" property="isAllublished" />
+    <result column="NOTES" jdbcType="VARCHAR" property="notes" />
+    <result column="PODPRICE" jdbcType="VARCHAR" property="podPrice" />
+    <result column="PODPRICETYPE" jdbcType="VARCHAR" property="podPriceType" />
+    <result column="PODPRICEPAGEUNIT" jdbcType="VARCHAR" property="podPricePageUnit" />
+    <result column="DRID" jdbcType="VARCHAR" property="drId" />
+    <result column="DOUBANID" jdbcType="VARCHAR" property="doubanId" />
+    <result column="AMAZONID" jdbcType="VARCHAR" property="amazonId" />
+    <result column="CALISID" jdbcType="VARCHAR" property="calisId" />
+    <result column="NLIBRARYID" jdbcType="VARCHAR" property="nlibraryId" />
+    <result column="DATASOURCE" jdbcType="VARCHAR" property="dataSource" />
+    <result column="QUALITYRATING" jdbcType="VARCHAR" property="qualityRating" />
+    <result column="QRTYPE" jdbcType="VARCHAR" property="qrType" />
+    <result column="CEBXOBJID" jdbcType="VARCHAR" property="cebxObjId" />
+    <result column="CEBXFILESIZE" jdbcType="VARCHAR" property="cebxFileSize" />
+    <result column="HASCEBX" jdbcType="INTEGER" property="hasCebx" />
+    <result column="CEBXPAGE" jdbcType="VARCHAR" property="cebxPage" />
+    <result column="COMPLEXOID" jdbcType="VARCHAR" property="complexOid" />
+    <result column="REDITOR" jdbcType="VARCHAR" property="reditor" />
+    <result column="DEPARTMENTID" jdbcType="VARCHAR" property="departmentId" />
+    <result column="COVERURL" jdbcType="VARCHAR" property="coverUrl" />
+    <result column="IMGHEIGTH" jdbcType="VARCHAR" property="imgHeigth" />
+    <result column="IMGWIDTH" jdbcType="VARCHAR" property="imgWidth" />
+    <result column="COVOBJID" jdbcType="VARCHAR" property="covObjId" />
+    <result column="THUMIMGURL" jdbcType="VARCHAR" property="thumImgUrl" />
+    <result column="THUMIMGSIZE" jdbcType="VARCHAR" property="thumImgSize" />
+    <result column="MEDIUMCOVER" jdbcType="VARCHAR" property="mediumCover" />
+    <result column="HASFLOW" jdbcType="INTEGER" property="hasFlow" />
+    <result column="ISOPTIMIZE" jdbcType="INTEGER" property="isOptimize" />
+    <result column="DONOR" jdbcType="VARCHAR" property="donor" />
+    <result column="LIBRARYID" jdbcType="VARCHAR" property="libraryId" />
+    <result column="BOOKID" jdbcType="VARCHAR" property="bookId" />
+    <result column="STYLECLASS" jdbcType="VARCHAR" property="styleClass" />
+    <result column="STYLEURL" jdbcType="VARCHAR" property="styleUrl" />
+    <result column="CHAPTERNUM" jdbcType="INTEGER" property="chapterNum" />
+    <result column="BOOKPAGES" jdbcType="VARCHAR" property="bookPages" />
+    <result column="TAGS" jdbcType="VARCHAR" property="tags" />
+    <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CONTENTNUM" jdbcType="INTEGER" property="contentNum" />
+    <result column="HASPUBLISH" jdbcType="INTEGER" property="hasPublish" />
+    <result column="ISPUBLICCOPYRIGHT" jdbcType="INTEGER" property="isPublicCopyRight" />
+    <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType" />
+    <result column="AUTHORINTRO" jdbcType="CLOB" property="authorIntro" />
+    <result column="ABSTRACT" jdbcType="CLOB" property="abstract_" />
+    <result column="PREFACE" jdbcType="CLOB" property="preface" />
+    <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog" />
+    <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog" />
+    <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    METAID, IDTYPE, SALESTATUS, LANGUAGE, TITLE, SUBTITLE, CREATOR, CREATORWORD, CREATORID,
+    CONTRIBUTOR, CONTRIBUTORWORD, CONTRIBUTORID, TRANSLATOR, TRANSLATORID, ORIGINTITLE,
+    ALTERNATIVETITLE, EDITIONORDER, EDITIONNOTE, PLACE, PUBLISHER, PUBLISHERID, ISSUEDDATE,
+    ENDISSUEDDATE, ISSUEDDATEDESC, SUBJECT, READER, CLASSCODE, APABICLASS, TYPE, ISBN,
+    ISBN10, ISBN13, PAPERPRICE, EBOOKPRICE, FOREIGNPRICE, FOREIGNPRICETYPE, PAPERPRICEDESC,
+    BINDING, ILLUSTRATION, PRESSORDER, EDITOR, RELATION, RELATIONID, VOLUME, ISSERIES,
+    VOLUMESCOUNT, ISALLUBLISHED, NOTES, PODPRICE, PODPRICETYPE, PODPRICEPAGEUNIT, DRID,
+    DOUBANID, AMAZONID, CALISID, NLIBRARYID, DATASOURCE, QUALITYRATING, QRTYPE, CEBXOBJID,
+    CEBXFILESIZE, HASCEBX, CEBXPAGE, COMPLEXOID, REDITOR, DEPARTMENTID, COVERURL, IMGHEIGTH,
+    IMGWIDTH, COVOBJID, THUMIMGURL, THUMIMGSIZE, MEDIUMCOVER, HASFLOW, ISOPTIMIZE, DONOR,
+    LIBRARYID, BOOKID, STYLECLASS, STYLEURL, CHAPTERNUM, BOOKPAGES, TAGS, CREATETIME,
+    UPDATETIME, CONTENTNUM, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,
+    AUTHORINTRO, ABSTRACT, PREFACE, FOAMATCATALOG, STREAMCATALOG, POSTSCRIPT
+  </sql>
+
+  <!-- 根据metaId查找数据 -->
+  <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_METADATA_TEMP
+    where METAID = #{metaId,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 根据metaId删除数据 -->
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from APABI_BOOK_METADATA_TEMP
+    where METAID = #{metaId,jdbcType=VARCHAR}
+  </delete>
+
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="com.apabi.flow.publish.model.ApabiBookMetaTempPublishFinal">
+    insert into APABI_BOOK_METADATA_TEMP
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="metaId != null">
+        METAID,
+      </if>
+      <if test="idType != null">
+        IDTYPE,
+      </if>
+      <if test="saleStatus != null">
+        SALESTATUS,
+      </if>
+      <if test="language != null">
+        LANGUAGE,
+      </if>
+      <if test="title != null">
+        TITLE,
+      </if>
+      <if test="subTitle != null">
+        SUBTITLE,
+      </if>
+      <if test="creator != null">
+        CREATOR,
+      </if>
+      <if test="creatorWord != null">
+        CREATORWORD,
+      </if>
+      <if test="creatorId != null">
+        CREATORID,
+      </if>
+      <if test="contributor != null">
+        CONTRIBUTOR,
+      </if>
+      <if test="contributorWord != null">
+        CONTRIBUTORWORD,
+      </if>
+      <if test="contributorId != null">
+        CONTRIBUTORID,
+      </if>
+      <if test="translator != null">
+        TRANSLATOR,
+      </if>
+      <if test="translatorId != null">
+        TRANSLATORID,
+      </if>
+      <if test="originTitle != null">
+        ORIGINTITLE,
+      </if>
+      <if test="alternativeTitle != null">
+        ALTERNATIVETITLE,
+      </if>
+      <if test="editionOrder != null">
+        EDITIONORDER,
+      </if>
+      <if test="editionNote != null">
+        EDITIONNOTE,
+      </if>
+      <if test="place != null">
+        PLACE,
+      </if>
+      <if test="publisher != null">
+        PUBLISHER,
+      </if>
+      <if test="publisherId != null">
+        PUBLISHERID,
+      </if>
+      <if test="issuedDate != null">
+        ISSUEDDATE,
+      </if>
+      <if test="endIssuedDate != null">
+        ENDISSUEDDATE,
+      </if>
+      <if test="issuedDateDesc != null">
+        ISSUEDDATEDESC,
+      </if>
+      <if test="subject != null">
+        SUBJECT,
+      </if>
+      <if test="reader != null">
+        READER,
+      </if>
+      <if test="classCode != null">
+        CLASSCODE,
+      </if>
+      <if test="apabiClass != null">
+        APABICLASS,
+      </if>
+      <if test="type != null">
+        TYPE,
+      </if>
+      <if test="isbn != null">
+        ISBN,
+      </if>
+      <if test="isbn10 != null">
+        ISBN10,
+      </if>
+      <if test="isbn13 != null">
+        ISBN13,
+      </if>
+      <if test="paperPrice != null">
+        PAPERPRICE,
+      </if>
+      <if test="ebookPrice != null">
+        EBOOKPRICE,
+      </if>
+      <if test="foreignPrice != null">
+        FOREIGNPRICE,
+      </if>
+      <if test="foreignPriceType != null">
+        FOREIGNPRICETYPE,
+      </if>
+      <if test="paperPriceDesc != null">
+        PAPERPRICEDESC,
+      </if>
+      <if test="binding != null">
+        BINDING,
+      </if>
+      <if test="illustration != null">
+        ILLUSTRATION,
+      </if>
+      <if test="pressOrder != null">
+        PRESSORDER,
+      </if>
+      <if test="editor != null">
+        EDITOR,
+      </if>
+      <if test="relation != null">
+        RELATION,
+      </if>
+      <if test="relationId != null">
+        RELATIONID,
+      </if>
+      <if test="volume != null">
+        VOLUME,
+      </if>
+      <if test="isSeries != null">
+        ISSERIES,
+      </if>
+      <if test="volumesCount != null">
+        VOLUMESCOUNT,
+      </if>
+      <if test="isAllublished != null">
+        ISALLUBLISHED,
+      </if>
+      <if test="notes != null">
+        NOTES,
+      </if>
+      <if test="podPrice != null">
+        PODPRICE,
+      </if>
+      <if test="podPriceType != null">
+        PODPRICETYPE,
+      </if>
+      <if test="podPricePageUnit != null">
+        PODPRICEPAGEUNIT,
+      </if>
+      <if test="drId != null">
+        DRID,
+      </if>
+      <if test="doubanId != null">
+        DOUBANID,
+      </if>
+      <if test="amazonId != null">
+        AMAZONID,
+      </if>
+      <if test="calisId != null">
+        CALISID,
+      </if>
+      <if test="nlibraryId != null">
+        NLIBRARYID,
+      </if>
+      <if test="dataSource != null">
+        DATASOURCE,
+      </if>
+      <if test="qualityRating != null">
+        QUALITYRATING,
+      </if>
+      <if test="qrType != null">
+        QRTYPE,
+      </if>
+      <if test="cebxObjId != null">
+        CEBXOBJID,
+      </if>
+      <if test="cebxFileSize != null">
+        CEBXFILESIZE,
+      </if>
+      <if test="hasCebx != null">
+        HASCEBX,
+      </if>
+      <if test="cebxPage != null">
+        CEBXPAGE,
+      </if>
+      <if test="complexOid != null">
+        COMPLEXOID,
+      </if>
+      <if test="reditor != null">
+        REDITOR,
+      </if>
+      <if test="departmentId != null">
+        DEPARTMENTID,
+      </if>
+      <if test="coverUrl != null">
+        COVERURL,
+      </if>
+      <if test="imgHeigth != null">
+        IMGHEIGTH,
+      </if>
+      <if test="imgWidth != null">
+        IMGWIDTH,
+      </if>
+      <if test="covObjId != null">
+        COVOBJID,
+      </if>
+      <if test="thumImgUrl != null">
+        THUMIMGURL,
+      </if>
+      <if test="thumImgSize != null">
+        THUMIMGSIZE,
+      </if>
+      <if test="mediumCover != null">
+        MEDIUMCOVER,
+      </if>
+      <if test="hasFlow != null">
+        HASFLOW,
+      </if>
+      <if test="isOptimize != null">
+        ISOPTIMIZE,
+      </if>
+      <if test="donor != null">
+        DONOR,
+      </if>
+      <if test="libraryId != null">
+        LIBRARYID,
+      </if>
+      <if test="bookId != null">
+        BOOKID,
+      </if>
+      <if test="styleClass != null">
+        STYLECLASS,
+      </if>
+      <if test="styleUrl != null">
+        STYLEURL,
+      </if>
+      <if test="chapterNum != null">
+        CHAPTERNUM,
+      </if>
+      <if test="bookPages != null">
+        BOOKPAGES,
+      </if>
+      <if test="tags != null">
+        TAGS,
+      </if>
+      <if test="createTime != null">
+        CREATETIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATETIME,
+      </if>
+      <if test="contentNum != null">
+        CONTENTNUM,
+      </if>
+      <if test="hasPublish != null">
+        HASPUBLISH,
+      </if>
+      <if test="isPublicCopyRight != null">
+        ISPUBLICCOPYRIGHT,
+      </if>
+      <if test="relationType != null">
+        RELATIONTYPE,
+      </if>
+      <if test="authorIntro != null">
+        AUTHORINTRO,
+      </if>
+      <if test="abstract_ != null">
+        ABSTRACT,
+      </if>
+      <if test="preface != null">
+        PREFACE,
+      </if>
+      <if test="foamatCatalog != null">
+        FOAMATCATALOG,
+      </if>
+      <if test="streamCatalog != null">
+        STREAMCATALOG,
+      </if>
+      <if test="postScript != null">
+        POSTSCRIPT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="metaId != null">
+        #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="idType != null">
+        #{idType,jdbcType=VARCHAR},
+      </if>
+      <if test="saleStatus != null">
+        #{saleStatus,jdbcType=INTEGER},
+      </if>
+      <if test="language != null">
+        #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null">
+        #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorWord != null">
+        #{creatorWord,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorId != null">
+        #{creatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="contributor != null">
+        #{contributor,jdbcType=VARCHAR},
+      </if>
+      <if test="contributorWord != null">
+        #{contributorWord,jdbcType=VARCHAR},
+      </if>
+      <if test="contributorId != null">
+        #{contributorId,jdbcType=VARCHAR},
+      </if>
+      <if test="translator != null">
+        #{translator,jdbcType=VARCHAR},
+      </if>
+      <if test="translatorId != null">
+        #{translatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="originTitle != null">
+        #{originTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="alternativeTitle != null">
+        #{alternativeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="editionOrder != null">
+        #{editionOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="editionNote != null">
+        #{editionNote,jdbcType=VARCHAR},
+      </if>
+      <if test="place != null">
+        #{place,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="publisherId != null">
+        #{publisherId,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDate != null">
+        #{issuedDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endIssuedDate != null">
+        #{endIssuedDate,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDateDesc != null">
+        #{issuedDateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="subject != null">
+        #{subject,jdbcType=VARCHAR},
+      </if>
+      <if test="reader != null">
+        #{reader,jdbcType=VARCHAR},
+      </if>
+      <if test="classCode != null">
+        #{classCode,jdbcType=VARCHAR},
+      </if>
+      <if test="apabiClass != null">
+        #{apabiClass,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn != null">
+        #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn10 != null">
+        #{isbn10,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn13 != null">
+        #{isbn13,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        #{paperPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="ebookPrice != null">
+        #{ebookPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="foreignPrice != null">
+        #{foreignPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="foreignPriceType != null">
+        #{foreignPriceType,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPriceDesc != null">
+        #{paperPriceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="binding != null">
+        #{binding,jdbcType=VARCHAR},
+      </if>
+      <if test="illustration != null">
+        #{illustration,jdbcType=VARCHAR},
+      </if>
+      <if test="pressOrder != null">
+        #{pressOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="editor != null">
+        #{editor,jdbcType=VARCHAR},
+      </if>
+      <if test="relation != null">
+        #{relation,jdbcType=VARCHAR},
+      </if>
+      <if test="relationId != null">
+        #{relationId,jdbcType=VARCHAR},
+      </if>
+      <if test="volume != null">
+        #{volume,jdbcType=VARCHAR},
+      </if>
+      <if test="isSeries != null">
+        #{isSeries,jdbcType=INTEGER},
+      </if>
+      <if test="volumesCount != null">
+        #{volumesCount,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllublished != null">
+        #{isAllublished,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="podPrice != null">
+        #{podPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="podPriceType != null">
+        #{podPriceType,jdbcType=VARCHAR},
+      </if>
+      <if test="podPricePageUnit != null">
+        #{podPricePageUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="drId != null">
+        #{drId,jdbcType=VARCHAR},
+      </if>
+      <if test="doubanId != null">
+        #{doubanId,jdbcType=VARCHAR},
+      </if>
+      <if test="amazonId != null">
+        #{amazonId,jdbcType=VARCHAR},
+      </if>
+      <if test="calisId != null">
+        #{calisId,jdbcType=VARCHAR},
+      </if>
+      <if test="nlibraryId != null">
+        #{nlibraryId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSource != null">
+        #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="qualityRating != null">
+        #{qualityRating,jdbcType=VARCHAR},
+      </if>
+      <if test="qrType != null">
+        #{qrType,jdbcType=VARCHAR},
+      </if>
+      <if test="cebxObjId != null">
+        #{cebxObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="cebxFileSize != null">
+        #{cebxFileSize,jdbcType=VARCHAR},
+      </if>
+      <if test="hasCebx != null">
+        #{hasCebx,jdbcType=INTEGER},
+      </if>
+      <if test="cebxPage != null">
+        #{cebxPage,jdbcType=VARCHAR},
+      </if>
+      <if test="complexOid != null">
+        #{complexOid,jdbcType=VARCHAR},
+      </if>
+      <if test="reditor != null">
+        #{reditor,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="coverUrl != null">
+        #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgHeigth != null">
+        #{imgHeigth,jdbcType=VARCHAR},
+      </if>
+      <if test="imgWidth != null">
+        #{imgWidth,jdbcType=VARCHAR},
+      </if>
+      <if test="covObjId != null">
+        #{covObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="thumImgUrl != null">
+        #{thumImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="thumImgSize != null">
+        #{thumImgSize,jdbcType=VARCHAR},
+      </if>
+      <if test="mediumCover != null">
+        #{mediumCover,jdbcType=VARCHAR},
+      </if>
+      <if test="hasFlow != null">
+        #{hasFlow,jdbcType=INTEGER},
+      </if>
+      <if test="isOptimize != null">
+        #{isOptimize,jdbcType=INTEGER},
+      </if>
+      <if test="donor != null">
+        #{donor,jdbcType=VARCHAR},
+      </if>
+      <if test="libraryId != null">
+        #{libraryId,jdbcType=VARCHAR},
+      </if>
+      <if test="bookId != null">
+        #{bookId,jdbcType=VARCHAR},
+      </if>
+      <if test="styleClass != null">
+        #{styleClass,jdbcType=VARCHAR},
+      </if>
+      <if test="styleUrl != null">
+        #{styleUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="chapterNum != null">
+        #{chapterNum,jdbcType=INTEGER},
+      </if>
+      <if test="bookPages != null">
+        #{bookPages,jdbcType=VARCHAR},
+      </if>
+      <if test="tags != null">
+        #{tags,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="contentNum != null">
+        #{contentNum,jdbcType=INTEGER},
+      </if>
+      <if test="hasPublish != null">
+        #{hasPublish,jdbcType=INTEGER},
+      </if>
+      <if test="isPublicCopyRight != null">
+        #{isPublicCopyRight,jdbcType=INTEGER},
+      </if>
+      <if test="relationType != null">
+        #{relationType,jdbcType=VARCHAR},
+      </if>
+      <if test="authorIntro != null">
+        #{authorIntro,jdbcType=CLOB},
+      </if>
+      <if test="abstract_ != null">
+        #{abstract_,jdbcType=CLOB},
+      </if>
+      <if test="preface != null">
+        #{preface,jdbcType=CLOB},
+      </if>
+      <if test="foamatCatalog != null">
+        #{foamatCatalog,jdbcType=CLOB},
+      </if>
+      <if test="streamCatalog != null">
+        #{streamCatalog,jdbcType=CLOB},
+      </if>
+      <if test="postScript != null">
+        #{postScript,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 更新数据 -->
+  <update id="update" parameterType="com.apabi.flow.publish.model.ApabiBookMetaTempPublishFinal">
+    update APABI_BOOK_METADATA_TEMP
+    <set>
+      <if test="idType != null">
+        IDTYPE = #{idType,jdbcType=VARCHAR},
+      </if>
+      <if test="saleStatus != null">
+        SALESTATUS = #{saleStatus,jdbcType=INTEGER},
+      </if>
+      <if test="language != null">
+        LANGUAGE = #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null">
+        SUBTITLE = #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorWord != null">
+        CREATORWORD = #{creatorWord,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorId != null">
+        CREATORID = #{creatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="contributor != null">
+        CONTRIBUTOR = #{contributor,jdbcType=VARCHAR},
+      </if>
+      <if test="contributorWord != null">
+        CONTRIBUTORWORD = #{contributorWord,jdbcType=VARCHAR},
+      </if>
+      <if test="contributorId != null">
+        CONTRIBUTORID = #{contributorId,jdbcType=VARCHAR},
+      </if>
+      <if test="translator != null">
+        TRANSLATOR = #{translator,jdbcType=VARCHAR},
+      </if>
+      <if test="translatorId != null">
+        TRANSLATORID = #{translatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="originTitle != null">
+        ORIGINTITLE = #{originTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="alternativeTitle != null">
+        ALTERNATIVETITLE = #{alternativeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="editionOrder != null">
+        EDITIONORDER = #{editionOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="editionNote != null">
+        EDITIONNOTE = #{editionNote,jdbcType=VARCHAR},
+      </if>
+      <if test="place != null">
+        PLACE = #{place,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="publisherId != null">
+        PUBLISHERID = #{publisherId,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDate != null">
+        ISSUEDDATE = #{issuedDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endIssuedDate != null">
+        ENDISSUEDDATE = #{endIssuedDate,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDateDesc != null">
+        ISSUEDDATEDESC = #{issuedDateDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="subject != null">
+        SUBJECT = #{subject,jdbcType=VARCHAR},
+      </if>
+      <if test="reader != null">
+        READER = #{reader,jdbcType=VARCHAR},
+      </if>
+      <if test="classCode != null">
+        CLASSCODE = #{classCode,jdbcType=VARCHAR},
+      </if>
+      <if test="apabiClass != null">
+        APABICLASS = #{apabiClass,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        TYPE = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn != null">
+        ISBN = #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn10 != null">
+        ISBN10 = #{isbn10,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn13 != null">
+        ISBN13 = #{isbn13,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        PAPERPRICE = #{paperPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="ebookPrice != null">
+        EBOOKPRICE = #{ebookPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="foreignPrice != null">
+        FOREIGNPRICE = #{foreignPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="foreignPriceType != null">
+        FOREIGNPRICETYPE = #{foreignPriceType,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPriceDesc != null">
+        PAPERPRICEDESC = #{paperPriceDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="binding != null">
+        BINDING = #{binding,jdbcType=VARCHAR},
+      </if>
+      <if test="illustration != null">
+        ILLUSTRATION = #{illustration,jdbcType=VARCHAR},
+      </if>
+      <if test="pressOrder != null">
+        PRESSORDER = #{pressOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="editor != null">
+        EDITOR = #{editor,jdbcType=VARCHAR},
+      </if>
+      <if test="relation != null">
+        RELATION = #{relation,jdbcType=VARCHAR},
+      </if>
+      <if test="relationId != null">
+        RELATIONID = #{relationId,jdbcType=VARCHAR},
+      </if>
+      <if test="volume != null">
+        VOLUME = #{volume,jdbcType=VARCHAR},
+      </if>
+      <if test="isSeries != null">
+        ISSERIES = #{isSeries,jdbcType=INTEGER},
+      </if>
+      <if test="volumesCount != null">
+        VOLUMESCOUNT = #{volumesCount,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllublished != null">
+        ISALLUBLISHED = #{isAllublished,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        NOTES = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="podPrice != null">
+        PODPRICE = #{podPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="podPriceType != null">
+        PODPRICETYPE = #{podPriceType,jdbcType=VARCHAR},
+      </if>
+      <if test="podPricePageUnit != null">
+        PODPRICEPAGEUNIT = #{podPricePageUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="drId != null">
+        DRID = #{drId,jdbcType=VARCHAR},
+      </if>
+      <if test="doubanId != null">
+        DOUBANID = #{doubanId,jdbcType=VARCHAR},
+      </if>
+      <if test="amazonId != null">
+        AMAZONID = #{amazonId,jdbcType=VARCHAR},
+      </if>
+      <if test="calisId != null">
+        CALISID = #{calisId,jdbcType=VARCHAR},
+      </if>
+      <if test="nlibraryId != null">
+        NLIBRARYID = #{nlibraryId,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSource != null">
+        DATASOURCE = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="qualityRating != null">
+        QUALITYRATING = #{qualityRating,jdbcType=VARCHAR},
+      </if>
+      <if test="qrType != null">
+        QRTYPE = #{qrType,jdbcType=VARCHAR},
+      </if>
+      <if test="cebxObjId != null">
+        CEBXOBJID = #{cebxObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="cebxFileSize != null">
+        CEBXFILESIZE = #{cebxFileSize,jdbcType=VARCHAR},
+      </if>
+      <if test="hasCebx != null">
+        HASCEBX = #{hasCebx,jdbcType=INTEGER},
+      </if>
+      <if test="cebxPage != null">
+        CEBXPAGE = #{cebxPage,jdbcType=VARCHAR},
+      </if>
+      <if test="complexOid != null">
+        COMPLEXOID = #{complexOid,jdbcType=VARCHAR},
+      </if>
+      <if test="reditor != null">
+        REDITOR = #{reditor,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentId != null">
+        DEPARTMENTID = #{departmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="coverUrl != null">
+        COVERURL = #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgHeigth != null">
+        IMGHEIGTH = #{imgHeigth,jdbcType=VARCHAR},
+      </if>
+      <if test="imgWidth != null">
+        IMGWIDTH = #{imgWidth,jdbcType=VARCHAR},
+      </if>
+      <if test="covObjId != null">
+        COVOBJID = #{covObjId,jdbcType=VARCHAR},
+      </if>
+      <if test="thumImgUrl != null">
+        THUMIMGURL = #{thumImgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="thumImgSize != null">
+        THUMIMGSIZE = #{thumImgSize,jdbcType=VARCHAR},
+      </if>
+      <if test="mediumCover != null">
+        MEDIUMCOVER = #{mediumCover,jdbcType=VARCHAR},
+      </if>
+      <if test="hasFlow != null">
+        HASFLOW = #{hasFlow,jdbcType=INTEGER},
+      </if>
+      <if test="isOptimize != null">
+        ISOPTIMIZE = #{isOptimize,jdbcType=INTEGER},
+      </if>
+      <if test="donor != null">
+        DONOR = #{donor,jdbcType=VARCHAR},
+      </if>
+      <if test="libraryId != null">
+        LIBRARYID = #{libraryId,jdbcType=VARCHAR},
+      </if>
+      <if test="bookId != null">
+        BOOKID = #{bookId,jdbcType=VARCHAR},
+      </if>
+      <if test="styleClass != null">
+        STYLECLASS = #{styleClass,jdbcType=VARCHAR},
+      </if>
+      <if test="styleUrl != null">
+        STYLEURL = #{styleUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="chapterNum != null">
+        CHAPTERNUM = #{chapterNum,jdbcType=INTEGER},
+      </if>
+      <if test="bookPages != null">
+        BOOKPAGES = #{bookPages,jdbcType=VARCHAR},
+      </if>
+      <if test="tags != null">
+        TAGS = #{tags,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATETIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="contentNum != null">
+        CONTENTNUM = #{contentNum,jdbcType=INTEGER},
+      </if>
+      <if test="hasPublish != null">
+        HASPUBLISH = #{hasPublish,jdbcType=INTEGER},
+      </if>
+      <if test="isPublicCopyRight != null">
+        ISPUBLICCOPYRIGHT = #{isPublicCopyRight,jdbcType=INTEGER},
+      </if>
+      <if test="relationType != null">
+        RELATIONTYPE = #{relationType,jdbcType=VARCHAR},
+      </if>
+      <if test="authorIntro != null">
+        AUTHORINTRO = #{authorIntro,jdbcType=CLOB},
+      </if>
+      <if test="abstract_ != null">
+        ABSTRACT = #{abstract_,jdbcType=CLOB},
+      </if>
+      <if test="preface != null">
+        PREFACE = #{preface,jdbcType=CLOB},
+      </if>
+      <if test="foamatCatalog != null">
+        FOAMATCATALOG = #{foamatCatalog,jdbcType=CLOB},
+      </if>
+      <if test="streamCatalog != null">
+        STREAMCATALOG = #{streamCatalog,jdbcType=CLOB},
+      </if>
+      <if test="postScript != null">
+        POSTSCRIPT = #{postScript,jdbcType=CLOB},
+      </if>
+    </set>
+    where METAID = #{metaId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.book.dao.BookPageMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.BookPage">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="META_ID" jdbcType="VARCHAR" property="metaId" />
+    <result column="PAGE_ID" jdbcType="DECIMAL" property="pageId" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="WORD_SUM" jdbcType="DECIMAL" property="wordSum" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.apabi.flow.book.model.BookPage">
+    <result column="CONTENT" jdbcType="CLOB" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CREATE_TIME, META_ID, PAGE_ID, UPDATE_TIME, WORD_SUM
+  </sql>
+  <sql id="Blob_Column_List">
+    CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from APABI_BOOK_PAGE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 查找 metaId 数据集下的 页面信息列表，但不查询页面内容，按 pageId 排序 -->
+  <select id="findAllByMetaIdOrderByPageId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PAGE
+    where META_ID = #{metaId,jdbcType=VARCHAR}
+    ORDER BY PAGE_ID
+  </select>
+
+  <!-- 查找 metaId 数据集下的 页面信息列表，包括页面内容，按 pageId 排序 -->
+  <select id="findAllByMetaIdOrderByPageIdWithContent" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from APABI_BOOK_PAGE
+    where META_ID = #{metaId,jdbcType=VARCHAR}
+    ORDER BY PAGE_ID
+  </select>
+
+  <!-- 根据metaId 和 pageId 查询分页内容信息 -->
+  <select id="findBookPageByMetaIdAndPageId" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from APABI_BOOK_PAGE
+    where META_ID = #{metaId,jdbcType=VARCHAR} AND PAGE_ID = #{pageId,jdbcType=DECIMAL}
+  </select>
+
+  <select id="findMaxPageIdByMetaId" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select NVL(MAX(PAGE_ID),0) AS pageId from APABI_BOOK_PAGE WHERE META_ID=#{metaId, jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PAGE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.book.model.BookPage">
+    insert into APABI_BOOK_PAGE (ID, CREATE_TIME, META_ID, 
+      PAGE_ID, UPDATE_TIME, WORD_SUM, 
+      CONTENT)
+    values (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{metaId,jdbcType=VARCHAR}, 
+      #{pageId,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{wordSum,jdbcType=DECIMAL}, 
+      #{content,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.book.model.BookPage">
+    insert into APABI_BOOK_PAGE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="metaId != null">
+        META_ID,
+      </if>
+      <if test="pageId != null">
+        PAGE_ID,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="wordSum != null">
+        WORD_SUM,
+      </if>
+      <if test="content != null">
+        CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="metaId != null">
+        #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="pageId != null">
+        #{pageId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wordSum != null">
+        #{wordSum,jdbcType=DECIMAL},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.book.model.BookPage">
+    update APABI_BOOK_PAGE
+    <set>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="metaId != null">
+        META_ID = #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="pageId != null">
+        PAGE_ID = #{pageId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wordSum != null">
+        WORD_SUM = #{wordSum,jdbcType=DECIMAL},
+      </if>
+      <if test="content != null">
+        CONTENT = #{content,jdbcType=CLOB},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.apabi.flow.book.model.BookPage">
+    update APABI_BOOK_PAGE
+    set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      META_ID = #{metaId,jdbcType=VARCHAR},
+      PAGE_ID = #{pageId,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      WORD_SUM = #{wordSum,jdbcType=DECIMAL},
+      CONTENT = #{content,jdbcType=CLOB}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.book.model.BookPage">
+    update APABI_BOOK_PAGE
+    set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      META_ID = #{metaId,jdbcType=VARCHAR},
+      PAGE_ID = #{pageId,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      WORD_SUM = #{wordSum,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

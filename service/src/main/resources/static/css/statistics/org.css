@@ -1,0 +1,122 @@
+body {
+	height: 800px;
+	min-width: 750px;
+	overflow: scroll;
+}
+
+hr {
+	width: 96%;
+	border-top: 1px solid #ccc;
+	margin: 10px auto;
+}
+
+.year_div {
+	margin: 2px auto 2px 15px;
+	float: left;
+	min-height: 20px;
+	background: #f7f7f7;
+	font-size: 0.08rem;
+}
+
+.year_select {
+	height: 25px;
+	margin-top: 8px;
+	border-radius: 4px;
+	background: #f7f7f7
+}
+
+.year_select option {
+	font-size: 0.08rem;
+	background: #f7f7f7;
+}
+
+.time-hide {
+	float: left;
+	margin: 10px;
+}
+
+.time-hide input {
+	height: 20px;
+}
+
+.time-btn {
+	width: 50px;
+	height: 22px;
+	background: white;
+	border-radius: 4px;
+	border: 1px solid #000;
+}
+.Wdate{
+    cursor: pointer;
+}
+
+.data_div {
+	float: left;
+	width: 98%;
+	margin: 10px 1% 20px 1%;
+}
+
+.list-div {
+	float: left;
+	width: 98%;
+	margin: 0 1%;
+	min-height: 640px;
+}
+
+.view-num {
+	font-size: 0.12rem;
+}
+
+.view-l, .view-r {
+	width: 100%;
+	float: left;
+	margin-left: 15px;
+}
+
+.view-word {
+	font-size: 0.09rem;
+	float: left;
+	width: 20%;
+}
+
+.search-div {
+	float: right;
+	text-align: right;
+}
+
+.search-div input {
+	height: 20px;
+}
+
+.search-div button, .exp-type {
+	height: 24px;
+	width: 60px;
+	margin-left: 10px;
+	border-radius: 4px;
+	background: #fff;
+	border: 1px solid;
+}
+
+.table-title {
+	width: 100%;
+	float: left;
+	text-align: left;
+	font-size: 20px;
+	margin-bottom: 2px;
+}
+
+.layout {
+	margin: 0;
+}
+
+@media all and (max-width: 900px) {
+	.year_select option, .view-word {
+		font-size: 0.20rem;
+	}
+	.view-num {
+		font-size: 0.25rem;
+	}
+	.time-hide input{
+        width:101px;
+    }
+}
