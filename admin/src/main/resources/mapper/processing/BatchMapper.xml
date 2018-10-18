@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.processing.dao.BatchMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.processing.model.Batch">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="MANAGER" jdbcType="VARCHAR" property="manager" />
+    <result column="BATCH_ID" jdbcType="VARCHAR" property="batchId" />
+    <result column="OUT_UNIT" jdbcType="VARCHAR" property="outUnit" />
+    <result column="SOURCE_TYPE" jdbcType="DECIMAL" property="sourceType"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.SourceTypeEnum"/>
+    <result column="COPYRIGHT_OWNER" jdbcType="VARCHAR" property="copyrightOwner" />
+    <result column="DOCUMENT_NUM" jdbcType="VARCHAR" property="documentNum" />
+    <result column="BATCH_STATE" jdbcType="DECIMAL" property="batchState"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.BatchStateEnum"/>
+    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+    <result column="AUDITOR" jdbcType="VARCHAR" property="auditor" />
+    <result column="CHECKER" jdbcType="VARCHAR" property="checker" />
+    <result column="MEMO" jdbcType="VARCHAR" property="memo" />
+    <result column="AUDIT_TIME" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="CHECK_TIME" jdbcType="TIMESTAMP" property="checkTime" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="DELETE_FLAG" jdbcType="DECIMAL" property="deleteFlag"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.DeleteFlagEnum"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, MANAGER, BATCH_ID, OUT_UNIT, SOURCE_TYPE, COPYRIGHT_OWNER, DOCUMENT_NUM, BATCH_STATE,
+    CREATOR, AUDITOR, CHECKER, MEMO, AUDIT_TIME, CHECK_TIME, CREATE_TIME, UPDATE_TIME, 
+    DELETE_FLAG
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_BATCH
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <!--<select id="listBatchSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT pb.ID, pb.MANAGER, pi.TITLE as BATCH_ID, pb.OUT_UNIT, pb.SOURCE_TYPE, pb.COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
+    pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
+    pb.DELETE_FLAG
+    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    WHERE pb.BATCH_ID = pi.ID
+    <if test="id != null and id != ''">
+      AND pb.ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="manager != null and manager != ''">
+      AND pb.MANAGER LIKE CONCAT(CONCAT('%',#{manager,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="copyrightOwner != null and copyrightOwner != ''">
+      AND pb.COPYRIGHT_OWNER LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="batchState != null">
+      AND pb.BATCH_STATE = #{batchState.code}
+    </if>
+    <if test="outUnit != null and outUnit != ''">
+      AND pb.OUT_UNIT LIKE CONCAT(CONCAT('%',#{outUnit,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="beginTime != null">
+      AND pb.CREATE_TIME <![CDATA[>=]]> #{beginTime}
+    </if>
+    <if test="endTime != null">
+      AND pb.CREATE_TIME <![CDATA[<]]> #{endTime}
+    </if>
+  </select>-->
+
+  <!-- 注意 外协单位 名称模糊查询 和 外协单位 id 查询的区别，根据不同的条件参数查询 -->
+  <select id="listBatchSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.TITLE COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
+    pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
+    pb.DELETE_FLAG
+    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    ON pb.COPYRIGHT_OWNER = pi.ID LEFT JOIN APABI_BOOK_PRO_OUT_UNIT po ON pb.OUT_UNIT = po.UNIT_ID
+    WHERE 1=1
+    <if test="id != null and id != ''">
+      AND pb.ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="manager != null and manager != ''">
+      AND pb.MANAGER LIKE CONCAT(CONCAT('%',#{manager,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="batchId != null and batchId != ''">
+      AND pb.BATCH_ID = #{batchId,jdbcType=VARCHAR}
+    </if>
+    <if test="copyrightOwner != null and copyrightOwner != ''">
+      AND pi.TITLE LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="batchState != null">
+      AND pb.BATCH_STATE = #{batchState.code,jdbcType=DECIMAL}
+    </if>
+    <if test="outUnit != null and outUnit != ''">
+      AND po.UNIT_NAME LIKE CONCAT(CONCAT('%',#{outUnit,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="outUnitId != null and outUnitId != ''">
+      AND pb.OUT_UNIT = #{outUnitId,jdbcType=VARCHAR}
+    </if>
+    <if test="beginTime != null">
+      AND pb.CREATE_TIME <![CDATA[>=]]> #{beginTime}
+    </if>
+    <if test="endTime != null">
+      AND pb.CREATE_TIME <![CDATA[<]]> #{endTime}
+    </if>
+    ORDER BY pb.CREATE_TIME DESC
+  </select>
+
+  <select id="listBatchSelective" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.TITLE COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
+    pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
+    pb.DELETE_FLAG
+    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    ON pb.COPYRIGHT_OWNER = pi.ID LEFT JOIN APABI_BOOK_PRO_OUT_UNIT po ON pb.OUT_UNIT = po.UNIT_ID
+    WHERE 1=1
+    <if test="id != null and id != ''">
+      AND pb.ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="manager != null and manager != ''">
+      AND pb.MANAGER LIKE CONCAT(CONCAT('%',#{manager,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="batchId != null and batchId != ''">
+      AND pb.BATCH_ID = #{batchId,jdbcType=VARCHAR}
+    </if>
+    <if test="copyrightOwner != null and copyrightOwner != ''">
+      AND pi.TITLE LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="batchState != null">
+      AND pb.BATCH_STATE = #{batchState.code,jdbcType=DECIMAL}
+    </if>
+    <if test="outUnit != null and outUnit != ''">
+      AND po.UNIT_NAME LIKE CONCAT(CONCAT('%',#{outUnit,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="outUnitId != null and outUnitId != ''">
+      AND pb.OUT_UNIT = #{outUnitId,jdbcType=VARCHAR}
+    </if>
+    <if test="beginTime != null">
+      AND pb.CREATE_TIME <![CDATA[>=]]> #{beginTime}
+    </if>
+    <if test="endTime != null">
+      AND pb.CREATE_TIME <![CDATA[<]]> #{endTime}
+    </if>
+    ORDER BY pb.CREATE_TIME DESC
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PRO_BATCH
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.processing.model.Batch">
+    insert into APABI_BOOK_PRO_BATCH (ID, MANAGER, BATCH_ID, 
+      OUT_UNIT, SOURCE_TYPE, COPYRIGHT_OWNER,
+      DOCUMENT_NUM, BATCH_STATE, CREATOR, 
+      AUDITOR, CHECKER, MEMO, 
+      AUDIT_TIME, CHECK_TIME, CREATE_TIME, 
+      UPDATE_TIME, DELETE_FLAG)
+    values (#{id,jdbcType=VARCHAR}, #{manager,jdbcType=VARCHAR}, #{batchId,jdbcType=VARCHAR}, 
+      #{outUnit,jdbcType=VARCHAR}, #{sourceType,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      #{copyrightOwner,jdbcType=VARCHAR},
+      #{documentNum,jdbcType=VARCHAR}, #{batchState,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      #{creator,jdbcType=VARCHAR},
+      #{auditor,jdbcType=VARCHAR}, #{checker,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
+      #{auditTime,jdbcType=TIMESTAMP}, #{checkTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.processing.model.Batch">
+    insert into APABI_BOOK_PRO_BATCH
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="manager != null">
+        MANAGER,
+      </if>
+      <if test="batchId != null">
+        BATCH_ID,
+      </if>
+      <if test="outUnit != null">
+        OUT_UNIT,
+      </if>
+      <if test="sourceType != null">
+        SOURCE_TYPE,
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER,
+      </if>
+      <if test="documentNum != null">
+        DOCUMENT_NUM,
+      </if>
+      <if test="batchState != null">
+        BATCH_STATE,
+      </if>
+      <if test="creator != null">
+        CREATOR,
+      </if>
+      <if test="auditor != null">
+        AUDITOR,
+      </if>
+      <if test="checker != null">
+        CHECKER,
+      </if>
+      <if test="memo != null">
+        MEMO,
+      </if>
+      <if test="auditTime != null">
+        AUDIT_TIME,
+      </if>
+      <if test="checkTime != null">
+        CHECK_TIME,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="deleteFlag != null">
+        DELETE_FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="manager != null">
+        #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="batchId != null">
+        #{batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="outUnit != null">
+        #{outUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceType != null">
+        #{sourceType,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      </if>
+      <if test="copyrightOwner != null">
+        #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="documentNum != null">
+        #{documentNum,jdbcType=VARCHAR},
+      </if>
+      <if test="batchState != null">
+        #{batchState,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="auditor != null">
+        #{auditor,jdbcType=VARCHAR},
+      </if>
+      <if test="checker != null">
+        #{checker,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null">
+        #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkTime != null">
+        #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null">
+        #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.processing.model.Batch">
+    update APABI_BOOK_PRO_BATCH
+    <set>
+      <if test="manager != null">
+        MANAGER = #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="batchId != null">
+        BATCH_ID = #{batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="outUnit != null">
+        OUT_UNIT = #{outUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceType != null">
+        SOURCE_TYPE = #{sourceType,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="documentNum != null">
+        DOCUMENT_NUM = #{documentNum,jdbcType=VARCHAR},
+      </if>
+      <if test="batchState != null">
+        BATCH_STATE = #{batchState,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      </if>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="auditor != null">
+        AUDITOR = #{auditor,jdbcType=VARCHAR},
+      </if>
+      <if test="checker != null">
+        CHECKER = #{checker,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        MEMO = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null">
+        AUDIT_TIME = #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkTime != null">
+        CHECK_TIME = #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null">
+        DELETE_FLAG = #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.processing.model.Batch">
+    update APABI_BOOK_PRO_BATCH
+    set MANAGER = #{manager,jdbcType=VARCHAR},
+      BATCH_ID = #{batchId,jdbcType=VARCHAR},
+      OUT_UNIT = #{outUnit,jdbcType=VARCHAR},
+      SOURCE_TYPE = #{sourceType.code,jdbcType=DECIMAL},
+      COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      DOCUMENT_NUM = #{documentNum,jdbcType=VARCHAR},
+      BATCH_STATE = #{batchState,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      AUDITOR = #{auditor,jdbcType=VARCHAR},
+      CHECKER = #{checker,jdbcType=VARCHAR},
+      MEMO = #{memo,jdbcType=VARCHAR},
+      AUDIT_TIME = #{auditTime,jdbcType=TIMESTAMP},
+      CHECK_TIME = #{checkTime,jdbcType=TIMESTAMP},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      DELETE_FLAG = #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

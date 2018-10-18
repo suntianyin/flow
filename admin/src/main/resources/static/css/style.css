@@ -1,0 +1,28 @@
+@charset "utf-8";
+.gridBody th.sort.desc {
+	background:#fff url(../images/sort_desc.gif) center right no-repeat
+}
+.gridBody th.sort.asc {
+	background:#fff url(../images/sort_asc.gif) center right no-repeat
+}
+.load-circle {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: url(../images/loading.gif) no-repeat center #fff;
+	text-align: center;
+	z-index: 6;
+	font-size: 30px;
+	opacity: 0.4
+}
+.cata-a {
+	cursor:pointer;
+	font-size: 16px;
+	padding-left: 20px;
+}
+.cata-input {
+	font-size: 15px;
+	margin-left: 10px;
+	padding-left: 10px;
+}

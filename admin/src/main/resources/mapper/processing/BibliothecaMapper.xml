@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.processing.dao.BibliothecaMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.processing.model.Bibliotheca">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="IDENTIFIER" jdbcType="VARCHAR" property="identifier" />
+    <result column="META_ID" jdbcType="VARCHAR" property="metaId" />
+    <result column="BATCH_ID" jdbcType="VARCHAR" property="batchId" />
+    <result column="ORIGINAL_FILENAME" jdbcType="VARCHAR" property="originalFilename" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="AUTHOR" jdbcType="VARCHAR" property="author" />
+    <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher" />
+    <result column="ISBN" jdbcType="VARCHAR" property="isbn" />
+    <result column="PUBLISH_TIME" jdbcType="VARCHAR" property="publishTime" />
+    <result column="EDITION" jdbcType="VARCHAR" property="edition" />
+    <result column="PAPER_PRICE" jdbcType="VARCHAR" property="paperPrice" />
+    <result column="E_BOOK_PRICE" jdbcType="VARCHAR" property="eBookPrice" />
+    <result column="DOCUMENT_FORMAT" jdbcType="VARCHAR" property="documentFormat" />
+    <result column="MEMO" jdbcType="VARCHAR" property="memo" />
+    <result column="DUPLICATE_FLAG" jdbcType="DECIMAL" property="duplicateFlag"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.DuplicateFlagEnum"/>
+    <result column="BIBLIOTHECA_STATE" jdbcType="DECIMAL" property="bibliothecaState"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.BibliothecaStateEnum"/>
+    <result column="COMPLETED_FLAG" jdbcType="DECIMAL" property="completedFlag"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.CompletedFlagEnum"/>
+    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="DELETE_FLAG" jdbcType="DECIMAL" property="deleteFlag"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.DeleteFlagEnum"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, IDENTIFIER, META_ID, BATCH_ID, ORIGINAL_FILENAME, TITLE, AUTHOR, PUBLISHER, ISBN, PUBLISH_TIME, EDITION,
+    PAPER_PRICE, E_BOOK_PRICE, DOCUMENT_FORMAT, MEMO, DUPLICATE_FLAG, BIBLIOTHECA_STATE, 
+    COMPLETED_FLAG, CREATOR, CREATE_TIME, UPDATE_TIME, DELETE_FLAG
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_BIBLIOTHECA
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PRO_BIBLIOTHECA
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.processing.model.Bibliotheca">
+    insert into APABI_BOOK_PRO_BIBLIOTHECA (ID, IDENTIFIER, META_ID, BATCH_ID, ORIGINAL_FILENAME,
+      TITLE, AUTHOR, PUBLISHER, 
+      ISBN, PUBLISH_TIME, EDITION, 
+      PAPER_PRICE, E_BOOK_PRICE, DOCUMENT_FORMAT, 
+      MEMO, DUPLICATE_FLAG, BIBLIOTHECA_STATE, 
+      COMPLETED_FLAG, CREATOR, CREATE_TIME, 
+      UPDATE_TIME, DELETE_FLAG)
+    values (#{id,jdbcType=VARCHAR}, #{identifier,jdbcType=VARCHAR}, #{metaId,jdbcType=VARCHAR}, #{batchId,jdbcType=VARCHAR}, #{originalFilename,jdbcType=VARCHAR},
+      #{title,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{publisher,jdbcType=VARCHAR}, 
+      #{isbn,jdbcType=VARCHAR}, #{publishTime,jdbcType=VARCHAR}, #{edition,jdbcType=VARCHAR}, 
+      #{paperPrice,jdbcType=VARCHAR}, #{eBookPrice,jdbcType=VARCHAR}, #{documentFormat,jdbcType=VARCHAR}, 
+      #{memo,jdbcType=VARCHAR}, #{duplicateFlag.code,jdbcType=DECIMAL},
+      #{bibliothecaState.code,jdbcType=DECIMAL},
+      #{completedFlag.code,jdbcType=DECIMAL},
+      #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{deleteFlag.code,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.processing.model.Bibliotheca">
+    insert into APABI_BOOK_PRO_BIBLIOTHECA
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="identifier != null">
+        IDENTIFIER,
+      </if>
+      <if test="metaId != null">
+        META_ID,
+      </if>
+      <if test="batchId != null">
+        BATCH_ID,
+      </if>
+      <if test="originalFilename != null">
+        ORIGINAL_FILENAME,
+      </if>
+      <if test="title != null">
+        TITLE,
+      </if>
+      <if test="author != null">
+        AUTHOR,
+      </if>
+      <if test="publisher != null">
+        PUBLISHER,
+      </if>
+      <if test="isbn != null">
+        ISBN,
+      </if>
+      <if test="publishTime != null">
+        PUBLISH_TIME,
+      </if>
+      <if test="edition != null">
+        EDITION,
+      </if>
+      <if test="paperPrice != null">
+        PAPER_PRICE,
+      </if>
+      <if test="eBookPrice != null">
+        E_BOOK_PRICE,
+      </if>
+      <if test="documentFormat != null">
+        DOCUMENT_FORMAT,
+      </if>
+      <if test="memo != null">
+        MEMO,
+      </if>
+      <if test="duplicateFlag != null">
+        DUPLICATE_FLAG,
+      </if>
+      <if test="bibliothecaState != null">
+        BIBLIOTHECA_STATE,
+      </if>
+      <if test="completedFlag != null">
+        COMPLETED_FLAG,
+      </if>
+      <if test="creator != null">
+        CREATOR,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="deleteFlag != null">
+        DELETE_FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="identifier != null">
+        #{identifier,jdbcType=VARCHAR},
+      </if>
+      <if test="metaId != null">
+        #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="batchId != null">
+        #{batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="originalFilename != null">
+        #{originalFilename,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null">
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn != null">
+        #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="publishTime != null">
+        #{publishTime,jdbcType=VARCHAR},
+      </if>
+      <if test="edition != null">
+        #{edition,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        #{paperPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="eBookPrice != null">
+        #{eBookPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="documentFormat != null">
+        #{documentFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="duplicateFlag != null">
+        #{duplicateFlag.code,jdbcType=DECIMAL},
+      </if>
+      <if test="bibliothecaState != null">
+        #{bibliothecaState.code,jdbcType=DECIMAL},
+      </if>
+      <if test="completedFlag != null">
+        #{completedFlag.code,jdbcType=DECIMAL},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null">
+        #{deleteFlag.code,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.processing.model.Bibliotheca">
+    update APABI_BOOK_PRO_BIBLIOTHECA
+    <set>
+      <if test="identifier != null">
+        IDENTIFIER = #{identifier,jdbcType=VARCHAR},
+      </if>
+      <if test="metaId != null">
+        META_ID = #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="batchId != null">
+        BATCH_ID = #{batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="originalFilename != null">
+        ORIGINAL_FILENAME = #{originalFilename,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null">
+        AUTHOR = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn != null">
+        ISBN = #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="publishTime != null">
+        PUBLISH_TIME = #{publishTime,jdbcType=VARCHAR},
+      </if>
+      <if test="edition != null">
+        EDITION = #{edition,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        PAPER_PRICE = #{paperPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="eBookPrice != null">
+        E_BOOK_PRICE = #{eBookPrice,jdbcType=VARCHAR},
+      </if>
+      <if test="documentFormat != null">
+        DOCUMENT_FORMAT = #{documentFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        MEMO = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="duplicateFlag != null">
+        DUPLICATE_FLAG = #{duplicateFlag.code,jdbcType=DECIMAL},
+      </if>
+      <if test="bibliothecaState != null">
+        BIBLIOTHECA_STATE = #{bibliothecaState.code,jdbcType=DECIMAL},
+      </if>
+      <if test="completedFlag != null">
+        COMPLETED_FLAG = #{completedFlag.code,jdbcType=DECIMAL},
+      </if>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null">
+        DELETE_FLAG = #{deleteFlag.code,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.processing.model.Bibliotheca">
+    update APABI_BOOK_PRO_BIBLIOTHECA
+    set IDENTIFIER = #{identifier,jdbcType=VARCHAR},
+      META_ID = #{metaId,jdbcType=VARCHAR},
+      BATCH_ID = #{batchId,jdbcType=VARCHAR},
+      ORIGINAL_FILENAME = #{originalFilename,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      AUTHOR = #{author,jdbcType=VARCHAR},
+      PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      ISBN = #{isbn,jdbcType=VARCHAR},
+      PUBLISH_TIME = #{publishTime,jdbcType=VARCHAR},
+      EDITION = #{edition,jdbcType=VARCHAR},
+      PAPER_PRICE = #{paperPrice,jdbcType=VARCHAR},
+      E_BOOK_PRICE = #{eBookPrice,jdbcType=VARCHAR},
+      DOCUMENT_FORMAT = #{documentFormat,jdbcType=VARCHAR},
+      MEMO = #{memo,jdbcType=VARCHAR},
+      DUPLICATE_FLAG = #{duplicateFlag.code,jdbcType=DECIMAL},
+      BIBLIOTHECA_STATE = #{bibliothecaState.code,jdbcType=DECIMAL},
+      COMPLETED_FLAG = #{completedFlag.code,jdbcType=DECIMAL},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      DELETE_FLAG = #{deleteFlag.code,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 根据batchId 和 BIBLIOTHECA_STATE 来 修改 书目的状态 -->
+  <update id="updateByBatchIdAndState" parameterType="java.util.Map">
+    update APABI_BOOK_PRO_BIBLIOTHECA
+    set BIBLIOTHECA_STATE = #{nextState.code,jdbcType=DECIMAL},
+    UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where BATCH_ID = #{batchId,jdbcType=VARCHAR}
+    <if test="currentState != null">
+      AND BIBLIOTHECA_STATE = #{currentState.code,jdbcType=DECIMAL}
+    </if>
+  </update>
+
+  <select id="listBibliothecaSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT pb.ID, pb.IDENTIFIER, pb.META_ID, pb.BATCH_ID, pb.ORIGINAL_FILENAME, pb.TITLE, pb.AUTHOR, pi.TITLE PUBLISHER, pb.ISBN, pb.PUBLISH_TIME, pb.EDITION,
+    pb.PAPER_PRICE, pb.E_BOOK_PRICE, pb.DOCUMENT_FORMAT, MEMO, pb.DUPLICATE_FLAG, pb.BIBLIOTHECA_STATE,
+    pb.COMPLETED_FLAG, pb.CREATOR, pb.CREATE_TIME, pb.UPDATE_TIME, pb.DELETE_FLAG
+    FROM APABI_BOOK_PRO_BIBLIOTHECA pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    ON pb.PUBLISHER = pi.ID
+    WHERE 1=1
+    <if test="id != null and id != ''">
+      AND pb.ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="identifier != null and identifier != ''">
+      AND pb.IDENTIFIER = #{identifier,jdbcType=VARCHAR}
+    </if>
+    <if test="metaId != null and metaId != ''">
+      AND pb.META_ID = #{metaId,jdbcType=VARCHAR}
+    </if>
+    <if test="batchId != null and batchId != ''">
+      AND pb.BATCH_ID = #{batchId,jdbcType=VARCHAR}
+    </if>
+    <if test="isbn != null and isbn != ''">
+      AND pb.ISBN = #{isbn,jdbcType=VARCHAR}
+    </if>
+
+    <if test="title != null and title != ''">
+      AND pb.TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="publisher != null and publisher != ''">
+      AND pi.TITLE LIKE CONCAT(CONCAT('%',#{publisher,jdbcType=VARCHAR}),'%')
+    </if>
+
+    <if test="duplicateFlag != null">
+      AND pb.DUPLICATE_FLAG = #{duplicateFlag.code,jdbcType=DECIMAL}
+    </if>
+    <if test="bibliothecaState != null">
+      AND pb.BIBLIOTHECA_STATE = #{bibliothecaState.code,jdbcType=DECIMAL}
+    </if>
+    <if test="bibliothecaStateNotEq != null">
+      AND pb.BIBLIOTHECA_STATE != #{bibliothecaState.code,jdbcType=DECIMAL}
+    </if>
+    <if test="completedFlag != null">
+      AND pb.COMPLETED_FLAG = #{completedFlag.code,jdbcType=DECIMAL}
+    </if>
+
+    <if test="beginTime != null">
+      AND pb.CREATE_TIME <![CDATA[>=]]> #{beginTime}
+    </if>
+    <if test="endTime != null">
+      AND pb.CREATE_TIME <![CDATA[<]]> #{endTime}
+    </if>
+    ORDER BY pb.CREATE_TIME DESC
+  </select>
+
+  <select id="listBibliothecaSelective" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT pb.ID, pb.IDENTIFIER, pb.META_ID, pb.BATCH_ID, pb.ORIGINAL_FILENAME, pb.TITLE, pb.AUTHOR, pi.TITLE PUBLISHER, pb.ISBN, pb.PUBLISH_TIME, pb.EDITION,
+    pb.PAPER_PRICE, pb.E_BOOK_PRICE, pb.DOCUMENT_FORMAT, MEMO, pb.DUPLICATE_FLAG, pb.BIBLIOTHECA_STATE,
+    pb.COMPLETED_FLAG, pb.CREATOR, pb.CREATE_TIME, pb.UPDATE_TIME, pb.DELETE_FLAG
+    FROM APABI_BOOK_PRO_BIBLIOTHECA pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    ON pb.PUBLISHER = pi.ID
+    WHERE 1=1
+    <if test="id != null and id != ''">
+      AND pb.ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="identifier != null and identifier != ''">
+      AND pb.IDENTIFIER = #{identifier,jdbcType=VARCHAR}
+    </if>
+    <if test="metaId != null and metaId != ''">
+      AND pb.META_ID = #{metaId,jdbcType=VARCHAR}
+    </if>
+    <if test="batchId != null and batchId != ''">
+      AND pb.BATCH_ID = #{batchId,jdbcType=VARCHAR}
+    </if>
+    <if test="isbn != null and isbn != ''">
+      AND pb.ISBN = #{isbn,jdbcType=VARCHAR}
+    </if>
+
+    <if test="title != null and title != ''">
+      AND pb.TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="publisher != null and publisher != ''">
+      AND pi.TITLE LIKE CONCAT(CONCAT('%',#{publisher,jdbcType=VARCHAR}),'%')
+    </if>
+
+    <if test="duplicateFlag != null">
+      AND pb.DUPLICATE_FLAG = #{duplicateFlag.code,jdbcType=DECIMAL}
+    </if>
+    <if test="bibliothecaState != null">
+      AND pb.BIBLIOTHECA_STATE = #{bibliothecaState.code,jdbcType=DECIMAL}
+    </if>
+    <if test="bibliothecaStateNotEq != null">
+      AND pb.BIBLIOTHECA_STATE != #{bibliothecaStateNotEq.code,jdbcType=DECIMAL}
+    </if>
+    <if test="completedFlag != null">
+      AND pb.COMPLETED_FLAG = #{completedFlag.code,jdbcType=DECIMAL}
+    </if>
+
+    <if test="beginTime != null">
+      AND pb.CREATE_TIME <![CDATA[>=]]> #{beginTime}
+    </if>
+    <if test="endTime != null">
+      AND pb.CREATE_TIME <![CDATA[<]]> #{endTime}
+    </if>
+    ORDER BY pb.CREATE_TIME DESC
+  </select>
+</mapper>

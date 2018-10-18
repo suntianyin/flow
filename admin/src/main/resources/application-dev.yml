@@ -1,0 +1,7 @@
+ctx: http://localhost:8083/flowadmin
+cebxHtmlExe: E:\cebxTool\Cebx2Html.exe
+targetCebxDir: F:\cebxHtml
+styleUrl: F:\style
+uploadXml: F:\upload\flow\xml
+uploadEpub: F:\upload\flow\epub
+uploadCebx: F:\upload\flow\cebx

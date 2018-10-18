@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.apabi.flow.admin.dao.MenuDao">
+
+	<resultMap id="menuResult" type="com.apabi.flow.admin.model.Menu">
+		<result property="id" column="id" />
+		<result property="parentId" column="parentId" />
+		<result property="name" column="name" />
+		<result property="description" column="description" />
+		<result property="crtDate" column="crt_date" />
+		<result property="crtUserId" column="crt_user_id" />
+		<result property="modifyDate" column="modify_date" />
+		<result property="modifyUserId" column="modify_user_id" />
+		<result property="enabled" column="enabled" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="commonColumns">
+	    <![CDATA[
+        	id ,
+        	parentId ,
+        	name ,
+        	description ,
+        	crt_date ,
+        	crt_user_id ,
+        	modify_date ,
+        	modify_user_id ,
+        	enabled 
+	    ]]>
+	</sql>
+
+	<sql id="dynamicWhere">
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+				<if test="id != null">
+				AND id = #{id}
+				</if>
+				<if test="parentId != null">
+				AND parentId = #{parentId}
+				</if>
+				<if test="name != null">
+				AND name = #{name}
+				</if>
+				<if test="description != null">
+				AND description = #{description}
+				</if>
+				<if test="crtDate != null">
+				AND crt_date = #{crtDate}
+				</if>
+				<if test="crtUserId != null">
+				AND crt_user_id = #{crtUserId}
+				</if>
+				<if test="modifyDate != null">
+				AND modify_date = #{modifyDate}
+				</if>
+				<if test="modifyUserId != null">
+				AND modify_user_id = #{modifyUserId}
+				</if>
+				<if test="enabled != null">
+				AND enabled = #{enabled}
+				</if>
+				<if test="keywords != null">
+				AND name like '%'||#{keywords}||'%'
+				</if>
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="com.apabi.flow.admin.model.Menu">
+		insert into menu (id , parentId , name ,
+		description , crt_date , crt_user_id ,
+		modify_date , modify_user_id , enabled
+		)
+		values (#{id,jdbcType=NUMERIC}, #{parentId,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR}, #{crtDate,jdbcType=TIMESTAMP}, #{crtUserId,jdbcType=NUMERIC},
+		#{modifyDate,jdbcType=TIMESTAMP}, #{modifyUserId,jdbcType=NUMERIC}, #{enabled,jdbcType=NUMERIC}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.apabi.flow.admin.model.Menu">
+		UPDATE menu
+		<trim prefix="SET" suffixOverrides=",">
+	        		<if test="parentId != null">
+	        			parentId = #{parentId},
+	        		</if>
+	        		<if test="name != null">
+	        			name = #{name},
+	        		</if>
+	        		<if test="description != null">
+	        			description = #{description},
+	        		</if>
+	        		<if test="crtDate != null">
+	        			crt_date = #{crtDate},
+	        		</if>
+	        		<if test="crtUserId != null">
+	        			crt_user_id = #{crtUserId},
+	        		</if>
+	        		<if test="modifyDate != null">
+	        			modify_date = #{modifyDate},
+	        		</if>
+	        		<if test="modifyUserId != null">
+	        			modify_user_id = #{modifyUserId},
+	        		</if>
+	        		<if test="enabled != null">
+	        			enabled = #{enabled},
+	        		</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+	<delete id="delete" parameterType="map">
+    <![CDATA[
+        delete from menu
+    ]]>
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+
+	<delete id="batchDelete" parameterType="java.util.List">
+		<![CDATA[
+        delete from menu
+    	]]>
+    	<where>
+			id in 
+			<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</where>
+	</delete>
+	
+	<select id="getById" resultMap="menuResult">
+		select
+		<include refid="commonColumns" />
+	    <![CDATA[
+	        from menu 
+	        where 
+		        id = #{id} 
+	    ]]>
+	</select>
+
+	<select id="count" resultType="long">
+    <![CDATA[
+        select count(*) from menu
+    ]]>
+    <include refid="dynamicWhere" />
+	</select>
+
+	<!-- 分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页 因为分页查询将传 #offset#,#pageSize#,#lastRows# 
+		三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现 -->
+	<select id="pageSelect" resultMap="menuResult">
+		select
+		<include refid="commonColumns" />
+	    <![CDATA[
+	        from menu 
+	    ]]>
+		<include refid="dynamicWhere" />
+		<if test="sortColumns != null">
+			ORDER BY ${sortColumns}
+		</if>
+	</select>
+	
+	<!-- 查询所有的菜单 -->
+	<select id="findByPage" resultMap="menuResult">
+		select
+			<include refid="commonColumns" />
+	        <![CDATA[
+	        from menu 
+	    ]]>
+		<include refid="dynamicWhere" />
+	</select>
+	<select id="queryAll" resultMap="menuResult">
+		select
+		<include refid="commonColumns" />
+		<![CDATA[
+	        from menu
+	    ]]>
+	</select>
+	<!-- 删除之前需要先检查关联性 -->
+	<select id="getCountByMenuId" resultType="int">
+		select count(*) from auth_res
+		where menu_id = #{menuId}
+	</select>
+
+</mapper>
