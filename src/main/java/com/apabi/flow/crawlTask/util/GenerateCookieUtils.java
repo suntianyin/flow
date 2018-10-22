@@ -1,6 +1,5 @@
-package com.apabi.flow.crawlTask.test;
+package com.apabi.flow.crawlTask.util;
 
-import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -22,7 +21,7 @@ import java.util.Set;
  * @Author pipi
  * @Date 2018/10/22 16:15
  **/
-public class TestCookie {
+public class GenerateCookieUtils {
 
 
     private static CloseableHttpClient getCloseableHttpClient(String ip, String port) {
