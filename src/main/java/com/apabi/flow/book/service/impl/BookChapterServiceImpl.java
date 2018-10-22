@@ -2,7 +2,6 @@ package com.apabi.flow.book.service.impl;
 
 import com.apabi.flow.book.dao.BookChapterDao;
 import com.apabi.flow.book.dao.BookMetaDao;
-import com.apabi.flow.book.dao.BookMetaVoRepository;
 import com.apabi.flow.book.dao.BookShardDao;
 import com.apabi.flow.book.model.BookChapter;
 import com.apabi.flow.book.model.BookChapterSum;
@@ -10,7 +9,6 @@ import com.apabi.flow.book.model.BookMetaVo;
 import com.apabi.flow.book.model.BookShard;
 import com.apabi.flow.book.service.BookChapterService;
 import com.apabi.flow.book.util.BookConstant;
-import com.apabi.flow.book.util.GetEpubookChapter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -21,7 +19,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -37,9 +34,6 @@ import java.util.stream.Collectors;
 public class BookChapterServiceImpl implements BookChapterService {
 
     private static final Logger log = LoggerFactory.getLogger(BookChapterServiceImpl.class);
-
-    @Autowired
-    BookMetaVoRepository bookMetaVoRepository;
 
     @Autowired
     BookMetaDao bookMetaDao;

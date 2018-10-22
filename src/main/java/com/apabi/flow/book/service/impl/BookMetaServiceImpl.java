@@ -15,6 +15,7 @@ import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
+import com.github.pagehelper.Page;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.Book;
@@ -31,23 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Predicate;
 import java.io.*;
 import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -91,9 +85,6 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     @Autowired
     BookShardDao bookShardDao;
-
-    @Autowired
-    BookMetaVoRepository bookMetaVoRepository;
 
     @Autowired
     ApabiBookMetaTempRepository bookMetaTempRepository;
@@ -335,7 +326,7 @@ public class BookMetaServiceImpl implements BookMetaService {
     }
 
     //分页查询
-    @Override
+    /*@Override
     public Page<BookMetaVo> queryPage(Map queryMap, int pageNumber, int pageSize) {
         //查询字段
         String tmp;
@@ -415,6 +406,12 @@ public class BookMetaServiceImpl implements BookMetaService {
         };
         Page<BookMetaVo> pages = bookMetaVoRepository.findAll(spec, pageable);
         return pages;
+    }*/
+
+    //分页查询
+    @Override
+    public Page<BookMetaVo> findBookMetaVoByPage(Map<String, String> queryMap) {
+        return bookMetaDao.findBookMetaVoByPage(queryMap);
     }
 
     //获取指定图书的所有章节内容

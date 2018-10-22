@@ -22,36 +22,36 @@
             var sortColumns = "";
             window.simpleTable = new SimpleTable('form-list', '1', '10', sortColumns);
             //分页
-            var metaid = $("#metaid").val();
+            var metaId = $("#metaId").val();
             var title = $("#title").val();
             var creator = $("#creator").val();
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
-            var pathurl = "bookMeta?s_metaid=" + metaid
-                    + "&s_title=" + title + "&s_creator=" + creator
-                    + "&s_publisher=" + publisher + "&s_isbn=" + isbn + "&s_isbnVal=" + isbnVal;
+            var pathUrl = "bookMeta?metaId=" + metaId
+                    + "&title=" + title + "&creator=" + creator
+                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
             var totalPages = 1;
             var currentPages = 1;
             <#if page??>
-                totalPages = ${page.totalPages?c};
-                currentPages = ${page.number?c}+1;
+                totalPages = ${pages?c};
+                currentPages = ${pageNum?c};
             </#if>
-            jqPaging(pathurl, totalPages, currentPages);
+            jqPaging(pathUrl, totalPages, currentPages);
         });
 
         //检索
         function btn_Search() {
-            var metaid = $("#metaid").val();
+            var metaId = $("#metaId").val();
             var title = $("#title").val();
             var creator = $("#creator").val();
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
             loading()
-            window.location.href = "bookMeta?pageNumber=1&s_metaid=" + metaid
-                    + "&s_title=" + title + "&s_creator=" + creator
-                    + "&s_publisher=" + publisher + "&s_isbn=" + isbn + "&s_isbnVal=" + isbnVal;
+            window.location.href = "bookMeta?metaId=" + metaId
+                    + "&title=" + title + "&creator=" + creator
+                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
 
         }
 
@@ -221,7 +221,7 @@
                     <tr>
                         <th>图书ID：</th>
                         <td>
-                            <input id="metaid" type="text" value="${metaid!'' }" class="txt" style="width: 200px"/>
+                            <input id="metaId" type="text" value="${metaId!'' }" class="txt" style="width: 200px"/>
                         </td>
                         <th>书名：</th>
                         <td>
@@ -301,15 +301,12 @@
                         <#if bookMetaList?? >
                             <#list bookMetaList as list>
                                 <tr class="gradeA odd" role="row">
-                                    <td><input type="checkbox" name="metaid" value="${list.metaid!'' }"></td>
-                                    <td>${list.metaid!'' }</td>
+                                    <td><input type="checkbox" name="metaId" value="${list.metaId!'' }"></td>
+                                    <td>${list.metaId!'' }</td>
                                     <td>${list.title! '' }</td>
                                     <td>${list.creator! '' }</td>
                                     <td>${list.publisher! '' }</td>
                                     <td>
-                                    <#--<#if list.publishDate??>-->
-                                    <#--${list.publishDate?date('yyyy-MM-dd') }-->
-                                    <#--</#if>-->
                                         ${list.publishDate!''}
                                     </td>
                                     <td>${list.isbn! '' }</td>
@@ -340,13 +337,13 @@
                                     <td>${list.language !''}</td>
                                     <td>
                                         <a style="cursor:pointer;"
-                                           onclick="bookMetaShow('${list.metaid!'' }');">详情&nbsp;</a>
+                                           onclick="bookMetaShow('${list.metaId!'' }');">详情&nbsp;</a>
                                         <a style="cursor:pointer;"
-                                           onclick="editBookChapter('${list.metaid!'' }', '${list.hasflow!'' }');">编辑内容&nbsp;</a>
+                                           onclick="editBookChapter('${list.metaId!'' }', '${list.hasflow!'' }');">编辑内容&nbsp;</a>
                                         <a style="cursor:pointer;"
-                                           onclick="epubChapterAdd('${list.metaid!'' }','${list.publishDate!''}');">解析epub&nbsp;</a>
+                                           onclick="epubChapterAdd('${list.metaId!'' }','${list.publishDate!''}');">解析epub&nbsp;</a>
                                         <a style="cursor:pointer;"
-                                           onclick="cebxChapterAdd('${list.metaid!'' }');">解析cebx&nbsp;</a>
+                                           onclick="cebxChapterAdd('${list.metaId!'' }');">解析cebx&nbsp;</a>
                                     </td>
                                 </tr>
                             </#list>

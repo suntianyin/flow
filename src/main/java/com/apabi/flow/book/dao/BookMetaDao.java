@@ -4,10 +4,13 @@ import com.apabi.flow.book.model.BookMeta;
 import com.apabi.flow.book.model.BookMetaBatch;
 import com.apabi.flow.book.model.BookMetaVo;
 import com.apabi.flow.book.model.EpubookMeta;
+import com.apabi.flow.bookSearch.model.BookSearchModel;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author guanpp
@@ -53,6 +56,9 @@ public interface BookMetaDao {
 
     //查询图书元数据条数
     int countBookMetaVoById(String metaid);
+
+    //分页查询
+    Page<BookMetaVo> findBookMetaVoByPage(Map<String,String> queryMap);
 
     /**
      * 根据isbn查询 BookMeta

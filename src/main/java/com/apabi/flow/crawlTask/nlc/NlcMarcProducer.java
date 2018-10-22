@@ -18,7 +18,7 @@ public class NlcMarcProducer implements Runnable {
         this.threadName = threadName;
     }
 
-    /*public NlcMarcProducer(List[] isbnList, ArrayBlockingQueue<String> isbnQueue, String threadName){
+/*    public NlcMarcProducer(List[] isbnList, ArrayBlockingQueue<String> isbnQueue, String threadName){
         this.isbnList = isbnList;
         this.isbnQueue = isbnQueue;
         this.threadName = threadName;

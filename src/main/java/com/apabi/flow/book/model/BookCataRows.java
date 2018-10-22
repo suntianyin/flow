@@ -1,5 +1,8 @@
 package com.apabi.flow.book.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author guanpp
  * @date 2018/8/1 13:51
@@ -15,6 +18,8 @@ public class BookCataRows {
     private int wordSum;
 
     private int ebookPageNum;
+
+    private List<BookCataRows> children = new ArrayList<>();
 
     public String getChapterName() {
         return chapterName;
@@ -54,5 +59,13 @@ public class BookCataRows {
 
     public void setEbookPageNum(int ebookPageNum) {
         this.ebookPageNum = ebookPageNum;
+    }
+
+    public List<BookCataRows> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<BookCataRows> children) {
+        this.children = children;
     }
 }

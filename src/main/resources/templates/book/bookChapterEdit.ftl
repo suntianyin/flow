@@ -89,7 +89,7 @@
         //保存目录
         function updateCatalog() {
             var url = RootPath() + "/book/catalogUpdate";
-            var metaId = '${bookMetaVo.metaid}';
+            var metaId = '${bookMetaVo.metaId}';
             var catalogArr = '';
             var index = 0;
             $("input[name='chapterName'], input[name='chapterNum']").each(function () {
@@ -161,7 +161,7 @@
                         <#list cataRows as list>
                             <br>
                             <a class="cata-a"
-                               onclick="getChapter('${bookMetaVo.metaid}', '${list.chapterNum}')">${list.chapterName }</a>
+                               onclick="getChapter('${bookMetaVo.metaId}', '${list.chapterNum}')">${list.chapterName }</a>
                             <input name="chapterName" value="${list.chapterName }" type="text" size="30"
                                    class="cata-input" hidden>
                             <input name="chapterNum" value="${list.chapterNum }" type="text" hidden>

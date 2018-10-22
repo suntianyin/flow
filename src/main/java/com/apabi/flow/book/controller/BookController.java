@@ -1,20 +1,19 @@
 package com.apabi.flow.book.controller;
 
-import cn.org.rapid_framework.page.PageRequest;
-import com.apabi.flow.book.dao.BookMetaVoRepository;
 import com.apabi.flow.book.entity.BookMetaMap;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.*;
 import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.ReadBook;
 import com.apabi.flow.common.CommEntity;
-import com.apabi.flow.common.PageRequestFactory;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.config.ApplicationConfig;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+/*import org.springframework.data.domain.Page;*/
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,9 +57,6 @@ public class BookController {
 
     @Autowired
     BookMetaService bookMetaService;
-
-    @Autowired
-    BookMetaVoRepository bookMetaVoRepository;
 
     @Autowired
     ReadBook readBook;
@@ -169,7 +165,7 @@ public class BookController {
     }
 
     //分页查询，获取所有图书meta数据
-    @RequestMapping(value = "/bookMeta")
+    /*@RequestMapping(value = "/bookMeta")
     public String bookMeta(HttpServletRequest request, Model model) {
         try {
             long start = System.currentTimeMillis();
@@ -215,6 +211,73 @@ public class BookController {
             }
 
             model.addAttribute("metaid", metaid);
+            model.addAttribute("title", title);
+            model.addAttribute("creator", creator);
+            model.addAttribute("publisher", publisher);
+            model.addAttribute("isbn", isbn);
+            model.addAttribute("isbnVal", isbnVal);
+            long end = System.currentTimeMillis();
+            log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");
+            return "book/bookMeta";
+        } catch (Exception e) {
+            log.warn("Exception {}" + e);
+        }
+        return null;
+    }*/
+
+    //分页查询，获取所有图书meta数据
+    @RequestMapping(value = "/bookMeta")
+    public String bookMeta(HttpServletRequest request, Model model,
+                           @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNum) {
+        try {
+            long start = System.currentTimeMillis();
+            Map<String, String[]> params = request.getParameterMap();
+            Map<String, String> queryMap = new HashMap<>();
+            String metaId = "";
+            if (!StringUtils.isEmpty(params.get("metaId"))) {
+                metaId = params.get("metaId")[0].trim();
+                queryMap.put("metaId", metaId);
+            }
+            String title = "";
+            if (!StringUtils.isEmpty(params.get("title"))) {
+                title = params.get("title")[0].trim();
+                queryMap.put("title", title);
+            }
+            String creator = "";
+            if (!StringUtils.isEmpty(params.get("creator"))) {
+                creator = params.get("creator")[0].trim();
+                queryMap.put("creator", creator);
+            }
+            String publisher = "";
+            if (!StringUtils.isEmpty(params.get("publisher"))) {
+                publisher = params.get("publisher")[0].trim();
+                queryMap.put("publisher", publisher);
+            }
+            String isbn = "";
+            if (!StringUtils.isEmpty(params.get("isbn"))) {
+                isbn = params.get("isbn")[0].trim();
+            }
+            String isbnVal = "";
+            if (!StringUtils.isEmpty(params.get("isbnVal"))) {
+                isbnVal = params.get("isbnVal")[0].trim();
+                queryMap.put("isbn", isbnVal);
+                queryMap.put("isbn10", isbnVal);
+                queryMap.put("isbn13", isbnVal);
+            }
+            PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
+            Page<BookMetaVo> page = null;
+            if (params.size() > 0) {
+                page = bookMetaService.findBookMetaVoByPage(queryMap);
+            }
+            if (page == null) {
+                model.addAttribute("bookMetaList", null);
+            } else {
+                model.addAttribute("bookMetaList", page.getResult());
+                model.addAttribute("pages", page.getPages());
+                model.addAttribute("pageNum", page.getPageNum());
+            }
+            model.addAttribute("page", page);
+            model.addAttribute("metaId", metaId);
             model.addAttribute("title", title);
             model.addAttribute("creator", creator);
             model.addAttribute("publisher", publisher);

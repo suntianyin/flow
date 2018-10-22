@@ -1,7 +1,7 @@
 package com.apabi.flow.book.service;
 
 import com.apabi.flow.book.model.*;
-import org.springframework.data.domain.Page;
+import com.github.pagehelper.Page;
 
 import java.text.ParseException;
 import java.util.List;
@@ -45,7 +45,10 @@ public interface BookMetaService {
     int saveXmlBookMeta(String path) throws Exception;
 
     //分页查询
-    Page<BookMetaVo> queryPage(Map queryMap, int start, int size);
+    /*Page<BookMetaVo> queryPage(Map queryMap, int start, int size);*/
+
+    //分页查询
+    Page<BookMetaVo> findBookMetaVoByPage(Map<String, String> queryMap);
 
     //获取epub文件的图书元数据
     List<BookMetaBatch> getBookMetaBatch(String dir);

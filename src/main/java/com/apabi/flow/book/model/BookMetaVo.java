@@ -10,85 +10,60 @@ import java.util.Date;
  * @date 2018/8/1 16:57
  * @description
  */
-@Table(name = "APABI_BOOK_METADATA")
-@Entity
+
 public class BookMetaVo {
-    @Id
-    @Column(name = "METAID")
-    private String metaid;
+
+    private String metaId;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
-    @Column(name = "CREATETIME")
     private Date createtime;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
-    @Column(name = "UPDATETIME")
     private Date updatetime;
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    @Column(name = "ISSUEDDATE")
-    //private String issueddate;
     private String publishDate;
 
-    @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "CREATOR")
     private String creator;
 
-    @Column(name = "ABSTRACT")
     private String summary;
 
-    @Column(name = "PUBLISHER")
     private String publisher;
 
-    @Column(name = "ISBN")
     private String isbn;
 
-    @Column(name = "ISBN10")
     private String isbn10;
 
-    @Column(name = "ISBN13")
     private String isbn13;
 
-    @Column(name = "CONTENTNUM")
-    //private Integer contentNum;
     private Integer wordSum;
 
-    @Column(name = "ISOPTIMIZE")
     private String isoptimize;
 
-    @Column(name = "LANGUAGE")
     private String language;
 
-    @Column(name = "COVERURL")
     private String coverUrl;
 
-    @Column(name = "CHAPTERNUM")
     private Integer chapterSum;
 
-    @Column(name = "STYLEURL")
     private String cssUrl;
 
-    @Column(name = "THUMIMGURL")
-    //private String thumimgUrl;
     private String coverMiniUrl;
 
-    @Column(name = "STYLECLASS")
     private String styleClass;
 
-    @Column(name = "HASFLOW")
     private Integer hasflow;
 
-    @Column(name = "HASCEBX")
     private Integer hascebx;
 
-    public String getMetaid() {
-        return metaid;
+    public String getMetaId() {
+        return metaId;
     }
 
-    public void setMetaid(String metaid) {
-        this.metaid = metaid;
+    public void setMetaId(String metaId) {
+        this.metaId = metaId;
     }
 
     public Date getCreatetime() {

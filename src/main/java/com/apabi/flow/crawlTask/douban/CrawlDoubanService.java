@@ -1,20 +1,20 @@
 package com.apabi.flow.crawlTask.douban;
 
-import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.dao.DoubanCrawlUrlDao;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
-import com.apabi.flow.douban.util.CrawlDoubanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,8 +22,8 @@ import java.util.concurrent.Executors;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-//@Order(3)
-//@Component
+@Order(3)
+@Component
 public class CrawlDoubanService implements ApplicationRunner {
     private static Logger logger = LoggerFactory.getLogger(CrawlDoubanService.class);
     @Autowired
@@ -45,6 +45,23 @@ public class CrawlDoubanService implements ApplicationRunner {
         List<String> idList = new ArrayList<>();
         List<String> urlList = doubanCrawlUrlDao.findAllUrl();
 
+        // ==================多线程抓取idList开始==================
+        CountDownLatch countDownLatch = new CountDownLatch(urlList.size());
+        ExecutorService idExecutorService = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < urlList.size(); i++) {
+            DoubanIdProducer doubanIdProducer = new DoubanIdProducer(urlList.get(i), idList,countDownLatch);
+            idExecutorService.execute(doubanIdProducer);
+        }
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        idExecutorService.shutdown();
+        System.out.println("多线程抓取idList结束");
+        // ==================多线程抓取idList结束==================
+
+        /*// ==================多线程抓取idList开始==================
         //CountDownLatch countDownLatch = new CountDownLatch(urlList.size());
         for (int i = 0; i < urlList.size(); i++) {
             long startTime = System.currentTimeMillis();
@@ -66,6 +83,8 @@ public class CrawlDoubanService implements ApplicationRunner {
                 idList.add(id);
             }
         }
+        // ==================多线程抓取idList结束==================*/
+
         // 创建生产者对象，将id从list中添加到队列中
         DoubanProducer producer = new DoubanProducer(idQueue, "doubanProducer", idList);
         new Thread(producer).start();

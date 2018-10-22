@@ -344,7 +344,7 @@
     </select>
 
     <resultMap id="BaseResultMap2" type="com.apabi.flow.book.model.BookMetaVo">
-        <id column="METAID" property="metaid" jdbcType="VARCHAR"/>
+        <id column="METAID" property="metaId" jdbcType="VARCHAR"/>
         <result column="CREATETIME" property="createtime"/>
         <result column="UPDATETIME" property="updatetime"/>
         <result column="ISSUEDDATE" property="publishDate" jdbcType="VARCHAR"/>
@@ -372,8 +372,8 @@
         COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,HASCEBX
     </sql>
     <sql id="Base_Value_List2">
-        <if test="metaid != null">
-            METAID = #{metaid},
+        <if test="metaId != null">
+            METAID = #{metaId},
         </if>
         <if test="createtime != null">
             CREATETIME = #{createtime},
@@ -440,7 +440,7 @@
         select
         <include refid="Base_Column_List2"/>
         from APABI_BOOK_METADATA
-        where METAID = #{metaid}
+        where METAID = #{metaId}
     </select>
     <select id="findBookMetaVoByIsbn" resultMap="BaseResultMap2" parameterType="java.lang.String">
         select
@@ -451,7 +451,34 @@
     <select id="countBookMetaVoById" resultType="java.lang.Integer" parameterType="java.lang.String">
         select count(*)
         from APABI_BOOK_METADATA
-        where METAID = #{metaid}
+        where METAID = #{metaId}
+    </select>
+    <select id="findBookMetaVoByPage" parameterType="Map" resultMap="BaseResultMap2">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM APABI_BOOK_METADATA
+        WHERE 1=1
+        <if test="metaId != null and metaId != ''">
+            AND METAID = #{metaId,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            AND TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="creator != null and creator != ''">
+            AND CREATOR LIKE CONCAT(CONCAT('%',#{creator,jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="publisher != null and publisher != ''">
+            AND PUBLISHER LIKE CONCAT(CONCAT('%',#{publisher,jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="isbn != null and isbn != ''">
+            AND ISBN = #{isbn,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn10 != null and isbn10 != ''">
+            AND ISBN10 = #{isbn10,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn13 != null and isbn13 != ''">
+            AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
+        </if>
     </select>
     <update id="updateBookMetaVo" parameterType="com.apabi.flow.book.model.BookMetaVo">
         UPDATE APABI_BOOK_METADATA
@@ -459,7 +486,7 @@
             <include refid="Base_Value_List2"/>
         </trim>
         <where>
-            METAID = #{metaid}
+            METAID = #{metaId}
         </where>
     </update>
 
