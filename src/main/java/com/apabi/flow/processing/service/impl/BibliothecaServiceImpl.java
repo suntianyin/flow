@@ -510,6 +510,10 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 }
                 String isbn = (String) entry.getValue().get("ISBN");
                 String publishTime = (String) entry.getValue().get("出版时间");
+                if(StringUtils.isNotBlank(publishTime)){
+                    publishTime = StringToolUtil.issuedDateFormat(publishTime);
+                    publishTime = publishTime.replaceAll(" 00:00:00","");
+                }
                 String edition = (String) entry.getValue().get("版次");
                 String paperPrice = (String) entry.getValue().get("纸书价格");
                 String documentFormat = (String) entry.getValue().get("文档格式");

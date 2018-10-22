@@ -1,32 +1,22 @@
 package com.apabi.flow.processing.controller;
 
-import com.apabi.flow.book.model.BookMeta;
-import com.apabi.flow.book.service.BookMetaService;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.util.ParamsUtils;
-import com.apabi.flow.isbn.model.IsbnEntity;
 import com.apabi.flow.processing.constant.*;
-import com.apabi.flow.processing.dao.OutUnitMapper;
 import com.apabi.flow.processing.model.Batch;
 import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.model.BibliothecaExcelModel;
 import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BatchService;
 import com.apabi.flow.processing.service.BibliothecaService;
+import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.publisher.dao.PublisherDao;
-import com.apabi.flow.thematic.model.ThematicSeries;
-import com.apabi.flow.thematic.util.ReadExcelUtils;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.sun.org.apache.bcel.internal.generic.DUP;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -298,9 +288,9 @@ public class BibliothecaController {
         Map<Integer, Map<Object, Object>> data = null;
         try(InputStream inputStream = file.getInputStream()){
             String fileName = file.getOriginalFilename();
-            ReadExcelUtils readExcelUtils = new ReadExcelUtils(inputStream, fileName);
+            ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
             // 读取Excel中的内容
-            data = readExcelUtils.getDataByInputStream();
+            data = readExcelTextUtils.getDataByInputStream();
             if (data == null || data.isEmpty()){
                 throw new Exception();
             }

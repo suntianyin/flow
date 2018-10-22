@@ -97,13 +97,13 @@
             <tr>
                 <td>开始使用时间:</td>
                 <td>
-                    <input id="startDate" name="startDate" type="text" class="txt" style="width: 200px" value="${(publisher.startDate?string("yyyy-MM-dd"))!''  }" />
+                    <input id="startDate" name="startDate" type="text" class="txt" style="width: 200px" value="${publisher.startDate! ''}" />
                 </td>
             </tr>
             <tr>
                 <td>结束使用时间:</td>
                 <td>
-                    <input id="endDate" name="endDate" type="text" class="txt" style="width: 200px" value="${(publisher.endDate?string("yyyy-MM-dd"))!'' }" />
+                    <input id="endDate" name="endDate" type="text" class="txt" style="width: 200px" value="${(publisher.endDate?string("yyyy-MM-dd"))! ''}" />
 
                 </td>
             </tr>

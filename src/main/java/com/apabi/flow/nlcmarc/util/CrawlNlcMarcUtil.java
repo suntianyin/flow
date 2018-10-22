@@ -56,7 +56,7 @@ public class CrawlNlcMarcUtil {
         }
         // 防封IP
         try {
-            Thread.sleep(random.nextInt(1000) + 200);
+            Thread.sleep(random.nextInt(2000) + 200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -95,7 +95,7 @@ public class CrawlNlcMarcUtil {
         httpGet2.setHeader("Connection", "keep-alive");
         // 防封IP
         try {
-            Thread.sleep(random.nextInt(1000) + 350);
+            Thread.sleep(random.nextInt(2000) + 350);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -163,7 +163,7 @@ public class CrawlNlcMarcUtil {
         httpGet3.setHeader("Connection", "keep-alive");
         // 防封ip
         try {
-            Thread.sleep(random.nextInt(1000) + 250);
+            Thread.sleep(random.nextInt(1500) + 250);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -213,7 +213,7 @@ public class CrawlNlcMarcUtil {
         httpGet4.setHeader("Connection", "keep-alive");
         // 防封ip
         try {
-            Thread.sleep(random.nextInt(1000) + 400);
+            Thread.sleep(random.nextInt(1500) + 400);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

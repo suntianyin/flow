@@ -15,9 +15,9 @@
 //                }
 
         $(function(){
-            var pathurl = "?page=";
-            var totalPages = ${pages!''};
-            var currentPages = ${pageNum!''};
+            var pathurl = "index?";
+            var totalPages = ${pages?c};
+            var currentPages = ${pageNum?c};
             jqPaging(pathurl,totalPages,currentPages);
         });
 

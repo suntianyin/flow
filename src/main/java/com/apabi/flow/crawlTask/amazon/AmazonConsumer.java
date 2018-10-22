@@ -3,10 +3,13 @@ package com.apabi.flow.crawlTask.amazon;
 import com.apabi.flow.douban.dao.AmazonMetaDao;
 import com.apabi.flow.douban.model.AmazonMeta;
 import com.apabi.flow.douban.util.CrawlAmazonUtils;
-import com.apabi.flow.nlcmarc.util.IpPoolUtils;
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -18,7 +21,7 @@ public class AmazonConsumer implements Runnable {
     private ArrayBlockingQueue<String> idQueue;
     private AmazonMetaDao amazonMetaDao;
 
-    public AmazonConsumer(ArrayBlockingQueue<String> idQueue,AmazonMetaDao amazonMetaDao){
+    public AmazonConsumer(ArrayBlockingQueue<String> idQueue, AmazonMetaDao amazonMetaDao) {
         this.idQueue = idQueue;
         this.amazonMetaDao = amazonMetaDao;
     }
@@ -28,16 +31,22 @@ public class AmazonConsumer implements Runnable {
         String id = "";
         String ip = "";
         String port = "";
+        AmazonMeta amazonMeta = null;
         try {
             id = idQueue.take();
             String host = IpPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
-            AmazonMeta amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
+            amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
             amazonMetaDao.addAmazonMeta(amazonMeta);
-            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "成功...");
+            // 记录插入时间
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
+            String time = simpleDateFormat.format(date);
+            logger.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "成功...");
         } catch (InterruptedException e) {
-            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "失败...");
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

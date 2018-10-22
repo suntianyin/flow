@@ -33,67 +33,61 @@ public class CrawlDoubanUtil {
         // 设置代理IP、端口、协议
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
         // 把代理设置到请求配置
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
+        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
         // 实例化CloseableHttpClient对象
         // 使用代理ip
-        // CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
-        // 使用本机ip
-        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
         return client;
     }
 
     // 从douban根据抓取列表获取该页面中的douban数据
-    public static List<String> crawlDoubanIdList(String url, String ip, String port) {
+    public static List<String> crawlDoubanIdList(String url, String ip, String port) throws IOException {
         List<String> doubanMetaIdList = new ArrayList<>();
-        // 实例化CloseableHttpClient对象
-        CloseableHttpClient client = getCloseableHttpClient(ip, port);
-        // 访问豆瓣主题首页
-        HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
-        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-        httpGet.setHeader("Cache-Control", "max-age=0");
-        httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Host", "book.douban.com");
-        httpGet.setHeader("Upgrade-Insecure-Request", "1");
-        httpGet.setHeader("Cookie", "bid=J6vnfEli0TQ; __yadk_uid=u3dJXeMdwc84GLD5EjdsdkboJM4616nz; ll=\"108288\"; ct=y; douban-fav-remind=1; _pk_ref.100001.3ac3=%5B%22%22%2C%22%22%2C1539651950%2C%22https%3A%2F%2Fwww.douban.com%2F%22%5D; ap_v=0,6.0; viewed=\"27172244_26729776_3836566_26892080_1827374_3211779_20441569_1077847_26816981_1675478\"; gr_user_id=f5a9f167-6723-4b9c-99c5-0a44759be55b; _vwo_uuid_v2=445EDEC423988C8C47599F3FB4EE9778|c3ca5c4034f557c057c8316b67b3a2a8; ps=y; ue=\"469250376@qq.com\"; dbcl2=\"83214422:u72XVXYF2uA\"; ck=BZJy; _pk_id.100001.3ac3=8249999ad76b71d5.1513584652.10.1539657694.1539598643.; _pk_ses.100001.3ac3=*; __utmt_douban=1; __utma=30149280.678349979.1512633094.1539598635.1539651927.17; __utmb=30149280.13.10.1539651927; __utmc=30149280; __utmz=30149280.1539651927.17.10.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmt=1; __utma=81379588.838003173.1513584652.1539598635.1539651950.10; __utmb=81379588.11.10.1539651950; __utmc=81379588; __utmz=81379588.1538102842.7.6.utmcsr=douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; push_noty_num=0; push_doumail_num=0");
-        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
-        httpGet.setHeader("Referer", "https://accounts.douban.com/login?alias=469250376%40qq.com&redir=https%3A%2F%2Fbook.douban.com%2Ftag%2F%25E4%25BA%25BA%25E6%2596%2587%3Ftype%3DR&source=None&error=1027");
-        CloseableHttpResponse response1 = null;
-        try {
-            response1 = client.execute(httpGet);
-            String html = EntityUtils.toString(response1.getEntity());
-            Document document = Jsoup.parse(html);
-            Elements elements = document.select("a[class='nbg']");
-            for (Element element : elements) {
-                String href = element.attr("href");
-                href = href.substring(0, href.lastIndexOf("/"));
-                String id = href.substring(href.lastIndexOf("/") + 1, href.length());
-                doubanMetaIdList.add(id);
-            }
-        } catch (IOException e) {
-            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上豆瓣主题主页");
-            e.printStackTrace();
-            httpGet.releaseConnection();
-            httpGet.abort();
+        if (StringUtils.isNotEmpty(url)) {
+            // 实例化CloseableHttpClient对象
+            CloseableHttpClient client = getCloseableHttpClient(ip, port);
+            // 访问豆瓣主题首页
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
+            httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+            httpGet.setHeader("Cache-Control", "max-age=0");
+            httpGet.setHeader("Connection", "keep-alive");
+            httpGet.setHeader("Host", "book.douban.com");
+            httpGet.setHeader("Upgrade-Insecure-Request", "1");
+            httpGet.setHeader("Cookie", "ll=\"108288\"; bid=AOJiWkefK-E; __utmt=1; __utma=30149280.97956999.1540178056.1540178056.1540178056.1; __utmb=30149280.1.10.1540178056; __utmc=30149280; __utmz=30149280.1540178056.1.1.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; as=\"https://sec.douban.com/b?r=https%3A%2F%2Fbook.douban.com%2F\"; ps=y");
+            httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+            //httpGet.setHeader("Referer", "https://accounts.douban.com/login?alias=469250376%40qq.com&redir=https%3A%2F%2Fbook.douban.com%2Ftag%2F%25E4%25BA%25BA%25E6%2596%2587%3Ftype%3DR&source=None&error=1027");
+            CloseableHttpResponse response1 = null;
             try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                response1 = client.execute(httpGet);
+                String html = EntityUtils.toString(response1.getEntity());
+                Document document = Jsoup.parse(html);
+                Elements elements = document.select("a[class='nbg']");
+                for (Element element : elements) {
+                    String href = element.attr("href");
+                    href = href.substring(0, href.lastIndexOf("/"));
+                    String id = href.substring(href.lastIndexOf("/") + 1, href.length());
+                    doubanMetaIdList.add(id);
+                }
+            } catch (IOException e) {
+                logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上豆瓣主题主页");
+                e.printStackTrace();
+                httpGet.releaseConnection();
+                httpGet.abort();
+                try {
+                    client.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                throw new IOException();
             }
-        }
-        // TODO 在代理ip购买后可以取消以下代码
-        try {
-            // 休眠1s，防止封ip
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
         return doubanMetaIdList;
     }
 
     // 根据doubanId并切换ip解析出DoubanMeta对象
-    public static DoubanMeta crawlDoubanMetaById(String id, String ip, String port) {
+    public static DoubanMeta crawlDoubanMetaById(String id, String ip, String port) throws IOException {
         DoubanMeta doubanMeta = new DoubanMeta();
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         String url = "https://api.douban.com/v2/book/" + id;
@@ -200,18 +194,11 @@ public class CrawlDoubanUtil {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            throw new IOException();
         }
         doubanMeta.setCreateTime(new Date());
         doubanMeta.setUpdateTime(new Date());
         return doubanMeta;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        List<String> list = crawlDoubanIdList("https://book.douban.com/tag/人文?type=R", "106.75.164.15", "3128");
-        for (String id : list) {
-            DoubanMeta doubanMeta = crawlDoubanMetaById(id, "106.75.164.15", "3128");
-            Thread.sleep(3000);
-            System.out.println(doubanMeta);
-        }
-    }
 }

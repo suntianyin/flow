@@ -3,10 +3,13 @@ package com.apabi.flow.crawlTask.douban;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
 import com.apabi.flow.douban.model.DoubanMeta;
 import com.apabi.flow.douban.util.CrawlDoubanUtil;
-import com.apabi.flow.nlcmarc.util.IpPoolUtils;
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -28,16 +31,21 @@ public class DoubanConsumer implements Runnable {
         String id = "";
         String ip = "";
         String port = "";
+        DoubanMeta doubanMeta = null;
         try {
             id = idQueue.take();
             String host = IpPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
-            DoubanMeta doubanMeta = CrawlDoubanUtil.crawlDoubanMetaById(id, ip, port);
+            doubanMeta = CrawlDoubanUtil.crawlDoubanMetaById(id, ip, port);
             doubanMetaDao.insert(doubanMeta);
-            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "成功...");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
+            String time = simpleDateFormat.format(date);
+            logger.info(time+"  "+Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "成功...");
         } catch (InterruptedException e) {
-            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "失败...");
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

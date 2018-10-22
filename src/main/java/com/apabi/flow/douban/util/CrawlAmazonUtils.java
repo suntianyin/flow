@@ -32,17 +32,14 @@ public class CrawlAmazonUtils {
         // 设置代理IP、端口、协议
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
         // 把代理设置到请求配置
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
+        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
         // 实例化CloseableHttpClient对象
-        // 使用代理ip
-        // CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
-        // 使用本机ip
-        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
         return client;
     }
 
     // 从douban根据抓取列表获取该页面中的douban数据
-    public static List<String> crawlAmazonIdList(String url, String ip, String port) {
+    public static List<String> crawlAmazonIdList(String url, String ip, String port) throws IOException {
         List<String> idList = new ArrayList<>();
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
@@ -58,7 +55,6 @@ public class CrawlAmazonUtils {
         httpGet.setHeader("Upgrade-Insecure-Request", "1");
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
         CloseableHttpResponse response1 = null;
-        // 访问国图首页，获取标识码
         try {
             response1 = client.execute(httpGet);
             String html = EntityUtils.toString(response1.getEntity());
@@ -69,7 +65,7 @@ public class CrawlAmazonUtils {
                 idList.add(id);
             }
         } catch (IOException e) {
-            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上国图主页");
+            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon主页");
             e.printStackTrace();
             httpGet.releaseConnection();
             httpGet.abort();
@@ -78,18 +74,12 @@ public class CrawlAmazonUtils {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-        }
-        // TODO 在代理ip购买后可以取消以下代码
-        try {
-            // 休眠1s，防止封ip
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
         return idList;
     }
 
-    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) {
+    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) throws IOException {
         AmazonMeta amazonMeta = new AmazonMeta();
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
@@ -105,7 +95,6 @@ public class CrawlAmazonUtils {
         httpGet.setHeader("Upgrade-Insecure-Request", "1");
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
         CloseableHttpResponse response = null;
-        // 访问国图首页，获取标识码
         try {
             response = client.execute(httpGet);
             String html = EntityUtils.toString(response.getEntity());
@@ -277,6 +266,7 @@ public class CrawlAmazonUtils {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+            throw new IOException();
         }
         // 设置出版日期
         String issuedDate = amazonMeta.getIssuedDate();
@@ -292,12 +282,6 @@ public class CrawlAmazonUtils {
         amazonMeta.setUpdateTime(new Date());
         // 设置已经抓取
         amazonMeta.setHasCrawled(1);
-        // TODO 防止ip被封，后期可以去掉
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return amazonMeta;
     }
 }

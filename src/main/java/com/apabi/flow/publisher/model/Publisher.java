@@ -1,12 +1,5 @@
 package com.apabi.flow.publisher.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -206,5 +199,32 @@ public class Publisher implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Publisher{" +
+                "id='" + id + '\'' +
+                ", relatePublisherID='" + relatePublisherID + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", title='" + title + '\'' +
+                ", titleType='" + titleType + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", nationalityCode='" + nationalityCode + '\'' +
+                ", founderDate='" + founderDate + '\'' +
+                ", classCode='" + classCode + '\'' +
+                ", resourceType='" + resourceType + '\'' +
+                ", publishingGroup='" + publishingGroup + '\'' +
+                ", publishingGroupID='" + publishingGroupID + '\'' +
+                ", president='" + president + '\'' +
+                ", vicePresident='" + vicePresident + '\'' +
+                ", qualityLevel='" + qualityLevel + '\'' +
+                ", summary='" + summary + '\'' +
+                ", place='" + place + '\'' +
+                ", operator='" + operator + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }

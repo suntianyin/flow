@@ -7,7 +7,7 @@
 
     <resultMap id="publisherResult" type="com.apabi.flow.publisher.model.Publisher">
         <result property="id" column="ID" />
-        <result property="relatePublisherID;" column="RELATEPUBLISHERID" />
+        <result property="relatePublisherID" column="RELATEPUBLISHERID" />
         <result property="isbn" column="ISBN" />
         <result property="title" column="TITLE" />
         <result property="titleType" column="TITLETYPE" />

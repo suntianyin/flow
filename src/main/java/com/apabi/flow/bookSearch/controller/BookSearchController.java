@@ -32,7 +32,6 @@ public class BookSearchController {
     public String indexBook(HttpServletRequest request, Model model, @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         Map<String, String> params = new HashMap<>();
-        System.out.println("parameterMap的大小为：" + parameterMap.size());
         String metaId = "";
         if (parameterMap.get("metaId") != null) {
             metaId = parameterMap.get("metaId")[0].trim();
