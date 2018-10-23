@@ -1,20 +1,20 @@
 package com.apabi.flow.crawlTask.douban;
 
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.dao.DoubanCrawlUrlDao;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
+import com.apabi.flow.douban.util.CrawlDoubanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,8 +22,8 @@ import java.util.concurrent.Executors;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-@Order(3)
-@Component
+//@Order(3)
+//@Component
 public class CrawlDoubanService implements ApplicationRunner {
     private static Logger logger = LoggerFactory.getLogger(CrawlDoubanService.class);
     @Autowired
@@ -46,19 +46,31 @@ public class CrawlDoubanService implements ApplicationRunner {
         List<String> urlList = doubanCrawlUrlDao.findAllUrl();
 
         // ==================多线程抓取idList开始==================
-        CountDownLatch countDownLatch = new CountDownLatch(urlList.size());
-        ExecutorService idExecutorService = Executors.newFixedThreadPool(10);
+        //CountDownLatch countDownLatch = new CountDownLatch(urlList.size());
+        ExecutorService service = Executors.newCachedThreadPool();
         for (int i = 0; i < urlList.size(); i++) {
-            DoubanIdProducer doubanIdProducer = new DoubanIdProducer(urlList.get(i), idList,countDownLatch);
-            idExecutorService.execute(doubanIdProducer);
+
+            service.execute(null);
+
+            long startTime = System.currentTimeMillis();
+            // 随机指定代理ip抓取doubanId
+            String ip = "";
+            String port = "";
+            String host = IpPoolUtils.getIp();
+            ip = host.split(":")[0];
+            port = host.split(":")[1];
+            List<String> doubanIdList = new ArrayList<>();
+            try {
+                doubanIdList = CrawlDoubanUtil.crawlDoubanIdList(urlList.get(i), ip, port);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            long endTime = System.currentTimeMillis();
+            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取第" + (i + 1) + "个url列表：" + urlList.get(i) + "，列表大小为：" + doubanIdList.size() + ";耗时为：" + (endTime - startTime) / 1000 + "秒");
+            for (String id : doubanIdList) {
+                idList.add(id);
+            }
         }
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        idExecutorService.shutdown();
-        System.out.println("多线程抓取idList结束");
         // ==================多线程抓取idList结束==================
 
         /*// ==================多线程抓取idList开始==================

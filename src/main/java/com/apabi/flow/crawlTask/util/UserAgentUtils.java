@@ -7,7 +7,7 @@ import java.util.Random;
  * @Date 2018/10/22 17:47
  **/
 public class UserAgentUtils {
-    public String[] userAgents = {
+    public static String[] userAgents = {
             "Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
             "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36",
             "Mozilla/5.0 (Windows NT 6.1; Intel Mac OS X 10.6; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
@@ -25,7 +25,7 @@ public class UserAgentUtils {
             "Mozilla/5.0 (iPad; CPU OS 7_0_2 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A501 Safari/9537.53"
     };
 
-    public String getUserAgent(){
+    public static String getUserAgent(){
         int size = userAgents.length;
         Random random = new Random();
         int index = random.nextInt(size);

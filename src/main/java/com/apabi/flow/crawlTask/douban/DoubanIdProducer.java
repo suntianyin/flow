@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @Author pipi
@@ -18,12 +17,10 @@ public class DoubanIdProducer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(DoubanIdProducer.class);
     private String url;
     private List<String> idList;
-    private CountDownLatch countDownLatch;
 
-    public DoubanIdProducer(String url, List<String> idList, CountDownLatch countDownLatch) {
+    public DoubanIdProducer(String url, List<String> idList) {
         this.url = url;
         this.idList = idList;
-        this.countDownLatch = countDownLatch;
     }
 
     @Override
@@ -42,10 +39,9 @@ public class DoubanIdProducer implements Runnable {
             e.printStackTrace();
         }
         long endTime = System.currentTimeMillis();
-        logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取url列表：" + url + "；列表大小为：" + doubanIdList.size() + "；剩余列表数：" + countDownLatch.getCount() + "；已经抓取的id数量：" + idList.size() + "；耗时为：" + (endTime - startTime) / 1000 + "秒");
+        logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取url列表：" + url + "，列表大小为：" + doubanIdList.size() + ";耗时为：" + (endTime - startTime) / 1000 + "秒");
         for (String id : doubanIdList) {
             idList.add(id);
         }
-        countDownLatch.countDown();
     }
 }
