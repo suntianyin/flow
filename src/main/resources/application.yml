@@ -1,11 +1,11 @@
 server:
-  port: 8084
+  port: 8083
   servlet:
     context-path: /flowadmin
 
 spring:
   profiles:
-    active: prod
+    active: dev
   data:
       mongodb:
         uri: mongodb://172.18.89.101:40000/books
