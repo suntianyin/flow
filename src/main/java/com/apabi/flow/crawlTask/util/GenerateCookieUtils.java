@@ -22,8 +22,6 @@ import java.util.Set;
  * @Date 2018/10/22 16:15
  **/
 public class GenerateCookieUtils {
-
-
     private static CloseableHttpClient getCloseableHttpClient(String ip, String port) {
         // 设置代理IP、端口、协议
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
@@ -88,7 +86,7 @@ public class GenerateCookieUtils {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\flow代码备份\\flowPlatform\\src\\main\\resources\\properties\\doubanCookie.properties", true));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\flowPlatform\\src\\main\\resources\\properties\\doubanCookie.properties", true));
         Set<String> cookieSet = new HashSet<String>();
         for (int i = 0; i < 100; i++) {
             String ip = IpPoolUtils.getIp();
