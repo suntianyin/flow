@@ -143,7 +143,7 @@
 
     <!-- 插入数据 -->
     <insert id="insert" parameterType="com.apabi.flow.douban.model.DoubanMeta">
-        insert into DOUBAN_METADATA_TEST
+        insert into DOUBAN_METADATA
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="doubanId != null">
                 DOUBANID,

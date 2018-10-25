@@ -18,14 +18,12 @@ import java.util.Random;
 /**
  * Created by pipi on 2018/7/24.
  */
-@Order(1)
-@Component
 public class IpPoolUtils {
     private static Logger logger = LoggerFactory.getLogger(IpPoolUtils.class);
     public static List<String> ipPool = new ArrayList<>();
     private static int ipCount;
 
-    static {
+    public IpPoolUtils() {
         logger.info("获取kuaidaili的ip列表开始...");
         String kuaidailiApiUrl = "http://svip.kdlapi.com/api/getproxy/?orderid=993991357970626&num=150&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=1&method=2&an_an=1&an_ha=1&sep=1";
         CloseableHttpClient client = HttpClients.createDefault();
@@ -44,10 +42,7 @@ public class IpPoolUtils {
         logger.info("获取kuaidaili的ip列表结束...");
     }
 
-    private IpPoolUtils() {
-    }
-
-    public synchronized static String getIp() {
+    public String getIp() {
         Random random = new Random();
         int index = random.nextInt(ipCount);
         return ipPool.get(index);

@@ -21,10 +21,12 @@ public class NlcMarcConsumer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(NlcMarcConsumer.class);
     private ArrayBlockingQueue<String> isbnQueue;
     private NlcBookMarcDao nlcBookMarcDao;
+    private IpPoolUtils ipPoolUtils;
 
-    public NlcMarcConsumer(ArrayBlockingQueue<String> isbnQueue, NlcBookMarcDao nlcBookMarcDao) {
+    public NlcMarcConsumer(ArrayBlockingQueue<String> isbnQueue, NlcBookMarcDao nlcBookMarcDao,IpPoolUtils ipPoolUtils) {
         this.isbnQueue = isbnQueue;
         this.nlcBookMarcDao = nlcBookMarcDao;
+        this.ipPoolUtils = ipPoolUtils;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class NlcMarcConsumer implements Runnable {
             // 从阻塞队列中获取isbn
             isbn = isbnQueue.take();
             // 根据ip配置文件解析ip和port
-            String host = IpPoolUtils.getIp();
+            String host = ipPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
             // 从国图抓取iso内容

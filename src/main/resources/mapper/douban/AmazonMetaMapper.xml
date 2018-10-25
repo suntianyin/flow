@@ -147,6 +147,11 @@
         FROM AMAZON_METADATA
     </select>
 
+    <!-- 分页查询AmazonMeta -->
+    <select id="findAmazonMetaByPage" resultMap="AmazonMetaMapper">
+        SELECT *
+        FROM AMAZON_METADATA
+    </select>
 
     <!-- 根据amazonId更新AmazonMeta-->
     <update id="updateAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
@@ -266,7 +271,7 @@
 
     <!-- 添加AmazonMeta -->
     <insert id="addAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
-        INSERT INTO AMAZON_METADATA_TEST
+        INSERT INTO AMAZON_METADATA
         (<include refid="Base_Column_List"/>)
         VALUES(<include refid="Base_Value_list"/>)
     </insert>

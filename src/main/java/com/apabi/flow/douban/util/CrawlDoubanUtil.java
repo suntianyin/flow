@@ -1,5 +1,7 @@
 package com.apabi.flow.douban.util;
 
+import com.apabi.flow.crawlTask.util.DoubanCookieUtils;
+import com.apabi.flow.crawlTask.util.UserAgentUtils;
 import com.apabi.flow.douban.model.DoubanMeta;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -7,6 +9,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -34,20 +37,23 @@ public class CrawlDoubanUtil {
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
         // 把代理设置到请求配置
         RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
+        // SocketConfig
+        // SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(10000).build();
+        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(10000).setSoLinger(60).setSoKeepAlive(true).build();
         // 实例化CloseableHttpClient对象
-        // 使用代理ip
-        CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
+        CloseableHttpClient client = HttpClients.custom().setDefaultSocketConfig(socketConfig).setDefaultRequestConfig(config).build();
         return client;
     }
 
     // 从douban根据抓取列表获取该页面中的douban数据
-    public static List<String> crawlDoubanIdList(String url, String ip, String port) throws IOException {
+    public static List<String> crawlDoubanIdList(String url, String ip, String port) {
         List<String> doubanMetaIdList = new ArrayList<>();
         if (StringUtils.isNotEmpty(url)) {
             // 实例化CloseableHttpClient对象
             CloseableHttpClient client = getCloseableHttpClient(ip, port);
             // 访问豆瓣主题首页
             HttpGet httpGet = new HttpGet(url);
+            // 请求配置
             httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
             httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
             httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
@@ -55,8 +61,10 @@ public class CrawlDoubanUtil {
             httpGet.setHeader("Connection", "keep-alive");
             httpGet.setHeader("Host", "book.douban.com");
             httpGet.setHeader("Upgrade-Insecure-Request", "1");
-            httpGet.setHeader("Cookie", "ll=\"108288\"; bid=AOJiWkefK-E; __utmt=1; __utma=30149280.97956999.1540178056.1540178056.1540178056.1; __utmb=30149280.1.10.1540178056; __utmc=30149280; __utmz=30149280.1540178056.1.1.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; as=\"https://sec.douban.com/b?r=https%3A%2F%2Fbook.douban.com%2F\"; ps=y");
-            httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+//            httpGet.setHeader("Cookie", "ll=\"108288\"; bid=AOJiWkefK-E; __utmt=1; __utma=30149280.97956999.1540178056.1540178056.1540178056.1; __utmb=30149280.1.10.1540178056; __utmc=30149280; __utmz=30149280.1540178056.1.1.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; as=\"https://sec.douban.com/b?r=https%3A%2F%2Fbook.douban.com%2F\"; ps=y");
+            httpGet.setHeader("Cookie", DoubanCookieUtils.getCookie() + "; __utmt=1; __utma=30149280.97956999.1540178056.1540178056.1540178056.1; __utmb=30149280.1.10.1540178056; __utmc=30149280; __utmz=30149280.1540178056.1.1.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; as=\"https://sec.douban.com/b?r=https%3A%2F%2Fbook.douban.com%2F\"; ps=y");
+//            httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+            httpGet.setHeader("User-Agent", UserAgentUtils.getUserAgent());
             //httpGet.setHeader("Referer", "https://accounts.douban.com/login?alias=469250376%40qq.com&redir=https%3A%2F%2Fbook.douban.com%2Ftag%2F%25E4%25BA%25BA%25E6%2596%2587%3Ftype%3DR&source=None&error=1027");
             CloseableHttpResponse response1 = null;
             try {
@@ -71,23 +79,32 @@ public class CrawlDoubanUtil {
                     doubanMetaIdList.add(id);
                 }
             } catch (IOException e) {
-                logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上豆瓣主题主页");
-                e.printStackTrace();
+                //logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上豆瓣主题主页");
+                //e.printStackTrace();
+//                try {
+//
+//                } catch (IOException e1) {
+//                    //e1.printStackTrace();
+//                }
+                //throw new IOException();
+            } finally {
                 httpGet.releaseConnection();
                 httpGet.abort();
-                try {
-                    client.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                if (response1 != null) {
+                    try {
+                        response1.close();
+                        client.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                throw new IOException();
             }
         }
         return doubanMetaIdList;
     }
 
     // 根据doubanId并切换ip解析出DoubanMeta对象
-    public static DoubanMeta crawlDoubanMetaById(String id, String ip, String port) throws IOException {
+    public static DoubanMeta crawlDoubanMetaById(String id, String ip, String port) {
         DoubanMeta doubanMeta = new DoubanMeta();
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         String url = "https://api.douban.com/v2/book/" + id;
@@ -99,7 +116,8 @@ public class CrawlDoubanUtil {
         httpGet.setHeader("Connection", "keep-alive");
         // 不可以加这个请求头，如果加上则走book.douban.com服务器，api应该走api.douban.com服务器
         // httpGet.setHeader("Host", "book.douban.com");
-        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+        // httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+        httpGet.setHeader("User-Agent", UserAgentUtils.getUserAgent());
         CloseableHttpResponse response = null;
         try {
             response = client.execute(httpGet);
@@ -193,8 +211,19 @@ public class CrawlDoubanUtil {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOException();
+            //e.printStackTrace();
+            //throw new IOException();
+        } finally {
+            httpGet.releaseConnection();
+            httpGet.abort();
+            if (response != null) {
+                try {
+                    response.close();
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         doubanMeta.setCreateTime(new Date());
         doubanMeta.setUpdateTime(new Date());

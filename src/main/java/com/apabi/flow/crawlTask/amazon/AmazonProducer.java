@@ -30,7 +30,7 @@ public class AmazonProducer implements Runnable {
             try {
                 arrayBlockingQueue.put(id);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }

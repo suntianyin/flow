@@ -1,8 +1,11 @@
 package com.apabi.flow.douban.dao;
 
 import com.apabi.flow.douban.model.AmazonMeta;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+
+import java.util.Map;
 
 /**
  * @author pipi
@@ -22,4 +25,6 @@ public interface AmazonMetaDao {
     void addAmazonMeta(AmazonMeta amazonMeta);
     // 更新AmazonMeta
     void updateAmazonMeta(AmazonMeta amazonMeta);
+    // 分页查询AmazonMeta
+    Page<AmazonMeta> findAmazonMetaByPage(Map<String,String> params);
 }

@@ -32,7 +32,7 @@ import java.util.*;
  * @date 2018/8/8 15:42
  * @description
  */
-@Controller("douban")
+@Controller
 @RequestMapping(value = "/douban")
 public class DoubanController {
     private Logger log = LoggerFactory.getLogger(DoubanController.class);

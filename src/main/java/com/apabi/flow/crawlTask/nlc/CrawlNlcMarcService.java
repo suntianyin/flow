@@ -1,5 +1,6 @@
 package com.apabi.flow.crawlTask.nlc;
 
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +25,11 @@ public class CrawlNlcMarcService implements ApplicationRunner {
     private static Logger logger = LoggerFactory.getLogger(CrawlNlcMarcService.class);
     @Autowired
     private NlcBookMarcDao nlcBookMarcDao;
+    private IpPoolUtils ipPoolUtils;
 
     @Override
     public void run(ApplicationArguments args) {
+        ipPoolUtils = new IpPoolUtils();
         logger.info("spring boot初始化完毕，开始执行国图爬虫....");
         // 模拟一些isbn
         String[] isbnList = {
@@ -145,7 +148,7 @@ public class CrawlNlcMarcService implements ApplicationRunner {
         // 设置线程数
         int threadAmount = 5 * cpuProcessorAmount;
         // 创建消费者对象
-        NlcMarcConsumer nlcMarcConsumer = new NlcMarcConsumer(isbnQueue, nlcBookMarcDao);
+        NlcMarcConsumer nlcMarcConsumer = new NlcMarcConsumer(isbnQueue, nlcBookMarcDao,ipPoolUtils);
         // 创建线程池对象
         ExecutorService executorService = Executors.newFixedThreadPool(threadAmount);
         // 开启threadAmount个线程消费者线程，让线程池管理消费者线程

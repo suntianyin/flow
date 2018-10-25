@@ -63,6 +63,8 @@ public class AmazonMetaController {
         return entity;
     }
 
+
+
     @RequestMapping("/update")
     public void testUpdate() {
         amazonMetaService.updateAmazon(null);

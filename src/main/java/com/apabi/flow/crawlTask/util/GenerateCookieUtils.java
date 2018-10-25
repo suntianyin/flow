@@ -87,9 +87,10 @@ public class GenerateCookieUtils {
 
     public static void main(String[] args) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\flowPlatform\\src\\main\\resources\\properties\\doubanCookie.properties", true));
+        IpPoolUtils ipPoolUtils = new IpPoolUtils();
         Set<String> cookieSet = new HashSet<String>();
         for (int i = 0; i < 100; i++) {
-            String ip = IpPoolUtils.getIp();
+            String ip = ipPoolUtils.getIp();
             String host = ip.split(":")[0];
             String port = ip.split(":")[1];
             String cookie = crawlDoubanCookie(host, port);

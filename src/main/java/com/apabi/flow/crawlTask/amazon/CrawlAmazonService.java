@@ -3,7 +3,6 @@ package com.apabi.flow.crawlTask.amazon;
 import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.dao.AmazonCrawlUrlDao;
 import com.apabi.flow.douban.dao.AmazonMetaDao;
-import com.apabi.flow.douban.util.CrawlAmazonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,11 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,55 +31,70 @@ public class CrawlAmazonService implements ApplicationRunner {
     @Autowired
     private AmazonMetaDao amazonMetaDao;
 
-    @Scheduled(cron = "0 */240 * * * ?")
+    @Scheduled(cron = "0 0 0/2 * * ? ")
     public void runTask() {
         run(null);
     }
 
     @Override
     public void run(ApplicationArguments args) {
-        logger.info("spring boot初始化完毕，开始执行amazon爬虫....");
+        long startTime = System.currentTimeMillis();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startDateTime = simpleDateFormat.format(startTime);
+        logger.info(startDateTime + " spring boot初始化完毕，开始执行amazon爬虫....");
+        // 获取cpu的核数
+        int cpuProcessorAmount = Runtime.getRuntime().availableProcessors();
         int queueSize = 100;
         List<String> idList = new ArrayList<>();
         List<String> urlList = amazonCrawlUrlDao.findAllUrl();
         ArrayBlockingQueue<String> idQueue = new ArrayBlockingQueue<String>(queueSize);
-        for (String url : urlList) {
-            long startTime = System.currentTimeMillis();
-            //TODO 还未分配ip
-            // 随机指定代理ip抓取doubanId
-            String ip = "";
-            String port = "";
-            String host = IpPoolUtils.getIp();
-            ip = host.split(":")[0];
-            port = host.split(":")[1];
-            List<String> amazonIdList = new ArrayList<>();
-            try {
-                amazonIdList = CrawlAmazonUtils.crawlAmazonIdList(url, ip, port);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            long endTime = System.currentTimeMillis();
-            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取url列表：" + url + "，列表大小为：" + amazonIdList.size() + ";耗时为：" + (endTime - startTime) / 1000 + "秒");
-            for (String id : amazonIdList) {
-                // TODO 还未分配ip
-                idList.add(id);
-            }
+        // 代理ip工具类
+        IpPoolUtils ipPoolUtils = new IpPoolUtils();
+
+        // ******************多线程抓取idList开始******************
+        CountDownLatch idListCountDownLatch = new CountDownLatch(urlList.size());
+        int producerThreadAmount = cpuProcessorAmount * 2;
+        ExecutorService idExecutorService = Executors.newFixedThreadPool(producerThreadAmount);
+        for (int i = 0; i < urlList.size(); i++) {
+            AmazonIdProducer producer = new AmazonIdProducer(urlList.get(i), idList, idListCountDownLatch, ipPoolUtils);
+            idExecutorService.execute(producer);
         }
+        try {
+            idListCountDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // 立即关闭线程池
+        idExecutorService.shutdownNow();
+        // ******************多线程抓取idList结束******************
+
+        // ******************多线程抓取id开始******************
+        // id列表中数据计数器
+        CountDownLatch idCountDownLatch = new CountDownLatch(idList.size());
         // 生产者对象
         AmazonProducer producer = new AmazonProducer(idQueue, "amazonProducer", idList);
         new Thread(producer).start();
         // 消费者对象
-        AmazonConsumer consumer = new AmazonConsumer(idQueue, amazonMetaDao);
-        // 获取cpu的核数
-        int cpuProcessorAmount = Runtime.getRuntime().availableProcessors();
+        AmazonConsumer consumer = new AmazonConsumer(idQueue, amazonMetaDao, ipPoolUtils, idCountDownLatch);
+
         // 设置线程数
-        int threadAmount = 3 * cpuProcessorAmount;
+        int consumerThreadAmount = 3 * cpuProcessorAmount;
         // 创建线程池对象
-        ExecutorService executorService = Executors.newFixedThreadPool(threadAmount);
+        ExecutorService executorService = Executors.newFixedThreadPool(consumerThreadAmount);
         for (int i = 0; i < idList.size(); i++) {
             executorService.execute(consumer);
         }
-        // 关闭线程池
-        executorService.shutdown();
+        try {
+            idCountDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // 立即关闭线程池
+        executorService.shutdownNow();
+        // ******************多线程抓取id结束******************
+
+        long endTime = System.currentTimeMillis();
+        String endDateTime = simpleDateFormat.format(endTime);
+        logger.info(endDateTime + " amazon爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
     }
 }

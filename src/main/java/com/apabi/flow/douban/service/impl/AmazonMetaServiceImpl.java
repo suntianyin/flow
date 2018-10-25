@@ -5,6 +5,7 @@ import com.apabi.flow.douban.model.AmazonMeta;
 import com.apabi.flow.douban.service.AmazonMetaService;
 import com.apabi.flow.douban.util.DomParseUtil;
 import com.apabi.flow.douban.util.StringToolUtil;
+import com.github.pagehelper.Page;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @Author pipi
@@ -20,7 +22,6 @@ import java.util.Date;
  **/
 @Service
 public class AmazonMetaServiceImpl implements AmazonMetaService {
-
     @Autowired
     private AmazonMetaDao amazonMetaDao;
 
@@ -101,6 +102,11 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
     @Override
     public void updateAmazon(AmazonMeta amazonMeta) {
         amazonMetaDao.updateAmazonMeta(amazonMeta);
+    }
+
+    @Override
+    public Page<AmazonMeta> findAmazonMetaByPage(Map<String,String> params) {
+        return amazonMetaDao.findAmazonMetaByPage(params);
     }
 
 

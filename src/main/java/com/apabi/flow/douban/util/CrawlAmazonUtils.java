@@ -6,6 +6,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -32,19 +33,28 @@ public class CrawlAmazonUtils {
         // 设置代理IP、端口、协议
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
         // 把代理设置到请求配置
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
+        RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
+        // SocketConfig
+        // SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(10000).setSoKeepAlive(false).build();
+        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(10000).setSoLinger(60).setSoKeepAlive(true).setSoKeepAlive(false).build();
         // 实例化CloseableHttpClient对象
-        CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
+        CloseableHttpClient client = HttpClients.custom().setDefaultSocketConfig(socketConfig).setDefaultRequestConfig(requestConfig).build();
         return client;
     }
 
     // 从douban根据抓取列表获取该页面中的douban数据
-    public static List<String> crawlAmazonIdList(String url, String ip, String port) throws IOException {
+    public static List<String> crawlAmazonIdList(String url, String ip, String port) {
         List<String> idList = new ArrayList<>();
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
-        // 访问amazon分类首页
+        // 设置代理ip
+        HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
+        // 访问豆瓣主题首页
         HttpGet httpGet = new HttpGet(url);
+        // 请求配置
+        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
+        httpGet.setConfig(config);
+        // 访问amazon分类首页
         httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
         httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
@@ -54,10 +64,10 @@ public class CrawlAmazonUtils {
         httpGet.setHeader("Host", "www.amazon.cn");
         httpGet.setHeader("Upgrade-Insecure-Request", "1");
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
-        CloseableHttpResponse response1 = null;
+        CloseableHttpResponse response = null;
         try {
-            response1 = client.execute(httpGet);
-            String html = EntityUtils.toString(response1.getEntity());
+            response = client.execute(httpGet);
+            String html = EntityUtils.toString(response.getEntity());
             Document document = Jsoup.parse(html);
             Elements elements = document.select("li[class='s-result-item celwidget  ']");
             for (Element element : elements) {
@@ -65,26 +75,49 @@ public class CrawlAmazonUtils {
                 idList.add(id);
             }
         } catch (IOException e) {
-            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon主页");
-            e.printStackTrace();
+            //logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon主页");
+            //e.printStackTrace();
+//            httpGet.releaseConnection();
+//            httpGet.abort();
+//            try {
+//                client.close();
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
+            //throw new IOException();
+        } finally {
             httpGet.releaseConnection();
             httpGet.abort();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            if (response != null) {
+                try {
+                    EntityUtils.consume(response.getEntity()); //会自动释放连接
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            throw new IOException();
+            if (client != null) {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return idList;
     }
 
-    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) throws IOException {
+    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) {
         AmazonMeta amazonMeta = new AmazonMeta();
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_9?s=books&ie=UTF8&qid=1539756341&sr=1-9";
+        // 设置代理ip
+        HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
         HttpGet httpGet = new HttpGet(url);
+        // 请求配置
+        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
+        httpGet.setConfig(config);
         httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
         httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
@@ -189,6 +222,7 @@ public class CrawlAmazonUtils {
                         amazonMeta.setPaperPrice(price);
                     }
                 }
+                // TODO 修改空指针异常
                 if (document.select("h1[class=a-size-large a-spacing-none]").select("span").attr("id").contains("ebooksProductTitle")) {
                     String title = document.select("h1[class=a-size-large a-spacing-none]").select("span[id=ebooksProductTitle]").first().text();
                     amazonMeta.setTitle(title);
@@ -257,16 +291,34 @@ public class CrawlAmazonUtils {
                 }
             }
         } catch (IOException e) {
-            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon详情页");
-            e.printStackTrace();
+            //logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon详情页");
+            //e.printStackTrace();
+//            httpGet.releaseConnection();
+//            httpGet.abort();
+//            try {
+//                client.close();
+//            } catch (IOException e1) {
+//                //e1.printStackTrace();
+//            }
+            //throw new IOException();
+        } finally {
             httpGet.releaseConnection();
             httpGet.abort();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            if (response != null) {
+                try {
+                    EntityUtils.consume(response.getEntity()); //会自动释放连接
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            throw new IOException();
+            if (client != null) {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         // 设置出版日期
         String issuedDate = amazonMeta.getIssuedDate();
