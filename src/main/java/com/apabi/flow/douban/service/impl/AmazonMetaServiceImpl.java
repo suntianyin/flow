@@ -109,6 +109,10 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
         return amazonMetaDao.findAmazonMetaByPage(params);
     }
 
+    @Override
+    public AmazonMeta findById(String amazonId) {
+        return amazonMetaDao.getAmazonMetaByAmazonId(amazonId);
+    }
 
     // 根据isbn在amazon网站爬取数据
     private AmazonMeta crawl(String isbn) throws Exception {

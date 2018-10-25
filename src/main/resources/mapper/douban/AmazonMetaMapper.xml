@@ -148,9 +148,25 @@
     </select>
 
     <!-- 分页查询AmazonMeta -->
-    <select id="findAmazonMetaByPage" resultMap="AmazonMetaMapper">
+    <select id="findAmazonMetaByPage" parameterType="Map" resultMap="AmazonMetaMapper">
         SELECT *
         FROM AMAZON_METADATA
+        WHERE 1=1
+        <if test="author != null and author != ''">
+            AND AUTHOR = #{author,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            AND TITLE = #{title,jdbcType=VARCHAR}
+        </if>
+        <if test="publisher != null and publisher != ''">
+            AND PUBLISHER = #{publisher,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn13 != null and isbn13 != ''">
+            AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn10 != null and isbn10 != ''">
+            AND ISBN10 = #{isbn10,jdbcType=VARCHAR}
+        </if>
     </select>
 
     <!-- 根据amazonId更新AmazonMeta-->
@@ -276,13 +292,12 @@
         VALUES(<include refid="Base_Value_list"/>)
     </insert>
 
-<!--    &lt;!&ndash; 添加AmazonMeta &ndash;&gt;
-    <insert id="addAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
-        INSERT INTO AMAZON_METADATA
-        (<include refid="Base_Column_List"/>)
-        VALUES(<include refid="Base_Value_list"/>)
-    </insert>-->
-
+    <!--    &lt;!&ndash; 添加AmazonMeta &ndash;&gt;
+        <insert id="addAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
+            INSERT INTO AMAZON_METADATA
+            (<include refid="Base_Column_List"/>)
+            VALUES(<include refid="Base_Value_list"/>)
+        </insert>-->
 
 
 </mapper>

@@ -27,8 +27,8 @@
         </td>
     </tr>
     <tr role="row">
-        <th>字段名</th>
-        <th>字段值</th>
+        <th width="100px">字段名</th>
+        <th width="100px">字段值</th>
     </tr>
     </thead>
     <tbody>

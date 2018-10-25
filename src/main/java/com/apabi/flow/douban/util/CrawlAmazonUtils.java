@@ -136,35 +136,35 @@ public class CrawlAmazonUtils {
                 Elements basicInformation = document.select("#detail_bullets_id").select("ul").select("li");
                 for (Element BasicInformation : basicInformation) {
                     if (BasicInformation.select("b").text().equals("出版社:") && BasicInformation.text().contains(";")) {
-                        amazonMeta.setPublisher(BasicInformation.text().replace("出版社:", "").split(";")[0]);
-                        amazonMeta.setEditionOrder(BasicInformation.text().replace("出版社:", "").split(";")[1].split("\\(")[0]);
-                        amazonMeta.setIssuedDate(BasicInformation.text().replace("出版社:", "").split(";")[1].split("\\(")[1].replace(")", ""));
+                        amazonMeta.setPublisher(BasicInformation.text().replace("出版社:", "").split(";")[0].trim());
+                        amazonMeta.setEditionOrder(BasicInformation.text().replace("出版社:", "").split(";")[1].split("\\(")[0].trim());
+                        amazonMeta.setIssuedDate(BasicInformation.text().replace("出版社:", "").split(";")[1].split("\\(")[1].replace(")", "").trim());
                     } else if (BasicInformation.select("b").text().equals("出版社:") && !BasicInformation.text().contains(";")) {
-                        amazonMeta.setPublisher(BasicInformation.text().replace("出版社:", "").split("\\(")[0]);
-                        amazonMeta.setIssuedDate(BasicInformation.text().replace("出版社:", "").split("\\(")[1].replace(")", ""));
+                        amazonMeta.setPublisher(BasicInformation.text().replace("出版社:", "").split("\\(")[0].trim());
+                        amazonMeta.setIssuedDate(BasicInformation.text().replace("出版社:", "").split("\\(")[1].replace(")", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("丛书名:")) {
-                        amazonMeta.setSeries(BasicInformation.text().replace("丛书名:", ""));
+                        amazonMeta.setSeries(BasicInformation.text().replace("丛书名:", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("外文书名:")) {
-                        amazonMeta.setOriginSeries(BasicInformation.text().replace("外文书名:", "").replace("'", "\\'"));
+                        amazonMeta.setOriginSeries(BasicInformation.text().replace("外文书名:", "").replace("'", "\\'").trim());
                     }
                     if (BasicInformation.select("b").text().equals("原书名:")) {
-                        amazonMeta.setOriginTitle(BasicInformation.text().replace("原书名:", ""));
+                        amazonMeta.setOriginTitle(BasicInformation.text().replace("原书名:", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("精装:") || BasicInformation.select("b").text().equals("平装:")) {
                         if (BasicInformation.select("b").text().equals("精装:")) {
-                            amazonMeta.setPages(BasicInformation.text().replace("精装:", ""));
+                            amazonMeta.setPages(BasicInformation.text().replace("精装:", "").trim());
                         }
                         if (BasicInformation.select("b").text().equals("平装:")) {
-                            amazonMeta.setPages(BasicInformation.text().replace("平装:", ""));
+                            amazonMeta.setPages(BasicInformation.text().replace("平装:", "").trim());
                         }
                     }
                     if (BasicInformation.select("b").text().equals("语种：")) {
-                        amazonMeta.setLanguage(BasicInformation.text().replace("语种：", ""));
+                        amazonMeta.setLanguage(BasicInformation.text().replace("语种：", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("开本:")) {
-                        amazonMeta.setFormat(BasicInformation.text().replace("开本:", ""));
+                        amazonMeta.setFormat(BasicInformation.text().replace("开本:", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("ISBN:")) {
                         if (BasicInformation.text().replace("ISBN:", "").contains(",")) {
@@ -172,20 +172,20 @@ public class CrawlAmazonUtils {
                             if (ISBN.split(",")[1].trim().length() == 10) {
                                 String isbn10 = ISBN.split(",")[1].trim();
                                 if (isbn10.length() == 10) {
-                                    amazonMeta.setIsbn10(isbn10);
+                                    amazonMeta.setIsbn10(isbn10.trim());
                                 }
                                 String isbn13 = ISBN.split(",")[0].trim();
                                 if (isbn13.length() == 13) {
-                                    amazonMeta.setIsbn13(isbn13);
+                                    amazonMeta.setIsbn13(isbn13.trim());
                                 }
                             } else {
                                 String isbn10 = ISBN.split(",")[0].trim();
                                 if (isbn10.length() == 10) {
-                                    amazonMeta.setIsbn10(isbn10);
+                                    amazonMeta.setIsbn10(isbn10.trim());
                                 }
                                 String isbn13 = ISBN.split(",")[1].trim();
                                 if (isbn13.length() == 13) {
-                                    amazonMeta.setIsbn13(isbn13);
+                                    amazonMeta.setIsbn13(isbn13.trim());
                                 }
                             }
                         } else {
@@ -200,20 +200,20 @@ public class CrawlAmazonUtils {
                         }
                     }
                     if (BasicInformation.select("b").text().equals("商品尺寸:")) {
-                        amazonMeta.setProductSize(BasicInformation.text().replace("商品尺寸:", ""));
+                        amazonMeta.setProductSize(BasicInformation.text().replace("商品尺寸:", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("商品重量:")) {
-                        amazonMeta.setCommodityWeight(BasicInformation.text().replace("商品重量:", ""));
+                        amazonMeta.setCommodityWeight(BasicInformation.text().replace("商品重量:", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("品牌:")) {
-                        amazonMeta.setBrand(BasicInformation.text().replace("品牌:", ""));
+                        amazonMeta.setBrand(BasicInformation.text().replace("品牌:", "").trim());
                     }
                     if (BasicInformation.select("b").text().equals("ASIN:")) {
                         amazonMeta.setAsin(BasicInformation.text().replace("ASIN:", "").replaceAll(" ", ""));
                         amazonMeta.setAmazonId(BasicInformation.text().replace("ASIN:", "").replaceAll(" ", ""));
                     }
                     if (BasicInformation.select("b").text().contains("亚马逊热销商品排名:")) {
-                        amazonMeta.setClassification(BasicInformation.select("b").select("a").text());
+                        amazonMeta.setClassification(BasicInformation.select("b").select("a").text().trim());
                     }
                 }
                 if (!document.select("div[id=rightCol]").text().contains("电子书定价:") || !document.select("div[id=rightCol]").text().contains("Kindle电子书价格:")) {
@@ -225,36 +225,36 @@ public class CrawlAmazonUtils {
                 // TODO 修改空指针异常
                 if (document.select("h1[class=a-size-large a-spacing-none]").select("span").attr("id").contains("ebooksProductTitle")) {
                     String title = document.select("h1[class=a-size-large a-spacing-none]").select("span[id=ebooksProductTitle]").first().text();
-                    amazonMeta.setTitle(title);
+                    amazonMeta.setTitle(title.trim());
                 } else {
                     String title = document.select("h1[class=a-size-large a-spacing-none]").select("span[id=productTitle]").first().text();
-                    amazonMeta.setTitle(title);
+                    amazonMeta.setTitle(title.trim());
                 }
                 if (document.select("span[class=author notFaded]").select("a[class=a-link-normal]").first() != null) {
                     String author = document.select("span[class=author notFaded]").select("a[class=a-link-normal]").first().text();
-                    amazonMeta.setAuthor(author);
+                    amazonMeta.setAuthor(author.trim());
                 }
                 if (document.select("span[class=author notFaded]").select("a[class=a-link-normal]").size() > 1) {
                     String translator = document.select("span[class=author notFaded]").select("a[class=a-link-normal]").get(1).text();
-                    amazonMeta.setTranslator(translator);
+                    amazonMeta.setTranslator(translator.trim());
                 }
                 if (document.select("span[class=a-size-small a-color-price]") != null) {
                     if (document.select("span[class=a-size-small a-color-price]").first() != null) {
                         if (document.select("span[class=a-size-small a-color-price]").first().text() != null) {
                             String kindlePrice = document.select("span[class=a-size-small a-color-price]").first().text();
-                            amazonMeta.setKindlePrice(kindlePrice);
+                            amazonMeta.setKindlePrice(kindlePrice.trim());
                         }
                     }
                 }
                 if (document.select("h1[class=a-size-large a-spacing-none]").select("span").size() > 2) {
                     String binding = document.select("span[class=a-size-medium a-color-secondary a-text-normal]").first().text();
-                    amazonMeta.setBinding(binding);
+                    amazonMeta.setBinding(binding.trim());
                 }
                 String content = document.select("div[id=bookDescription_feature_div]").select("noscript").text().replace("海报：", "");
-                amazonMeta.setSummary(content);
+                amazonMeta.setSummary(content.trim());
                 if (document.select("div[id=bookDescription_feature_div]").select("noscript").select("img") != null) {
                     String poster = document.select("div[id=bookDescription_feature_div]").select("noscript").select("img").attr("src");
-                    amazonMeta.setPoster(poster);
+                    amazonMeta.setPoster(poster.trim());
                 }
                 String merchantID = document.select("form[action=/gp/product/handle-buy-box/ref=dp_start-bbf_1_glance]").select("input[id=merchantID]").attr("value");
                 String qid = document.select("form[action=/gp/product/handle-buy-box/ref=dp_start-bbf_1_glance]").select("input[id=qid]").attr("value");
@@ -265,28 +265,28 @@ public class CrawlAmazonUtils {
 
                 for (Element detail : details) {
                     if (detail.select("h3").text().equals("编辑推荐")) {
-                        amazonMeta.setEditRecommend(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setEditRecommend(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("名人推荐")) {
-                        amazonMeta.setCelebrityRecommend(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setCelebrityRecommend(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("媒体推荐")) {
-                        amazonMeta.setMediaRecommendation(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setMediaRecommendation(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("作者简介")) {
-                        amazonMeta.setAuthorIntroduction(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setAuthorIntroduction(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("序言")) {
-                        amazonMeta.setPreface(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setPreface(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("目录")) {
-                        amazonMeta.setCatalog(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setCatalog(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("文摘")) {
-                        amazonMeta.setAbstract_(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setAbstract_(detail.select("p").text().replace("'", "\\'").trim());
                     }
                     if (detail.select("h3").text().equals("后记")) {
-                        amazonMeta.setPostScript(detail.select("p").text().replace("'", "\\'"));
+                        amazonMeta.setPostScript(detail.select("p").text().replace("'", "\\'").trim());
                     }
                 }
             }
