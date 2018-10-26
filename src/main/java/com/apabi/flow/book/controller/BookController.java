@@ -165,67 +165,6 @@ public class BookController {
     }
 
     //分页查询，获取所有图书meta数据
-    /*@RequestMapping(value = "/bookMeta")
-    public String bookMeta(HttpServletRequest request, Model model) {
-        try {
-            long start = System.currentTimeMillis();
-            PageRequest pageRequest = new PageRequest();
-            PageRequestFactory.bindPageRequest(pageRequest, request);
-            Map<String, Object> params = (Map<String, Object>) pageRequest.getFilters();
-            String metaid = "";
-            if (params.get("metaid") != null) {
-                metaid = params.get("metaid").toString();
-            }
-            String title = "";
-            if (params.get("title") != null) {
-                title = params.get("title").toString();
-            }
-            String creator = "";
-            if (params.get("creator") != null) {
-                creator = params.get("creator").toString();
-            }
-            String publisher = "";
-            if (params.get("publisher") != null) {
-                publisher = params.get("publisher").toString();
-            }
-            String isbn = "";
-            if (params.get("isbn") != null) {
-                isbn = params.get("isbn").toString();
-            }
-            String isbnVal = "";
-            if (params.get("isbnVal") != null) {
-                isbnVal = params.get("isbnVal").toString();
-            }
-            //List<BookMetaVo> list = new ArrayList<>();
-            //Page<BookMetaVo> page = new PageImpl<>(list);
-            Page<BookMetaVo> page = null;
-            if (params.size() > 0) {
-                page = bookMetaService.queryPage(params, pageRequest.getPageNumber(), DEFAULT_PAGESIZE);
-            }
-            if (page == null) {
-                model.addAttribute("bookMetaList", null);
-                model.addAttribute("page", null);
-            } else {
-                model.addAttribute("bookMetaList", page.getContent());
-                model.addAttribute("page", page);
-            }
-
-            model.addAttribute("metaid", metaid);
-            model.addAttribute("title", title);
-            model.addAttribute("creator", creator);
-            model.addAttribute("publisher", publisher);
-            model.addAttribute("isbn", isbn);
-            model.addAttribute("isbnVal", isbnVal);
-            long end = System.currentTimeMillis();
-            log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");
-            return "book/bookMeta";
-        } catch (Exception e) {
-            log.warn("Exception {}" + e);
-        }
-        return null;
-    }*/
-
-    //分页查询，获取所有图书meta数据
     @RequestMapping(value = "/bookMeta")
     public String bookMeta(HttpServletRequest request, Model model,
                            @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNum) {

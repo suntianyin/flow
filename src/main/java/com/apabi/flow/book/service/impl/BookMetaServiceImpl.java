@@ -196,23 +196,66 @@ public class BookMetaServiceImpl implements BookMetaService {
         if (!StringUtils.isEmpty(metaid)) {
             String cataRow = bookMetaDao.findCataRowsById(metaid);
             if (!StringUtils.isEmpty(cataRow)) {
-                List<String> cataRows = Arrays.asList(cataRow.split("},"));
-                List<BookCataRows> cataRowsList = new ArrayList<>();
-                //生成目录
-                JSONObject jsonObject;
-                for (String cata : cataRows) {
-                    jsonObject = JSONObject.fromObject(cata + "}");
-                    BookCataRows cataLog = (BookCataRows) JSONObject.toBean(jsonObject, BookCataRows.class);
-                    cataRowsList.add(cataLog);
+                String tmp = String.valueOf(cataRow.charAt(0));
+                if (tmp.equals("[")) {
+                    //获取层次目录
+                    JSONArray jsonArray = JSONArray.fromObject(cataRow);
+                    List<BookCataRows> rowsList = new ArrayList<>();
+                    BookCataRows root = new BookCataRows();
+                    Iterator it = jsonArray.iterator();
+                    while (it.hasNext()) {
+                        JSONObject jsonObject = (JSONObject) it.next();
+                        createCataTree(jsonObject, root);
+                    }
+                    rowsList.addAll(root.getChildren());
+                    return rowsList;
+                } else {
+                    //获取非层次目录
+                    List<String> cataRows = Arrays.asList(cataRow.split("},"));
+                    List<BookCataRows> cataRowsList = new ArrayList<>();
+                    //生成目录
+                    JSONObject jsonObject;
+                    for (String cata : cataRows) {
+                        jsonObject = JSONObject.fromObject(cata + "}");
+                        BookCataRows cataLog = (BookCataRows) JSONObject.toBean(jsonObject, BookCataRows.class);
+                        cataRowsList.add(cataLog);
+                    }
+                    //按章节号进行排序
+                    List<BookCataRows> rowsList = cataRowsList.stream()
+                            .sorted(Comparator.comparingInt(BookCataRows::getChapterNum))
+                            .collect(Collectors.toList());
+                    return rowsList;
                 }
-                //按章节号进行排序
-                List<BookCataRows> rowsList = cataRowsList.stream()
-                        .sorted(Comparator.comparingInt(BookCataRows::getChapterNum))
-                        .collect(Collectors.toList());
-                return rowsList;
             }
         }
         return null;
+    }
+
+    //构建目录对象list
+    private void createCataTree(JSONObject jsonObject, BookCataRows parentCata) {
+        if (jsonObject != null) {
+            List<JSONObject> childE = jsonObject.getJSONArray("children");
+            if (childE != null && childE.size() > 0) {
+                BookCataRows cataRows = new BookCataRows();
+                cataRows.setChapterName(jsonObject.getString("chapterName"));
+                cataRows.setChapterNum(jsonObject.getInt("chapterNum"));
+                cataRows.setUrl(jsonObject.getString("url"));
+                cataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
+                cataRows.setWordSum(jsonObject.getInt("wordSum"));
+                for (JSONObject child : childE) {
+                    createCataTree(child, cataRows);
+                }
+                parentCata.getChildren().add(cataRows);
+            } else {
+                BookCataRows bookCataRows = new BookCataRows();
+                bookCataRows.setChapterName(jsonObject.getString("chapterName"));
+                bookCataRows.setChapterNum(jsonObject.getInt("chapterNum"));
+                bookCataRows.setUrl(jsonObject.getString("url"));
+                bookCataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
+                bookCataRows.setWordSum(jsonObject.getInt("wordSum"));
+                parentCata.getChildren().add(bookCataRows);
+            }
+        }
     }
 
     //解析xml数据，并保存
@@ -507,7 +550,9 @@ public class BookMetaServiceImpl implements BookMetaService {
             String platform = conds.get("platform");
             String libId = conds.get("libId");
             for (String metaid : idList) {
-                if (metaid.equals("on")) continue;
+                if (metaid.equals("on")) {
+                    continue;
+                }
                 MongoBookMeta mongo = mongoBookService.findBookMetaById(metaid);
                 if (mongo == null || mongo.getChapterSum() == 0) {
                     BookMeta bookMeta = bookMetaDao.findBookMetaById(metaid);
@@ -835,11 +880,13 @@ public class BookMetaServiceImpl implements BookMetaService {
         if (fs != null && fs.length > 0) {
             for (File f : fs) {
                 //若是目录，则递归打印该目录下的文件
-                if (f.isDirectory())
+                if (f.isDirectory()) {
                     func(f);
+                }
                 //若是文件，直接打印
-                if (f.isFile())
+                if (f.isFile()) {
                     FILES.add(f.getPath());
+                }
 //                System.out.println(f);
             }
         }
