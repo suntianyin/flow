@@ -56,7 +56,7 @@
   </delete>
 
   <insert id="insertNlcMarc" parameterType="com.apabi.flow.nlcmarc.model.NlcBookMarc">
-    insert into NLC_BOOK_MARC_TEST
+    insert into NLC_BOOK_MARC
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="nlcMarcId != null">
         NLCMARCID,

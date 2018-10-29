@@ -39,7 +39,6 @@ public class AmazonConsumer implements Runnable {
         AmazonMeta amazonMeta = null;
         try {
             id = idQueue.take();
-            countDownLatch.countDown();
             String host = ipPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
@@ -54,6 +53,8 @@ public class AmazonConsumer implements Runnable {
             }
         } catch (InterruptedException e) {
             //e.printStackTrace();
+        } finally {
+            countDownLatch.countDown();
         }
         /*catch (IOException e) {
             e.printStackTrace();

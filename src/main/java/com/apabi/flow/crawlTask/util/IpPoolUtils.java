@@ -7,8 +7,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ public class IpPoolUtils {
 
     public IpPoolUtils() {
         logger.info("获取kuaidaili的ip列表开始...");
-        String kuaidailiApiUrl = "http://svip.kdlapi.com/api/getproxy/?orderid=993991357970626&num=150&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=1&method=2&an_an=1&an_ha=1&sep=1";
+        String kuaidailiApiUrl = "http://svip.kdlapi.com/api/getproxy/?orderid=993991357970626&num=800&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=1&method=1&an_an=1&an_ha=1&sp1=1&quality=1&sort=1&dedup=1&sep=1";
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet get = new HttpGet(kuaidailiApiUrl);
         try {

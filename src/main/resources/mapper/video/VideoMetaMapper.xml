@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.flow.video.dao.VideoMetaMapper">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.video.model.VideoMeta">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="CH_TITLE" property="chTitle" jdbcType="VARCHAR"/>
+        <result column="EN_TITLE" property="enTitle" jdbcType="VARCHAR"/>
+        <result column="SERIES" property="series" jdbcType="VARCHAR"/>
+        <result column="KEY_WORD" property="keyWord" jdbcType="VARCHAR"/>
+        <result column="HUMAN" property="human" jdbcType="VARCHAR"/>
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR"/>
+        <result column="CREATOR" property="creator" jdbcType="VARCHAR"/>
+        <result column="SUBJECT" property="subject" jdbcType="VARCHAR"/>
+        <result column="LABEL" property="label" jdbcType="VARCHAR"/>
+        <result column="SOURCE" property="source" jdbcType="VARCHAR"/>
+        <result column="SCENE" property="scene" jdbcType="VARCHAR"/>
+        <result column="USER_AGE" property="userAge" jdbcType="INTEGER"/>
+        <result column="DIALECT" property="dialect" jdbcType="VARCHAR"/>
+        <result column="DIALOGUE_LANGUAGE" property="dialogueLanguage" jdbcType="VARCHAR"/>
+        <result column="CAPTION_LANGUAGES" property="captionLanguages" jdbcType="VARCHAR"/>
+        <result column="CODE_FORMAT" property="codeFormat" jdbcType="VARCHAR"/>
+        <result column="RIGHT_OWNER" property="rightOwner" jdbcType="VARCHAR"/>
+        <result column="AUTHORIZATION_PERIOD" property="authorizationPeriod" jdbcType="TIMESTAMP"/>
+        <result column="TYPE" property="type" jdbcType="VARCHAR"/>
+        <result column="VIDEO_TIME" property="videoTime" jdbcType="DOUBLE"/>
+        <result column="SCORE" property="score" jdbcType="DOUBLE"/>
+        <result column="PUBLICATION_COUNTRY" property="publicationCountry" jdbcType="VARCHAR"/>
+        <result column="PUBLICATION_COMPANY" property="publicationCompany" jdbcType="VARCHAR"/>
+        <result column="PUBLICATION_YEAR" property="publicationYear" jdbcType="TIMESTAMP"/>
+        <result column="VIDEO_SIZE" property="videoSize" jdbcType="DOUBLE"/>
+        <result column="COLOR" property="color" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="SAVE_PATH" property="savePath" jdbcType="VARCHAR"/>
+        <result column="PREVIEW_PATH" property="previewPath" jdbcType="VARCHAR"/>
+        <result column="PLAY_PATH" property="playPath" jdbcType="VARCHAR"/>
+        <result column="NOTE" property="note" jdbcType="VARCHAR"/>
+        <result column="INSERT_TIME" property="insertTime" jdbcType="TIMESTAMP"/>
+        <result column="OPERATOR" property="operator" jdbcType="VARCHAR"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, CH_TITLE, EN_TITLE, SERIES, KEY_WORD, HUMAN, DESCRIPTION, CREATOR ,SUBJECT,LABEL,
+        SOURCE,SCENE,USER_AGE,DIALECT,DIALOGUE_LANGUAGE,CAPTION_LANGUAGES,CODE_FORMAT,RIGHT_OWNER,
+        AUTHORIZATION_PERIOD,TYPE,VIDEO_TIME,SCORE,PUBLICATION_COUNTRY,PUBLICATION_COMPANY,PUBLICATION_YEAR,
+        VIDEO_SIZE,COLOR,CREATE_TIME,SAVE_PATH,PREVIEW_PATH,PLAY_PATH,NOTE,INSERT_TIME,OPERATOR,UPDATE_TIME
+    </sql>
+    <sql id="Base_Value_List1">
+        <if test="chTitle != null">
+            CH_TITLE = #{chTitle},
+        </if>
+        <if test="enTitle != null">
+            EN_TITLE = #{enTitle},
+        </if>
+        <if test="series != null">
+            SERIES = #{series},
+        </if>
+        <if test="keyWord != null">
+            KEY_WORD = #{keyWord},
+        </if>
+        <if test="human != null">
+            HUMAN = #{human},
+        </if>
+        <if test="description != null">
+            DESCRIPTION = #{description},
+        </if>
+        <if test="creator != null">
+            CREATOR = #{creator},
+        </if>
+        <if test="subject != null">
+            SUBJECT = #{subject},
+        </if>
+        <if test="label != null">
+            LABEL = #{label},
+        </if>
+        <if test="source != null">
+            SOURCE = #{source},
+        </if>
+        <if test="scene != null">
+            SCENE = #{scene},
+        </if>
+        <if test="userAge != null">
+            USER_AGE = #{userAge},
+        </if>
+        <if test="dialect != null">
+            DIALECT = #{dialect},
+        </if>
+        <if test="dialogueLanguage != null">
+            DIALOGUE_LANGUAGE = #{dialogueLanguage},
+        </if>
+        <if test="captionLanguages != null">
+            CAPTION_LANGUAGES = #{captionLanguages},
+        </if>
+        <if test="codeFormat != null">
+            CODE_FORMAT = #{codeFormat},
+        </if>
+        <if test="rightOwner != null">
+            RIGHT_OWNER = #{rightOwner},
+        </if>
+        <if test="authorizationPeriod != null">
+            AUTHORIZATION_PERIOD = #{authorizationPeriod},
+        </if>
+        <if test="type != null">
+            TYPE = #{type},
+        </if>
+        <if test="videoTime != null">
+            VIDEO_TIME = #{videoTime},
+        </if>
+        <if test="score != null">
+            SCORE = #{score},
+        </if>
+        <if test="publicationCountry != null">
+            PUBLICATION_COUNTRY = #{publicationCountry},
+        </if>
+        <if test="publicationCompany != null">
+            PUBLICATION_COMPANY = #{publicationCompany},
+        </if>
+        <if test="publicationYear != null">
+            PUBLICATION_YEAR = #{publicationYear},
+        </if>
+        <if test="videoSize != null">
+            VIDEO_SIZE = #{videoSize},
+        </if>
+        <if test="color != null">
+            COLOR = #{color},
+        </if>
+        <if test="createTime != null">
+            CREATE_TIME = #{createTime},
+        </if>
+        <if test="savePath != null">
+            SAVE_PATH = #{savePath},
+        </if>
+        <if test="previewPath != null">
+            PREVIEW_PATH = #{previewPath},
+        </if>
+        <if test="playPath != null">
+            PLAY_PATH = #{playPath},
+        </if>
+        <if test="note != null">
+            NOTE = #{note},
+        </if>
+        <if test="insertTime != null">
+            INSERT_TIME = #{insertTime},
+        </if>
+        <if test="operator != null">
+            OPERATOR = #{operator},
+        </if>
+        <if test="updateTime != null">
+            UPDATE_TIME = #{updateTime},
+        </if>
+    </sql>
+    <sql id="Base_Value_List">
+        #{id,jdbcType=VARCHAR},
+        #{chTitle,jdbcType=VARCHAR},
+        #{enTitle,jdbcType=VARCHAR},
+        #{series,jdbcType=VARCHAR},
+        #{keyWord,jdbcType=VARCHAR},
+        #{human,jdbcType=VARCHAR},
+        #{description,jdbcType=VARCHAR},
+        #{creator,jdbcType=VARCHAR},
+        #{subject,jdbcType=VARCHAR},
+        #{label,jdbcType=VARCHAR},
+        #{source,jdbcType=VARCHAR},
+        #{scene,jdbcType=VARCHAR},
+        #{userAge,jdbcType=INTEGER},
+        #{dialect,jdbcType=VARCHAR},
+        #{dialogueLanguage,jdbcType=VARCHAR},
+        #{captionLanguages,jdbcType=VARCHAR},
+        #{codeFormat,jdbcType=VARCHAR},
+        #{rightOwner,jdbcType=VARCHAR},
+        #{authorizationPeriod,jdbcType=TIMESTAMP},
+        #{type,jdbcType=VARCHAR},
+        #{videoTime,jdbcType=DOUBLE},
+        #{score,jdbcType=DOUBLE},
+        #{publicationCountry,jdbcType=VARCHAR},
+        #{publicationCompany,jdbcType=VARCHAR},
+        #{publicationYear,jdbcType=TIMESTAMP},
+        #{videoSize,jdbcType=DOUBLE},
+        #{color,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{savePath,jdbcType=VARCHAR},
+        #{previewPath,jdbcType=VARCHAR},
+        #{playPath,jdbcType=VARCHAR},
+        #{note,jdbcType=VARCHAR},
+        #{insertTime,jdbcType=TIMESTAMP},
+        #{operator,jdbcType=VARCHAR},
+        #{updateTime,jdbcType=TIMESTAMP}
+    </sql>
+
+    <select id="queryPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        <![CDATA[
+	        from APABI_VIDEO_METADATA
+	    ]]>
+    </select>
+
+    <select id="selectdataById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_VIDEO_METADATA
+        where ID = #{id}
+    </select>
+
+    <insert id="addVideoMeta" parameterType="com.apabi.flow.video.model.VideoMeta">
+        insert into APABI_VIDEO_METADATA (<include refid="Base_Column_List"/>)
+        values
+        (<include refid="Base_Value_List"/>)
+    </insert>
+
+    <update id="updateVideoMeta" parameterType="com.apabi.flow.video.model.VideoMeta">
+        UPDATE APABI_VIDEO_METADATA
+        <trim prefix="SET" suffixOverrides=",">
+            <include refid="Base_Value_List1"/>
+        </trim>
+        <where>
+             ID = #{id}
+        </where>
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from APABI_VIDEO_METADATA
+        where ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+</mapper>

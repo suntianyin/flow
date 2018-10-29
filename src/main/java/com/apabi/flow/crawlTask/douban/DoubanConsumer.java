@@ -24,7 +24,7 @@ public class DoubanConsumer implements Runnable {
     private IpPoolUtils ipPoolUtils;
     private CountDownLatch countDownLatch;
 
-    public DoubanConsumer(ArrayBlockingQueue<String> idQueue, DoubanMetaDao doubanMetaDao, IpPoolUtils ipPoolUtils,CountDownLatch countDownLatch) {
+    public DoubanConsumer(ArrayBlockingQueue<String> idQueue, DoubanMetaDao doubanMetaDao, IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
         this.idQueue = idQueue;
         this.doubanMetaDao = doubanMetaDao;
         this.ipPoolUtils = ipPoolUtils;
@@ -39,7 +39,6 @@ public class DoubanConsumer implements Runnable {
         DoubanMeta doubanMeta = null;
         try {
             id = idQueue.take();
-            countDownLatch.countDown();
             String host = ipPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
@@ -49,10 +48,12 @@ public class DoubanConsumer implements Runnable {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = new Date();
                 String time = simpleDateFormat.format(date);
-                logger.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取"+id+"并添加至数据库成功，列表中剩余："+countDownLatch.getCount()+"个数据...");
+                logger.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (InterruptedException e) {
             //e.printStackTrace();
+        } finally {
+            countDownLatch.countDown();
         }
     }
 }

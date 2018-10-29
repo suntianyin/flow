@@ -27,7 +27,7 @@
         </encoder>
     </appender>
 
-    <!-- amazon输出到独立文件的配置 -->
+    <!-- amazonAPI接口输出到独立文件的配置 -->
     <appender name="AMAZON" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <!-- onMatch=ACCEPT,onMismatch=DENY:只有INFO及以上级别的日志才会被添加到日志中 -->
@@ -95,6 +95,23 @@
         </encoder>
     </appender>
 
+    <!-- nlc定时爬虫任务配置 -->
+    <appender name="NLC_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/nlc.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- douban定时爬虫任务执行时间日志配置 -->
     <appender name="DOUBAN_CRAWL_STATUS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -129,7 +146,24 @@
         </encoder>
     </appender>
 
-    <!-- 针对AmazonMetaController配置的日志 -->
+    <!-- nlc定时爬虫任务执行时间日志配置 -->
+    <appender name="NLC_CRAWL_STATUS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/nlc-status.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 针对AmazonMetaController接口配置的日志 -->
     <logger name="com.apabi.flow.douban.controller.AmazonMetaController" level="INFO" additivity="false">
         <!-- 对于AmazonMetaController的STDOUT的日志配置 -->
         <appender-ref ref="STDOUT"/>
@@ -161,6 +195,14 @@
         <appender-ref ref="AMAZON_CRAWL"/>
     </logger>
 
+    <!-- 针对nlc定时爬虫任务配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.nlc.NlcMarcConsumer" level="INFO" additivity="false">
+        <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
+        <appender-ref ref="NLC_CRAWL"/>
+    </logger>
+
     <!-- 针对douban定时爬虫任务执行时间配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.douban.CrawlDoubanService" level="INFO" additivity="false">
         <!-- 对于douban定时爬虫任务的STDOUT的日志配置 -->
@@ -175,6 +217,14 @@
         <appender-ref ref="STDOUT"/>
         <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
         <appender-ref ref="AMAZON_CRAWL_STATUS"/>
+    </logger>
+
+    <!-- 针对nlc定时爬虫任务执行时间配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.nlc.CrawlNlcMarcService" level="INFO" additivity="false">
+        <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
+        <appender-ref ref="NLC_CRAWL_STATUS"/>
     </logger>
 
     <root level="INFO">

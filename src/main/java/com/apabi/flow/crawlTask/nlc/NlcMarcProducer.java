@@ -1,5 +1,6 @@
 package com.apabi.flow.crawlTask.nlc;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -8,11 +9,10 @@ import java.util.concurrent.ArrayBlockingQueue;
  **/
 public class NlcMarcProducer implements Runnable {
     private ArrayBlockingQueue<String> isbnQueue;
-    private String[] isbnList;
-    //    private List[] isbnList;
+    private List<String> isbnList;
     private String threadName;
 
-    public NlcMarcProducer(ArrayBlockingQueue<String> isbnQueue, String threadName, String[] isbnList) {
+    public NlcMarcProducer(ArrayBlockingQueue<String> isbnQueue, String threadName, List<String> isbnList) {
         this.isbnQueue = isbnQueue;
         this.isbnList = isbnList;
         this.threadName = threadName;

@@ -1,77 +1,115 @@
 package com.apabi.flow.nlcmarc.util;
 
+import com.apabi.flow.crawlTask.util.UserAgentUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLException;
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 public class CrawlNlcMarcUtil {
-    private static Logger logger = LoggerFactory.getLogger(CrawlNlcMarcUtil.class);
     private static Random random = new Random();
-
     public static CloseableHttpClient getCloseableHttpClient(String ip, String port) {
         // 设置代理IP、端口、协议
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
+
+        HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
+            @Override
+            public boolean retryRequest(
+                    IOException exception,
+                    int executionCount,
+                    HttpContext context) {
+                if (executionCount >= 2) {
+                    // Do not retry if over max retry count
+                    return false;
+                }
+                if (exception instanceof InterruptedIOException) {
+                    // Timeout
+                    return false;
+                }
+                if (exception instanceof UnknownHostException) {
+                    // Unknown host
+                    return false;
+                }
+                if (exception instanceof ConnectTimeoutException) {
+                    // Connection refused
+                    return false;
+                }
+                if (exception instanceof SSLException) {
+                    // SSL handshake exception
+                    return false;
+                }
+                HttpClientContext clientContext = HttpClientContext.adapt(context);
+                HttpRequest request = clientContext.getRequest();
+                boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
+                if (idempotent) {
+                    // Retry if the request is considered idempotent
+                    return true;
+                }
+                return false;
+            }
+        };
         // 把代理设置到请求配置
         RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(10000).setConnectTimeout(10000).setConnectionRequestTimeout(10000).build();
+        // SocketConfig
+        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(10000).build();
         // 实例化CloseableHttpClient对象
-        CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
-        // CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = HttpClients.custom().setRetryHandler(requestRetryHandler).setDefaultRequestConfig(config).setDefaultSocketConfig(socketConfig).build();
         return client;
     }
 
     // 从国图根据isbn或者isbn13获取marc数据内容
-    public static String crawlNlcMarc(String ISBN, String ip, String port) {
+    public static String crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException {
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         // 访问国图首页
         HttpGet httpGet1 = new HttpGet("http://opac.nlc.cn/F/");
-        httpGet1.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+        httpGet1.setHeader("User-Agent", UserAgentUtils.getUserAgent());
         httpGet1.setHeader("Connection", "keep-alive");
+        httpGet1.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        httpGet1.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+        httpGet1.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+        httpGet1.setHeader("Host", "opac.nlc.cn");
         CloseableHttpResponse response1 = null;
         // 访问国图首页，获取标识码
         try {
             response1 = client.execute(httpGet1);
+            Thread.sleep(600);
         } catch (IOException e) {
-            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上国图主页");
-            e.printStackTrace();
+            httpGet1.setHeader("Connection", "close");
             httpGet1.releaseConnection();
             httpGet1.abort();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         }
         // 防封IP
-        try {
-            Thread.sleep(random.nextInt(2000) + 200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(random.nextInt(500) + 200);
         // 获取response1的实体类
         HttpEntity entity1 = response1.getEntity();
         String html = null;
         try {
             html = EntityUtils.toString(entity1, "GBK");
         } catch (IOException e) {
-            e.printStackTrace();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         } finally {
             EntityUtils.consumeQuietly(entity1);
             // 关闭response1
@@ -93,49 +131,37 @@ public class CrawlNlcMarcUtil {
         HttpGet httpGet2 = new HttpGet(firstURL);
         httpGet2.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
         httpGet2.setHeader("Connection", "keep-alive");
+        httpGet2.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        httpGet2.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+        httpGet2.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+        httpGet2.setHeader("Host", "opac.nlc.cn");
         // 防封IP
-        try {
-            Thread.sleep(random.nextInt(2000) + 350);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(random.nextInt(500) + 350);
         CloseableHttpResponse response2 = null;
         try {
             response2 = client.execute(httpGet2);
+            Thread.sleep(650);
         } catch (IOException e) {
-            logger.error(Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接失败！！！" + firstURL + "访问不到，" + ISBN + "无法进行查询");
-            e.printStackTrace();
+            httpGet2.setHeader("Connection", "close");
             httpGet2.releaseConnection();
             httpGet2.abort();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         }
         HttpEntity entity2 = response2.getEntity();
         String html2 = null;
         try {
             html2 = EntityUtils.toString(entity2, "UTF-8");
         } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         } finally {
             EntityUtils.consumeQuietly(entity2);
-            try {
-                EntityUtils.consume(entity2);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            EntityUtils.consume(entity2);
             // 关闭response2
             try {
                 response2.close();
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         Document document2 = Jsoup.parse(html2);
@@ -145,13 +171,8 @@ public class CrawlNlcMarcUtil {
             // 获取doc_number确定下载哪本书
             doc_number = href.substring(href.indexOf("doc_number=") + 11, href.indexOf("doc_number=") + 20);
         } catch (Exception e) {
-            logger.error(ISBN + "下载出错！");
-            e.printStackTrace();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         }
         String first1 = first;
         String second1 = second;
@@ -161,25 +182,22 @@ public class CrawlNlcMarcUtil {
         HttpGet httpGet3 = new HttpGet(finalURL2);
         httpGet3.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
         httpGet3.setHeader("Connection", "keep-alive");
+        httpGet3.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        httpGet3.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+        httpGet3.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+        httpGet3.setHeader("Host", "opac.nlc.cn");
         // 防封ip
-        try {
-            Thread.sleep(random.nextInt(1500) + 250);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(random.nextInt(500) + 250);
         CloseableHttpResponse response3 = null;
         try {
             response3 = client.execute(httpGet3);
+            Thread.sleep(700);
         } catch (IOException e) {
-            logger.error(Thread.currentThread().getName() + "使用" + ip + ":" + port + "访问不到：" + finalURL2);
-            e.printStackTrace();
+            httpGet3.setHeader("Connection", "close");
             httpGet3.releaseConnection();
             httpGet3.abort();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         }
         HttpEntity entity3 = response3.getEntity();
         String html3 = null;
@@ -187,23 +205,14 @@ public class CrawlNlcMarcUtil {
             html3 = EntityUtils.toString(entity3, "UTF-8");
         } catch (IOException e) {
             EntityUtils.consumeQuietly(entity3);
-            try {
-                EntityUtils.consume(entity3);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            EntityUtils.consume(entity3);
+            client.close();
+            throw new IOException(e);
         } finally {
             // 关闭response3
             try {
                 response3.close();
             } catch (IOException e1) {
-                e1.printStackTrace();
             }
         }
         String href1 = Jsoup.parse(html3).select("p[class='text3'] a").attr("href");
@@ -211,56 +220,45 @@ public class CrawlNlcMarcUtil {
         HttpGet httpGet4 = new HttpGet(href1);
         httpGet4.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
         httpGet4.setHeader("Connection", "keep-alive");
+        httpGet4.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        httpGet4.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+        httpGet4.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+        httpGet4.setHeader("Host", "opac.nlc.cn");
         // 防封ip
-        try {
-            Thread.sleep(random.nextInt(1500) + 400);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(random.nextInt(200) + 400);
         CloseableHttpResponse response4 = null;
         try {
             response4 = client.execute(httpGet4);
+            Thread.sleep(750);
         } catch (IOException e) {
-            logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "访问不到：" + href1 + "，无法对" + ISBN + "进行保存");
-            e.printStackTrace();
+            httpGet4.setHeader("Connection", "close");
             httpGet4.releaseConnection();
             httpGet4.abort();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         }
         HttpEntity entity4 = response4.getEntity();
         String iso = null;
         try {
             iso = EntityUtils.toString(entity4, "UTF-8");
         } catch (IOException e) {
-            e.printStackTrace();
-            try {
-                client.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            client.close();
+            throw new IOException(e);
         } finally {
             EntityUtils.consumeQuietly(entity4);
-            try {
-                EntityUtils.consume(entity4);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            EntityUtils.consume(entity4);
             // 关闭response4
             try {
                 response4.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new IOException(e);
             }
         }
         return iso;
     }
 
-    public static void main(String[] args) {
-        String s = crawlNlcMarc("9787513631525", "106.75.164.15", "3128");
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String s = crawlNlcMarc("9787532752355", "92.247.169.202", "58770");
         System.out.println(s);
     }
 }
