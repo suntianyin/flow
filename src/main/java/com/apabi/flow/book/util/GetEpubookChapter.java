@@ -8,6 +8,7 @@ import com.apabi.flow.book.service.BookShardService;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.MediaType;
@@ -42,6 +43,12 @@ public class GetEpubookChapter {
     private static final Logger log = LoggerFactory.getLogger(GetEpubookChapter.class);
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    /*//章节编号
+    private static int chapterNum = 0;*/
+
+    //目录和章节的对应关系
+    private static Map<String, Integer> cataChapter = new HashMap<>();
 
     //样式和图片文件的生成路径
     private String styleUrl;
@@ -116,7 +123,7 @@ public class GetEpubookChapter {
                             int wordSum = 0;
                             //获取章节内容，body标签中的所有子标签
                             //存储章节目录映射信息
-                            Map<String, Integer> map = new HashMap<>();
+                            //Map<String, Integer> map = new HashMap<>();
                             //按章节存放
                             List<BookChapter> chapterList = new ArrayList<>();
                             //对章节进行分组存放
@@ -126,7 +133,7 @@ public class GetEpubookChapter {
                                 //图书号和章节号拼接id
                                 chapter.setComId(epubookMeta.getMetaid() + i);
                                 chapter.setChapterNum(i);
-                                map.put(contents.get(i).getHref(), i);
+                                cataChapter.put(contents.get(i).getHref(), i);
 
                                 doc = Jsoup.parse(new String(contents.get(i).getData(), "utf-8"));
                                 //替换章节末尾引用文献序号
@@ -183,17 +190,12 @@ public class GetEpubookChapter {
                             }
                             epubookMeta.setContentNum(wordSum);
                             //获取目录信息，并添加章节号和章节字数
-                            List<BookCataRows> catalogList = getCataRowData(book, map);
+                            //List<BookCataRows> catalogList = getCataRowData(book, map);
+                            List<BookCataRows> catalogList = getCataRows(book);
                             if (catalogList != null && catalogList.size() > 0) {
-                                //List<String> cataArr = new ArrayList<>();
-                                String cataArr = "";
-                                JSONObject jsonObject;
-                                for (BookCataRows cataRows : catalogList) {
-                                    jsonObject = JSONObject.fromObject(cataRows);
-                                    //cataArr.add(jsonObject.toString());
-                                    cataArr += jsonObject.toString() + ",";
-                                }
-                                epubookMeta.setStreamCatalog(cataArr);
+                                //目录结构树
+                                JSONArray json = JSONArray.fromObject(catalogList.get(0).getChildren());
+                                epubookMeta.setStreamCatalog(json.toString());
                             } else {
                                 log.warn("图书《" + epubookMeta.getTitle() + "》目录获取有误！");
                                 return null;
@@ -328,6 +330,68 @@ public class GetEpubookChapter {
             }
         }
         return null;
+    }
+
+    //获取层次目录
+    private List<BookCataRows> getCataRows(Book book) {
+        if (book != null) {
+            try {
+                List<BookCataRows> bookCataRowsTree = new ArrayList<>();
+                List<TOCReference> tocs = book.getTableOfContents().getTocReferences();
+                int startNum = 0;
+                if (tocs != null && tocs.size() > 0) {
+                    startNum = cataChapter.get(tocs.get(0).getResource().getHref());
+                }
+                BookCataRows root = new BookCataRows();
+                if (startNum > 0) {
+                    for (int i = 0; i < startNum; i++) {
+                        BookCataRows cata = new BookCataRows();
+                        cata.setChapterNum(i);
+                        if (i == 0) {
+                            cata.setChapterName("封面");
+                        } else {
+                            cata.setChapterName("序言" + i);
+                        }
+                        root.getChildren().add(cata);
+                    }
+                }
+                for (TOCReference toc : tocs) {
+                    createCataTree(toc, root);
+                }
+                bookCataRowsTree.add(root);
+                cataChapter.clear();
+                return bookCataRowsTree;
+            } catch (Exception e) {
+                log.warn("图书" + book.getTitle() + e.getMessage());
+                return null;
+            }
+        }
+        return null;
+    }
+
+    //构建目录树
+    private void createCataTree(TOCReference toc, BookCataRows parentCata) {
+        if (toc != null) {
+            List<TOCReference> childTocs = toc.getChildren();
+            if (childTocs != null && childTocs.size() > 0) {
+                BookCataRows cataRows = new BookCataRows();
+                cataRows.setChapterName(toc.getTitle());
+                String url = toc.getResource().getHref();
+                cataRows.setUrl(url);
+                cataRows.setChapterNum(cataChapter.get(url));
+                for (TOCReference child : childTocs) {
+                    createCataTree(child, cataRows);
+                }
+                parentCata.getChildren().add(cataRows);
+            } else {
+                BookCataRows bookCataRows = new BookCataRows();
+                bookCataRows.setChapterName(toc.getTitle());
+                String url = toc.getResource().getHref();
+                bookCataRows.setUrl(url);
+                bookCataRows.setChapterNum(cataChapter.get(url));
+                parentCata.getChildren().add(bookCataRows);
+            }
+        }
     }
 
     //获取css文件，并保存

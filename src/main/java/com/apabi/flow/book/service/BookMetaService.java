@@ -29,6 +29,12 @@ public interface BookMetaService {
     //保存epub图书元数据
     int saveEpubookMeta(EpubookMeta epubookMeta);
 
+    //更新图书元数据
+    int updateBookMetaById(BookMeta bookMeta);
+
+    //更新图书目录
+    int updateCataTree(String metaId, String cataTree);
+
     //删除图书元数据
     int deleteBookMeta(String metaid);
 
@@ -40,6 +46,9 @@ public interface BookMetaService {
 
     //获取目录信息
     List<BookCataRows> getCataRowsById(String metaid);
+
+    //获取目录树
+    String getCataTreeById(String metaid);
 
     //解析xml数据，并保存
     int saveXmlBookMeta(String path) throws Exception;

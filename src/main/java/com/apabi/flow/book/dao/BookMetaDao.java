@@ -49,6 +49,9 @@ public interface BookMetaDao {
     int updateEpubookMeta(EpubookMeta epubookMeta);
 
     //更新图书元数据
+    int updateBookMetaById(BookMeta bookMeta);
+
+    //更新图书元数据
     int updateBookMetaVo(BookMetaVo bookMetaVo);
 
     //保存图书元数据

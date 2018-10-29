@@ -11,6 +11,7 @@ import com.apabi.flow.book.service.BookShardService;
 import com.apabi.flow.book.service.MongoBookService;
 import com.apabi.flow.book.util.*;
 import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
@@ -158,6 +159,80 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
+    //更新图书元数据
+    @Override
+    public int updateBookMetaById(BookMeta bookMeta) {
+        if (bookMeta != null) {
+            bookMetaDao.updateBookMetaById(bookMeta);
+            return 1;
+        }
+        return 0;
+    }
+
+    //更新图书目录
+    @Override
+    public int updateCataTree(String metaId, String cataTree) {
+        if (!StringUtils.isEmpty(metaId)) {
+            if (!StringUtils.isEmpty(cataTree)) {
+                JSONArray jsonArray = JSONArray.fromObject(cataTree);
+                BookCataRows root = new BookCataRows();
+                Iterator it = jsonArray.iterator();
+                while (it.hasNext()) {
+                    JSONObject jsonObject = (JSONObject) it.next();
+                    createCataRows(jsonObject, root);
+                }
+                JSONArray json = JSONArray.fromObject(root.getChildren());
+                BookMeta bookMeta = new BookMeta();
+                bookMeta.setMetaId(metaId);
+                bookMeta.setStreamCatalog(json.toString());
+                bookMeta.setUpdateTime(new Date());
+                int res = bookMetaDao.updateBookMetaById(bookMeta);
+                if (res > 0) {
+                    //更新tmp表
+                    String sql = "UPDATE APABI_BOOK_METADATA_TEMP" +
+                            " SET STREAMCATALOG = ?, UPDATETIME = ?" +
+                            "WHERE METAID = ?";
+                    Object[] objects = new Object[]{
+                            bookMeta.getStreamCatalog(), bookMeta.getUpdateTime(),
+                            bookMeta.getMetaId()
+                    };
+                    int ress = jdbcTemplate.update(sql, objects);
+                    if (ress > 0) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    //构建目录对象list
+    private void createCataRows(JSONObject jsonObject, BookCataRows parentCata) {
+        if (jsonObject != null) {
+            List<JSONObject> childE = jsonObject.getJSONArray("children");
+            if (childE != null && childE.size() > 0) {
+                BookCataRows cataRows = new BookCataRows();
+                cataRows.setChapterName(jsonObject.getString("name"));
+                cataRows.setChapterNum(jsonObject.getInt("nodeId"));
+                cataRows.setUrl(jsonObject.getString("src"));
+                cataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
+                cataRows.setWordSum(jsonObject.getInt("wordSum"));
+                for (JSONObject child : childE) {
+                    createCataRows(child, cataRows);
+                }
+                parentCata.getChildren().add(cataRows);
+            } else {
+                BookCataRows bookCataRows = new BookCataRows();
+                bookCataRows.setChapterName(jsonObject.getString("name"));
+                bookCataRows.setChapterNum(jsonObject.getInt("nodeId"));
+                bookCataRows.setUrl(jsonObject.getString("src"));
+                bookCataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
+                bookCataRows.setWordSum(jsonObject.getInt("wordSum"));
+                parentCata.getChildren().add(bookCataRows);
+            }
+        }
+    }
+
     //删除图书元数据
     @Override
     public int deleteBookMeta(String metaid) {
@@ -253,6 +328,73 @@ public class BookMetaServiceImpl implements BookMetaService {
                 bookCataRows.setUrl(jsonObject.getString("url"));
                 bookCataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
                 bookCataRows.setWordSum(jsonObject.getInt("wordSum"));
+                parentCata.getChildren().add(bookCataRows);
+            }
+        }
+    }
+
+    //获取目录树
+    @Override
+    public String getCataTreeById(String metaid) {
+        if (!StringUtils.isEmpty(metaid)) {
+            String cataRow = bookMetaDao.findCataRowsById(metaid);
+            if (!StringUtils.isEmpty(cataRow)) {
+                String tmp = String.valueOf(cataRow.charAt(0));
+                if (tmp.equals("[")) {
+                    //获取层次目录
+                    JSONArray jsonArray = JSONArray.fromObject(cataRow);
+                    ZtreeNode root = new ZtreeNode();
+                    Iterator it = jsonArray.iterator();
+                    while (it.hasNext()) {
+                        JSONObject jsonObject = (JSONObject) it.next();
+                        createZTree(jsonObject, root);
+                    }
+                    JSONArray json = JSONArray.fromObject(root.getChildren());
+                    return json.toString();
+                } else {
+                    //获取非层次目录
+                    cataRow = "[" + cataRow + "]";
+                    JSONArray jsonArray = JSONArray.fromObject(cataRow);
+                    ZtreeNode root = new ZtreeNode();
+                    Iterator it = jsonArray.iterator();
+                    while (it.hasNext()) {
+                        JSONObject jsonObject = (JSONObject) it.next();
+                        createZTree(jsonObject, root);
+                    }
+                    JSONArray json = JSONArray.fromObject(root.getChildren());
+                    return json.toString();
+                }
+            }
+        }
+        return null;
+    }
+
+    //构建目录对象list
+    private void createZTree(JSONObject jsonObject, ZtreeNode parentCata) {
+        if (jsonObject != null) {
+            boolean flag = jsonObject.has("children");
+            List<JSONObject> childE = null;
+            if (flag) {
+                childE = jsonObject.getJSONArray("children");
+            }
+            if (childE != null && childE.size() > 0) {
+                ZtreeNode cataRows = new ZtreeNode();
+                cataRows.setName(jsonObject.getString("chapterName"));
+                cataRows.setNodeId(jsonObject.getInt("chapterNum"));
+                cataRows.setSrc(jsonObject.getString("url"));
+                cataRows.setWordSum(jsonObject.getInt("wordSum"));
+                cataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
+                for (JSONObject child : childE) {
+                    createZTree(child, cataRows);
+                }
+                parentCata.getChildren().add(cataRows);
+            } else {
+                ZtreeNode bookCataRows = new ZtreeNode();
+                bookCataRows.setName(jsonObject.getString("chapterName"));
+                bookCataRows.setNodeId(jsonObject.getInt("chapterNum"));
+                bookCataRows.setSrc(jsonObject.getString("url"));
+                bookCataRows.setWordSum(jsonObject.getInt("wordSum"));
+                bookCataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
                 parentCata.getChildren().add(bookCataRows);
             }
         }

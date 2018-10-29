@@ -6,6 +6,8 @@
     <title>编辑图书内容</title>
     <script charset="utf-8" src="${ctx}/editor/kindeditor-all.js"></script>
     <script charset="utf-8" src="${ctx}/editor/lang/zh-CN.js"></script>
+    <script charset="utf-8" src="${ctx}/js/zTree3/js/jquery.ztree.all.js"></script>
+    <link rel="stylesheet" href="${ctx}/js/zTree3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <script>
         KindEditor.plugin('save', function (K) {
             var editor = this, name = 'save';
@@ -34,8 +36,7 @@
                     }
                 });
             });
-        })
-        ;
+        });
         KindEditor.lang({
             save: '保存'
         });
@@ -51,6 +52,29 @@
                 cssData: 'body {font-size:16px;}',
                 items: ["save", "source"]
             });
+        });
+
+        //目录树
+        var zTreeObj;
+
+        function zTreeOnClick(event, treeId, treeNode) {
+            getChapter('${metaId}', treeNode.nodeId);
+        };
+        // zTree 的参数配置
+        var setting = {
+            edit: {
+                enable: true,
+                showRenameBtn: true,
+                showRemoveBtn: false
+            },
+            callback: {
+                onClick: zTreeOnClick
+            }
+        };
+        // zTree 的数据属性
+        var zNodes = eval('(' + '${cataRows}' + ')');
+        $(document).ready(function () {
+            zTreeObj = $.fn.zTree.init($("#treeCata"), setting, zNodes);
         });
 
         //获取章节内容
@@ -84,6 +108,32 @@
         function editCatalog() {
             $('.cata-input').toggle();
             $('.cata-a').toggle();
+        }
+
+        //更新目录
+        function updateCata() {
+            var url = RootPath() + "/book/cataTreeUpdate";
+            var metaId = '${bookMetaVo.metaId}';
+            var catalogArr = JSON.stringify(zTreeObj.getNodes());
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "text",
+                data: {catalogArr: catalogArr, metaId: metaId},
+                success: function (data) {
+                    if (data == "success") {
+                        tipDialog("保存成功！", 3, 1);
+                        top.frames[tabiframeId()].location.reload();
+                        closeDialog();
+                    }else{
+                        tipDialog("更新失败，联系管理员！", 3, -1);
+                    }
+                },
+                error: function (data) {
+                    Loading(false);
+                    alertDialog("更新失败，联系管理员！", -1);
+                }
+            });
         }
 
         //保存目录
@@ -153,20 +203,10 @@
                     <span style="height:3%;background: #c9c9c9;display: block;padding: 15px;text-align: center;font-size: 20;">目录</span>
                     <span style="height:2%;border-top:1px solid #2d2625;display: block;padding: 15px;text-align: center;">
                         <a style="cursor:pointer;font-size: 15px;"
-                           onclick="editCatalog()">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a style="cursor:pointer;font-size: 15px;"
-                           onclick="updateCatalog()">保存</a>
+                           onclick="updateCata()">保存</a>
                     </span>
                     <div id="catalog" style="overflow:auto;height:85%;border-top: #2d2625 solid 1px;">
-                        <#list cataRows as list>
-                            <br>
-                            <a class="cata-a"
-                               onclick="getChapter('${bookMetaVo.metaId}', '${list.chapterNum}')">${list.chapterName }</a>
-                            <input name="chapterName" value="${list.chapterName }" type="text" size="30"
-                                   class="cata-input" hidden>
-                            <input name="chapterNum" value="${list.chapterNum }" type="text" hidden>
-                            </br>
-                        </#list>
+                        <ul id="treeCata" class="ztree"></ul>
                     </div>
                 </div>
                 <div style=" float:left;width: 78%;height: 90%;border: #2d2625 solid 1px;">

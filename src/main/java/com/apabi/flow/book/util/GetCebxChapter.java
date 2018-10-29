@@ -76,128 +76,6 @@ public class GetCebxChapter {
     JdbcTemplate jdbcTemplate;
 
     //获取章节内容
-    /*public EpubookMeta insertCebx(String path, EpubookMeta epubookMeta, String fileName) throws IOException {
-        if (StringUtils.isNotBlank(path)) {
-            //解析cebx文件
-            boolean res = getHtmlCss(path);
-            if (res) {
-                //解析html文件
-                File dir = new File(config.getTargetCebxDir());
-                if (!dir.exists()) {
-                    return null;
-                }
-                long start = System.currentTimeMillis();
-                String[] fileList = dir.list();
-                int contentSum = 0;
-                if (fileList != null && fileList.length > 0) {
-                    //List<String> cataRows = new ArrayList<>();
-                    StringBuffer cataRows = new StringBuffer();
-                    String cata;
-                    String[] tmp;
-                    String content;
-                    int wordSum = 0;
-                    Document doc;
-                    //按章节存放
-                    List<BookChapter> chapterList = new ArrayList<>();
-                    //对章节进行分组存放
-                    List<BookShard> chapterShardList = new ArrayList<>();
-                    for (String file : fileList) {
-                        //只获取html文件
-                        if (file.toLowerCase().contains(FILE_HTML)) {
-                            //获取章节内容
-                            content = readToString(config.getTargetCebxDir() + File.separator + file);
-                            if (StringUtils.isNotBlank(content)) {
-                                wordSum = content.replaceAll("\\u3000|\\s*", "").length();
-                            }
-                            //获取目录和章节号
-                            file = file.replace(FILE_HTML, "");
-                            tmp = file.split(BookConstant.FILE_NAME_LABEL);
-                            //拼接目录
-                            if (tmp != null && tmp.length > 1) {
-                                int chapterNum = Integer.parseInt(tmp[1]);
-                                cata = "{\"chapterName\":\"" + tmp[0] + "\",\"chapterNum\":" + chapterNum + "," +
-                                        "\"ebookPageNum\":0,\"url\":\"\",\"wordSum\":" + wordSum + "},";
-                                cataRows.append(cata);
-                                //生成章节
-                                BookChapter bookChapter = new BookChapter();
-                                bookChapter.setComId(epubookMeta.getMetaid() + chapterNum);
-                                bookChapter.setContent(content);
-                                bookChapter.setWordSum(wordSum);
-                                bookChapter.setChapterNum(chapterNum);
-                                bookChapter.setCreateTime(new Date());
-                                bookChapter.setUpdateTime(new Date());
-                                contentSum += wordSum;
-                                //拆分章节
-                                doc = Jsoup.parse(content, BookConstant.CODE_UTF8);
-                                Elements children = doc.body().children();
-                                List<String> tags = new ArrayList<>();
-                                String contentP = "";
-                                for (int j = 0; j < children.size(); j++) {
-                                    contentP += children.get(j).outerHtml();
-                                    boolean flag = (j != 0 && j % BookConstant.shardSize == 0) || (j == children.size() - 1);
-                                    if (flag) {
-                                        tags.add(contentP);
-                                        contentP = "";
-                                    }
-                                }
-                                //添加分组数
-                                bookChapter.setShardSum(tags.size());
-                                chapterList.add(bookChapter);
-                                //每组分片都新建一个shard
-                                for (int k = 0; k < tags.size(); k++) {
-                                    BookShard chapterShard = new BookShard();
-                                    chapterShard.setComId(epubookMeta.getMetaid() + chapterNum + "S" + k);
-                                    chapterShard.setChapterNum(chapterNum);
-                                    chapterShard.setIndex(k);
-                                    chapterShard.setCreateTime(new Date());
-                                    chapterShard.setUpdateTime(new Date());
-                                    Document shards = Jsoup.parse(tags.get(k), "utf-8");
-                                    int wordS = shards.text().replaceAll("\\u3000|\\s*", "").length();
-                                    chapterShard.setWordSum(wordS);
-                                    String contentS = tags.get(k);
-                                    chapterShard.setContent(contentS);
-                                    chapterShardList.add(chapterShard);
-                                }
-                            }
-                        }
-                    }
-                    long end = System.currentTimeMillis();
-                    log.info("图书章节及分组拆分耗时：" + (end - start) + "毫秒");
-                    //获取样式文件
-                    boolean res1 = saveCss(epubookMeta);
-                    if (res1) {
-                        //样式连接
-                        String styleUrl = "<link href=\"" +
-                                "" + BookConstant.BASE_URL + "/" + cssUrl + "\"" +
-                                " rel=\"stylesheet\" type=\"text/css\">";
-                        epubookMeta.setStyleUrl(styleUrl);
-                        //总字数
-                        epubookMeta.setContentNum(contentSum);
-                        //章节数
-                        epubookMeta.setChapterNum(chapterList.size());
-                        //目录
-                        epubookMeta.setStreamCatalog(cataRows.toString());
-                        epubookMeta.setHasflow(1);
-                        epubookMeta.setIsoptimize(1);
-                        epubookMeta.setUpdatetime(new Date());
-                        int rs = saveBook(epubookMeta, chapterList, chapterShardList);
-                        if (rs == 1) {
-                            //保存图书和文件的对应关系
-                            saveFile(epubookMeta.getMetaid(), fileName);
-                            //更新metadata_tmp表
-                            updateBookMetaTmp(epubookMeta);
-                            //清空cebxHtml文件夹
-                            deleteFiles(fileList);
-                            return epubookMeta;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }*/
-
-    //获取章节内容
     public EpubookMeta insertCebx(String path, EpubookMeta epubookMeta, String fileName) throws Exception {
         if (StringUtils.isNotBlank(path)) {
             //解析cebx文件
@@ -219,9 +97,6 @@ public class GetCebxChapter {
                 String[] fileList = dir.list();
                 int contentSum = 0;
                 if (fileList != null && fileList.length > 0) {
-                    /*StringBuffer cataRows = new StringBuffer();*/
-                    //String cata;
-                    String[] tmp;
                     String content;
                     int wordSum = 0;
                     Document doc;

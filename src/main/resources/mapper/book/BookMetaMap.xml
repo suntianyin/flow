@@ -206,6 +206,287 @@
         #{hasPublish,jdbcType=DECIMAL},
         #{isPublicCopyRight,jdbcType=DECIMAL}
     </sql>
+    <sql id="Base_Set_List">
+        <if test="metaId != null">
+            METAID = #{metaId},
+        </if>
+        <if test="idType != null">
+            IDTYPE = #{idType},
+        </if>
+        <if test="saleStatus != null">
+            SALESTATUS = #{saleStatus},
+        </if>
+        <if test="language != null">
+            LANGUAGE = #{language},
+        </if>
+        <if test="title != null">
+            TITLE = #{title},
+        </if>
+        <if test="subTitle != null">
+            SUBTITLE = #{subTitle},
+        </if>
+        <if test="creator != null">
+            CREATOR = #{creator},
+        </if>
+        <if test="authorIntro != null">
+            AUTHORINTRO = #{authorIntro},
+        </if>
+        <if test="creatorWord != null">
+            CREATORWORD = #{creatorWord},
+        </if>
+        <if test="creatorId != null">
+            CREATORID = #{creatorId},
+        </if>
+        <if test="contributor != null">
+            CONTRIBUTOR = #{contributor},
+        </if>
+        <if test="contributorWord != null">
+            CONTRIBUTORWORD = #{contributorWord},
+        </if>
+        <if test="contributorId != null">
+            CONTRIBUTORID = #{contributorId},
+        </if>
+        <if test="translator != null">
+            TRANSLATOR = #{translator},
+        </if>
+        <if test="translatorId != null">
+            TRANSLATORID = #{translatorId},
+        </if>
+        <if test="originTitle != null">
+            ORIGINTITLE = #{originTitle},
+        </if>
+        <if test="alternativeTitle != null">
+            ALTERNATIVETITLE = #{alternativeTitle},
+        </if>
+        <if test="editionOrder != null">
+            EDITIONORDER = #{editionOrder},
+        </if>
+        <if test="editionNote != null">
+            EDITIONNOTE = #{editionNote},
+        </if>
+        <if test="place != null">
+            PLACE = #{place},
+        </if>
+        <if test="publisher != null">
+            PUBLISHER = #{publisher},
+        </if>
+        <if test="publisherId != null">
+            PUBLISHERID = #{publisherId},
+        </if>
+        <if test="issuedDate != null">
+            ISSUEDDATE = #{issuedDate},
+        </if>
+        <if test="endIssuedDate != null">
+            ENDISSUEDDATE = #{endIssuedDate},
+        </if>
+        <if test="issuedDateDesc != null">
+            ISSUEDDATEDESC = #{issuedDateDesc},
+        </if>
+        <if test="abstract_ != null">
+            ABSTRACT_ = #{abstract_},
+        </if>
+        <if test="subject != null">
+            SUBJECT = #{subject},
+        </if>
+        <if test="preface != null">
+            PREFACE = #{preface},
+        </if>
+        <if test="reader != null">
+            READER = #{reader},
+        </if>
+        <if test="classCode != null">
+            CLASSCODE = #{classCode},
+        </if>
+        <if test="apabiClass != null">
+            APABICLASS = #{apabiClass},
+        </if>
+        <if test="type != null">
+            TYPE = #{type},
+        </if>
+        <if test="isbn != null">
+            ISBN = #{isbn},
+        </if>
+        <if test="isbn10 != null">
+            ISBN10 = #{isbn10},
+        </if>
+        <if test="isbn13 != null">
+            ISBN13 = #{isbn13},
+        </if>
+        <if test="paperPrice != null">
+            PAPERPRICE = #{paperPrice},
+        </if>
+        <if test="ebookPrice != null">
+            EBOOKPRICE = #{ebookPrice},
+        </if>
+        <if test="foreignPrice != null">
+            FOREIGNPRICE = #{foreignPrice},
+        </if>
+        <if test="foreignPriceType != null">
+            FOREIGNPRICETYPE = #{foreignPriceType},
+        </if>
+        <if test="paperPriceDesc != null">
+            PAPERPRICEDESC = #{paperPriceDesc},
+        </if>
+        <if test="binding != null">
+            BINDING = #{binding},
+        </if>
+        <if test="illustration != null">
+            ILLUSTRATION = #{illustration},
+        </if>
+        <if test="pressOrder != null">
+            PRESSORDER = #{pressOrder},
+        </if>
+        <if test="editor != null">
+            EDITOR = #{editor},
+        </if>
+        <if test="relation != null">
+            RELATION = #{relation},
+        </if>
+        <if test="relationId != null">
+            RELATIONID = #{relationId},
+        </if>
+        <if test="volume != null">
+            VOLUME = #{volume},
+        </if>
+        <if test="isSeries != null">
+            ISSERIES = #{isSeries},
+        </if>
+        <if test="volumesCount != null">
+            VOLUMESCOUNT = #{volumesCount},
+        </if>
+        <if test="isAllublished != null">
+            ISALLUBLISHED = #{isAllublished},
+        </if>
+        <if test="notes != null">
+            NOTES = #{notes},
+        </if>
+        <if test="podPrice != null">
+            PODPRICE = #{podPrice},
+        </if>
+        <if test="podPriceType != null">
+            PODPRICETYPE = #{podPriceType},
+        </if>
+        <if test="podPricePageUnit != null">
+            PODPRICEPAGEUNIT = #{podPricePageUnit},
+        </if>
+        <if test="drId != null">
+            DRID = #{drId},
+        </if>
+        <if test="doubanId != null">
+            DOUBANID = #{doubanId},
+        </if>
+        <if test="amazonId != null">
+            AMAZONID = #{amazonId},
+        </if>
+        <if test="calisId != null">
+            CALISID = #{calisId},
+        </if>
+        <if test="nlibraryId != null">
+            NLIBRARYID = #{nlibraryId},
+        </if>
+        <if test="dataSource != null">
+            DATASOURCE = #{dataSource},
+        </if>
+        <if test="qualityRating != null">
+            QUALITYRATING = #{qualityRating},
+        </if>
+        <if test="qrType != null">
+            QRTYPE = #{qrType},
+        </if>
+        <if test="cebxObjId != null">
+            CEBXOBJID = #{cebxObjId},
+        </if>
+        <if test="cebxFileSize != null">
+            CEBXFILESIZE = #{cebxFileSize},
+        </if>
+        <if test="hasCebx != null">
+            HASCEBX = #{hasCebx},
+        </if>
+        <if test="cebxPage != null">
+            CEBXPAGE = #{cebxPage},
+        </if>
+        <if test="complexOid != null">
+            COMPLEXOID = #{complexOid},
+        </if>
+        <if test="reditor != null">
+            REDITOR = #{reditor},
+        </if>
+        <if test="departmentId != null">
+            DEPARTMENTID = #{departmentId},
+        </if>
+        <if test="coverUrl != null">
+            COVERURL = #{coverUrl},
+        </if>
+        <if test="imgHeigth != null">
+            IMGHEIGTH = #{imgHeigth},
+        </if>
+        <if test="imgWidth != null">
+            IMGWIDTH = #{imgWidth},
+        </if>
+        <if test="covObjId != null">
+            COVOBJID = #{covObjId},
+        </if>
+        <if test="thumImgUrl != null">
+            THUMIMGURL = #{thumImgUrl},
+        </if>
+        <if test="thumImgSize != null">
+            THUMIMGSIZE = #{thumImgSize},
+        </if>
+        <if test="mediumCover != null">
+            MEDIUMCOVER = #{mediumCover},
+        </if>
+        <if test="hasFlow != null">
+            HASFLOW = #{hasFlow},
+        </if>
+        <if test="isOptimize != null">
+            ISOPTIMIZE = #{isOptimize},
+        </if>
+        <if test="donor != null">
+            DONOR = #{donor},
+        </if>
+        <if test="libraryId != null">
+            LIBRARYID = #{libraryId},
+        </if>
+        <if test="bookId != null">
+            BOOKID = #{bookId},
+        </if>
+        <if test="styleClass != null">
+            STYLECLASS = #{styleClass},
+        </if>
+        <if test="styleUrl != null">
+            STYLEURL = #{styleUrl},
+        </if>
+        <if test="chapterNum != null">
+            CHAPTERNUM = #{chapterNum},
+        </if>
+        <if test="bookPages != null">
+            BOOKPAGES = #{bookPages},
+        </if>
+        <if test="tags != null">
+            TAGS = #{tags},
+        </if>
+        <if test="createTime != null">
+            CREATETIME = #{createTime},
+        </if>
+        <if test="updateTime != null">
+            UPDATETIME = #{updateTime},
+        </if>
+        <if test="contentNum != null">
+            CONTENTNUM = #{contentNum},
+        </if>
+        <if test="foamatCatalog != null">
+            FOAMATCATALOG = #{foamatCatalog},
+        </if>
+        <if test="streamCatalog != null">
+            STREAMCATALOG = #{streamCatalog},
+        </if>
+        <if test="hasPublish != null">
+            HASPUBLISH = #{hasPublish},
+        </if>
+        <if test="isPublicCopyRight != null">
+            ISPUBLICCOPYRIGHT = #{isPublicCopyRight},
+        </if>
+    </sql>
     <select id="findBookMetaById" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
@@ -217,26 +498,32 @@
         values
         (<include refid="Base_Value_List"/>)
     </insert>
-
     <select id="findCataRowsById" resultType="java.lang.String" parameterType="java.lang.String">
         select STREAMCATALOG
         from APABI_BOOK_METADATA
         where METAID = #{metaId}
     </select>
-
     <select id="listBookMetaByIsbn" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA
         where ISBN = #{isbn}
     </select>
-
     <select id="listBookMetaByIsbn13" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA
         where ISBN13 = #{isbn13}
     </select>
+    <update id="updateBookMetaById" parameterType="com.apabi.flow.book.model.BookMeta">
+        UPDATE APABI_BOOK_METADATA
+        <trim prefix="SET" suffixOverrides=",">
+            <include refid="Base_Set_List"/>
+        </trim>
+        <where>
+            METAID = #{metaId}
+        </where>
+    </update>
 
     <resultMap id="BaseResultMap1" type="com.apabi.flow.book.model.EpubookMeta">
         <id column="METAID" property="metaid" jdbcType="VARCHAR"/>

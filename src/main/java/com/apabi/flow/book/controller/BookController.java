@@ -7,6 +7,7 @@ import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.ReadBook;
 import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
+import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -511,7 +512,7 @@ public class BookController {
     }
 
     //编辑图书内容
-    @GetMapping("/bookChapterEdit")
+    /*@GetMapping("/bookChapterEdit")
     public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
         long start = System.currentTimeMillis();
         if (!StringUtils.isEmpty(metaid)) {
@@ -557,11 +558,49 @@ public class BookController {
             model.addAttribute("bookMetaVo", bookMetaVo);
             model.addAttribute("cataRows", cataRowsList);
             model.addAttribute("bookChapter", bookChapter);
+            model.addAttribute("metaId", metaid);
+        }
+        long end = System.currentTimeMillis();
+        log.info("获取图书" + metaid + "编辑页面耗时：" + (end - start) + "毫秒");
+        return "book/bookChapterEdit";
+    }*/
+
+    //编辑图书内容
+    @GetMapping("/bookChapterEdit")
+    public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
+        long start = System.currentTimeMillis();
+        if (!StringUtils.isEmpty(metaid)) {
+            String cataRows = bookMetaService.getCataTreeById(metaid);
+            BookMetaVo bookMetaVo = bookMetaService.selectBookMetaById(metaid);
+            BookChapter bookChapter = bookChapterService.selectChapterById(metaid, 0);
+            model.addAttribute("bookMetaVo", bookMetaVo);
+            model.addAttribute("cataRows", cataRows);
+            model.addAttribute("bookChapter", bookChapter);
+            model.addAttribute("metaId", metaid);
         }
         long end = System.currentTimeMillis();
         log.info("获取图书" + metaid + "编辑页面耗时：" + (end - start) + "毫秒");
         return "book/bookChapterEdit";
     }
+
+    //更新目录内容
+    @RequestMapping(value = "/cataTreeUpdate", method = RequestMethod.POST)
+    @ResponseBody
+    public String cataTreeUpdate(String catalogArr, String metaId) {
+        if (!StringUtils.isEmpty(metaId)) {
+            if (!StringUtils.isEmpty(catalogArr)) {
+                long start = System.currentTimeMillis();
+                int res = bookMetaService.updateCataTree(metaId, catalogArr);
+                if (res > 0) {
+                    long end = System.currentTimeMillis();
+                    log.info("更新图书：" + metaId + "目录，耗时：" + (end - start) + "毫秒");
+                    return "success";
+                }
+            }
+        }
+        return "error";
+    }
+
 
     //保存图书内容
     @RequestMapping(value = "/bookChapterSave", method = RequestMethod.POST)
