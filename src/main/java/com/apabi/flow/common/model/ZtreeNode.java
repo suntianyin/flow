@@ -22,7 +22,7 @@ public class ZtreeNode {
 
     private int ebookPageNum;
 
-    private boolean open;
+    private boolean open = true;
 
     private List<ZtreeNode> children = new ArrayList<>();
 
