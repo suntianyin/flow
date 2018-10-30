@@ -7,6 +7,7 @@ import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.ReadBook;
 import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
+import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -163,67 +164,6 @@ public class BookController {
         }
         return null;
     }
-
-    //分页查询，获取所有图书meta数据
-    /*@RequestMapping(value = "/bookMeta")
-    public String bookMeta(HttpServletRequest request, Model model) {
-        try {
-            long start = System.currentTimeMillis();
-            PageRequest pageRequest = new PageRequest();
-            PageRequestFactory.bindPageRequest(pageRequest, request);
-            Map<String, Object> params = (Map<String, Object>) pageRequest.getFilters();
-            String metaid = "";
-            if (params.get("metaid") != null) {
-                metaid = params.get("metaid").toString();
-            }
-            String title = "";
-            if (params.get("title") != null) {
-                title = params.get("title").toString();
-            }
-            String creator = "";
-            if (params.get("creator") != null) {
-                creator = params.get("creator").toString();
-            }
-            String publisher = "";
-            if (params.get("publisher") != null) {
-                publisher = params.get("publisher").toString();
-            }
-            String isbn = "";
-            if (params.get("isbn") != null) {
-                isbn = params.get("isbn").toString();
-            }
-            String isbnVal = "";
-            if (params.get("isbnVal") != null) {
-                isbnVal = params.get("isbnVal").toString();
-            }
-            //List<BookMetaVo> list = new ArrayList<>();
-            //Page<BookMetaVo> page = new PageImpl<>(list);
-            Page<BookMetaVo> page = null;
-            if (params.size() > 0) {
-                page = bookMetaService.queryPage(params, pageRequest.getPageNumber(), DEFAULT_PAGESIZE);
-            }
-            if (page == null) {
-                model.addAttribute("bookMetaList", null);
-                model.addAttribute("page", null);
-            } else {
-                model.addAttribute("bookMetaList", page.getContent());
-                model.addAttribute("page", page);
-            }
-
-            model.addAttribute("metaid", metaid);
-            model.addAttribute("title", title);
-            model.addAttribute("creator", creator);
-            model.addAttribute("publisher", publisher);
-            model.addAttribute("isbn", isbn);
-            model.addAttribute("isbnVal", isbnVal);
-            long end = System.currentTimeMillis();
-            log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");
-            return "book/bookMeta";
-        } catch (Exception e) {
-            log.warn("Exception {}" + e);
-        }
-        return null;
-    }*/
 
     //分页查询，获取所有图书meta数据
     @RequestMapping(value = "/bookMeta")
@@ -572,7 +512,7 @@ public class BookController {
     }
 
     //编辑图书内容
-    @GetMapping("/bookChapterEdit")
+    /*@GetMapping("/bookChapterEdit")
     public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
         long start = System.currentTimeMillis();
         if (!StringUtils.isEmpty(metaid)) {
@@ -618,11 +558,49 @@ public class BookController {
             model.addAttribute("bookMetaVo", bookMetaVo);
             model.addAttribute("cataRows", cataRowsList);
             model.addAttribute("bookChapter", bookChapter);
+            model.addAttribute("metaId", metaid);
+        }
+        long end = System.currentTimeMillis();
+        log.info("获取图书" + metaid + "编辑页面耗时：" + (end - start) + "毫秒");
+        return "book/bookChapterEdit";
+    }*/
+
+    //编辑图书内容
+    @GetMapping("/bookChapterEdit")
+    public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
+        long start = System.currentTimeMillis();
+        if (!StringUtils.isEmpty(metaid)) {
+            String cataRows = bookMetaService.getCataTreeById(metaid);
+            BookMetaVo bookMetaVo = bookMetaService.selectBookMetaById(metaid);
+            BookChapter bookChapter = bookChapterService.selectChapterById(metaid, 0);
+            model.addAttribute("bookMetaVo", bookMetaVo);
+            model.addAttribute("cataRows", cataRows);
+            model.addAttribute("bookChapter", bookChapter);
+            model.addAttribute("metaId", metaid);
         }
         long end = System.currentTimeMillis();
         log.info("获取图书" + metaid + "编辑页面耗时：" + (end - start) + "毫秒");
         return "book/bookChapterEdit";
     }
+
+    //更新目录内容
+    @RequestMapping(value = "/cataTreeUpdate", method = RequestMethod.POST)
+    @ResponseBody
+    public String cataTreeUpdate(String catalogArr, String metaId) {
+        if (!StringUtils.isEmpty(metaId)) {
+            if (!StringUtils.isEmpty(catalogArr)) {
+                long start = System.currentTimeMillis();
+                int res = bookMetaService.updateCataTree(metaId, catalogArr);
+                if (res > 0) {
+                    long end = System.currentTimeMillis();
+                    log.info("更新图书：" + metaId + "目录，耗时：" + (end - start) + "毫秒");
+                    return "success";
+                }
+            }
+        }
+        return "error";
+    }
+
 
     //保存图书内容
     @RequestMapping(value = "/bookChapterSave", method = RequestMethod.POST)

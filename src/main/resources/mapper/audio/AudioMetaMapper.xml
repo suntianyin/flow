@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.audio.dao.AudioMetaMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.audio.model.AudioMeta">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CH_TITLE" jdbcType="VARCHAR" property="chTitle" />
+    <result column="EN_TITLE" jdbcType="VARCHAR" property="enTitle" />
+    <result column="SERIES" jdbcType="VARCHAR" property="series" />
+    <result column="KEY_WORD" jdbcType="VARCHAR" property="keyWord" />
+    <result column="HUMAN" jdbcType="VARCHAR" property="human" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+    <result column="SUBJECT" jdbcType="VARCHAR" property="subject" />
+    <result column="LABEL" jdbcType="VARCHAR" property="label" />
+    <result column="SOURCE" jdbcType="VARCHAR" property="source" />
+    <result column="SCENE" jdbcType="VARCHAR" property="scene" />
+    <result column="DIALECT" jdbcType="VARCHAR" property="dialect" />
+    <result column="DIALOGUE_LANGUAGE" jdbcType="VARCHAR" property="dialogueLanguage" />
+    <result column="CODE_FORMAT" jdbcType="VARCHAR" property="codeFormat" />
+    <result column="RIGHT_OWNER" jdbcType="VARCHAR" property="rightOwner" />
+    <result column="AUTHORIZATION_PERIOD" jdbcType="TIMESTAMP" property="authorizationPeriod" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+    <result column="AUDIO_TIME" jdbcType="DOUBLE" property="audioTime" />
+    <result column="SCORE" jdbcType="DOUBLE" property="score" />
+    <result column="PUBLICATION_COUNTRY" jdbcType="VARCHAR" property="publicationCountry" />
+    <result column="PUBLICATION_COMPANY" jdbcType="VARCHAR" property="publicationCompany" />
+    <result column="PUBLICATION_YEAR" jdbcType="TIMESTAMP" property="publicationYear" />
+    <result column="AUDIO_SIZE" jdbcType="DOUBLE" property="audioSize" />
+    <result column="SAVE_PATH" jdbcType="VARCHAR" property="savePath" />
+    <result column="NOTE" jdbcType="VARCHAR" property="note" />
+    <result column="USER_AGE" jdbcType="INTEGER" property="userAge" />
+    <result column="PLAY_PATH" jdbcType="VARCHAR" property="playPath" />
+    <result column="INSERT_TIME" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CH_TITLE, EN_TITLE, SERIES, KEY_WORD, HUMAN, DESCRIPTION, CREATE_TIME, CREATOR, 
+    SUBJECT, LABEL, SOURCE, SCENE, DIALECT, DIALOGUE_LANGUAGE, CODE_FORMAT, RIGHT_OWNER, 
+    AUTHORIZATION_PERIOD, TYPE, AUDIO_TIME, SCORE, PUBLICATION_COUNTRY, PUBLICATION_COMPANY, 
+    PUBLICATION_YEAR, AUDIO_SIZE, SAVE_PATH, NOTE, USER_AGE, PLAY_PATH, INSERT_TIME, 
+    OPERATOR, UPDATE_TIME
+  </sql>
+  <select id="queryPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    <![CDATA[
+	        from APABI_AUDIO_METADATA
+	    ]]>
+  </select>
+  <select id="selectdataById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_AUDIO_METADATA
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_AUDIO_METADATA
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.audio.model.AudioMeta">
+    insert into APABI_AUDIO_METADATA (ID, CH_TITLE, EN_TITLE, 
+      SERIES, KEY_WORD, HUMAN, 
+      DESCRIPTION, CREATE_TIME, CREATOR, 
+      SUBJECT, LABEL, SOURCE, 
+      SCENE, DIALECT, DIALOGUE_LANGUAGE, 
+      CODE_FORMAT, RIGHT_OWNER, AUTHORIZATION_PERIOD, 
+      TYPE, AUDIO_TIME, SCORE, 
+      PUBLICATION_COUNTRY, PUBLICATION_COMPANY, 
+      PUBLICATION_YEAR, AUDIO_SIZE, SAVE_PATH, 
+      NOTE, USER_AGE, PLAY_PATH, 
+      INSERT_TIME, OPERATOR, UPDATE_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{chTitle,jdbcType=VARCHAR}, #{enTitle,jdbcType=VARCHAR}, 
+      #{series,jdbcType=VARCHAR}, #{keyWord,jdbcType=VARCHAR}, #{human,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR}, 
+      #{subject,jdbcType=VARCHAR}, #{label,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, 
+      #{scene,jdbcType=VARCHAR}, #{dialect,jdbcType=VARCHAR}, #{dialogueLanguage,jdbcType=VARCHAR}, 
+      #{codeFormat,jdbcType=VARCHAR}, #{rightOwner,jdbcType=VARCHAR}, #{authorizationPeriod,jdbcType=TIMESTAMP}, 
+      #{type,jdbcType=VARCHAR}, #{audioTime,jdbcType=DOUBLE}, #{score,jdbcType=DOUBLE}, 
+      #{publicationCountry,jdbcType=VARCHAR}, #{publicationCompany,jdbcType=VARCHAR}, 
+      #{publicationYear,jdbcType=TIMESTAMP}, #{audioSize,jdbcType=DOUBLE}, #{savePath,jdbcType=VARCHAR}, 
+      #{note,jdbcType=VARCHAR}, #{userAge,jdbcType=INTEGER}, #{playPath,jdbcType=VARCHAR},
+      #{insertTime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="addAudioMeta" parameterType="com.apabi.flow.audio.model.AudioMeta">
+    insert into APABI_AUDIO_METADATA
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="chTitle != null">
+        CH_TITLE,
+      </if>
+      <if test="enTitle != null">
+        EN_TITLE,
+      </if>
+      <if test="series != null">
+        SERIES,
+      </if>
+      <if test="keyWord != null">
+        KEY_WORD,
+      </if>
+      <if test="human != null">
+        HUMAN,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="creator != null">
+        CREATOR,
+      </if>
+      <if test="subject != null">
+        SUBJECT,
+      </if>
+      <if test="label != null">
+        LABEL,
+      </if>
+      <if test="source != null">
+        SOURCE,
+      </if>
+      <if test="scene != null">
+        SCENE,
+      </if>
+      <if test="dialect != null">
+        DIALECT,
+      </if>
+      <if test="dialogueLanguage != null">
+        DIALOGUE_LANGUAGE,
+      </if>
+      <if test="codeFormat != null">
+        CODE_FORMAT,
+      </if>
+      <if test="rightOwner != null">
+        RIGHT_OWNER,
+      </if>
+      <if test="authorizationPeriod != null">
+        AUTHORIZATION_PERIOD,
+      </if>
+      <if test="type != null">
+        TYPE,
+      </if>
+      <if test="audioTime != null">
+        AUDIO_TIME,
+      </if>
+      <if test="score != null">
+        SCORE,
+      </if>
+      <if test="publicationCountry != null">
+        PUBLICATION_COUNTRY,
+      </if>
+      <if test="publicationCompany != null">
+        PUBLICATION_COMPANY,
+      </if>
+      <if test="publicationYear != null">
+        PUBLICATION_YEAR,
+      </if>
+      <if test="audioSize != null">
+        AUDIO_SIZE,
+      </if>
+      <if test="savePath != null">
+        SAVE_PATH,
+      </if>
+      <if test="note != null">
+        NOTE,
+      </if>
+      <if test="userAge != null">
+        USER_AGE,
+      </if>
+      <if test="playPath != null">
+        PLAY_PATH,
+      </if>
+      <if test="insertTime != null">
+        INSERT_TIME,
+      </if>
+      <if test="operator != null">
+        OPERATOR,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="chTitle != null">
+        #{chTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="enTitle != null">
+        #{enTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="series != null">
+        #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="keyWord != null">
+        #{keyWord,jdbcType=VARCHAR},
+      </if>
+      <if test="human != null">
+        #{human,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="subject != null">
+        #{subject,jdbcType=VARCHAR},
+      </if>
+      <if test="label != null">
+        #{label,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="scene != null">
+        #{scene,jdbcType=VARCHAR},
+      </if>
+      <if test="dialect != null">
+        #{dialect,jdbcType=VARCHAR},
+      </if>
+      <if test="dialogueLanguage != null">
+        #{dialogueLanguage,jdbcType=VARCHAR},
+      </if>
+      <if test="codeFormat != null">
+        #{codeFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="rightOwner != null">
+        #{rightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="authorizationPeriod != null">
+        #{authorizationPeriod,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="audioTime != null">
+        #{audioTime,jdbcType=DOUBLE},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=DOUBLE},
+      </if>
+      <if test="publicationCountry != null">
+        #{publicationCountry,jdbcType=VARCHAR},
+      </if>
+      <if test="publicationCompany != null">
+        #{publicationCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="publicationYear != null">
+        #{publicationYear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="audioSize != null">
+        #{audioSize,jdbcType=DOUBLE},
+      </if>
+      <if test="savePath != null">
+        #{savePath,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="userAge != null">
+        #{userAge,jdbcType=INTEGER},
+      </if>
+      <if test="playPath != null">
+        #{playPath,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateAudioMeta" parameterType="com.apabi.flow.audio.model.AudioMeta">
+    update APABI_AUDIO_METADATA
+    <set>
+      <if test="chTitle != null">
+        CH_TITLE = #{chTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="enTitle != null">
+        EN_TITLE = #{enTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="series != null">
+        SERIES = #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="keyWord != null">
+        KEY_WORD = #{keyWord,jdbcType=VARCHAR},
+      </if>
+      <if test="human != null">
+        HUMAN = #{human,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="subject != null">
+        SUBJECT = #{subject,jdbcType=VARCHAR},
+      </if>
+      <if test="label != null">
+        LABEL = #{label,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        SOURCE = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="scene != null">
+        SCENE = #{scene,jdbcType=VARCHAR},
+      </if>
+      <if test="dialect != null">
+        DIALECT = #{dialect,jdbcType=VARCHAR},
+      </if>
+      <if test="dialogueLanguage != null">
+        DIALOGUE_LANGUAGE = #{dialogueLanguage,jdbcType=VARCHAR},
+      </if>
+      <if test="codeFormat != null">
+        CODE_FORMAT = #{codeFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="rightOwner != null">
+        RIGHT_OWNER = #{rightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="authorizationPeriod != null">
+        AUTHORIZATION_PERIOD = #{authorizationPeriod,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        TYPE = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="audioTime != null">
+        AUDIO_TIME = #{audioTime,jdbcType=DOUBLE},
+      </if>
+      <if test="score != null">
+        SCORE = #{score,jdbcType=DOUBLE},
+      </if>
+      <if test="publicationCountry != null">
+        PUBLICATION_COUNTRY = #{publicationCountry,jdbcType=VARCHAR},
+      </if>
+      <if test="publicationCompany != null">
+        PUBLICATION_COMPANY = #{publicationCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="publicationYear != null">
+        PUBLICATION_YEAR = #{publicationYear,jdbcType=TIMESTAMP},
+      </if>
+      <if test="audioSize != null">
+        AUDIO_SIZE = #{audioSize,jdbcType=DOUBLE},
+      </if>
+      <if test="savePath != null">
+        SAVE_PATH = #{savePath,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        NOTE = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="userAge != null">
+        USER_AGE = #{userAge,jdbcType=INTEGER},
+      </if>
+      <if test="playPath != null">
+        PLAY_PATH = #{playPath,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.audio.model.AudioMeta">
+    update APABI_AUDIO_METADATA
+    set CH_TITLE = #{chTitle,jdbcType=VARCHAR},
+      EN_TITLE = #{enTitle,jdbcType=VARCHAR},
+      SERIES = #{series,jdbcType=VARCHAR},
+      KEY_WORD = #{keyWord,jdbcType=VARCHAR},
+      HUMAN = #{human,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      SUBJECT = #{subject,jdbcType=VARCHAR},
+      LABEL = #{label,jdbcType=VARCHAR},
+      SOURCE = #{source,jdbcType=VARCHAR},
+      SCENE = #{scene,jdbcType=VARCHAR},
+      DIALECT = #{dialect,jdbcType=VARCHAR},
+      DIALOGUE_LANGUAGE = #{dialogueLanguage,jdbcType=VARCHAR},
+      CODE_FORMAT = #{codeFormat,jdbcType=VARCHAR},
+      RIGHT_OWNER = #{rightOwner,jdbcType=VARCHAR},
+      AUTHORIZATION_PERIOD = #{authorizationPeriod,jdbcType=TIMESTAMP},
+      TYPE = #{type,jdbcType=VARCHAR},
+      AUDIO_TIME = #{audioTime,jdbcType=DOUBLE},
+      SCORE = #{score,jdbcType=DOUBLE},
+      PUBLICATION_COUNTRY = #{publicationCountry,jdbcType=VARCHAR},
+      PUBLICATION_COMPANY = #{publicationCompany,jdbcType=VARCHAR},
+      PUBLICATION_YEAR = #{publicationYear,jdbcType=TIMESTAMP},
+      AUDIO_SIZE = #{audioSize,jdbcType=DOUBLE},
+      SAVE_PATH = #{savePath,jdbcType=VARCHAR},
+      NOTE = #{note,jdbcType=VARCHAR},
+      USER_AGE = #{userAge,jdbcType=INTEGER},
+      PLAY_PATH = #{playPath,jdbcType=VARCHAR},
+      INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
