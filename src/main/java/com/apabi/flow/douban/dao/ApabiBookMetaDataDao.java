@@ -20,4 +20,5 @@ public interface ApabiBookMetaDataDao {
     void update(ApabiBookMetaData apabiBookMetaData);
     Page<String> findIsbnByPageWithoutCrawledNlc();
     void updateNlcMarcId(@Param("nlibraryId") String nlibraryId,@Param("isbn") String isbn);
+    int findIsbnCount();
 }

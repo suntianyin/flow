@@ -1,7 +1,12 @@
 package com.apabi.flow.cleanData.controller;
 
 import com.apabi.flow.cleanData.dao.CleanDataDao;
+import com.apabi.flow.cleanData.dao.NlcCrawlIsbnDao;
 import com.apabi.flow.cleanData.model.CleanData;
+import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.Isbn13ToIsbnUtil;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.github.pagehelper.Page;
@@ -12,12 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,6 +37,12 @@ public class CleanDataController {
     private Logger log = LoggerFactory.getLogger(CleanDataController.class);
     @Autowired
     private CleanDataDao cleanDataDao;
+    @Autowired
+    private NlcCrawlIsbnDao nlcCrawlIsbnDao;
+    @Autowired
+    private ApabiBookMetaDataDao apabiBookMetaDataDao;
+    @Autowired
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
     private static final int PAGE_SIZE = 10000;
 
     @RequestMapping("/checkIsbn")
@@ -228,5 +241,74 @@ public class CleanDataController {
             long time = Duration.between(start, end).toMillis();
             System.out.println("更新第" + i * PAGE_SIZE + "至" + (i + 1) * PAGE_SIZE + "条数据的清洗列表耗时：" + time + "毫秒");
         }
+    }
+
+
+    // 将meta表中的isbn导入到一个中间表
+    @ResponseBody
+    @RequestMapping("/isbn")
+    public String insertIsbn() {
+        int pageSize = 10000;
+        for (int i = 104; i <= 309; i++) {
+            PageHelper.startPage(i, pageSize);
+            Page<String> isbnByPageWithoutCrawledNlc = apabiBookMetaDataDao.findIsbnByPageWithoutCrawledNlc();
+            for (String s : isbnByPageWithoutCrawledNlc) {
+                try {
+                    nlcCrawlIsbnDao.insert(s);
+                    System.out.println(s);
+                } catch (Exception e) {
+                }
+            }
+        }
+        return "success";
+    }
+
+    // 测试apabi_book_metadata_temp的update方法
+    @RequestMapping("/apabiTemp")
+    public void testApabiBookTempDao() {
+        ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();
+        String metaId = UUIDCreater.nextId();
+        apabiBookMetaDataTemp.setMetaId(metaId);
+        apabiBookMetaDataTemp.setAbstract_("testAbstract_");
+        apabiBookMetaDataTemp.setAlternativeTitle("testAlternativeTitle");
+        apabiBookMetaDataTemp.setAmazonId("testAmazonId");
+        apabiBookMetaDataTemp.setApabiClass("testApabiClass");
+        apabiBookMetaDataTemp.setAuthorIntro("testAuthorIntro");
+        apabiBookMetaDataTemp.setBinding("testBinding");
+        apabiBookMetaDataTemp.setBookId("testBookId");
+        apabiBookMetaDataTemp.setBookPages("testBookPages");
+        apabiBookMetaDataTemp.setCalisId("testCalisId");
+        apabiBookMetaDataTemp.setCebxObjId("testCebxObjId");
+        apabiBookMetaDataTemp.setChapterNum(1);
+        apabiBookMetaDataTemp.setContentNum(1);
+        apabiBookMetaDataTemp.setCreateTime(new Date());
+        apabiBookMetaDataTemp.setIsbn("testIsbn");
+        apabiBookMetaDataTemp.setIsbn13("testIsbn13");
+        apabiBookMetaDataTemp.setUpdateTime(new Date());
+        apabiBookMetaDataTemp.setIssuedDate("testIssuedDate");
+        apabiBookMetaDataTempDao.insert(apabiBookMetaDataTemp);
+
+        apabiBookMetaDataTemp.setAbstract_("testAbstract_2");
+        apabiBookMetaDataTemp.setAlternativeTitle("testAlternativeTitle2");
+        apabiBookMetaDataTemp.setAmazonId("testAmazonId2");
+        apabiBookMetaDataTemp.setApabiClass("testApabiClass2");
+        apabiBookMetaDataTemp.setAuthorIntro("testAuthorIntro2");
+        apabiBookMetaDataTemp.setBinding("testBinding2");
+        apabiBookMetaDataTemp.setBookId("testBookId2");
+        apabiBookMetaDataTemp.setBookPages("testBookPages2");
+        apabiBookMetaDataTemp.setCalisId("testCalisId2");
+        apabiBookMetaDataTemp.setCebxObjId("testCebxObjId2");
+        apabiBookMetaDataTemp.setChapterNum(2);
+        apabiBookMetaDataTemp.setContentNum(2);
+        apabiBookMetaDataTemp.setCreateTime(new Date());
+        apabiBookMetaDataTemp.setIsbn("testIsbn2");
+        apabiBookMetaDataTemp.setIsbn13("testIsbn132");
+        apabiBookMetaDataTemp.setUpdateTime(new Date());
+        apabiBookMetaDataTemp.setIssuedDate("testIssuedDate2");
+        apabiBookMetaDataTempDao.update(apabiBookMetaDataTemp);
+        ApabiBookMetaDataTemp byId = apabiBookMetaDataTempDao.findById(metaId);
+        List<ApabiBookMetaDataTemp> testIsbn2 = apabiBookMetaDataTempDao.findByIsbn("testIsbn2");
+        List<ApabiBookMetaDataTemp> testIsbn132 = apabiBookMetaDataTempDao.findByIsbn13("testIsbn132");
+        apabiBookMetaDataTempDao.delete(metaId);
     }
 }
