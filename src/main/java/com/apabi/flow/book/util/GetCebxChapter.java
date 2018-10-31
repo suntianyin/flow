@@ -109,8 +109,9 @@ public class GetCebxChapter {
                         if (file.toLowerCase().contains(FILE_HTML)) {
                             //获取章节内容
                             content = readToString(config.getTargetCebxDir() + File.separator + file);
+                            doc = Jsoup.parse(content, BookConstant.CODE_UTF8);
                             if (StringUtils.isNotBlank(content)) {
-                                wordSum = content.replaceAll("\\u3000|\\s*", "").length();
+                                wordSum = doc.body().children().text().replaceAll("\\u3000|\\s*", "").length();
                             }
                             //从目录章节对应map中获取章节号
                             int num = cataChapter.get(file);
@@ -124,7 +125,7 @@ public class GetCebxChapter {
                             bookChapter.setUpdateTime(new Date());
                             contentSum += wordSum;
                             //拆分章节
-                            doc = Jsoup.parse(content, BookConstant.CODE_UTF8);
+                            //doc = Jsoup.parse(content, BookConstant.CODE_UTF8);
                             Elements children = doc.body().children();
                             List<String> tags = new ArrayList<>();
                             String contentP = "";

@@ -305,8 +305,8 @@ public class BookController {
                 long end = System.currentTimeMillis();
                 log.info("发布" + sum + "本图书到爱读爱看耗时：" + (end - start) + "毫秒");
                 return String.valueOf(sum);
-            } catch (ParseException e) {
-                log.warn("出版日期格式转换失败");
+            } catch (Exception e) {
+                log.warn("爱读爱看发布失败：{}" + e.getMessage());
             }
         }
         return "error";
