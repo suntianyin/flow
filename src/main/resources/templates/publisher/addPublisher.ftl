@@ -123,9 +123,8 @@
                             <option value="a">综合</option>
                             <option value="b">少儿</option>
                             <option value="c">青年</option>
-                            <option value="c">青年</option>
                             <option value="d">大学</option>
-                            <option value="e">人名</option>
+                            <option value="e">人民</option>
                             <option value="z">其他</option>
                         </select>
                     <#--<input id="classCode" type="text" value="${publisher.classCode!'' }" class="txt" style="width: 200px"/>-->
@@ -141,7 +140,7 @@
                             <option value="YearBook">年鉴</option>
                             <option value="PicLib">图片库</option>
                             <option value="Newspaper">报纸</option>
-                            <option value="video ">视频</option>
+                            <option value="video">视频</option>
                             <option value="audio">音频</option>
                         </select>
                     </td>

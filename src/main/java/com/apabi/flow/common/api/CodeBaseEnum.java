@@ -8,6 +8,6 @@ package com.apabi.flow.common.api;
  * @date 2018/9/5 17:53
  * @since 1.0.0
  */
-public interface CodeBaseEnum {
-    Integer getCode();
+public interface CodeBaseEnum<T> {
+    T getCode();
 }

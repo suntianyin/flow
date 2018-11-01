@@ -2,6 +2,8 @@ package com.apabi.flow.author.controller;
 
 import com.apabi.flow.author.model.Author;
 import com.apabi.flow.author.service.AuthorService;
+import com.apabi.flow.author.util.EntityInfo;
+import com.apabi.flow.author.util.TransformAuthorFieldNameUtils;
 import com.apabi.flow.common.UUIDCreater;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -16,6 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -115,28 +120,101 @@ public class AuthorController {
         return "redirect:/author/index";
     }
 
-    @GetMapping ("/edit/index")
+//    @GetMapping ("/edit/index")
+//    public String editPublisherMessage(@RequestParam("id") String id, Model model) {
+//        try {
+//            long start = System.currentTimeMillis();
+//            Author author = authorService.getAuthorById(id);
+//            model.addAttribute("author",author);
+//            long end = System.currentTimeMillis();
+//            log.info("修改作者信息耗时：" + (end - start) + "毫秒");
+//            return "author/editAuthor";
+//        } catch (Exception e) {
+//            log.warn("Exception {}" , e);
+//        }
+//        return null;
+//    }
+
+    @GetMapping ("/edit")
     public String editPublisherMessage(@RequestParam("id") String id, Model model) {
         try {
             long start = System.currentTimeMillis();
-            Author author = authorService.getAuthorById(id);
-            model.addAttribute("author",author);
+//            Author author = authorService.getAuthorById(id);
+//            model.addAttribute("author",author);
+            Author author = null;
+            if (StringUtils.isNotEmpty(id)) {
+                author = authorService.getAuthorById(id);
+            }
+            Class clazz = Class.forName("com.apabi.flow.author.model.Author");
+
+            List<EntityInfo> list=new ArrayList<>();
+//            Map<String, String> map = new HashMap<>();
+            Field[] fields = clazz.getDeclaredFields();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+            SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (Field field : fields) {
+                // 字段名
+                EntityInfo entityInfo=new EntityInfo();
+                String key = field.getName();
+                entityInfo.setFieldName(key);
+                // 字段值
+                String value = null;
+                key = TransformAuthorFieldNameUtils.transform(key);
+                if ("创建时间".equals(key)) {
+                        value = getFieldValueByFieldName(field.getName(), author);
+                        // 将创建时间转为字符串
+                    if (StringUtils.isNotEmpty(value)) {
+                        Date parse = simpleDateFormat.parse(value);
+                        value = simpleDateFormat1.format(parse);
+                    }
+                } else if ("最后更新时间".equals(key)) {
+                    value = getFieldValueByFieldName(field.getName(), author);
+                    // 将更新时间转为字符串
+                    if (StringUtils.isNotEmpty(value)) {
+                        Date parse = simpleDateFormat.parse(value);
+                        value = simpleDateFormat1.format(parse);
+                    }
+                }else if ("作者类型".equals(key)) {
+                    if(author.getType()!=null) {
+                        value = author.getType().getDesc();
+                    }
+                }else if ("是否卒于50年".equals(key)) {
+                    if(author.getDieOver50()!=null) {
+                        value = author.getDieOver50().getDesc();
+                    }
+                }else if ("性别".equals(key)) {
+                    if(author.getSexCode()!=null) {
+                        value = author.getSexCode().getDesc();
+                    }
+                }else if ("姓名类型".equals(key)) {
+                    if(author.getTitleType()!=null) {
+                        value = author.getTitleType().getDesc();
+                    }
+                } else {
+                    // 普通字段值
+                    value = getFieldValueByFieldName(field.getName(), author);
+                }
+                entityInfo.setInfo(key);
+                entityInfo.setMetaValue(value);
+//                map.put(key, value);
+                list.add(entityInfo);
+            }
+            model.addAttribute("entityInfoList", list);
             long end = System.currentTimeMillis();
-            log.info("修改作者信息耗时：" + (end - start) + "毫秒");
-            return "author/editAuthor";
+            log.info("查询作者信息耗时：" + (end - start) + "毫秒");
+            return "author/edit";
         } catch (Exception e) {
             log.warn("Exception {}" , e);
         }
         return null;
     }
-
     /**
      * 更新作者信息
      *
      * @param author
      * @return
      */
-    @PostMapping("/edit")
+    @PostMapping("/update")
     public String editAuthor(@RequestBody Author author) {
         if (StringUtils.isNotBlank(author.getId())){
             author.setUpdateTime(new Date());
@@ -173,5 +251,83 @@ public class AuthorController {
         }
 
         return addedNum > 0 ? "成功":"失败";
+    }
+    // 查看作者详细数据
+    @RequestMapping("/authorDetail")
+    public String authorDetail(@RequestParam("id") String id, Model model) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, ParseException {
+        Author author = null;
+        if (StringUtils.isNotEmpty(id)) {
+            author = authorService.getAuthorById(id);
+        }
+        Class clazz = Class.forName("com.apabi.flow.author.model.Author");
+        Map<String, String> map = new HashMap<>();
+        Field[] fields = clazz.getDeclaredFields();
+        /*for (Field field : fields) {
+            String key = field.getName();
+            String value = getFieldValueByFieldName(field.getName(), doubanMeta);
+            key = TransformDoubanFieldNameUtils.transform(key);
+            map.put(key, value);
+        }*/
+        // 数据库中的数据 -> Date
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+        // Date -> String
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (Field field : fields) {
+            // 字段名
+            String key = field.getName();
+            // 字段值
+            String value = null;
+            key = TransformAuthorFieldNameUtils.transform(key);
+            if ("创建时间".equals(key)) {
+                    value = getFieldValueByFieldName(field.getName(), author);
+                    // 将创建时间转为字符串
+                if (StringUtils.isNotEmpty(value)) {
+                    Date parse = simpleDateFormat.parse(value);
+                    value = simpleDateFormat1.format(parse);
+                }
+            } else if ("最后更新时间".equals(key)) {
+                value = getFieldValueByFieldName(field.getName(), author);
+                // 将更新时间转为字符串
+                if (StringUtils.isNotEmpty(value)) {
+                    Date parse = simpleDateFormat.parse(value);
+                    value = simpleDateFormat1.format(parse);
+                }
+            }else if ("作者类型".equals(key)) {
+                if(author.getType()!=null) {
+                    value = author.getType().getDesc();
+                }
+            }else if ("是否卒于50年".equals(key)) {
+                if(author.getDieOver50()!=null) {
+                    value = author.getDieOver50().getDesc();
+                }
+            }else if ("性别".equals(key)) {
+                if(author.getSexCode()!=null) {
+                    value = author.getSexCode().getDesc();
+                }
+            }else if ("姓名类型".equals(key)) {
+                if(author.getTitleType()!=null) {
+                    value = author.getTitleType().getDesc();
+                }
+            } else {
+                // 普通字段值
+                value = getFieldValueByFieldName(field.getName(), author);
+            }
+            map.put(key, value);
+        }
+        model.addAttribute("authorMap", map);
+        model.addAttribute("id", id);
+        return "author/authorDetail";
+    }
+    // 根据字段名获取字段值
+    private String getFieldValueByFieldName(String key, Object obj) throws NoSuchFieldException, IllegalAccessException {
+        Class<?> clazz = obj.getClass();
+        Field field = clazz.getDeclaredField(key);
+        field.setAccessible(true);
+        Object object = field.get(obj);
+        if (object != null) {
+            return object.toString();
+        } else {
+            return null;
+        }
     }
 }

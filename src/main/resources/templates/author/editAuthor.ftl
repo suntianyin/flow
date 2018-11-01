@@ -23,7 +23,7 @@
                     var formObj = $("#form1");
                     var postData = JSON.stringify(formObj.serializeJson());
                     $.ajax({
-                        url: "${ctx}/author/edit",
+                        url: "${ctx}/author/update",
                         type: "POST",
                         data: postData,
                         contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
