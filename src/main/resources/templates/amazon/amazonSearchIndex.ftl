@@ -124,11 +124,14 @@
                            class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                         <thead>
                         <tr role="row">
+                            <th>id</th>
                             <th>作者</th>
                             <th>书名</th>
                             <th>出版社</th>
+                            <th>出版日期</th>
                             <th>ISBN10</th>
                             <th>ISBN13</th>
+                            <th>更新时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -136,11 +139,14 @@
                         <#if amazonMetaModelList?? >
                             <#list amazonMetaModelList as list>
                                 <tr class="gradeA odd" role="row">
+                                    <td align="center">${list.amazonId! '' }</td>
                                     <td align="center">${list.author! '' }</td>
                                     <td align="center">${list.title! '' }</td>
                                     <td align="center">${list.publisher! '' }</td>
+                                    <td align="center">${list.issuedDate! '' }</td>
                                     <td align="center">${list.isbn10! '' }</td>
                                     <td align="center">${list.isbn13! '' }</td>
+                                    <td align="center">${list.updateTime?string("yyyy-MM-dd HH:mm:ss")! '' }</td>
                                     <td align="center">
                                         <a style="cursor:pointer;" onclick="btn_detail('${list.amazonId! "" }');">查看&nbsp;</a>
                                         <a style="cursor:pointer;"

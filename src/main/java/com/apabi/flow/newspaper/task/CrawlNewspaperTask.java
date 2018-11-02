@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -17,15 +18,16 @@ import java.util.concurrent.CountDownLatch;
  **/
 public class CrawlNewspaperTask implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(CrawlNewspaperTask.class);
+    private ArrayBlockingQueue<String> urlQueue;
     private NewspaperDao newspaperDao;
+
     private CountDownLatch countDownLatch;
     private CnrIpPoolUtils cnrIpPoolUtils;
     private CloseableHttpClient closeableHttpClient;
-    private String url;
 
-    public CrawlNewspaperTask(NewspaperDao newspaperDao, CountDownLatch countDownLatch, String url, CnrIpPoolUtils cnrIpPoolUtils, CloseableHttpClient closeableHttpClient) {
+    public CrawlNewspaperTask(ArrayBlockingQueue<String> urlQueue, NewspaperDao newspaperDao, CountDownLatch countDownLatch, CnrIpPoolUtils cnrIpPoolUtils, CloseableHttpClient closeableHttpClient) {
         this.countDownLatch = countDownLatch;
-        this.url = url;
+        this.urlQueue = urlQueue;
         this.cnrIpPoolUtils = cnrIpPoolUtils;
         this.closeableHttpClient = closeableHttpClient;
         this.newspaperDao = newspaperDao;
@@ -34,17 +36,19 @@ public class CrawlNewspaperTask implements Runnable {
     @Override
     public void run() {
         try {
+            String url = urlQueue.take();
             List<Newspaper> newspaperResultList = CnrCrawlUtils.crawlByUrl(cnrIpPoolUtils, url, closeableHttpClient);
-            System.out.println("抓取的新闻列表大小为："+newspaperResultList.size());
             for (Newspaper newspaper : newspaperResultList) {
-                newspaperDao.insert(newspaper);
-                LOGGER.info("抓取"+newspaper.getTitle()+"并插入数据库成功");
+                try {
+                    newspaperDao.insert(newspaper);
+                    LOGGER.info(Thread.currentThread().getName() + "抓取" + newspaper.getTitle() + "并准备插入数据库成功");
+                } catch (Exception e) {
+                }
             }
         } catch (Exception e) {
             //e.printStackTrace();
         } finally {
             countDownLatch.countDown();
         }
-
     }
 }

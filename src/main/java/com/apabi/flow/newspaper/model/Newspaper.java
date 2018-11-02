@@ -17,4 +17,11 @@ public class Newspaper {
     private String title;
     private String abstract_;
     private String htmlContent;
+
+    @Override
+    public String toString() {
+        return "Newspaper{" +
+                "url='" + url + '\'' +
+                ", title='" + title + '\'';
+    }
 }

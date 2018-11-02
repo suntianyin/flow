@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,8 +22,8 @@ import java.util.concurrent.Executors;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-@Order(3)
-@Component
+//@Order(3)
+//@Component
 public class CrawlAmazonService implements ApplicationRunner {
     private Logger logger = LoggerFactory.getLogger(CrawlAmazonService.class);
     @Autowired

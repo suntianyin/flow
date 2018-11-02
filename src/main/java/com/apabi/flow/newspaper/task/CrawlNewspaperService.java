@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,9 +39,18 @@ public class CrawlNewspaperService {
         CloseableHttpClient httpClient = CnrCrawlUtils.getCloseableHttpClient();
         CountDownLatch countDownLatch = new CountDownLatch(pageNum);
         ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ArrayBlockingQueue<String> urlQueue = new ArrayBlockingQueue<String>(100);
         for (int i = 1; i <= pageNum; i++) {
             String url = "http://news.cnr.cn/native/index_" + i + ".html";
-            CrawlNewspaperTask crawlNewspaperTask = new CrawlNewspaperTask(newspaperDao, countDownLatch, url, cnrIpPoolUtils, httpClient);
+            try {
+                urlQueue.put(url);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        CrawlNewspaperTask crawlNewspaperTask = new CrawlNewspaperTask(urlQueue, newspaperDao, countDownLatch, cnrIpPoolUtils, httpClient);
+        for (int i = 0; i < pageNum; i++) {
             executorService.execute(crawlNewspaperTask);
         }
         try {
