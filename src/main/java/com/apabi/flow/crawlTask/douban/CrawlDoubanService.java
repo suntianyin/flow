@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,8 +24,8 @@ import java.util.concurrent.Executors;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-//@Order(3)
-//@Component
+@Order(2)
+@Component
 public class CrawlDoubanService implements ApplicationRunner {
     private static Logger logger = LoggerFactory.getLogger(CrawlDoubanService.class);
     @Autowired
@@ -65,7 +67,7 @@ public class CrawlDoubanService implements ApplicationRunner {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        idExecutorService.shutdownNow();
+        idExecutorService.shutdown();
         // ******************多线程抓取idList结束******************
 
         // ******************多线程抓取id结束******************
@@ -91,7 +93,7 @@ public class CrawlDoubanService implements ApplicationRunner {
             e.printStackTrace();
         }
         // 关闭线程池
-        executorService.shutdownNow();
+        executorService.shutdown();
         // ******************多线程抓取id结束******************
 
         long endTime = System.currentTimeMillis();

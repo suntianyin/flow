@@ -1,7 +1,7 @@
 package com.apabi.flow.cleanData.controller;
 
 import com.apabi.flow.cleanData.dao.CleanDataDao;
-import com.apabi.flow.cleanData.dao.NlcCrawlIsbnDao;
+import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
 import com.apabi.flow.cleanData.model.CleanData;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
@@ -249,7 +249,7 @@ public class CleanDataController {
     @RequestMapping("/isbn")
     public String insertIsbn() {
         int pageSize = 10000;
-        for (int i = 104; i <= 309; i++) {
+        for (int i = 310; i <= 311; i++) {
             PageHelper.startPage(i, pageSize);
             Page<String> isbnByPageWithoutCrawledNlc = apabiBookMetaDataDao.findIsbnByPageWithoutCrawledNlc();
             for (String s : isbnByPageWithoutCrawledNlc) {
@@ -260,6 +260,7 @@ public class CleanDataController {
                 }
             }
         }
+        System.out.println("导入中间表完成...");
         return "success";
     }
 

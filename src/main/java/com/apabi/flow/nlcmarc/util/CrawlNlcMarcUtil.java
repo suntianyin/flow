@@ -1,5 +1,6 @@
 package com.apabi.flow.nlcmarc.util;
 
+import com.apabi.flow.crawlTask.exception.NoSuchIsbnException;
 import com.apabi.flow.crawlTask.util.UserAgentUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -76,7 +77,7 @@ public class CrawlNlcMarcUtil {
     }
 
     // 从国图根据isbn或者isbn13获取marc数据内容
-    public static String crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException {
+    public static String crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException, NoSuchIsbnException {
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         // 访问国图首页
@@ -87,13 +88,13 @@ public class CrawlNlcMarcUtil {
         httpGet1.setHeader("Accept-Encoding", "gzip, deflate, sdch");
         httpGet1.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet1.setHeader("Host", "opac.nlc.cn");
-        httpGet1.setHeader("Cookie","Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+        httpGet1.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
         httpGet1.setHeader("Upgrade-Insecure-Requests", "1");
         CloseableHttpResponse response1 = null;
         // 访问国图首页，获取标识码
         try {
             response1 = client.execute(httpGet1);
-            Thread.sleep(900);
+            Thread.sleep(300);
         } catch (IOException e) {
             e.printStackTrace();
             httpGet1.setHeader("Connection", "close");
@@ -103,7 +104,7 @@ public class CrawlNlcMarcUtil {
             throw new IOException(e);
         }
         // 防封IP
-        Thread.sleep(random.nextInt(1300) + 200);
+        Thread.sleep(random.nextInt(300) + 200);
         // 获取response1的实体类
         HttpEntity entity1 = response1.getEntity();
         String html = null;
@@ -139,10 +140,10 @@ public class CrawlNlcMarcUtil {
         httpGet2.setHeader("Accept-Encoding", "gzip, deflate, sdch");
         httpGet2.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet2.setHeader("Host", "opac.nlc.cn");
-        httpGet2.setHeader("Cookie","Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+        httpGet2.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
         httpGet2.setHeader("Upgrade-Insecure-Requests", "1");
         // 防封IP
-        Thread.sleep(random.nextInt(1300) + 350);
+        Thread.sleep(random.nextInt(300) + 350);
         CloseableHttpResponse response2 = null;
         try {
             response2 = client.execute(httpGet2);
@@ -151,7 +152,7 @@ public class CrawlNlcMarcUtil {
             httpGet2.setHeader("Connection", "close");
             httpGet2.releaseConnection();
             httpGet2.abort();
-            //client.close();
+            client.close();
             throw new IOException(e);
         }
         HttpEntity entity2 = response2.getEntity();
@@ -160,7 +161,7 @@ public class CrawlNlcMarcUtil {
             html2 = EntityUtils.toString(entity2, "UTF-8");
         } catch (Exception e) {
             e.printStackTrace();
-            //client.close();
+            client.close();
             throw new IOException(e);
         } finally {
             EntityUtils.consumeQuietly(entity2);
@@ -180,8 +181,8 @@ public class CrawlNlcMarcUtil {
             doc_number = href.substring(href.indexOf("doc_number=") + 11, href.indexOf("doc_number=") + 20);
         } catch (Exception e) {
             e.printStackTrace();
-            //client.close();
-            throw new IOException(e);
+            client.close();
+            throw new NoSuchIsbnException("国图数据库中没有该ISBN:" + ISBN);
         }
         String first1 = first;
         String second1 = second;
@@ -195,10 +196,10 @@ public class CrawlNlcMarcUtil {
         httpGet3.setHeader("Accept-Encoding", "gzip, deflate, sdch");
         httpGet3.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet3.setHeader("Host", "opac.nlc.cn");
-        httpGet3.setHeader("Cookie","Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+        httpGet3.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
         httpGet3.setHeader("Upgrade-Insecure-Requests", "1");
         // 防封IP
-        Thread.sleep(random.nextInt(1500) + 350);
+        Thread.sleep(random.nextInt(500) + 350);
         CloseableHttpResponse response3 = null;
         try {
             response3 = client.execute(httpGet3);
@@ -237,9 +238,9 @@ public class CrawlNlcMarcUtil {
         httpGet4.setHeader("Accept-Encoding", "gzip, deflate, sdch");
         httpGet4.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet4.setHeader("Host", "opac.nlc.cn");
-        httpGet4.setHeader("Cookie","Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+        httpGet4.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
         httpGet4.setHeader("Upgrade-Insecure-Requests", "1");
-        Thread.sleep(1350);
+        Thread.sleep(350);
         CloseableHttpResponse response4 = null;
         try {
             response4 = client.execute(httpGet4);
@@ -248,7 +249,7 @@ public class CrawlNlcMarcUtil {
             httpGet4.setHeader("Connection", "close");
             httpGet4.releaseConnection();
             httpGet4.abort();
-            //client.close();
+            client.close();
             throw new IOException(e);
         }
         HttpEntity entity4 = response4.getEntity();
@@ -257,7 +258,7 @@ public class CrawlNlcMarcUtil {
             iso = EntityUtils.toString(entity4, "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
-            //client.close();
+            client.close();
             throw new IOException(e);
         } finally {
             EntityUtils.consumeQuietly(entity4);
@@ -274,7 +275,7 @@ public class CrawlNlcMarcUtil {
         return iso;
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, NoSuchIsbnException {
         String iso = CrawlNlcMarcUtil.crawlNlcMarc("7-5407-2053-0", "212.111.2.220", "53281");
         System.out.println(iso);
     }

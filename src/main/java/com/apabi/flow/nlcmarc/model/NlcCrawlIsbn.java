@@ -1,4 +1,4 @@
-package com.apabi.flow.cleanData.model;
+package com.apabi.flow.nlcmarc.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,4 +15,5 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class NlcCrawlIsbn {
     private String isbn;
+    private String hasCrawled;
 }
