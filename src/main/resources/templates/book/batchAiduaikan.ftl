@@ -82,8 +82,12 @@
                 contentType: false,
                 success: function (data) {
                     $("#loading").hide();
-                    tipDialog(data + "本图书发布成功！", 3, 1);
-                    closeDialog();
+                    if (data == "error") {
+                        tipDialog("图书发布失败，联系管理员！", 3, -1);
+                    } else {
+                        tipDialog(data + "本图书发布成功！", 3, 1);
+                        closeDialog();
+                    }
                 },
                 error: function (data) {
                     $("#loading").hide();

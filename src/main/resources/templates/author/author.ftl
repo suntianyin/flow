@@ -82,6 +82,11 @@
                 top.frames[iframe].AcceptClick()
             });
         }
+        //作者元数据查看
+        function btn_detail(id) {
+            loading();
+            window.location.href = "authorDetail?id=" + id;
+        }
 
     </script>
 </head>
@@ -151,18 +156,18 @@
                         <th>死亡日期</th>
                         <th>性别</th>
                         <th>作者类型</th>
-                        <th>民族</th>
-                        <th>学历</th>
-                        <th>所在朝代名称</th>
-                        <th>籍贯</th>
-                        <th>职业分类名称</th>
-                        <th>任职机构名称</th>
-                        <th>头像</th>
-                        <th>简介</th>
+                        <#--<th>民族</th>-->
+                        <#--<th>学历</th>-->
+                        <#--<th>所在朝代名称</th>-->
+                        <#--<th>籍贯</th>-->
+                        <#--<th>职业分类名称</th>-->
+                        <#--<th>任职机构名称</th>-->
+                        <#--<th>头像</th>-->
+                        <#--<th>简介</th>-->
                         <th>是否卒于50年</th>
                         <th>国图作者id</th>
                         <th>操作人</th>
-                        <th>创建时间</th>
+                        <#--<th>创建时间</th>-->
                         <th>最后更新时间</th>
                         <th>操作</th>
                     </tr>
@@ -171,32 +176,33 @@
                     <#if authorList??>
                         <#list authorList as list>
                         <tr class="gradeA odd" role="row">
-                            <td>${(list.id)!''}</td>
-                            <td>${(list.title)! '' }</td>
-                            <td>${(list.titleType.getDesc())! '' }</td>
-                            <td>${(list.startDate)! '' }</td>
-                            <td>${(list.endDate)!'' }</td>
-                            <td>${(list.nationalityCode)! '' }</td>
-                            <td>${(list.personId)! '' }</td>
-                            <td>${(list.birthday)! '' }</td>
-                            <td>${(list.deathDay)! '' }</td>
-                            <td>${(list.sexCode.getDesc())! '' }</td>
-                            <td>${(list.type.getDesc()) !''}</td>
-                            <td>${(list.nationalCode)! '' }</td>
-                            <td>${(list.qualificationCode)! '' }</td>
-                            <td>${(list.dynastyName)! '' }</td>
-                            <td>${(list.originCode)! '' }</td>
-                            <td>${(list.careerClassCode)! '' }</td>
-                            <td>${(list.serviceAgency)! '' }</td>
-                            <td>${(list.headPortraitPath)! '' }</td>
-                            <td>${(list.summary)! '' }</td>
-                            <td>${(list.dieOver50.getDesc())! '' }</td>
-                            <td>${(list.nlcAuthorId)! '' }</td>
-                            <td>${(list.operator)! '' }</td>
-                            <td>${(list.createTime?datetime)! '' }</td>
-                            <td>${(list.updateTime?datetime)! '' }</td>
-                            <td>
-                                <a href="javascript:void(0);" onclick="updateAuthor('${list.id}')">修改</a>
+                            <td align="center">${(list.id)!''}</td>
+                            <td align="center">${(list.title)! '' }</td>
+                            <td align="center">${(list.titleType.getDesc())! '' }</td>
+                            <td align="center">${(list.startDate)! '' }</td>
+                            <td align="center">${(list.endDate)!'' }</td>
+                            <td align="center">${(list.nationalityCode)! '' }</td>
+                            <td align="center">${(list.personId)! '' }</td>
+                            <td align="center">${(list.birthday)! '' }</td>
+                            <td align="center">${(list.deathDay)! '' }</td>
+                            <td align="center">${(list.sexCode.getDesc())! '' }</td>
+                            <td align="center">${(list.type.getDesc()) !''}</td>
+                            <#--<td align="center">${(list.nationalCode)! '' }</td>-->
+                            <#--<td align="center">${(list.qualificationCode)! '' }</td>-->
+                            <#--<td align="center">${(list.dynastyName)! '' }</td>-->
+                            <#--<td align="center">${(list.originCode)! '' }</td>-->
+                            <#--<td align="center">${(list.careerClassCode)! '' }</td>-->
+                            <#--<td align="center">${(list.serviceAgency)! '' }</td>-->
+                            <#--<td align="center">${(list.headPortraitPath)! '' }</td>-->
+                            <#--<td align="center">${(list.summary)! '' }</td>-->
+                            <td align="center">${(list.dieOver50.getDesc())! '' }</td>
+                            <td align="center">${(list.nlcAuthorId)! '' }</td>
+                            <td align="center">${(list.operator)! '' }</td>
+                            <#--<td>${(list.createTime?datetime)! '' }</td>-->
+                            <td align="center">${(list.updateTime?datetime)! '' }</td>
+                            <td align="center">
+                                <a style="cursor:pointer;" onclick="btn_detail('${list.id! "" }');">查看&nbsp;</a>
+                                <#--<a href="javascript:void(0);" onclick="updateAuthor('${list.id}')">修改</a>-->
                             </td>
                         </tr>
                         </#list>

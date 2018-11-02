@@ -192,9 +192,9 @@
             //$('input[type=checkbox]').prop('checked', $(checkbox).prop('checked'));
             //$('input:checkbox:checked').prop('checked', $(checkbox).prop('checked'));
             if ($("#checkAll").prop("checked")) {
-                $("input[type='checkbox'][name='metaid']").prop("checked", true);//全选
+                $("input[type='checkbox'][name='metaId']").prop("checked", true);//全选
             } else {
-                $("input[type='checkbox'][name='metaid']").prop("checked", false);  //取消全选
+                $("input[type='checkbox'][name='metaId']").prop("checked", false);  //取消全选
             }
         }
     </script>

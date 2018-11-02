@@ -63,9 +63,11 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     public static final String iyzhiMobileMookCatalogUrl = PropertiesUtil.get("iyzhi.mobile.book.catalog.url");
 
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
 
     private static List<String> FILES = new ArrayList<>();
 
@@ -706,7 +708,6 @@ public class BookMetaServiceImpl implements BookMetaService {
                         List<String> libs = new ArrayList<>();
                         libs.add(libId);
                         mongoBookMeta.setLibId(libs);
-
                         mongoBookMeta.setId(bookMeta.getMetaId());
                         mongoBookMeta.setTitle(bookMeta.getTitle());
                         mongoBookMeta.setCreator(bookMeta.getCreator());
@@ -714,7 +715,11 @@ public class BookMetaServiceImpl implements BookMetaService {
                         mongoBookMeta.setSummary(bookMeta.getAbstract_());
                         String publishDate = bookMeta.getIssuedDate();
                         if (!StringUtils.isEmpty(publishDate)) {
-                            mongoBookMeta.setPublishDate(sdf1.parse(publishDate));
+                            if (publishDate.contains("/")) {
+                                mongoBookMeta.setPublishDate(sdf2.parse(publishDate));
+                            } else {
+                                mongoBookMeta.setPublishDate(sdf1.parse(publishDate));
+                            }
                         }
                         mongoBookMeta.setIsbn(bookMeta.getIsbn());
                         mongoBookMeta.setChapterSum(bookMeta.getChapterNum());
@@ -725,20 +730,14 @@ public class BookMetaServiceImpl implements BookMetaService {
                         mongoBookMeta.setCoverUrl(bookMeta.getCoverUrl());
                         mongoBookMeta.setCoverMiniUrl(bookMeta.getThumImgUrl());
                         mongoBookMeta.setBodyClass(bookMeta.getStyleClass());
-                        String catalog = bookMeta.getStreamCatalog();
-                        if (!StringUtils.isEmpty(catalog)) {
-                            List<String> cataRows = Arrays.asList(bookMeta.getStreamCatalog().split("},"));
-                            List<String> newCata = new ArrayList<>();
-                            for (int i = 0; i < cataRows.size(); i++) {
-                                String cata = cataRows.get(i) + "}";
-                                newCata.add(cata);
-                            }
-                            mongoBookMeta.setCataRows(newCata);
-                        }
+                        mongoBookMeta.set_route_("shard1");
                         mongoBookMeta.setCreatedDate(new Date());
                         mongoBookMeta.setLastModifiedDate(new Date());
+                        //发布图书元数据
+                        mongoBookService.updateBookMeta(mongoBookMeta);
+                        sum++;
                         //获取章节内容分组
-                        List<MongoBookShard> shardList = getMongoShards(metaid);
+                        /*List<MongoBookShard> shardList = getMongoShards(metaid);
                         if (shardList != null && shardList.size() > 0) {
                             int res1 = mongoBookService.updateBookShard(shardList);
                             if (res1 > 0) {
@@ -753,7 +752,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     }
                                 }
                             }
-                        }
+                        }*/
                     } else {
                         log.warn("流式服务中图书" + metaid + "不存在");
                     }

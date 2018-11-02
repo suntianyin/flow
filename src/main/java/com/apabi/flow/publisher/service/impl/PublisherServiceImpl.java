@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.github.pagehelper.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author wuji
  * @date 2018/8/10 10:49
@@ -20,8 +22,8 @@ public class PublisherServiceImpl implements PublisherService {
 
 
     @Override
-    public Page<Publisher> queryPage() {
-        return publisherDao.queryPage();
+    public Page<Publisher> queryPage(String id, String title, String relatePublisherID) {
+        return publisherDao.queryPage(id, title, relatePublisherID);
     }
 
     @Override
@@ -37,5 +39,15 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public int editPublisher(Publisher publisher) {
         return publisherDao.editPublisher(publisher);
+    }
+
+    @Override
+    public List<Publisher> listPublishersByIdAndTitleAndRelatePublisherID(String id, String title, String relatePublisherID) {
+        return publisherDao.listPublishersByIdAndTitleAndRelatePublisherID(id, title, relatePublisherID);
+    }
+
+    @Override
+    public List<Publisher> findAll() {
+        return publisherDao.findAll();
     }
 }

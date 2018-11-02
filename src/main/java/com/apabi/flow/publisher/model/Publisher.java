@@ -1,5 +1,9 @@
 package com.apabi.flow.publisher.model;
 
+import com.apabi.flow.publisher.constant.ClassCodeEnum;
+import com.apabi.flow.publisher.constant.ResourceTypeEnum;
+import com.apabi.flow.publisher.constant.TitleTypeEnum;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,13 +18,13 @@ public class Publisher implements Serializable {
     private String relatePublisherID;
     private String isbn;
     private String title;
-    private String titleType;
+    private TitleTypeEnum titleType;
     private String startDate;
     private String endDate;
     private String nationalityCode;
     private String founderDate;
-    private String classCode;
-    private String resourceType;
+    private ClassCodeEnum classCode;
+    private ResourceTypeEnum resourceType;
     private String publishingGroup;
     private String publishingGroupID;
     private String president;
@@ -64,13 +68,7 @@ public class Publisher implements Serializable {
         this.title = title;
     }
 
-    public String getTitleType() {
-        return titleType;
-    }
 
-    public void setTitleType(String titleType) {
-        this.titleType = titleType;
-    }
 
     public String getStartDate() {
         return startDate;
@@ -104,20 +102,27 @@ public class Publisher implements Serializable {
         this.founderDate = founderDate;
     }
 
-    public String getClassCode() {
+    public TitleTypeEnum getTitleType() {
+        return titleType;
+    }
+
+    public void setTitleType(TitleTypeEnum titleType) {
+        this.titleType = titleType;
+    }
+
+    public ClassCodeEnum getClassCode() {
         return classCode;
     }
 
-    public void setClassCode(String classCode) {
+    public void setClassCode(ClassCodeEnum classCode) {
         this.classCode = classCode;
     }
 
-
-    public String getResourceType() {
+    public ResourceTypeEnum getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(String resourceType) {
+    public void setResourceType(ResourceTypeEnum resourceType) {
         this.resourceType = resourceType;
     }
 

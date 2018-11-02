@@ -6,27 +6,32 @@
 <mapper namespace="com.apabi.flow.publisher.dao.PublisherDao">
 
     <resultMap id="publisherResult" type="com.apabi.flow.publisher.model.Publisher">
-        <result property="id" column="ID" />
-        <result property="relatePublisherID" column="RELATEPUBLISHERID" />
-        <result property="isbn" column="ISBN" />
-        <result property="title" column="TITLE" />
-        <result property="titleType" column="TITLETYPE" />
-        <result property="startDate" column="STARTDATE" />
-        <result property="endDate" column="ENDDATE" />
-        <result property="nationalityCode" column="NATIONALITYCODE" />
-        <result property="founderDate" column="FOUNDERDATE" />
-        <result property="classCode" column="CLASSCODE" />
-        <result property="resourceType" column="RESOURCETYPE" />
-        <result property="publishingGroup" column="PUBLISHINGGROUP" />
-        <result property="publishingGroupID" column="PUBLISHINGGROUPID" />
-        <result property="president" column="PRESIDENT" />
-        <result property="vicePresident" column="VICEPRESIDENT" />
-        <result property="qualityLevel" column="QUALITYLEVEL" />
-        <result property="summary" column="SUMMARY" />
-        <result property="place" column="PLACE" />
-        <result property="operator" column="OPERATOR" />
-        <result property="createTime" column="CREATETIME" />
-        <result property="updateTime" column="UPDATETIME" />
+        <result property="id" column="ID"/>
+        <result property="relatePublisherID" column="RELATEPUBLISHERID"/>
+        <result property="isbn" column="ISBN"/>
+        <result property="title" column="TITLE"/>
+        <result property="titleType" column="TITLETYPE" typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+                javaType="com.apabi.flow.publisher.constant.TitleTypeEnum"/>
+        <result property="startDate" column="STARTDATE"/>
+        <result property="endDate" column="ENDDATE"/>
+        <result property="nationalityCode" column="NATIONALITYCODE"/>
+        <result property="founderDate" column="FOUNDERDATE"/>
+        <result property="classCode" column="CLASSCODE"
+                typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+                javaType="com.apabi.flow.publisher.constant.ClassCodeEnum"/>
+        <result property="resourceType" column="RESOURCETYPE"
+                typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+                javaType="com.apabi.flow.publisher.constant.ResourceTypeEnum"/>
+        <result property="publishingGroup" column="PUBLISHINGGROUP"/>
+        <result property="publishingGroupID" column="PUBLISHINGGROUPID"/>
+        <result property="president" column="PRESIDENT"/>
+        <result property="vicePresident" column="VICEPRESIDENT"/>
+        <result property="qualityLevel" column="QUALITYLEVEL"/>
+        <result property="summary" column="SUMMARY"/>
+        <result property="place" column="PLACE"/>
+        <result property="operator" column="OPERATOR"/>
+        <result property="createTime" column="CREATETIME"/>
+        <result property="updateTime" column="UPDATETIME"/>
     </resultMap>
 
     <!-- 用于select查询公用抽取的列 -->
@@ -118,7 +123,7 @@
                 #{title,jdbcType=VARCHAR},
             </if>
             <if test="titleType != null ">
-                #{titleType,jdbcType=VARCHAR},
+                #{titleType.code,jdbcType=VARCHAR},
             </if>
             <if test="startDate != null ">
                 #{startDate,jdbcType=VARCHAR},
@@ -133,10 +138,10 @@
                 #{founderDate,jdbcType=VARCHAR},
             </if>
             <if test="classCode != null ">
-                #{classCode,jdbcType=VARCHAR},
+                #{classCode.code,jdbcType=VARCHAR},
             </if>
             <if test="resourceType != null ">
-                #{resourceType,jdbcType=VARCHAR},
+                #{resourceType.code,jdbcType=VARCHAR},
             </if>
             <if test="publishingGroup != null ">
                 #{publishingGroup,jdbcType=VARCHAR},
@@ -168,13 +173,13 @@
             <if test="updateTime != null ">
                 #{updateTime,jdbcType=TIMESTAMP},
             </if>
-            </trim>
+        </trim>
     </insert>
 
     <!-- 根据Id查询resId -->
     <select id="selectdataById" resultMap="publisherResult">
         select
-        <include refid="commonColumns" />
+        <include refid="commonColumns"/>
         <![CDATA[
 	        from APABI_PUBLISHER_INFO
 	    ]]>
@@ -197,7 +202,7 @@
                 TITLE = #{title,jdbcType=VARCHAR},
             </if>
             <if test="titleType != null ">
-                TITLETYPE = #{titleType,jdbcType=VARCHAR},
+                TITLETYPE = #{titleType.code,jdbcType=VARCHAR},
             </if>
             <if test="startDate != null ">
                 STARTDATE = #{startDate,jdbcType=VARCHAR},
@@ -212,10 +217,10 @@
                 FOUNDERDATE = #{founderDate,jdbcType=VARCHAR},
             </if>
             <if test="classCode != null ">
-                CLASSCODE = #{classCode,jdbcType=VARCHAR},
+                CLASSCODE = #{classCode.code,jdbcType=VARCHAR},
             </if>
             <if test="resourceType != null ">
-                RESOURCETYPE = #{resourceType,jdbcType=VARCHAR},
+                RESOURCETYPE = #{resourceType.code,jdbcType=VARCHAR},
             </if>
             <if test="publishingGroup != null ">
                 PUBLISHINGGROUP = #{publishingGroup,jdbcType=VARCHAR},
@@ -253,16 +258,42 @@
 
     <select id="queryPage" resultMap="publisherResult">
         select
-        <include refid="commonColumns" />
-        <![CDATA[
-	        from APABI_PUBLISHER_INFO
-	    ]]>
+        <include refid="commonColumns"/>
+        from APABI_PUBLISHER_INFO
+        WHERE 1=1
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            AND TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="relatePublisherID != null and relatePublisherID != ''">
+            AND RELATEPUBLISHERID = #{relatePublisherID,jdbcType=VARCHAR}
+        </if>
+        ORDER BY UPDATETIME DESC
     </select>
 
     <select id="findAll" resultMap="publisherResult">
         select
-        <include refid="commonColumns" />
-	    from APABI_PUBLISHER_INFO
+        <include refid="commonColumns"/>
+        from APABI_PUBLISHER_INFO
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="listPublishersByIdAndTitleAndRelatePublisherID" resultMap="publisherResult">
+        select
+        <include refid="commonColumns"/>
+        from APABI_PUBLISHER_INFO
+        WHERE 1=1
+        <if test="id != null and id != ''">
+            AND ID = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            AND TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="relatePublisherID != null and relatePublisherID != ''">
+            AND RELATEPUBLISHERID = #{relatePublisherID,jdbcType=VARCHAR}
+        </if>
     </select>
 
 </mapper>

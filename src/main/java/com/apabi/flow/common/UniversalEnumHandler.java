@@ -64,20 +64,21 @@ public final class UniversalEnumHandler<E extends BaseEnum> extends BaseTypeHand
     public void setNonNullParameter(PreparedStatement ps, int i, E parameter,
                                     JdbcType jdbcType) throws SQLException {
         //BaseTypeHandler已经帮我们做了parameter的null判断
-        ps.setObject(i,(Integer)parameter.getCode(), jdbcType.TYPE_CODE);
+        ps.setObject(i,parameter.getCode(), jdbcType.TYPE_CODE);
     }
 
     @Override
     public E getNullableResult(ResultSet rs, String columnName)
             throws SQLException {
         // 根据数据库存储类型决定获取类型，本例子中数据库中存放String类型
-        int i = rs.getInt(columnName);
+        String s = rs.getString(columnName);
+        System.out.println(rs.getType());
         if (rs.wasNull()) {
             return null;
         } else {
             // 根据数据库中的value值，定位PersonType子类
 
-            return locateEnumStatus(i);
+            return locateEnumStatus(s);
         }
     }
 
@@ -120,7 +121,14 @@ public final class UniversalEnumHandler<E extends BaseEnum> extends BaseTypeHand
         }
         throw new IllegalArgumentException("未知的枚举类型：" + value + ",请核对" + type.getSimpleName());
     }
-
+    private E locateEnumStatus(String value) {
+        for(E e : enums) {
+            if(e.getCode().toString().equals(value)) {
+                return e;
+            }
+        }
+        throw new IllegalArgumentException("未知的枚举类型：" + value + ",请核对" + type.getSimpleName());
+    }
     /**
      * Get the converter to convert from S to target type T, where T is also an instance of R.
      *
