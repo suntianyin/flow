@@ -1,4 +1,4 @@
-package com.apabi.flow.newspaper.util;
+package com.apabi.flow.newspaper.cnr.util;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -58,7 +58,10 @@ public class CnrIpPoolUtils {
 
     public String getIp() {
         Random random = new Random();
-        int index = random.nextInt(ipCount);
+        int index = random.nextInt(ipCount)-1;
+        if(index<0){
+            index = 0;
+        }
         String ip = ipPool.get(index);
         return ip;
     }

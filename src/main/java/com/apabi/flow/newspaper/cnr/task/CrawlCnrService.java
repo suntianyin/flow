@@ -1,8 +1,8 @@
-package com.apabi.flow.newspaper.task;
+package com.apabi.flow.newspaper.cnr.task;
 
+import com.apabi.flow.newspaper.cnr.util.CnrCrawlUtils;
+import com.apabi.flow.newspaper.cnr.util.CnrIpPoolUtils;
 import com.apabi.flow.newspaper.dao.NewspaperDao;
-import com.apabi.flow.newspaper.util.CnrCrawlUtils;
-import com.apabi.flow.newspaper.util.CnrIpPoolUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +22,8 @@ import java.util.concurrent.Executors;
  **/
 @Controller
 @RequestMapping("/cnr")
-public class CrawlNewspaperService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlNewspaperService.class);
+public class CrawlCnrService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlCnrService.class);
     @Autowired
     private NewspaperDao newspaperDao;
 
@@ -49,9 +49,9 @@ public class CrawlNewspaperService {
             }
         }
 
-        CrawlNewspaperTask crawlNewspaperTask = new CrawlNewspaperTask(urlQueue, newspaperDao, countDownLatch, cnrIpPoolUtils, httpClient);
+        CrawlCnrTask crawlCnrTask = new CrawlCnrTask(urlQueue, newspaperDao, countDownLatch, cnrIpPoolUtils, httpClient);
         for (int i = 0; i < pageNum; i++) {
-            executorService.execute(crawlNewspaperTask);
+            executorService.execute(crawlCnrTask);
         }
         try {
             countDownLatch.await();
