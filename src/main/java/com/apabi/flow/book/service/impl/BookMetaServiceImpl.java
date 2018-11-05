@@ -16,6 +16,7 @@ import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
+import com.apabi.shuyuan.book.dao.CmfBookMetaDao;
 import com.github.pagehelper.Page;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -116,6 +117,9 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     @Autowired
     ApplicationConfig config;
+
+    @Autowired
+    CmfBookMetaDao cmfBookMetaDao;
 
     //根据图书metaid，获取图书元数据
     @Override
@@ -968,16 +972,22 @@ public class BookMetaServiceImpl implements BookMetaService {
                         File newFile = new File(path);
                         try {
                             String metaId = Xml2BookMeta.getMetaId4Xml(path);
-                            metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
-                            if (metaBatches.size() == 0) {
+                            if (!StringUtils.isEmpty(metaId)){
+                                metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
+                                if (metaBatches.size() == 0) {
+                                    BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                                    bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
+                                    metaBatches.add(bookMetaBatch);
+                                } else {
+                                    //用于排序
+                                    for (BookMetaBatch bookMetaBatch : metaBatches) {
+                                        bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
+                                    }
+                                }
+                            }else {
                                 BookMetaBatch bookMetaBatch = new BookMetaBatch();
                                 bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
                                 metaBatches.add(bookMetaBatch);
-                            } else {
-                                //用于排序
-                                for (BookMetaBatch bookMetaBatch : metaBatches) {
-                                    bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
-                                }
                             }
                         } catch (Exception e) {
                             log.warn("{\"status\":\"{}\",\"file\":\"{}\",\"message\":\"{}\"}", -1, newFile.getName(), e.getMessage());
@@ -986,8 +996,30 @@ public class BookMetaServiceImpl implements BookMetaService {
                         metaBatches.clear();
                     }
                 } else {
-                    //扫描cebx文件
-
+                    //扫描cebx文件，通过文件名从书苑获取metaId
+                    for (String cebxFile : CEBX_FILES){
+                        File newFile = new File(cebxFile);
+                        String metaId = cmfBookMetaDao.getMetaIdByFileName(newFile.getName().replace("cebx","ceb"));
+                        if (!StringUtils.isEmpty(metaId)){
+                            metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
+                            if (metaBatches.size() == 0) {
+                                BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                                bookMetaBatch.setFileName(newFile.getName());
+                                metaBatches.add(bookMetaBatch);
+                            } else {
+                                //用于排序
+                                for (BookMetaBatch bookMetaBatch : metaBatches) {
+                                    bookMetaBatch.setFileName(newFile.getName());
+                                }
+                            }
+                        }else {
+                            BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                            bookMetaBatch.setFileName(newFile.getName());
+                            metaBatches.add(bookMetaBatch);
+                        }
+                    }
+                    bookMetaBatches.addAll(metaBatches);
+                    metaBatches.clear();
                 }
                 long end = System.currentTimeMillis();
                 log.info("{\"status\":\"{}\",\"file\":\"{}\",\"useTime\":\"{}\"}", 0, dirPath, (end - start));

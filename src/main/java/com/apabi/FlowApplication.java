@@ -1,4 +1,4 @@
-package com.apabi.flow;
+package com.apabi;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @ServletComponentScan
-@MapperScan("com.apabi.flow.*.dao")
-@EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
 public class FlowApplication extends SpringBootServletInitializer{
