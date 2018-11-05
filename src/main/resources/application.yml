@@ -5,20 +5,22 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: dev
   data:
       mongodb:
         uri: mongodb://172.18.89.101:40000/books
   datasource:
-    driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@172.18.89.115:1521:orcl
-    password: book
-    username: book
-#    driver-class-name: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://127.0.0.1:3306/nr2k?useUnicode=true&characterEncoding=utf-8
-#    password: root
-#    username: root
     type: com.alibaba.druid.pool.DruidDataSource
+    primary:
+      driver-class-name: oracle.jdbc.OracleDriver
+      url: jdbc:oracle:thin:@172.18.89.115:1521:orcl
+      username: book
+      password: book
+    secondary:
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      url: jdbc:sqlserver://172.18.89.253:1433;DatabaseName=Dlib_2
+      username: gpp
+      password: Founder123
     # 下面为连接池的补充设置，应用到上面所有数据源中
     # 初始化大小，最小，最大
     initialSize: 3
@@ -40,6 +42,11 @@ spring:
     #关闭abanded连接时输出错误日志
     logAbandoned: true
     filters: mergeStat
+
+##    driver-class-name: com.mysql.jdbc.Driver
+##    url: jdbc:mysql://127.0.0.1:3306/nr2k?useUnicode=true&characterEncoding=utf-8
+##    password: root
+##    username: root
 
   jpa:
     hibernate:
