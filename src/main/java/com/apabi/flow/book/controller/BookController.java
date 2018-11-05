@@ -107,13 +107,19 @@ public class BookController {
     @RequestMapping(value = "/batchChapter", method = RequestMethod.POST)
     @ResponseBody
     public String batchChapter(@RequestParam("fileInfo") String fileInfo,
-                               @RequestParam("filePath") String filePath) {
+                               @RequestParam("filePath") String filePath,
+                               @RequestParam("fileType") String fileType) {
         if (!StringUtils.isEmpty(fileInfo)) {
             if (!StringUtils.isEmpty(filePath)) {
                 long start = System.currentTimeMillis();
                 try {
-                    List<BookBatchRes> bookBatchResList = readBook.batchChapter(fileInfo, filePath);
-                    if (bookBatchResList != null && bookBatchResList.size() > 0) {
+                    List<BookBatchRes> bookBatchResList = new ArrayList<>();
+                    if (fileType.equals("epub")) {
+                        bookBatchResList = readBook.batchChapterEpub(fileInfo, filePath);
+                    } else if (fileType.equals("cebx")) {
+                        bookBatchResList = readBook.batchChapterCebx(fileInfo, filePath);
+                    }
+                    if (bookBatchResList.size() > 0) {
                         RES_LIST = "";
                         for (BookBatchRes bookBatchRes : bookBatchResList) {
                             RES_LIST += bookBatchRes.toString();
@@ -145,7 +151,9 @@ public class BookController {
             List<BookMetaBatch> bookMetas = new ArrayList<>();
             if (!StringUtils.isEmpty(fileType)) {
                 if (fileType.toLowerCase().equals("epub")) {
-                    bookMetaList = bookMetaService.getBookMetaBatch(filePath);
+                    bookMetaList = bookMetaService.getBookMetaEpubBatch(filePath);
+                } else if (fileType.toLowerCase().equals("cebx")) {
+                    bookMetaList = bookMetaService.getBookMetaCebxBatch(filePath);
                 }
             }
             if (bookMetaList != null && bookMetaList.size() > 0) {

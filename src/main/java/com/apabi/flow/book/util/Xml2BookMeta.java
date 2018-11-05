@@ -3,6 +3,7 @@ package com.apabi.flow.book.util;
 import com.apabi.flow.book.model.BookMeta;
 import net.sf.json.JSONObject;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
@@ -268,6 +269,21 @@ public class Xml2BookMeta {
             bookMeta.setType(doc.selectSingleNode("//Type").getText());
             bookMeta.setLanguage(doc.selectSingleNode("//Language").getText());
             return bookMeta;
+        }
+        return null;
+    }
+
+    //获取xml文件中的id
+    public static String getMetaId4Xml(String path) throws Exception {
+        if (!StringUtils.isEmpty(path)) {
+            String suffix = path.substring(path.lastIndexOf(".") + 1);
+            if (suffix.toLowerCase().equals("xml")) {
+                SAXReader saxReader = new SAXReader();
+                Document doc = saxReader.read(new File(path));
+                Element root = doc.getRootElement();
+                String metaId = root.element("header").elementTextTrim("identifier");
+                return metaId;
+            }
         }
         return null;
     }

@@ -64,8 +64,8 @@ public class ReadBook {
         return 0;
     }
 
-    //批量发布
-    public List<BookBatchRes> batchChapter(String fileInfo, String filePath) throws Exception {
+    //批量发布Epub
+    public List<BookBatchRes> batchChapterEpub(String fileInfo, String filePath) throws Exception {
         if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
             String[] fileInfos = fileInfo.split(";");
             if (fileInfos != null && fileInfos.length > 0) {
@@ -120,6 +120,34 @@ public class ReadBook {
             }
         }
         return 0;
+    }
+
+    //批量发布Cebx
+    public List<BookBatchRes> batchChapterCebx(String fileInfo, String filePath) throws Exception {
+        if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
+            String[] fileInfos = fileInfo.split(";");
+            if (fileInfos != null && fileInfos.length > 0) {
+                List<BookBatchRes> bookBatchResList = new ArrayList<>();
+                for (String file : fileInfos) {
+                    String[] fileId = file.split(",");
+                    if (fileId != null && fileId.length == 2) {
+                        //传入文件路径和图书metaId
+                        int res = readCebxBook(filePath + File.separator + fileId[1], fileId[0]);
+                        BookBatchRes bookBatchRes = new BookBatchRes();
+                        bookBatchRes.setFileName(fileId[1]);
+                        bookBatchRes.setMetaId(fileId[0]);
+                        if (res > 0) {
+                            bookBatchRes.setStatus(1);
+                        } else {
+                            bookBatchRes.setStatus(0);
+                        }
+                        bookBatchResList.add(bookBatchRes);
+                    }
+                }
+                return bookBatchResList;
+            }
+        }
+        return null;
     }
 
 }

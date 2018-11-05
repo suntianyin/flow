@@ -9,7 +9,7 @@
     <title></title>
     <script type="text/javascript">
 
-        //检索
+        //扫描文件
         function btn_Search() {
             loading();
             $("#form1").submit();
@@ -32,9 +32,13 @@
                 tipDialog("请填写文件路径", 3, -2);
                 return;
             }
+
+            var fileType = $("#fileType").val();
+
             var formData = new FormData();
             formData.append('fileInfo', fileInfo);
             formData.append("filePath", filePath);
+            formData.append("fileType", fileType);
             loading();
             $.ajax({
                 url: RootPath() + "/book/batchChapter",

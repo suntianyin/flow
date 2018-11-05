@@ -227,6 +227,28 @@
         <appender-ref ref="NLC_CRAWL_STATUS"/>
     </logger>
 
+    <!--从书苑获取图书数据，新增到流式图书库中-->
+    <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/shuyuan/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.apabi.flow.book.task.GetBook4ShuyuanTask" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="GET_BOOK_SHUYUAN"/>
+    </logger>
+
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="CONSOLE"/>

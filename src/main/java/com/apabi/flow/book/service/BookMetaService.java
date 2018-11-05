@@ -60,7 +60,10 @@ public interface BookMetaService {
     Page<BookMetaVo> findBookMetaVoByPage(Map<String, String> queryMap);
 
     //获取epub文件的图书元数据
-    List<BookMetaBatch> getBookMetaBatch(String dir);
+    List<BookMetaBatch> getBookMetaEpubBatch(String dir);
+
+    //获取cebx文件的图书元数据
+    List<BookMetaBatch> getBookMetaCebxBatch(String dir);
 
     //将指定图书存入爱读爱看
     int insertBookMeta2Mongo(String ids, Map<String, String> conds) throws ParseException;
