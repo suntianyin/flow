@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.book.dao.SystemConfMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.SystemConf">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CONFNAME" jdbcType="VARCHAR" property="confname" />
+    <result column="CONFKEY" jdbcType="VARCHAR" property="confkey" />
+    <result column="CONFVALUE" jdbcType="VARCHAR" property="confvalue" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+    <result column="CREATETIME" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CONFNAME, CONFKEY, CONFVALUE, DESCRIPTION, OPERATOR, CREATETIME, UPDATETIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from SYSTEM_CONF
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByConfKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from SYSTEM_CONF
+    where CONFKEY = #{confkey,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from SYSTEM_CONF
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.book.model.SystemConf">
+    insert into SYSTEM_CONF (ID, CONFNAME, CONFKEY, 
+      CONFVALUE, DESCRIPTION, OPERATOR, 
+      CREATETIME, UPDATETIME)
+    values (#{id,jdbcType=VARCHAR}, #{confname,jdbcType=VARCHAR}, #{confkey,jdbcType=VARCHAR}, 
+      #{confvalue,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.book.model.SystemConf">
+    insert into SYSTEM_CONF
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="confname != null">
+        CONFNAME,
+      </if>
+      <if test="confkey != null">
+        CONFKEY,
+      </if>
+      <if test="confvalue != null">
+        CONFVALUE,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="operator != null">
+        OPERATOR,
+      </if>
+      <if test="createtime != null">
+        CREATETIME,
+      </if>
+      <if test="updatetime != null">
+        UPDATETIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="confname != null">
+        #{confname,jdbcType=VARCHAR},
+      </if>
+      <if test="confkey != null">
+        #{confkey,jdbcType=VARCHAR},
+      </if>
+      <if test="confvalue != null">
+        #{confvalue,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.book.model.SystemConf">
+    update SYSTEM_CONF
+    <set>
+      <if test="confname != null">
+        CONFNAME = #{confname,jdbcType=VARCHAR},
+      </if>
+      <if test="confkey != null">
+        CONFKEY = #{confkey,jdbcType=VARCHAR},
+      </if>
+      <if test="confvalue != null">
+        CONFVALUE = #{confvalue,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        CREATETIME = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null">
+        UPDATETIME = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.book.model.SystemConf">
+    update SYSTEM_CONF
+    set CONFNAME = #{confname,jdbcType=VARCHAR},
+      CONFKEY = #{confkey,jdbcType=VARCHAR},
+      CONFVALUE = #{confvalue,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      CREATETIME = #{createtime,jdbcType=TIMESTAMP},
+      UPDATETIME = #{updatetime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

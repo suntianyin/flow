@@ -57,7 +57,9 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     public static String shuyuanOrgCode = PropertiesUtil.get("iyzhiCode");
 
-    public static String baseUrlType = "command/htmlpage.ashx";
+    public static String baseUrlType = "comm/htmlpage.ashx";
+
+    public static String urlType ="htmlpage.ashx";
 
     public static String serviceType = "htmlpage";
 

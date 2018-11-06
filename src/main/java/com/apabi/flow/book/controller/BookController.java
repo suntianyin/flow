@@ -1,5 +1,6 @@
 package com.apabi.flow.book.controller;
 
+import com.apabi.flow.book.dao.PageCrawledQueueMapper;
 import com.apabi.flow.book.entity.BookMetaMap;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.*;
@@ -70,6 +71,9 @@ public class BookController {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    PageCrawledQueueMapper pageCrawledQueueMapper;
 
     @Autowired
     ApplicationConfig config;
@@ -884,6 +888,13 @@ public class BookController {
         return bookPageService.processBookFromPage2Chapter(metaid);
     }
 
+
+    @RequestMapping("/bookPageManagement")
+    public String getBookPageManagement() {
+        return "book/bookPageManagement";
+    }
+
+
     /**
      * 根据配置文件自动拉取分页数据
      *
@@ -891,8 +902,17 @@ public class BookController {
      */
     @ResponseBody
     @RequestMapping("/autoFetchPageData")
-    public int autoFetchPageData() {
-        return bookPageService.autoFetchPageData();
+    public Object autoFetchPageData() {
+        ResultEntity resultEntity = new ResultEntity();
+        int i = bookPageService.autoFetchPageData();
+        if(i>=1){
+            resultEntity.setMsg("采集加密流式内容成功，拉取总页数为"+i);
+            resultEntity.setStatus(i);
+        }else{
+            resultEntity.setMsg("采集加密失败！请联系管理员");
+            resultEntity.setStatus(-1);
+        }
+        return resultEntity;
     }
 
     /**
@@ -902,8 +922,50 @@ public class BookController {
      */
     @ResponseBody
     @RequestMapping("/autoProcessBookFromPage2Chapter")
-    public int autoProcessBookFromPage2Chapter() {
-        return bookPageService.autoProcessBookFromPage2Chapter();
+    public Object autoProcessBookFromPage2Chapter() {
+        ResultEntity resultEntity = new ResultEntity();
+        int i = bookPageService.autoProcessBookFromPage2Chapter();
+        if(i>=1){
+            resultEntity.setMsg("流式内容拼装成功,拼接章节数为"+i);
+            resultEntity.setStatus(i);
+        }else{
+            resultEntity.setMsg("流式内容拼装失败！请联系管理员");
+            resultEntity.setStatus(-1);
+        }
+        return resultEntity;
+    }
+
+    /**
+     * 批量上传metaid
+     *
+     * @return 返回上传数据成功书id数
+     */
+    @ResponseBody
+    @RequestMapping("/getBookMetaIds")
+    public Object getBookMetaIds(@RequestParam("metaIds") String metaIds) {
+        try {
+            if (metaIds != null && metaIds != "") {
+                ResultEntity resultEntity = new ResultEntity();
+                String[] split = metaIds.split(",");
+                HashSet<String> hashSet = new HashSet();
+                for (String a : split) {
+                    hashSet.add(a);
+                }
+                int num = 0;
+                for (String b : hashSet) {
+                    PageCrawledQueue pageCrawledQueue = new PageCrawledQueue();
+                    pageCrawledQueue.setId(b);
+                    int i = pageCrawledQueueMapper.insert(pageCrawledQueue);
+                    num += i;
+                }
+                resultEntity.setMsg("上传数据成功" + num + "条");
+                resultEntity.setStatus(1);
+                return resultEntity;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @GetMapping("/test")

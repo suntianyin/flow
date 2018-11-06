@@ -86,4 +86,11 @@ public interface BookPageMapper {
      * @return 返回当前数据集下的 第 pageid 页的页面信息实体
      */
     BookPage findBookPageByMetaIdAndPageId(@Param("metaId") String metaId, @Param("pageId") Integer pageId);
+    /**
+     * 修改某个数据集下的 某一页内容信息
+     * @param metaId
+     * @param pageId
+     * @return
+     */
+    Integer updateBookPageByMetaIdAndPageId(BookPage bookPage);
 }

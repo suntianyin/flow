@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.book.dao.PageAssemblyQueueMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.PageAssemblyQueue">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PAGE_ASSEMBLY_QUEUE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.book.model.PageAssemblyQueue">
+    insert into APABI_BOOK_PAGE_ASSEMBLY_QUEUE (ID)
+    values (#{id,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.book.model.PageAssemblyQueue">
+    insert into APABI_BOOK_PAGE_ASSEMBLY_QUEUE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="findAll" resultMap="BaseResultMap">
+    select ID from APABI_BOOK_PAGE_ASSEMBLY_QUEUE
+  </select>
+</mapper>

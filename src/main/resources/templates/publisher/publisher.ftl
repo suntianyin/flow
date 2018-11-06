@@ -8,7 +8,6 @@
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
     <title>出版社数据</title>
     <script type="text/javascript">
-
         //                function updatePublisher(id) {
         //        //            console.log("********************")
         //                    window.location.href = "edit?id="+id;
@@ -53,13 +52,111 @@
             var relatePublisherID = $("#relatePublisherID").val().trim();
             window.location.href = "index?id=" + id + "&title=" + title + "&relatePublisherID=" + relatePublisherID;
         }
-        var title=$("#title");//定位到input框
-        title.change(function(){
-            console.log(title.val());
-            alert(title.val())
-            // this.query_search($n3.val());//query_search为模糊查询的方法
+        var test_list;
+        $(function () {
+            $.ajax({
+                url: "${ctx}/publisher/getRelatePublisherMap",
+                dataType:'json',
+                type: "get",
+                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+                async: false,
+                success: function (data) {
+                   console.log(data)
+                    test_list = data;
+                },
+                error: function (data) {
+                    alertDialog(data.responseText, -1);
+                }
+            });
+            return test_list;
         })
+        //测试用的数据，这里可以用AJAX获取服务器数据
+        // var test_list1 = ["小张", "小苏", "小杨", "老张", "老苏", "老杨", "老爷爷", "小妹妹", "老奶奶", "大鹏", "大明", "大鹏展翅", "你好", "hello", "hi"];
+        var old_value = "";
+        var highlightindex = -1;   //高亮
+        //自动完成
+        function AutoComplete(auto, search, mylist) {
+            if ($("#" + search).val() != old_value || old_value == "") {
+                var autoNode = $("#" + auto);   //缓存对象（弹出框）
+                var carlist = new Array();
+                var carId= new Array();
+                var n = 0;
+                var m=0;
+                old_value = $("#" + search).val();
+                for (var i in mylist) {
+                    // carId[m++]=mylist[i].fieldName;
+                    if (mylist[i].metaValue.indexOf(old_value) >= 0) {
+                        carlist[n++] = mylist[i].metaValue;
 
+                    }
+                }
+                if (carlist.length == 0) {
+                    autoNode.hide();
+                    return;
+                }
+                autoNode.empty();  //清空上次的记录
+                for (i in carlist) {
+                    var wordNode = carlist[i];   //弹出框里的每一条内容
+                    var newDivNode = $("<li>").attr("id", i);    //设置每个节点的id值
+                    newDivNode.attr("style", "font:14px/25px arial;width: 200px;height:25px;padding:0 8px;cursor: pointer;background-color: white;");
+                    newDivNode.html(wordNode).appendTo(autoNode);  //追加到弹出框
+                    //鼠标移入高亮，移开不高亮
+                    newDivNode.mouseover(function () {
+                        if (highlightindex != -1) {        //原来高亮的节点要取消高亮（是-1就不需要了）
+                            autoNode.children("li").eq(highlightindex).css("background-color", "white");
+                        }
+                        //记录新的高亮节点索引
+                        highlightindex = $(this).attr("id");
+                        // $(this).css("background-color", "#ebebeb");
+                        $(this).css("background-color", "#2c9be2");
+                    });
+                    newDivNode.mouseout(function () {
+                        $(this).css("background-color", "white");
+                    });
+                    //鼠标点击文字上屏
+                    newDivNode.click(function () {
+                        //取出高亮节点的文本内容
+                        // var comText = autoNode.hide().children("li").eq(highlightindex).text();
+                        var comText =$("#" + highlightindex).text();
+                        highlightindex = -1;
+                        // console.log(comText);
+                        //文本框中的内容变成高亮节点的内容
+                        $("#" + search).val(comText);
+                        // $("#relatePublisherID").val($("#" + highlightindex).id);
+                    })
+                    if (carlist.length > 0) {    //如果返回值有内容就显示出来
+                        autoNode.show();
+                    } else {               //服务器端无内容返回 那么隐藏弹出框
+                        autoNode.hide();
+                        //弹出框隐藏的同时，高亮节点索引值也变成-1
+                        highlightindex = -1;
+                    }
+                }
+            }
+            //点击页面隐藏自动补全提示框
+            document.onclick = function (e) {
+                var e = e ? e : window.event;
+                var tar = e.srcElement || e.target;
+                if (tar.id != search) {
+                    if ($("#" + auto).is(":visible")) {
+                        $("#" + auto).css("display", "none")
+                    }
+                }
+            }
+        }
+
+        $(function () {
+            old_value = $("#relatePublisherID").val();
+            console.log(test_list)
+            $("#relatePublisherID").focus(function () {
+                if ($("#relatePublisherID").val() == "") {
+                    AutoComplete("auto_div", "relatePublisherID", test_list);
+                }
+            });
+            $("#relatePublisherID").keyup(function () {
+                AutoComplete("auto_div", "relatePublisherID", test_list);
+            });
+        });
     </script>
 </head>
 <body>
@@ -79,35 +176,52 @@
         <!--列表-->
         <div id="grid_List">
             <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
-                <table border="0" class="form-find" style="height: 45px;">
-                    <tr>
-                        <th>出版社id：</th>
-                        <td>
-                            <input id="id" type="text" value="${id! ''}" class="txt" style="width: 200px"/>
-                        </td>
+                <form autocomplete="off">
+                    <table border="0" class="form-find" style="height: 45px;">
+                        <tr>
+                            <th>出版社id：</th>
+                            <td>
+                                <input id="id" type="text" value="${id! ''}" class="txt" style="width: 200px"/>
+                            </td>
 
-                        <th>出版社名称：</th>
-                        <td>
-                            <input id="title" type="text" value="${title! ''}" class="txt" style="width: 200px"/>
-                        </td>
+                            <th>出版社名称：</th>
+                            <td>
+                                <input id="title" type="text" value="${title! ''}" class="txt" style="width: 200px"/>
+                            </td>
 
-                        <th>关联出版社：</th>
-                        <td>
-                            <select id="relatePublisherID" name="relatePublisherID" class="txtselect">
-                            <#--<#list RelatePublisherIDset as a>-->
-                            <#--<option value="${RelatePublisherIDset[a_index]!''}">${RelatePublisherIDset[a_index]!''}</option>-->
+                            <#--<th>关联出版社：</th>-->
+                            <#--<td>-->
+                                <#--<select id="relatePublisherID" name="relatePublisherID" class="txtselect">-->
+                                    <#--<option value="" selected="selected">请选择出版社名称</option>-->
+                            <#--<#list map?keys as key>-->
+                            <#--<option value="${key!''}">${map[key]!''}</option>-->
                             <#--</#list>-->
-                                <option value="" selected="selected"></option>
-                                <#list map?keys as key>
-                                    <option value="${key!''}">${map[key]!''}</option>
-                                </#list>
-                            </select>
-                        </td>
-                        <td>
-                            <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
-                        </td>
-                    </tr>
-                </table>
+                                <#--</select>-->
+                            <#--</td>-->
+                            <th>关联出版社：</th>
+                            <td>
+                                <div class="search">
+                                    <input type="text" id="relatePublisherID" class="txt" style="width: 200px" value="${relatePublisherID!''}"/>
+                                    <ul id="auto_div" style="position: absolute;
+	display: none;
+	background: #fff;
+	border: 1px #f7f7f7 solid;
+	border-radius: 5px;
+	width: 10%;
+	margin: 0;
+	padding: 0;
+	color: #323232;
+	font-size: 0.9rem;">
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>
+                                <input id="btnSearch" type="button" class="btnSearch" value="搜 索"
+                                       onclick="btn_Search()"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -169,8 +283,8 @@
                     <#--</td>-->
                         <td align="center">
                             <a style="cursor:pointer;" onclick="btn_detail('${list.id! "" }');">查看&nbsp;</a>
-                            <#--<a style="cursor:pointer;"-->
-                               <#--onclick="btn_edit('${list.id! "" }');">编辑&nbsp;</a>-->
+                        <#--<a style="cursor:pointer;"-->
+                        <#--onclick="btn_edit('${list.id! "" }');">编辑&nbsp;</a>-->
                         </td>
                     </tr>
                     </#list>
