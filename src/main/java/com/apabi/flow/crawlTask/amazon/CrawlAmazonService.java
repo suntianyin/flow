@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-//@Order(2)
+//@Order(3)
 //@Component
 public class CrawlAmazonService implements ApplicationRunner {
     private Logger logger = LoggerFactory.getLogger(CrawlAmazonService.class);
@@ -65,7 +65,7 @@ public class CrawlAmazonService implements ApplicationRunner {
             e.printStackTrace();
         }
         // 立即关闭线程池
-        idExecutorService.shutdownNow();
+        idExecutorService.shutdown();
         // ******************多线程抓取idList结束******************
 
         // ******************多线程抓取id开始******************
@@ -90,7 +90,7 @@ public class CrawlAmazonService implements ApplicationRunner {
             e.printStackTrace();
         }
         // 立即关闭线程池
-        executorService.shutdownNow();
+        executorService.shutdown();
         // ******************多线程抓取id结束******************
 
         long endTime = System.currentTimeMillis();

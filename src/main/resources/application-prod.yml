@@ -10,11 +10,21 @@ spring:
       mongodb:
         uri: mongodb://192.168.12.21:27017/books
   datasource:
-    driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
-    username: book
-    password: book037268
     type: com.alibaba.druid.pool.DruidDataSource
+    primary:
+      driver-class-name: oracle.jdbc.OracleDriver
+      url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
+      username: book
+      password: book037268
+    secondary:
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      url: jdbc:sqlserver://172.18.89.253:1433;DatabaseName=Dlib_2
+      username: gpp
+      password: Founder123
+#    driver-class-name: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
+#    username: book
+#    password: book037268
     # 下面为连接池的补充设置，应用到上面所有数据源中
     # 初始化大小，最小，最大
     initialSize: 5

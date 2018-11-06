@@ -56,8 +56,9 @@
         //douban元数据编辑
         // 标记tag标签的id，保证不同tag的id不一样
         var index = 250;
+
         function btn_edit(doubanId) {
-            AddTabMenu2('R' + index, '${ctx}/douban/doubanEdit?doubanId='+doubanId, doubanId, 'true');
+            AddTabMenu2('R' + index, '${ctx}/douban/doubanEdit?doubanId=' + doubanId, doubanId, 'true');
             index++;
         }
     </script>
@@ -105,7 +106,7 @@
                                         <option value="isbn13" selected="selected">isbn13</option>
                                     </#if>
                                 <#else>
-                                    <option value="isbn" >isbn</option>
+                                    <option value="isbn">isbn</option>
                                     <option value="isbn10">isbn10</option>
                                     <option value="isbn13" selected="selected">isbn13</option>
                                 </#if>
@@ -124,11 +125,15 @@
                            class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                         <thead>
                         <tr role="row">
+                            <th>豆瓣Id</th>
                             <th>作者</th>
                             <th>书名</th>
                             <th>出版社</th>
+                            <th>出版日期</th>
                             <th>ISBN10</th>
                             <th>ISBN13</th>
+                            <th>创建时间</th>
+                            <th>更新时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -136,11 +141,15 @@
                         <#if doubanMetaModelList?? >
                             <#list doubanMetaModelList as list>
                                 <tr class="gradeA odd" role="row">
+                                    <td align="center">${list.doubanId! '' }</td>
                                     <td align="center">${list.author! '' }</td>
                                     <td align="center">${list.title! '' }</td>
                                     <td align="center">${list.publisher! '' }</td>
+                                    <td align="center">${list.issueddate! '' }</td>
                                     <td align="center">${list.isbn10! '' }</td>
                                     <td align="center">${list.isbn13! '' }</td>
+                                    <td align="center">${(list.createTime?string('yyyy-MM-dd HH:mm:ss'))! '' }</td>
+                                    <td align="center">${(list.updateTime?string('yyyy-MM-dd HH:mm:ss'))! '' }</td>
                                     <td align="center">
                                         <a style="cursor:pointer;" onclick="btn_detail('${list.doubanId! "" }');">查看&nbsp;</a>
                                         <a style="cursor:pointer;"

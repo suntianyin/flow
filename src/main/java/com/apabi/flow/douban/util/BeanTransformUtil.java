@@ -1,4 +1,5 @@
-package com.apabi.flow.douban.util;/**
+package com.apabi.flow.douban.util;
+/**
  * Created by pipi on 2018/8/8.
  */
 

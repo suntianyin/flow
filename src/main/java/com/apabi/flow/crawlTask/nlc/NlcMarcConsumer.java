@@ -1,6 +1,8 @@
 package com.apabi.flow.crawlTask.nlc;
 
-import com.apabi.flow.crawlTask.util.IpPoolUtils;
+import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
+import com.apabi.flow.crawlTask.exception.NoSuchIsbnException;
+import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
 import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
 import com.apabi.flow.nlcmarc.model.NlcBookMarc;
@@ -24,13 +26,15 @@ public class NlcMarcConsumer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(NlcMarcConsumer.class);
     private ArrayBlockingQueue<String> isbnQueue;
     private NlcBookMarcDao nlcBookMarcDao;
+    private NlcCrawlIsbnDao nlcCrawlIsbnDao;
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
-    private IpPoolUtils ipPoolUtils;
+    private NlcIpPoolUtils ipPoolUtils;
     private CountDownLatch countDownLatch;
 
-    public NlcMarcConsumer(ArrayBlockingQueue<String> isbnQueue, NlcBookMarcDao nlcBookMarcDao, ApabiBookMetaDataDao apabiBookMetaDataDao,IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
+    public NlcMarcConsumer(ArrayBlockingQueue<String> isbnQueue, NlcBookMarcDao nlcBookMarcDao, NlcCrawlIsbnDao nlcCrawlIsbnDao, ApabiBookMetaDataDao apabiBookMetaDataDao, NlcIpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
         this.isbnQueue = isbnQueue;
         this.nlcBookMarcDao = nlcBookMarcDao;
+        this.nlcCrawlIsbnDao = nlcCrawlIsbnDao;
         this.apabiBookMetaDataDao = apabiBookMetaDataDao;
         this.ipPoolUtils = ipPoolUtils;
         this.countDownLatch = countDownLatch;
@@ -43,6 +47,7 @@ public class NlcMarcConsumer implements Runnable {
         String port = "";
         String isoContent = "";
         NlcBookMarc nlcBookMarc = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             // 从阻塞队列中获取isbn
             isbn = isbnQueue.take();
@@ -59,8 +64,9 @@ public class NlcMarcConsumer implements Runnable {
                     // 将解析好的NlcBookMarc数据插入到数据库
                     nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
                     // 更新apabi_book_metadata中的数据
-                    apabiBookMetaDataDao.updateNlcMarcId(nlcBookMarc.getNlcMarcId(),isbn);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    apabiBookMetaDataDao.updateNlcMarcId(nlcBookMarc.getNlcMarcId(), isbn);
+                    // 在nlc_crawl_isbn中把该isbn标记为hasCrawled = 1
+                    nlcCrawlIsbnDao.updateHasCrawled(isbn);
                     Date date = new Date();
                     String time = simpleDateFormat.format(date);
                     logger.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
@@ -68,6 +74,12 @@ public class NlcMarcConsumer implements Runnable {
             }
         } catch (InterruptedException e) {
         } catch (IOException e) {
+        } catch (NoSuchIsbnException e) {
+            // 如果国图数据库中没有该条isbn，则把该数据标记为可疑数据
+            nlcCrawlIsbnDao.markIsbnSuspect(isbn);
+            Date date = new Date();
+            String time = simpleDateFormat.format(date);
+            logger.info(time + "  " + Thread.currentThread().getName() + "国图中可能没有" + isbn + "这条数据...");
         } finally {
             countDownLatch.countDown();
         }

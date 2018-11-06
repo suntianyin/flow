@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.shuyuan.book.dao.CmfBookMetaDao">
+    <resultMap id="BaseResultMap" type="com.apabi.shuyuan.book.model.CmfBookMeta">
+        <id column="DRID" jdbcType="DECIMAL" property="drid"/>
+        <!--<result column="TITLE" jdbcType="VARCHAR" property="title"/>
+        <result column="ALTERNATIVETITLE" jdbcType="VARCHAR" property="alternativeTitle"/>
+        <result column="CREATOR" jdbcType="VARCHAR" property="creator"/>
+        <result column="SUBJECT" jdbcType="VARCHAR" property="subject"/>
+        <result column="ABSTRACT" jdbcType="VARCHAR" property="Abstract"/>
+        <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher"/>
+        <result column="TYPE" jdbcType="VARCHAR" property="type"/>
+        <result column="CONTRIBUTOR" jdbcType="VARCHAR" property="contributor"/>
+        <result column="ISSUEDDATE" jdbcType="VARCHAR" property="issuedDate"/>
+        <result column="Year" jdbcType="VARCHAR" property="year"/>-->
+    </resultMap>
+
+    <select id="getMaxDrid" resultType="java.lang.Integer">
+        SELECT MAX(DRID) FROM CMF_META_0001
+    </select>
+    <select id="getMetaIdByFileName" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT
+            Identifier
+        FROM
+            CMF_META_0001
+        WHERE
+            DRID = (
+        SELECT
+            DRID
+        FROM
+            CMF_DigitObject
+        WHERE
+            FileName = #{fileName})
+    </select>
+</mapper>

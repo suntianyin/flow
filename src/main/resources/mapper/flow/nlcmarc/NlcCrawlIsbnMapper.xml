@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.nlcmarc.model.NlcCrawlIsbn">
+        <id column="ISBN" jdbcType="VARCHAR" property="isbn"/>
+        <result column="HASCRAWLED" jdbcType="VARCHAR" property="hasCrawled"/>
+    </resultMap>
+
+    <!-- 根据isbn删除 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from NLC_CRAWL_ISBN
+        where ISBN = #{isbn}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="java.lang.String">
+        insert into NLC_CRAWL_ISBN (ISBN,HASCRAWLED)
+        values (#{isbn,jdbcType=VARCHAR},#{hasCrawled,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 统计表中没有抓取数据的个数 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from NLC_CRAWL_ISBN where HASCRAWLED = '0'
+    </select>
+
+    <!-- 统计表中可疑数据的个数 -->
+    <select id="countSuspect" resultType="java.lang.Integer">
+        select count(*) from NLC_CRAWL_ISBN where HASCRAWLED = '2'
+    </select>
+
+    <!-- 获取所有的isbn -->
+    <select id="getIsbnList" resultType="java.lang.String">
+        select isbn from NLC_CRAWL_ISBN where 1=1 and hasCrawled = '0'
+    </select>
+
+    <!-- 获取所有的可疑的isbn -->
+    <select id="getSuspectIsbnList" resultType="java.lang.String">
+        select isbn from NLC_CRAWL_ISBN where 1=1 and hasCrawled = '2'
+    </select>
+
+    <!-- 将已经抓取到的数据更新hasCrawled字段 -->
+    <update id="updateHasCrawled" parameterType="java.lang.String">
+        update NLC_CRAWL_ISBN set HASCRAWLED = '1' where ISBN = #{isbn}
+    </update>
+
+    <!-- 标记可疑isbn：可能数据库中没有该数据；可能由于网络原因没有一次性抓取到 -->
+    <update id="markIsbnSuspect" parameterType="java.lang.String">
+        update NLC_CRAWL_ISBN set HASCRAWLED = '2' where ISBN = #{isbn}
+    </update>
+
+</mapper>

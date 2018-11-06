@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-//@Order(3)
+//@Order(2)
 //@Component
 public class CrawlDoubanService implements ApplicationRunner {
     private static Logger logger = LoggerFactory.getLogger(CrawlDoubanService.class);
@@ -65,7 +65,7 @@ public class CrawlDoubanService implements ApplicationRunner {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        idExecutorService.shutdownNow();
+        idExecutorService.shutdown();
         // ******************多线程抓取idList结束******************
 
         // ******************多线程抓取id结束******************
@@ -91,7 +91,7 @@ public class CrawlDoubanService implements ApplicationRunner {
             e.printStackTrace();
         }
         // 关闭线程池
-        executorService.shutdownNow();
+        executorService.shutdown();
         // ******************多线程抓取id结束******************
 
         long endTime = System.currentTimeMillis();
