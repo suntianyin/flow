@@ -7,6 +7,8 @@ import com.apabi.flow.book.service.BookShardService;
 import com.apabi.flow.book.util.*;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.DataConfig;
+import com.apabi.flow.systemconf.dao.SystemConfMapper;
+import com.apabi.flow.systemconf.model.SystemConf;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -68,6 +71,9 @@ public class BookPageServiceImpl implements BookPageService {
     @Autowired
     BookShardDao bookShardDao;
 
+    public BookPageServiceImpl() throws Exception {
+    }
+
     /**
      * 借道，内部类，常量
      */
@@ -79,6 +85,7 @@ public class BookPageServiceImpl implements BookPageService {
         String SHARDINSERT = "shardinsert";
         String SHARDUPDATE = "shardupdate";
     }
+
     /**
      * 记录 本次bookLog 的日志信息
      *
@@ -106,7 +113,7 @@ public class BookPageServiceImpl implements BookPageService {
             BookLog bookLog = new BookLog(UUIDCreater.nextId(), metaid, DataType.PAGEUPDATE, addedNum, totals, startIndex, startIndex + addedNum - 1, new Date(), null);
             bookLogMapper.insert(bookLog);
             log.info("总页数：{}，从第 {} 页开始修改，本次共修改了 {} 页", totals, startIndex, addedNum);
-        }else if (DataType.SHARDUPDATE.equals(dataType)) {
+        } else if (DataType.SHARDUPDATE.equals(dataType)) {
             BookLog bookLog = new BookLog(UUIDCreater.nextId(), metaid, DataType.SHARDUPDATE, addedNum, totals, startIndex, startIndex + addedNum - 1, new Date(), null);
             bookLogMapper.insert(bookLog);
             log.info("总分组数：{}，从第 {} 分组开始修改，本次修改了 {} 分组", totals, startIndex, addedNum);
@@ -116,6 +123,7 @@ public class BookPageServiceImpl implements BookPageService {
             log.info("总分组数：{}，从第 {} 分组开始添加，本次共添加了 {} 分组", totals, startIndex, addedNum);
         }
     }
+
     /**
      * 根据data-config.yml 中的pageMetaIdList 的数组自动抓取多本书的流式分页内容
      * 更改为查PageAssemblyQueue
@@ -197,6 +205,7 @@ public class BookPageServiceImpl implements BookPageService {
         }
         return pageNums;
     }
+
     /**
      * 通过xml，获取书苑图书页码信息
      * 书苑流式内容采集
@@ -214,7 +223,7 @@ public class BookPageServiceImpl implements BookPageService {
                 log.error("获取元数据信息出错，无法查询url每页内容前缀，退出数据获取");
                 return 0;
             }
-            String confvalue = systemConf.getConfvalue();
+            String confvalue = systemConf.getConfKey();
             //总页数
             int cebxPage = 0;
             BookMeta meta = bookMetaDao.findBookMetaById(metaId);
@@ -304,6 +313,7 @@ public class BookPageServiceImpl implements BookPageService {
         }
         return 0;
     }
+
     /**
      * 通过获取书苑xml 章节目录，将本地图书分页数据拼装成章节数据
      * 书苑按页流式内容封装成流式章节内容
@@ -418,7 +428,7 @@ public class BookPageServiceImpl implements BookPageService {
                 }
                 if (!chapterList.isEmpty()) {
                     SimpleDateFormat localSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    int num =0;
+                    int num = 0;
                     for (BookChapter chapter : chapterList) {
                         BookChapter chapter1 = null;
                         num++;
@@ -438,7 +448,7 @@ public class BookPageServiceImpl implements BookPageService {
                     }
                     if (chapterShardList != null && chapterShardList.size() > 0) {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        int a=0;
+                        int a = 0;
                         for (BookShard bookShard : chapterShardList) {
                             try {
                                 BookShard bookShard1 = bookShardDao.findBookShardByComId(bookShard.getComId());
@@ -473,12 +483,14 @@ public class BookPageServiceImpl implements BookPageService {
         return 0;
     }
 
-//    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //            List<Integer> pageNums=new ArrayList<>();
 //            String foamatCatalog = "[{\"chapterName\":\"封面页\",\"chapterNum\":0,\"children\":[],\"ebookPageNum\":1,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"书名页\",\"chapterNum\":1,\"children\":[],\"ebookPageNum\":2,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"版权页\",\"chapterNum\":2,\"children\":[],\"ebookPageNum\":3,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"前言页\",\"chapterNum\":3,\"children\":[],\"ebookPageNum\":4,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"目录页\",\"chapterNum\":4,\"children\":[],\"ebookPageNum\":8,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"第1章 成就卓越的科学泰斗\",\"chapterNum\":5,\"children\":[{\"chapterName\":\"相对论鼻祖阿尔伯特•爱因斯坦\",\"chapterNum\":6,\"children\":[],\"ebookPageNum\":13,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"从汤玛斯•爱迪生想到记忆力名人\",\"chapterNum\":7,\"children\":[],\"ebookPageNum\":17,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"科学女杰居里夫人\",\"chapterNum\":8,\"children\":[],\"ebookPageNum\":22,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"无线电发明者伽利尔摩•马可尼\",\"chapterNum\":9,\"children\":[],\"ebookPageNum\":26,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"飞机发明者莱特兄弟\",\"chapterNum\":10,\"children\":[],\"ebookPageNum\":29,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"名医格林菲尔\",\"chapterNum\":11,\"children\":[],\"ebookPageNum\":32,\"url\":\"\",\"wordSum\":0}],\"ebookPageNum\":12,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"第2章 巨擘操觚的文学巨匠\",\"chapterNum\":12,\"children\":[{\"chapterName\":\"戏剧大师威廉•莎士比亚\",\"chapterNum\":13,\"children\":[],\"ebookPageNum\":36,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"伟大作家列夫•尼古拉耶维奇•托尔斯泰\",\"chapterNum\":14,\"children\":[],\"ebookPageNum\":39,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"法国文豪大仲马\",\"chapterNum\":15,\"children\":[],\"ebookPageNum\":42,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"大文学家赫伯托•乔治•韦尔斯\",\"chapterNum\":16,\"children\":[],\"ebookPageNum\":46,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"天才诗人埃德加•爱伦•坡\",\"chapterNum\":17,\"children\":[],\"ebookPageNum\":50,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"短篇小说家欧•亨利\",\"chapterNum\":18,\"children\":[],\"ebookPageNum\":54,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"大戏剧家萧伯纳\",\"chapterNum\":19,\"children\":[],\"ebookPageNum\":57,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"英国文豪威廉•萨默赛特•毛姆\",\"chapterNum\":20,\"children\":[],\"ebookPageNum\":61,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"文坛怪杰西奥多•德莱塞\",\"chapterNum\":21,\"children\":[],\"ebookPageNum\":64,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"著名小说家南根里\",\"chapterNum\":22,\"children\":[],\"ebookPageNum\":67,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"《爱丽丝漫游仙境记》作者查理•都格森\",\"chapterNum\":23,\"children\":[],\"ebookPageNum\":70,\"url\":\"\",\"wordSum\":0}],\"ebookPageNum\":35,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"第3章 传扬不朽的艺坛怪杰\",\"chapterNum\":24,\"children\":[{\"chapterName\":\"卡通大师华特•迪士尼\",\"chapterNum\":25,\"children\":[],\"ebookPageNum\":73,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"“说谎大王”罗伯•利波里\",\"chapterNum\":26,\"children\":[],\"ebookPageNum\":76,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"幽默影星罗伊•罗吉尔\",\"chapterNum\":27,\"children\":[],\"ebookPageNum\":80,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"音乐家沃尔夫冈•阿玛迪乌斯•莫扎特\",\"chapterNum\":28,\"children\":[],\"ebookPageNum\":83,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"权威作曲家乔治•杰斯文\",\"chapterNum\":29,\"children\":[],\"ebookPageNum\":85,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"歌唱家恩瑞科•卡鲁索\",\"chapterNum\":30,\"children\":[],\"ebookPageNum\":88,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"“魔术之王”霍华德•瑟斯顿\",\"chapterNum\":31,\"children\":[],\"ebookPageNum\":92,\"url\":\"\",\"wordSum\":0}],\"ebookPageNum\":72,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"第4章 堪称楷模的名人大师\",\"chapterNum\":32,\"children\":[{\"chapterName\":\"印度救星莫罕达斯•卡拉姆昌德•甘地\",\"chapterNum\":33,\"children\":[],\"ebookPageNum\":96,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"英国首相温斯顿•丘吉尔\",\"chapterNum\":34,\"children\":[],\"ebookPageNum\":99,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"美国第26任总统西奥多•罗斯福\",\"chapterNum\":35,\"children\":[],\"ebookPageNum\":104,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"美国第28任总统威尔逊\",\"chapterNum\":36,\"children\":[],\"ebookPageNum\":108,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"为爱至死不渝的奥匈皇太子鲁道尔夫\",\"chapterNum\":37,\"children\":[],\"ebookPageNum\":111,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"讲话高手罗威尔•仲马斯\",\"chapterNum\":38,\"children\":[],\"ebookPageNum\":115,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"著名牧师派克斯•卡德门\",\"chapterNum\":39,\"children\":[],\"ebookPageNum\":118,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"评论权威辛泰尔\",\"chapterNum\":40,\"children\":[],\"ebookPageNum\":121,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"大律师克劳伦斯•丹诺\",\"chapterNum\":41,\"children\":[],\"ebookPageNum\":124,\"url\":\"\",\"wordSum\":0}],\"ebookPageNum\":95,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"第5章 举世闻名的实业大家\",\"chapterNum\":42,\"children\":[{\"chapterName\":\"钢铁大王安德鲁•卡内基\",\"chapterNum\":43,\"children\":[],\"ebookPageNum\":129,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"大银行家皮尔庞特•摩根\",\"chapterNum\":44,\"children\":[],\"ebookPageNum\":133,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"石油大王约翰•戴维森•洛克菲勒\",\"chapterNum\":45,\"children\":[],\"ebookPageNum\":137,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"大出版家爱德华•博克\",\"chapterNum\":46,\"children\":[],\"ebookPageNum\":140,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"报界王者约瑟夫•普利策\",\"chapterNum\":47,\"children\":[],\"ebookPageNum\":144,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"报业泰斗威廉•伦道夫•赫斯特\",\"chapterNum\":48,\"children\":[],\"ebookPageNum\":162,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"军火巨商巴兹尔•沙哈罗夫\",\"chapterNum\":49,\"children\":[],\"ebookPageNum\":165,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"钻石大王吉姆•布雷迪\",\"chapterNum\":50,\"children\":[],\"ebookPageNum\":168,\"url\":\"\",\"wordSum\":0}],\"ebookPageNum\":128,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"第6章 坚忍顽强的探险勇士\",\"chapterNum\":51,\"children\":[{\"chapterName\":\"“探险之王”克里斯托弗•哥伦布\",\"chapterNum\":52,\"children\":[],\"ebookPageNum\":172,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"“北极熊”史蒂文森\",\"chapterNum\":53,\"children\":[],\"ebookPageNum\":176,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"赛车手马尔科姆•坎贝尔\",\"chapterNum\":54,\"children\":[],\"ebookPageNum\":179,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"南极探险家罗伯特•福尔肯•斯科特\",\"chapterNum\":55,\"children\":[],\"ebookPageNum\":183,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"海军大将李屈林•拜德\",\"chapterNum\":56,\"children\":[],\"ebookPageNum\":187,\"url\":\"\",\"wordSum\":0},{\"chapterName\":\"非洲探险家马丁•约翰逊\",\"chapterNum\":57,\"children\":[],\"ebookPageNum\":190,\"url\":\"\",\"wordSum\":0}],\"ebookPageNum\":171,\"url\":\"\",\"wordSum\":0}]";
 //            JSONArray jsonArray=JSONArray.fromObject(foamatCatalog);
 //            pageNums = getPageNums(jsonArray, pageNums);
 //            System.out.println(pageNums.toString());
-//
-//    }
+        String url = "http://cebxol.apabi.com/command/htmlpage.ashx?ServiceType=htmlpage&objID=m.20121205-YPT-889-0306.ft.cebx.1&metaId=m.20121205-YPT-889-0306&OrgId=iyzhi&width=1920&height=1080&pageid=18&username=iyzhi&rights=1-0_00&time=2018-11-08+09%3A07%3A31&sign=A9F4C4E21607A90B7CAD587DF5894EE9";
+        HttpEntity httpEntity = HttpUtils.doGetEntity(url);
+        String tmp = EntityUtils.toString(httpEntity);
+    }
 }

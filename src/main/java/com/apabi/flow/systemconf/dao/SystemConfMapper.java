@@ -1,6 +1,7 @@
-package com.apabi.flow.book.dao;
+package com.apabi.flow.systemconf.dao;
 
-import com.apabi.flow.book.model.SystemConf;
+import com.apabi.flow.systemconf.model.SystemConf;
+import com.github.pagehelper.Page;
 
 public interface SystemConfMapper {
     int deleteByPrimaryKey(String id);
@@ -15,5 +16,7 @@ public interface SystemConfMapper {
 
     int updateByPrimaryKey(SystemConf record);
 
-    SystemConf selectByConfKey(String confkey);
+    SystemConf selectByConfKey(String confKey);
+
+    Page<SystemConf> queryPage();
 }
