@@ -46,4 +46,22 @@ public class EbookUtil {
         log.info("makeHtmlUrl[" + url + "]");
         return url;
     }
+
+
+    //根据类型组装流式分页内容查询url
+    public static String makePageUrl(String makePageUrl,String shuyuanOrgId, String metaid, String baseUrlType, String serviceType, String width, String height, Long pageid) throws Exception {
+        String objId = metaid + ".ft.cebx.1";
+        String rights = "1-0_00";           //测试用
+        String userName = shuyuanOrgId;
+        String rightKey = PropertiesUtil.get("iyzhiKey");
+        Map<String, Object> signMap = SySignUtils.ebookSign(shuyuanOrgId, userName, metaid, rights, rightKey);
+        String url = "";
+        if (serviceType.equals(SERVICE_TYPE_IMAGE)) {
+            url = makePageUrl + "/" + baseUrlType + "?" + "ServiceType=" + serviceType + "&objID=" + URLEncoder.encode(objId, "UTF-8") + "&metaId=" + URLEncoder.encode(metaid, "UTF-8") + "&OrgId=" + shuyuanOrgId + "&username=" + URLEncoder.encode(userName, "UTF-8") + "&rights=" + rights + "&time=" + signMap.get("time") + "&sign=" + signMap.get("sign");
+        } else if (serviceType.equals(SERVICE_TYPE_HTML)) {
+            url = makePageUrl + "/" + baseUrlType + "?" + "ServiceType=" + serviceType + "&objID=" + URLEncoder.encode(objId, "UTF-8") + "&metaId=" + URLEncoder.encode(metaid, "UTF-8") + "&OrgId=" + shuyuanOrgId + "&width=" + width + "&height=" + height + "&pageid=" + pageid + "&username=" + URLEncoder.encode(userName, "UTF-8") + "&rights=" + rights + "&time=" + signMap.get("time") + "&sign=" + signMap.get("sign");
+        }
+        log.info("makeHtmlUrl[" + url + "]");
+        return url;
+    }
 }
