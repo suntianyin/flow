@@ -1,6 +1,8 @@
 package com.apabi.flow.book.service.impl;
 
 import com.apabi.flow.book.dao.*;
+import com.apabi.flow.book.fetchPage.FetchPageConsumer;
+import com.apabi.flow.book.fetchPage.FetchPageProducer;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookPageService;
 import com.apabi.flow.book.service.BookShardService;
@@ -27,6 +29,10 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 功能描述： <br>
@@ -96,7 +102,7 @@ public class BookPageServiceImpl implements BookPageService {
      * @param startIndex
      * @param endIndex
      */
-    private void saveBookLog(String metaid, String dataType, Integer addedNum, Integer totals, Integer startIndex, Integer endIndex) {
+    private  void saveBookLog(String metaid, String dataType, Integer addedNum, Integer totals, Integer startIndex, Integer endIndex) {
         if (DataType.PAGEINSERT.equals(dataType)) {
             BookLog bookLog = new BookLog(UUIDCreater.nextId(), metaid, DataType.PAGEINSERT, addedNum, totals, startIndex, startIndex + addedNum - 1, new Date(), null);
             bookLogMapper.insert(bookLog);
@@ -130,14 +136,70 @@ public class BookPageServiceImpl implements BookPageService {
      *
      * @return
      */
+//    @Override
+//    public int autoFetchPageData() {
+//        int totalNum = 0;
+//        List<PageCrawledQueue> list = pageCrawledQueueMapper.findAll();
+//        for (PageCrawledQueue pageCrawledQueue : list) {
+//            totalNum += insertShuyuanPageData(pageCrawledQueue.getId());
+//        }
+//        log.info("拉取总页数为 - {}", totalNum);
+//        return totalNum;
+//    }
     @Override
     public int autoFetchPageData() {
-        int totalNum = 0;
-        List<PageCrawledQueue> list = pageCrawledQueueMapper.findAll();
-        for (PageCrawledQueue pageCrawledQueue : list) {
-            totalNum += insertShuyuanPageData(pageCrawledQueue.getId());
+        int totalNum = 1;
+        try {
+            long startTime = System.currentTimeMillis();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String startDateTime = simpleDateFormat.format(startTime);
+            log.info(startDateTime + " spring boot初始化完毕，开始执行流式分页抓取....");
+            // 定义队列大小
+            int queueSize = 100;
+            // 获取cpu的核数
+            int cpuProcessorAmount = Runtime.getRuntime().availableProcessors();
+            ArrayBlockingQueue idQueue = new ArrayBlockingQueue(queueSize);
+            List<String> idList = new ArrayList<>();
+            List<PageCrawledQueue> list = pageCrawledQueueMapper.findAll();
+            for (PageCrawledQueue p:list) {
+                idList.add(p.getId());
+            }
+            int producerThreadAmount = cpuProcessorAmount * 2;
+            FetchPageProducer fetchPageProducer = new FetchPageProducer( idQueue, "fetchPageProducer", idList);
+            new Thread(fetchPageProducer).start();
+            // id列表中数据计数器
+            CountDownLatch idCountDownLatch = new CountDownLatch(idList.size());
+            // 设置线程数
+            int consumerThreadAmount = 3 * cpuProcessorAmount;
+            SystemConf systemConf = systemConfMapper.selectByConfKey("EpageContent");
+            if (systemConf == null) {
+                log.error("获取系统参数信息出错，无法查询url每页内容前缀");
+            }
+            String confvalue = systemConf.getConfValue();
+            // 创建消费者对象
+            FetchPageConsumer consumer = new FetchPageConsumer(idCountDownLatch,confvalue, idQueue,  bookMetaDao,  bookPageMapper,  pageCrawledQueueMapper,  pageAssemblyQueueMapper,  bookLogMapper);
+            // 创建线程池对象
+            ExecutorService executorService = Executors.newFixedThreadPool(consumerThreadAmount);
+            // 开启threadAmount个线程消费者线程，让线程池管理消费者线程
+            for (int i = 0; i < idList.size(); i++) {
+                // 执行线程中的任务
+                executorService.execute(consumer);
+            }
+            try {
+                idCountDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // 关闭线程池
+            executorService.shutdown();
+            // ******************多线程抓取page结束******************
+            long endTime = System.currentTimeMillis();
+            String endDateTime = simpleDateFormat.format(endTime);
+            log.info(endDateTime + " 流式分页抓取执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
-        log.info("拉取总页数为 - {}", totalNum);
         return totalNum;
     }
 
@@ -223,7 +285,7 @@ public class BookPageServiceImpl implements BookPageService {
                 log.error("获取元数据信息出错，无法查询url每页内容前缀，退出数据获取");
                 return 0;
             }
-            String confvalue = systemConf.getConfKey();
+            String confvalue = systemConf.getConfValue();
             //总页数
             int cebxPage = 0;
             BookMeta meta = bookMetaDao.findBookMetaById(metaId);
