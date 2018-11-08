@@ -161,6 +161,9 @@ public class BookPageServiceImpl implements BookPageService {
             ArrayBlockingQueue idQueue = new ArrayBlockingQueue(queueSize);
             List<String> idList = new ArrayList<>();
             List<PageCrawledQueue> list = pageCrawledQueueMapper.findAll();
+            if(list.size()==0){
+                return -1;
+            }
             for (PageCrawledQueue p:list) {
                 idList.add(p.getId());
             }
@@ -213,6 +216,9 @@ public class BookPageServiceImpl implements BookPageService {
     public int autoProcessBookFromPage2Chapter() {
         int totalNum = 0;
         List<PageAssemblyQueue> list = pageAssemblyQueueMapper.findAll();
+        if(list.size()==0){
+            return -1;
+        }
         for (PageAssemblyQueue pageAssemblyQueue : list) {
             try {
                 totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId());
@@ -421,6 +427,8 @@ public class BookPageServiceImpl implements BookPageService {
                     saveBookLog(metaId, DataType.CHAPTERINSERT, chapterList.size(), chapterList.size(), 0, chapterList.size() - 1);
                     return 0;
                 }
+                //总字数
+                int wordSum=0;
                 for (Integer pageNum : pageNums) {
                     if (pageNum == 1) {
                         continue;
@@ -437,6 +445,7 @@ public class BookPageServiceImpl implements BookPageService {
                     //获取章节字数
                     doc = Jsoup.parse(content.toString());
                     word = doc.body().children().text().replaceAll("\\u3000|\\s*", "").length();
+                    wordSum+=word;
                     chapter.setWordSum(word);
                     //给获取内容为空的章节添加一个p标签
                     if (content.length() == 0) {
@@ -534,6 +543,18 @@ public class BookPageServiceImpl implements BookPageService {
                         log.info("删除pageAssemblyQueue的id：{}成功", metaId);
                     } else {
                         log.info("删除pageAssemblyQueue的id：{}失败", metaId);
+                    }
+                    meta.setHasFlow(1);
+                    meta.setContentNum(wordSum);
+                    meta.setChapterNum(chapterNum);
+                    meta.setStreamCatalog(meta.getFoamatCatalog());
+                    meta.setIsOptimize(1);
+                    meta.setUpdateTime(new Date());
+                    int i1 = bookMetaDao.updateBookMetaById(meta);
+                    if (i1 > 0) {
+                        log.info("修改Bookmeta的id：{}成功", metaId);
+                    } else {
+                        log.info("修改Bookmeta的id：{}失败", metaId);
                     }
                     return num;
                 }

@@ -68,6 +68,7 @@ public class FetchPageConsumer implements Runnable {
             }
             if (cebxPage == 0) {
                 log.error("获取元数据信息出错，无法得到书本页数信息，退出数据获取");
+                return;
             }
             //页数 从 第一页开始，直到 总页数
             for (long i = start; i <= cebxPage; i++) {
@@ -77,7 +78,7 @@ public class FetchPageConsumer implements Runnable {
                 try {
                     //计数需要放在最上面才能保证数据的正确性，在后或中间都有可能会执行不到
                     num++;
-                    Thread.sleep(1000);
+//                    Thread.sleep(1000);
                     url = EbookUtil.makePageUrl(confvalue, BookMetaServiceImpl.shuyuanOrgCode, metaId, BookMetaServiceImpl.urlType, BookMetaServiceImpl.serviceType, "1920", "1080", i);
                     httpEntity = HttpUtils.doGetEntity(url);
                     String tmp = EntityUtils.toString(httpEntity);
@@ -128,7 +129,7 @@ public class FetchPageConsumer implements Runnable {
             } else {
                 log.info("添加pageAssemblyQueue的id:{}失败", metaId);
             }
-            log.info(Thread.currentThread().getName() +  "在抓取" + metaId + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            log.info(Thread.currentThread().getName() +  "在抓取" + metaId + "并添加至数据库成功，列表中剩余：" + (countDownLatch.getCount()-1) + "个数据...");
         } catch (Exception e) {
             e.printStackTrace();
         }finally {

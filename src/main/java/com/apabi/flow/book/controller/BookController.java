@@ -916,6 +916,9 @@ public class BookController {
         if(i==1){
             resultEntity.setMsg("采集加密流式内容成功");
             resultEntity.setStatus(i);
+        }else if(i==-1){
+            resultEntity.setMsg("采集加密队列已无数据");
+            resultEntity.setStatus(1);
         }else{
             resultEntity.setMsg("采集加密失败！请联系管理员");
             resultEntity.setStatus(-1);
@@ -936,6 +939,9 @@ public class BookController {
         if(i>=1){
             resultEntity.setMsg("流式内容拼装成功,拼接章节数为"+i);
             resultEntity.setStatus(i);
+        }else if(i==-1){
+            resultEntity.setMsg("拼装章节队列已无数据");
+            resultEntity.setStatus(1);
         }else{
             resultEntity.setMsg("流式内容拼装失败！请联系管理员");
             resultEntity.setStatus(-1);

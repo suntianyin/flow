@@ -26,6 +26,22 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <!-- 流式分页接口输出到独立文件的配置 -->
+    <appender name="PAGE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有INFO及以上级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/fetchPage/fetchPage.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
 
     <!-- amazonAPI接口输出到独立文件的配置 -->
     <appender name="AMAZON" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -162,6 +178,13 @@
             <pattern>%msg%n</pattern>
         </encoder>
     </appender>
+    <!-- 针对FetchPageConsumer接口配置的日志 -->
+    <logger name="com.apabi.flow.book.fetchPage.FetchPageConsumer" level="INFO" additivity="false">
+        <!-- 对于FetchPageConsumer的STDOUT的日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于FetchPageConsumer的输出至日志文件的日志配置 -->
+        <appender-ref ref="PAGE"/>
+    </logger>
 
     <!-- 针对AmazonMetaController接口配置的日志 -->
     <logger name="com.apabi.flow.douban.controller.AmazonMetaController" level="INFO" additivity="false">
