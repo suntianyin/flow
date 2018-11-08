@@ -299,10 +299,13 @@ public class BookMeta implements Serializable{
     @Column(name = "ISPUBLICCOPYRIGHT")
     private Integer isPublicCopyRight;
 
+    @Column(name = "FLOWSOURCE")
     private String flowSource;
 
+    @Column(name = "ISREADCEBXFLOW")
     private Integer isReadCebxFlow;
 
+    @Column(name = "ISREADEPUB")
     private Integer isReadEpub;
 
     public String getMetaId() {

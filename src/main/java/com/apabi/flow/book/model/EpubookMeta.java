@@ -81,6 +81,7 @@ public class EpubookMeta {
     @Column(name = "HASFLOW")
     private Integer hasflow;
 
+    @Column(name = "FLOWSOURCE")
     private String flowSource;
 
     /*@Column(name = "FILENAME")
