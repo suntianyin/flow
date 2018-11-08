@@ -913,8 +913,8 @@ public class BookController {
     public Object autoFetchPageData() {
         ResultEntity resultEntity = new ResultEntity();
         int i = bookPageService.autoFetchPageData();
-        if(i>=1){
-            resultEntity.setMsg("采集加密流式内容成功，拉取总页数为"+i);
+        if(i==1){
+            resultEntity.setMsg("采集加密流式内容成功");
             resultEntity.setStatus(i);
         }else{
             resultEntity.setMsg("采集加密失败！请联系管理员");
