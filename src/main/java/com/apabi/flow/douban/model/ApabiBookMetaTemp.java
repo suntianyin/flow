@@ -119,6 +119,39 @@ public class ApabiBookMetaTemp implements Serializable {
     @Column(name = "HASCEBX")
     private Integer hasCebx;
 
+    @Column(name = "ISREADEPUB")
+    private Integer isReadEpub;
+
+    @Column(name = "FLOWSOURCE")
+    private String flowSource;
+
+    @Column(name = "ISREADCEBXFLOW")
+    private Integer isReadCebxFlow;
+
+    public Integer getIsReadEpub() {
+        return isReadEpub;
+    }
+
+    public void setIsReadEpub(Integer isReadEpub) {
+        this.isReadEpub = isReadEpub;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
+    }
+
+    public Integer getIsReadCebxFlow() {
+        return isReadCebxFlow;
+    }
+
+    public void setIsReadCebxFlow(Integer isReadCebxFlow) {
+        this.isReadCebxFlow = isReadCebxFlow;
+    }
+
     public Integer getHasFlow() {
         return hasFlow;
     }
@@ -394,4 +427,46 @@ public class ApabiBookMetaTemp implements Serializable {
     public ApabiBookMetaTemp() {
     }
 
+    @Override
+    public String toString() {
+        return "ApabiBookMetaTemp{" +
+                "metaId='" + metaId + '\'' +
+                ", doubanId='" + doubanId + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", isbn13='" + isbn13 + '\'' +
+                ", isbn10='" + isbn10 + '\'' +
+                ", title='" + title + '\'' +
+                ", creator='" + creator + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", alternativeTitle='" + alternativeTitle + '\'' +
+                ", subTitle='" + subTitle + '\'' +
+                ", originTitle='" + originTitle + '\'' +
+                ", translator='" + translator + '\'' +
+                ", issueddate='" + issueddate + '\'' +
+                ", bookPages='" + bookPages + '\'' +
+                ", paperPrice='" + paperPrice + '\'' +
+                ", ebookPrice='" + ebookPrice + '\'' +
+                ", binding='" + binding + '\'' +
+                ", relation='" + relation + '\'' +
+                ", abstract_='" + abstract_ + '\'' +
+                ", authorIntro='" + authorIntro + '\'' +
+                ", foamatCatalog='" + foamatCatalog + '\'' +
+                ", tags='" + tags + '\'' +
+                ", thumImgUrl='" + thumImgUrl + '\'' +
+                ", mediumCover='" + mediumCover + '\'' +
+                ", coverUrl='" + coverUrl + '\'' +
+                ", dataSource='" + dataSource + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", hasPublish=" + hasPublish +
+                ", preface='" + preface + '\'' +
+                ", postScript='" + postScript + '\'' +
+                ", amazonId='" + amazonId + '\'' +
+                ", hasFlow=" + hasFlow +
+                ", hasCebx=" + hasCebx +
+                ", isReadEpub=" + isReadEpub +
+                ", flowSource='" + flowSource + '\'' +
+                ", isReadCebxFlow=" + isReadCebxFlow +
+                '}';
+    }
 }

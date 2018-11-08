@@ -72,6 +72,10 @@ public class PrimaryDataSourceConfig {
     }
 
 
+    /**
+     * JPA事务管理器加入IOC容器
+     * @return
+     */
     @Bean(name = "transactionManager")
     public PlatformTransactionManager platformTransactionManager(){
         return new DataSourceTransactionManager(setDataSource());

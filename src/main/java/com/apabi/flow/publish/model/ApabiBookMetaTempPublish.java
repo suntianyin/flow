@@ -300,6 +300,39 @@ public class ApabiBookMetaTempPublish {
     @Column(name = "ISPUBLICCOPYRIGHT")
     private Integer isPublicCopyRight;
 
+    @Column(name = "ISREADEPUB")
+    private Integer isReadEpub;
+
+    @Column(name = "FLOWSOURCE")
+    private String flowSource;
+
+    @Column(name = "ISREADCEBXFLOW")
+    private Integer isReadCebxFlow;
+
+    public Integer getIsReadEpub() {
+        return isReadEpub;
+    }
+
+    public void setIsReadEpub(Integer isReadEpub) {
+        this.isReadEpub = isReadEpub;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
+    }
+
+    public Integer getIsReadCebxFlow() {
+        return isReadCebxFlow;
+    }
+
+    public void setIsReadCebxFlow(Integer isReadCebxFlow) {
+        this.isReadCebxFlow = isReadCebxFlow;
+    }
+
     public String getMetaId() {
         return metaId;
     }
@@ -1149,6 +1182,9 @@ public class ApabiBookMetaTempPublish {
                 ", contentNum=" + contentNum +
                 ", hasPublish=" + hasPublish +
                 ", isPublicCopyRight=" + isPublicCopyRight +
+                ", isReadEpub=" + isReadEpub +
+                ", flowSource='" + flowSource + '\'' +
+                ", isReadCebxFlow=" + isReadCebxFlow +
                 '}';
     }
 }

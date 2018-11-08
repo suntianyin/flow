@@ -114,6 +114,17 @@ public class ApabiBookMeta implements Serializable {
     @Column(name = "HASCEBX")
     private Integer hasCebx;
 
+    @Column(name = "ISREADEPUB")
+    private Integer isReadEpub;
+
+    @Column(name = "FLOWSOURCE")
+    private String flowSource;
+
+    @Column(name = "ISREADCEBXFLOW")
+    private Integer isReadCebxFlow;
+
+
+
     public String getIsbn() {
         return isbn;
     }
@@ -362,6 +373,30 @@ public class ApabiBookMeta implements Serializable {
         this.createTime = createTime;
     }
 
+    public Integer getIsReadEpub() {
+        return isReadEpub;
+    }
+
+    public void setIsReadEpub(Integer isReadEpub) {
+        this.isReadEpub = isReadEpub;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
+    }
+
+    public Integer getIsReadCebxFlow() {
+        return isReadCebxFlow;
+    }
+
+    public void setIsReadCebxFlow(Integer isReadCebxFlow) {
+        this.isReadCebxFlow = isReadCebxFlow;
+    }
+
     @Override
     public String toString() {
         return "ApabiBookMeta{" +
@@ -369,6 +404,7 @@ public class ApabiBookMeta implements Serializable {
                 ", doubanId='" + doubanId + '\'' +
                 ", isbn13='" + isbn13 + '\'' +
                 ", isbn10='" + isbn10 + '\'' +
+                ", isbn='" + isbn + '\'' +
                 ", title='" + title + '\'' +
                 ", creator='" + creator + '\'' +
                 ", publisher='" + publisher + '\'' +
@@ -393,6 +429,11 @@ public class ApabiBookMeta implements Serializable {
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", hasPublish=" + hasPublish +
+                ", hasFlow=" + hasFlow +
+                ", hasCebx=" + hasCebx +
+                ", isReadEpub=" + isReadEpub +
+                ", flowSource='" + flowSource + '\'' +
+                ", isReadCebxFlow=" + isReadCebxFlow +
                 '}';
     }
 }

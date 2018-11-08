@@ -56,7 +56,7 @@
         <result column="PODPRICE" jdbcType="VARCHAR" property="podPrice"/>
         <result column="PODPRICETYPE" jdbcType="VARCHAR" property="podPriceType"/>
         <result column="PODPRICEPAGEUNIT" jdbcType="VARCHAR" property="podPricePageUnit"/>
-        <result column="DRID" jdbcType="VARCHAR" property="drId"/>
+        <result column="DRID" jdbcType="INTEGER" property="drId"/>
         <result column="DOUBANID" jdbcType="VARCHAR" property="doubanId"/>
         <result column="AMAZONID" jdbcType="VARCHAR" property="amazonId"/>
         <result column="CALISID" jdbcType="VARCHAR" property="calisId"/>

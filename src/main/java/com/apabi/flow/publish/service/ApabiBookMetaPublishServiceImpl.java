@@ -143,6 +143,7 @@ public class ApabiBookMetaPublishServiceImpl implements ApabiBookMetaPublishServ
     }
 
     // 根据metaId查询meta_data库中的数据
+    @Override
     public ApabiBookMetaPublish findApabiBookMetaPublish(String metaId) {
         if (!StringUtils.isEmpty(metaId)) {
             return apabiBookMetaPublishRepository.findApabiBookMetaPublishByMetaIdIs(metaId);

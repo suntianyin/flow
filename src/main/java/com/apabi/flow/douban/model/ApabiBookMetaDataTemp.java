@@ -207,4 +207,9 @@ public class ApabiBookMetaDataTemp {
 
     private String postScript;
 
+    private Integer isReadEpub;
+
+    private String flowSource;
+
+    private Integer isReadCebxFlow;
 }

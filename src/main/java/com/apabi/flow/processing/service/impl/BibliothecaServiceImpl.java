@@ -3,22 +3,23 @@ package com.apabi.flow.processing.service.impl;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
 import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.StringToolUtil;
-import com.apabi.flow.isbn.model.IsbnEntity;
-import com.apabi.flow.processing.constant.*;
+import com.apabi.flow.processing.constant.BibliothecaStateEnum;
+import com.apabi.flow.processing.constant.BizException;
+import com.apabi.flow.processing.constant.DeleteFlagEnum;
+import com.apabi.flow.processing.constant.DuplicateFlagEnum;
 import com.apabi.flow.processing.dao.BibliothecaMapper;
 import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.model.BibliothecaExcelModel;
 import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
-import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishDao;
-import com.apabi.flow.publish.model.ApabiBookMetaTempPublish2;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -63,8 +64,10 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Autowired
     private PublisherDao publisherDao;
 
+    //@Autowired
+    //private ApabiBookMetaTempPublishDao apabiBookMetaTempPublishDao;
     @Autowired
-    private ApabiBookMetaTempPublishDao apabiBookMetaTempPublishDao;
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     /**
      * 根据 书目 id 逻辑删除当前批次
@@ -353,7 +356,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             //当数据为 noMatch 和 按钮为 make 类型时，需要做 元数据 插入 TEMP 库操作
             if ("noMatch".equals(dataType) && "make".equals(btnType)){
                 for (String id : bibliothecaIdList){
-                    ApabiBookMetaTempPublish2 apabiBookMetaTempPublish2 = new ApabiBookMetaTempPublish2();
+                    //ApabiBookMetaTempPublish2 apabiBookMetaTempPublish2 = new ApabiBookMetaTempPublish2();
+                    ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();
                     Bibliotheca bibliotheca = bibliothecaMapper.selectByPrimaryKey(id);
 
                     String issuedDate = StringToolUtil.issuedDateFormat(bibliotheca.getPublishTime());
@@ -366,18 +370,29 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                         throw new Exception("请检查数据出版日期是否存在或符合 2018-10-01 格式");
                     }
                     // 元数据库中，不用修改电子书价格
-                    apabiBookMetaTempPublish2.setMetaId(metaId);
-                    apabiBookMetaTempPublish2.setTitle(bibliotheca.getTitle());
-                    apabiBookMetaTempPublish2.setCreator(bibliotheca.getAuthor());
-                    apabiBookMetaTempPublish2.setPublisher(bibliotheca.getPublisher());
-                    apabiBookMetaTempPublish2.setIsbn(bibliotheca.getIsbn());
-                    apabiBookMetaTempPublish2.setIssuedDate(issuedDate);
-                    apabiBookMetaTempPublish2.setEditionOrder(bibliotheca.getEdition());
-                    apabiBookMetaTempPublish2.setPaperPrice(bibliotheca.getPaperPrice());
-                    apabiBookMetaTempPublish2.setCreateTime(new Date());
-                    apabiBookMetaTempPublish2.setUpdateTime(new Date());
+                    apabiBookMetaDataTemp.setMetaId(metaId);
+                    apabiBookMetaDataTemp.setTitle(bibliotheca.getTitle());
+                    apabiBookMetaDataTemp.setCreator(bibliotheca.getAuthor());
+                    apabiBookMetaDataTemp.setPublisher(bibliotheca.getPublisher());
+                    apabiBookMetaDataTemp.setIsbn(bibliotheca.getIsbn());
+                    apabiBookMetaDataTemp.setIssuedDate(issuedDate);
+                    apabiBookMetaDataTemp.setEditionOrder(bibliotheca.getEdition());
+                    apabiBookMetaDataTemp.setPaperPrice(bibliotheca.getPaperPrice());
+                    apabiBookMetaDataTemp.setCreateTime(new Date());
+                    apabiBookMetaDataTemp.setUpdateTime(new Date());
+                    apabiBookMetaDataTempDao.insert(apabiBookMetaDataTemp);
 
-                    apabiBookMetaTempPublishDao.saveAndFlush(apabiBookMetaTempPublish2);
+                    //apabiBookMetaTempPublish2.setMetaId(metaId);
+                    //apabiBookMetaTempPublish2.setTitle(bibliotheca.getTitle());
+                    //apabiBookMetaTempPublish2.setCreator(bibliotheca.getAuthor());
+                    //apabiBookMetaTempPublish2.setPublisher(bibliotheca.getPublisher());
+                    //apabiBookMetaTempPublish2.setIsbn(bibliotheca.getIsbn());
+                    //apabiBookMetaTempPublish2.setIssuedDate(issuedDate);
+                    //apabiBookMetaTempPublish2.setEditionOrder(bibliotheca.getEdition());
+                    //apabiBookMetaTempPublish2.setPaperPrice(bibliotheca.getPaperPrice());
+                    //apabiBookMetaTempPublish2.setCreateTime(new Date());
+                    //apabiBookMetaTempPublish2.setUpdateTime(new Date());
+                    //apabiBookMetaTempPublishDao.saveAndFlush(apabiBookMetaTempPublish2);
 
                     Bibliotheca bibliotheca1 = new Bibliotheca();
                     bibliotheca1.setId(bibliotheca.getId());

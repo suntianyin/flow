@@ -6,7 +6,6 @@ package com.apabi.flow.publish.util;
  **/
 public class TransformFieldNameUtils {
 
-
     private static String[] fields = {
             "metaId,阿帕比图书metaid",
             "idType,标识类型",
@@ -102,7 +101,10 @@ public class TransformFieldNameUtils {
             "updateTime,更新时间",
             "contentNum,字数",
             "hasPublish,是否发布",
-            "isPublicCopyRight,是否公版"
+            "isPublicCopyRight,是否公版",
+            "isReadCebxFlow,是否cebx流式阅读",
+            "flowSource,流式内容来源",
+            "isReadEpub,是否epub阅读"
     };
 
     public static String transform(String fieldName) {

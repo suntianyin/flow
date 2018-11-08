@@ -180,7 +180,7 @@ public class ApabiBookMetaPublish {
     private String podPricePageUnit;
 
     @Column(name = "DRID")
-    private String drId;
+    private Integer drId;
 
     @Column(name = "DOUBANID")
     private String doubanId;
@@ -300,6 +300,39 @@ public class ApabiBookMetaPublish {
 
     @Column(name = "ISPUBLICCOPYRIGHT")
     private Integer isPublicCopyRight;
+
+    @Column(name = "ISREADEPUB")
+    private Integer isReadEpub;
+
+    @Column(name = "FLOWSOURCE")
+    private String flowSource;
+
+    @Column(name = "ISREADCEBXFLOW")
+    private Integer isReadCebxFlow;
+
+    public Integer getIsReadEpub() {
+        return isReadEpub;
+    }
+
+    public void setIsReadEpub(Integer isReadEpub) {
+        this.isReadEpub = isReadEpub;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
+    }
+
+    public Integer getIsReadCebxFlow() {
+        return isReadCebxFlow;
+    }
+
+    public void setIsReadCebxFlow(Integer isReadCebxFlow) {
+        this.isReadCebxFlow = isReadCebxFlow;
+    }
 
     public String getMetaId() {
         return metaId;
@@ -733,11 +766,11 @@ public class ApabiBookMetaPublish {
         this.podPricePageUnit = podPricePageUnit;
     }
 
-    public String getDrId() {
+    public Integer getDrId() {
         return drId;
     }
 
-    public void setDrId(String drId) {
+    public void setDrId(Integer drId) {
         this.drId = drId;
     }
 
@@ -1110,7 +1143,7 @@ public class ApabiBookMetaPublish {
                 ", podPrice='" + podPrice + '\'' +
                 ", podPriceType='" + podPriceType + '\'' +
                 ", podPricePageUnit='" + podPricePageUnit + '\'' +
-                ", drId='" + drId + '\'' +
+                ", drId=" + drId +
                 ", doubanId='" + doubanId + '\'' +
                 ", amazonId='" + amazonId + '\'' +
                 ", calisId='" + calisId + '\'' +
@@ -1150,6 +1183,9 @@ public class ApabiBookMetaPublish {
                 ", streamCatalog='" + streamCatalog + '\'' +
                 ", hasPublish=" + hasPublish +
                 ", isPublicCopyRight=" + isPublicCopyRight +
+                ", isReadEpub=" + isReadEpub +
+                ", flowSource='" + flowSource + '\'' +
+                ", isReadCebxFlow=" + isReadCebxFlow +
                 '}';
     }
 }

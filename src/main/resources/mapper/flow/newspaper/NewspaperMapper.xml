@@ -21,6 +21,37 @@
     where URL = #{url,jdbcType=VARCHAR}
   </select>
 
+  <!-- 分页查询没有html_content的数据 -->
+  <select id="findNoHtmlContentUrlsByPage" resultType="java.lang.String">
+    select url
+    from NEWSPAPER_CRAWL
+    where 1 = 1 and html_content is null
+  </select>
+
+  <!-- 查询没有html_content的数据数量 -->
+  <select id="countNoHtmlContent" resultType="java.lang.Integer">
+    select count(*)
+    from NEWSPAPER_CRAWL
+    where html_content is null
+  </select>
+
+  <!-- 更新数据 -->
+  <update id="update" parameterType="com.apabi.flow.newspaper.model.Newspaper">
+    update NEWSPAPER_CRAWL
+    <set>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="abstract_ != null">
+        ABSTRACT = #{abstract_,jdbcType=CLOB},
+      </if>
+      <if test="htmlContent != null">
+        HTML_CONTENT = #{htmlContent,jdbcType=CLOB},
+      </if>
+    </set>
+    where URL = #{url,jdbcType=VARCHAR}
+  </update>
+
   <!-- 根据url删除 -->
   <delete id="delete" parameterType="java.lang.String">
     delete from NEWSPAPER_CRAWL
@@ -59,22 +90,5 @@
       </if>
     </trim>
   </insert>
-
-  <!-- 更新数据 -->
-  <update id="update" parameterType="com.apabi.flow.newspaper.model.Newspaper">
-    update NEWSPAPER_CRAWL
-    <set>
-      <if test="title != null">
-        TITLE = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="abstract_ != null">
-        ABSTRACT = #{abstract_,jdbcType=CLOB},
-      </if>
-      <if test="htmlContent != null">
-        HTML_CONTENT = #{htmlContent,jdbcType=CLOB},
-      </if>
-    </set>
-    where URL = #{url,jdbcType=VARCHAR}
-  </update>
 
 </mapper>

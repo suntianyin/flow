@@ -56,7 +56,7 @@
         <result column="PODPRICE" jdbcType="VARCHAR" property="podPrice"/>
         <result column="PODPRICETYPE" jdbcType="VARCHAR" property="podPriceType"/>
         <result column="PODPRICEPAGEUNIT" jdbcType="VARCHAR" property="podPricePageUnit"/>
-        <result column="DRID" jdbcType="VARCHAR" property="drId"/>
+        <result column="DRID" jdbcType="INTEGER" property="drId"/>
         <result column="DOUBANID" jdbcType="VARCHAR" property="doubanId"/>
         <result column="AMAZONID" jdbcType="VARCHAR" property="amazonId"/>
         <result column="CALISID" jdbcType="VARCHAR" property="calisId"/>
@@ -250,7 +250,7 @@
       #{podPrice,jdbcType=VARCHAR},
       #{podPriceType,jdbcType=VARCHAR},
       #{podPricePageUnit,jdbcType=VARCHAR},
-      #{drId,jdbcType=VARCHAR},
+      #{drId,jdbcType=INTEGER},
       #{doubanId,jdbcType=VARCHAR},
       #{amazonId,jdbcType=VARCHAR},
       #{calisId,jdbcType=VARCHAR},
@@ -372,7 +372,7 @@
       PODPRICE = #{podPrice,jdbcType=VARCHAR},
       PODPRICETYPE = #{podPriceType,jdbcType=VARCHAR},
       PODPRICEPAGEUNIT = #{podPricePageUnit,jdbcType=VARCHAR},
-      DRID = #{drId,jdbcType=VARCHAR},
+      DRID = #{drId,jdbcType=INTEGER},
       DOUBANID = #{doubanId,jdbcType=VARCHAR},
       AMAZONID = #{amazonId,jdbcType=VARCHAR},
       CALISID = #{calisId,jdbcType=VARCHAR},

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.newspaper.dao.NewspaperCrawlUrlDao">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.newspaper.crawl_url.model.NewspaperCrawlUrl">
+    <id column="INDEX_PAGE" jdbcType="VARCHAR" property="indexPage" />
+    <result column="COLUMN_NAME" jdbcType="VARCHAR" property="columnName" />
+    <result column="SOURCE" jdbcType="VARCHAR" property="source" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    INDEX_PAGE, COLUMN_NAME, SOURCE
+  </sql>
+
+  <!-- 根据id查询数据 -->
+  <select id="findByIndexPage" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from NEWSPAPER_CRAWL_URL
+    where INDEX_PAGE = #{indexPage,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 删除数据 -->
+  <delete id="delete" parameterType="java.lang.String">
+    delete from NEWSPAPER_CRAWL_URL
+    where INDEX_PAGE = #{indexPage,jdbcType=VARCHAR}
+  </delete>
+
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="com.apabi.flow.newspaper.crawl_url.model.NewspaperCrawlUrl">
+    insert into NEWSPAPER_CRAWL_URL
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="indexPage != null">
+        INDEX_PAGE,
+      </if>
+      <if test="columnName != null">
+        COLUMN_NAME,
+      </if>
+      <if test="source != null">
+        SOURCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="indexPage != null">
+        #{indexPage,jdbcType=VARCHAR},
+      </if>
+      <if test="columnName != null">
+        #{columnName,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 更新数据 -->
+  <update id="update" parameterType="com.apabi.flow.newspaper.crawl_url.model.NewspaperCrawlUrl">
+    update NEWSPAPER_CRAWL_URL
+    <set>
+      <if test="columnName != null">
+        COLUMN_NAME = #{columnName,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        SOURCE = #{source,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where INDEX_PAGE = #{indexPage,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

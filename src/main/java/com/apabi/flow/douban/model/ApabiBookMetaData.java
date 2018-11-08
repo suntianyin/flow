@@ -193,6 +193,36 @@ public class ApabiBookMetaData {
 
     private String postScript;
 
+    private Integer isReadEpub;
+
+    private String flowSource;
+
+    private Integer isReadCebxFlow;
+
+    public Integer getIsReadEpub() {
+        return isReadEpub;
+    }
+
+    public void setIsReadEpub(Integer isReadEpub) {
+        this.isReadEpub = isReadEpub;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
+    }
+
+    public Integer getIsReadCebxFlow() {
+        return isReadCebxFlow;
+    }
+
+    public void setIsReadCebxFlow(Integer isReadCebxFlow) {
+        this.isReadCebxFlow = isReadCebxFlow;
+    }
+
     public String getMetaId() {
         return metaId;
     }
@@ -1051,6 +1081,9 @@ public class ApabiBookMetaData {
                 ", preface='" + preface + '\'' +
                 ", styleUrl='" + styleUrl + '\'' +
                 ", postScript='" + postScript + '\'' +
+                ", isReadEpub=" + isReadEpub +
+                ", flowSource='" + flowSource + '\'' +
+                ", isReadCebxFlow=" + isReadCebxFlow +
                 '}';
     }
 }
