@@ -175,6 +175,7 @@ public class GetCebxChapter {
                         epubookMeta.setStreamCatalog(cataLog);
                         epubookMeta.setHasflow(1);
                         epubookMeta.setIsoptimize(1);
+                        epubookMeta.setFlowSource("cebx");
                         epubookMeta.setUpdatetime(new Date());
                         int rs = saveBook(epubookMeta, chapterList, chapterShardList);
                         if (rs == 1) {
@@ -392,12 +393,13 @@ public class GetCebxChapter {
             String sql = "UPDATE APABI_BOOK_METADATA_TEMP" +
                     " SET COVERURL = ?, THUMIMGURL = ?, STREAMCATALOG = ?, " +
                     "STYLEURL = ?, CHAPTERNUM = ?, UPDATETIME = ?," +
-                    "CONTENTNUM = ?, HASFLOW = ?, ISOPTIMIZE = ? " +
+                    "CONTENTNUM = ?, HASFLOW = ?, ISOPTIMIZE = ?, FLOWSOURCE = ? " +
                     "WHERE METAID = ?";
             Object[] objects = new Object[]{
                     epubookMeta.getCoverUrl(), epubookMeta.getThumimgUrl(), epubookMeta.getStreamCatalog(),
                     epubookMeta.getStyleUrl(), epubookMeta.getChapterNum(), epubookMeta.getUpdatetime(),
                     epubookMeta.getContentNum(), epubookMeta.getHasflow(), epubookMeta.getIsoptimize(),
+                    epubookMeta.getFlowSource(),
                     epubookMeta.getMetaid()
             };
             return jdbcTemplate.update(sql, objects);

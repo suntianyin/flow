@@ -53,7 +53,7 @@
         <result column="PODPRICE" jdbcType="VARCHAR" property="podPrice"/>
         <result column="PODPRICETYPE" jdbcType="VARCHAR" property="podPriceType"/>
         <result column="PODPRICEPAGEUNIT" jdbcType="VARCHAR" property="podPricePageUnit"/>
-        <result column="DRID" jdbcType="VARCHAR" property="drId"/>
+        <result column="DRID" jdbcType="DECIMAL" property="drId"/>
         <result column="DOUBANID" jdbcType="VARCHAR" property="doubanId"/>
         <result column="AMAZONID" jdbcType="VARCHAR" property="amazonId"/>
         <result column="CALISID" jdbcType="VARCHAR" property="calisId"/>
@@ -90,6 +90,9 @@
         <result column="CONTENTNUM" jdbcType="DECIMAL" property="contentNum"/>
         <result column="HASPUBLISH" jdbcType="DECIMAL" property="hasPublish"/>
         <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
+        <result column="ISREADCEBXFLOW" jdbcType="DECIMAL" property="isReadCebxFlow"/>
+        <result column="ISREADEPUB" jdbcType="DECIMAL" property="isReadEpub"/>
     </resultMap>
     <sql id="Base_Column_List">
         METAID,IDTYPE,SALESTATUS,LANGUAGE,TITLE,SUBTITLE,
@@ -109,7 +112,8 @@
         THUMIMGURL,THUMIMGSIZE,MEDIUMCOVER,HASFLOW,ISOPTIMIZE,
         DONOR,LIBRARYID,BOOKID,STYLECLASS,STYLEURL,CHAPTERNUM,
         BOOKPAGES,TAGS,CREATETIME,UPDATETIME,CONTENTNUM,FOAMATCATALOG,
-        STREAMCATALOG,HASPUBLISH,ISPUBLICCOPYRIGHT
+        STREAMCATALOG,HASPUBLISH,ISPUBLICCOPYRIGHT,FLOWSOURCE,ISREADCEBXFLOW,
+        ISREADEPUB
     </sql>
     <sql id="Base_Value_List">
         #{metaId,jdbcType=VARCHAR},
@@ -166,7 +170,7 @@
         #{podPrice,jdbcType=VARCHAR},
         #{podPriceType,jdbcType=VARCHAR},
         #{podPricePageUnit,jdbcType=VARCHAR},
-        #{drId,jdbcType=VARCHAR},
+        #{drId,jdbcType=DECIMAL},
         #{doubanId,jdbcType=VARCHAR},
         #{amazonId,jdbcType=VARCHAR},
         #{calisId,jdbcType=VARCHAR},
@@ -204,7 +208,10 @@
         #{foamatCatalog,jdbcType=VARCHAR},
         #{streamCatalog,jdbcType=VARCHAR},
         #{hasPublish,jdbcType=DECIMAL},
-        #{isPublicCopyRight,jdbcType=DECIMAL}
+        #{isPublicCopyRight,jdbcType=DECIMAL},
+        #{flowSource,jdbcType=VARCHAR},
+        #{isReadCebxFlow,jdbcType=DECIMAL},
+        #{isReadEpub,jdbcType=DECIMAL}
     </sql>
     <sql id="Base_Set_List">
         <if test="metaId != null">
@@ -486,6 +493,15 @@
         <if test="isPublicCopyRight != null">
             ISPUBLICCOPYRIGHT = #{isPublicCopyRight},
         </if>
+        <if test="flowSource != null">
+            FLOWSOURCE = #{flowSource},
+        </if>
+        <if test="isReadCebxFlow != null">
+            ISREADCEBXFLOW = #{isReadCebxFlow},
+        </if>
+        <if test="isReadEpub != null">
+            ISREADEPUB = #{isReadEpub},
+        </if>
     </sql>
     <select id="findBookMetaById" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
@@ -502,6 +518,9 @@
         select STREAMCATALOG
         from APABI_BOOK_METADATA
         where METAID = #{metaId}
+    </select>
+    <select id="getMaxDrid" resultType="java.lang.Integer">
+        SELECT MAX(DRID) FROM APABI_BOOK_METADATA
     </select>
     <select id="listBookMetaByIsbn" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
@@ -546,11 +565,12 @@
         <result column="THUMIMGURL" property="thumimgUrl" jdbcType="VARCHAR"/>
         <result column="STYLECLASS" property="styleClass" jdbcType="VARCHAR"/>
         <result column="HASFLOW" property="hasflow" jdbcType="INTEGER"/>
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
     </resultMap>
     <sql id="Base_Column_List1">
         METAID,CREATETIME,UPDATETIME,ISSUEDDATE,TITLE,CREATOR,ABSTRACT,PUBLISHER,
         ISBN,CONTENTNUM,TYPE,ISOPTIMIZE,LANGUAGE,STREAMCATALOG,COVERURL,CHAPTERNUM,
-        STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW
+        STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,FLOWSOURCE
     </sql>
     <sql id="Base_Value_List1">
         <if test="metaid != null">
@@ -612,6 +632,9 @@
         </if>
         <if test="hasflow != null">
             HASFLOW = #{hasflow},
+        </if>
+        <if test="flowSource != null">
+            FLOWSOURCE = #{flowSource},
         </if>
     </sql>
     <update id="updateEpubookMeta" parameterType="com.apabi.flow.book.model.EpubookMeta">
