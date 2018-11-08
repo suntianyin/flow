@@ -25,7 +25,6 @@ public class CrawlHtmlContentTask {
     @Autowired
     private NewspaperDao newspaperDao;
 
-
     @ResponseBody
     @RequestMapping("/execute")
     public String updateNoHtml() {
