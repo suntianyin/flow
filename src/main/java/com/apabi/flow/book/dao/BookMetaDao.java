@@ -60,6 +60,9 @@ public interface BookMetaDao {
     //查询图书元数据条数
     int countBookMetaVoById(String metaid);
 
+    //获取最大drid
+    int getMaxDrid();
+
     //分页查询
     Page<BookMetaVo> findBookMetaVoByPage(Map<String,String> queryMap);
 

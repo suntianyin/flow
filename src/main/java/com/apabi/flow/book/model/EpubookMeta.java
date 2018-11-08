@@ -81,6 +81,8 @@ public class EpubookMeta {
     @Column(name = "HASFLOW")
     private Integer hasflow;
 
+    private String flowSource;
+
     /*@Column(name = "FILENAME")
     private String fileName;*/
 
@@ -242,5 +244,13 @@ public class EpubookMeta {
 
     public void setHasflow(Integer hasflow) {
         this.hasflow = hasflow;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
     }
 }

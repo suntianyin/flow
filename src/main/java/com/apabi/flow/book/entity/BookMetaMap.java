@@ -104,5 +104,8 @@ public class BookMetaMap {
         put("streamCatalog", "流式目录");
         put("hasPublish", "是否发布");
         put("isPublicCopyRight", "是否有发布权限");
+        put("isReadEpub", "是否epub阅读");
+        put("isReadCebxFlow", "是否cebx流式阅读");
+        put("flowSource", "流式内容来源");
     }};
 }

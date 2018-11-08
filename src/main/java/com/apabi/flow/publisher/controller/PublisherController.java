@@ -39,8 +39,34 @@ import java.util.*;
 public class PublisherController {
     public static final Integer DEFAULT_PAGESIZE = 10;
     private Logger log = LoggerFactory.getLogger(PublisherController.class);
+    private Map<String,String> mapr;
     @Autowired
     PublisherService publisherService;
+    @RequestMapping("/getRelatePublisherMap")
+    @ResponseBody
+    public Object getRelatePublisherMap(){
+        List<Publisher> all = publisherService.findAll();
+        HashSet<String> set=new HashSet();
+        HashMap<String,String> map=new HashMap<>();
+        for (Publisher p:all) {
+            if(p.getRelatePublisherID()!=null)
+                set.add(p.getRelatePublisherID());
+        }
+        for(String s :set){
+            Publisher p = publisherService.selectdataById(s);
+            if(p.getRelatePublisherID()!=null)
+                map.put(p.getTitle(),p.getId());
+        }
+        this.mapr=map;
+        List<EntityInfo> list=new ArrayList<>();
+        for (String key : map.keySet()) {
+            EntityInfo entityInfo=new EntityInfo();
+            entityInfo.setFieldName(map.get(key));
+            entityInfo.setMetaValue(key);
+            list.add(entityInfo);
+        }
+        return list;
+    }
 
     //出版社展示信息
     @RequestMapping("/index")
@@ -55,7 +81,11 @@ public class PublisherController {
 //            List<String> list=new ArrayList<>();
             HashMap<String,String> map=new HashMap<>();
             PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
-            Page<Publisher> page = publisherService.queryPage(id,title,relatePublisherID);
+            String a=null;
+            if(StringUtils.isNotEmpty(relatePublisherID)){
+                a=this.mapr.get(relatePublisherID);
+            }
+            Page<Publisher> page = publisherService.queryPage(id,title,a);
             List<Publisher> all = publisherService.findAll();
             for (Publisher p:all) {
                 if(p.getRelatePublisherID()!=null)
@@ -95,7 +125,23 @@ public class PublisherController {
         }
         return null;
     }
-
+    @GetMapping("/findRelatePublisherID")
+    @ResponseBody
+    public Object findRelatePublisherID(){
+        HashSet<String> set=new HashSet();
+        HashMap<String,String> map=new HashMap<>();
+        List<Publisher> all = publisherService.findAll();
+        for (Publisher p:all) {
+            if(p.getRelatePublisherID()!=null)
+                set.add(p.getRelatePublisherID());
+        }
+        for(String s :set){
+            Publisher p = publisherService.selectdataById(s);
+            if(p.getRelatePublisherID()!=null)
+                map.put(p.getId(),p.getTitle());
+        }
+        return map;
+    }
 //    @GetMapping("/list")
 //    public List<Publisher> listPublishersByIdAndTitleAndRelatePublisherID(@RequestParam(value = "id", required = false) String id,
 //                                                                          @RequestParam(value = "title", required = false) String title ,

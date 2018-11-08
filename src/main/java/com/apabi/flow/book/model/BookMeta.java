@@ -181,7 +181,7 @@ public class BookMeta implements Serializable{
     private String podPricePageUnit;
 
     @Column(name = "DRID")
-    private String drId;
+    private Integer drId;
 
     @Column(name = "DOUBANID")
     private String doubanId;
@@ -298,6 +298,12 @@ public class BookMeta implements Serializable{
 
     @Column(name = "ISPUBLICCOPYRIGHT")
     private Integer isPublicCopyRight;
+
+    private String flowSource;
+
+    private Integer isReadCebxFlow;
+
+    private Integer isReadEpub;
 
     public String getMetaId() {
         return metaId;
@@ -731,11 +737,11 @@ public class BookMeta implements Serializable{
         this.podPricePageUnit = podPricePageUnit;
     }
 
-    public String getDrId() {
+    public Integer getDrId() {
         return drId;
     }
 
-    public void setDrId(String drId) {
+    public void setDrId(Integer drId) {
         this.drId = drId;
     }
 
@@ -1041,5 +1047,29 @@ public class BookMeta implements Serializable{
 
     public void setIsPublicCopyRight(Integer isPublicCopyRight) {
         this.isPublicCopyRight = isPublicCopyRight;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
+    }
+
+    public Integer getIsReadCebxFlow() {
+        return isReadCebxFlow;
+    }
+
+    public void setIsReadCebxFlow(Integer isReadCebxFlow) {
+        this.isReadCebxFlow = isReadCebxFlow;
+    }
+
+    public Integer getIsReadEpub() {
+        return isReadEpub;
+    }
+
+    public void setIsReadEpub(Integer isReadEpub) {
+        this.isReadEpub = isReadEpub;
     }
 }
