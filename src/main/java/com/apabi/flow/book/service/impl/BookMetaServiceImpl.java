@@ -13,10 +13,12 @@ import com.apabi.flow.book.util.*;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
-import com.apabi.shuyuan.book.dao.CmfBookMetaDao;
+import com.apabi.shuyuan.book.dao.SCmfMetaDao;
 import com.github.pagehelper.Page;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -60,7 +62,7 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     public static String baseUrlType = "comm/htmlpage.ashx";
 
-    public static String urlType ="htmlpage.ashx";
+    public static String urlType = "htmlpage.ashx";
 
     public static String serviceType = "htmlpage";
 
@@ -121,7 +123,10 @@ public class BookMetaServiceImpl implements BookMetaService {
     ApplicationConfig config;
 
     @Autowired
-    CmfBookMetaDao cmfBookMetaDao;
+    SCmfMetaDao SCmfMetaDao;
+
+    @Autowired
+    ApabiBookMetaDataTempDao bookMetaDataTempDao;
 
     //根据图书metaid，获取图书元数据
     @Override
@@ -255,7 +260,7 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
-    //删除图书元数据内容
+    //删除图书内容
     @Override
     public int deleteBookChapter(String metaid) {
         if (!StringUtils.isEmpty(metaid)) {
@@ -974,21 +979,21 @@ public class BookMetaServiceImpl implements BookMetaService {
                         File newFile = new File(path);
                         try {
                             String metaId = Xml2BookMeta.getMetaId4Xml(path);
-                            if (!StringUtils.isEmpty(metaId)){
+                            if (!StringUtils.isEmpty(metaId)) {
                                 metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
                                 if (metaBatches.size() == 0) {
                                     BookMetaBatch bookMetaBatch = new BookMetaBatch();
-                                    bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
+                                    bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                     metaBatches.add(bookMetaBatch);
                                 } else {
                                     //用于排序
                                     for (BookMetaBatch bookMetaBatch : metaBatches) {
-                                        bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
+                                        bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                     }
                                 }
-                            }else {
+                            } else {
                                 BookMetaBatch bookMetaBatch = new BookMetaBatch();
-                                bookMetaBatch.setFileName(newFile.getName().replace(".xml",".cebx"));
+                                bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                 metaBatches.add(bookMetaBatch);
                             }
                         } catch (Exception e) {
@@ -999,10 +1004,10 @@ public class BookMetaServiceImpl implements BookMetaService {
                     }
                 } else {
                     //扫描cebx文件，通过文件名从书苑获取metaId
-                    for (String cebxFile : CEBX_FILES){
+                    for (String cebxFile : CEBX_FILES) {
                         File newFile = new File(cebxFile);
-                        String metaId = cmfBookMetaDao.getMetaIdByFileName(newFile.getName().replace("cebx","ceb"));
-                        if (!StringUtils.isEmpty(metaId)){
+                        String metaId = SCmfMetaDao.getMetaIdByFileName(newFile.getName().replace("cebx", "ceb"));
+                        if (!StringUtils.isEmpty(metaId)) {
                             metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
                             if (metaBatches.size() == 0) {
                                 BookMetaBatch bookMetaBatch = new BookMetaBatch();
@@ -1014,7 +1019,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     bookMetaBatch.setFileName(newFile.getName());
                                 }
                             }
-                        }else {
+                        } else {
                             BookMetaBatch bookMetaBatch = new BookMetaBatch();
                             bookMetaBatch.setFileName(newFile.getName());
                             metaBatches.add(bookMetaBatch);
@@ -1236,5 +1241,51 @@ public class BookMetaServiceImpl implements BookMetaService {
             }
         }
         return null;
+    }
+
+    //批量删除图书章节内容
+    @Override
+    public int deleteBookChapterBatch(String conMetaId) {
+        if (!StringUtils.isEmpty(conMetaId)) {
+            String[] metaIds = conMetaId.split("\r\n");
+            if (metaIds != null && metaIds.length > 0) {
+                int sum = 0;
+                for (String metaId : metaIds) {
+                    try {
+                        //删除章节内容
+                        bookChapterDao.deleteAllBookChapter(metaId);
+                        //删除分组内容
+                        bookShardDao.deleteAllBookShard(metaId);
+                        //更新图书元数据
+                        BookMeta bookMeta = new BookMeta();
+                        bookMeta.setMetaId(metaId);
+                        bookMeta.setChapterNum(0);
+                        bookMeta.setStyleUrl("");
+                        bookMeta.setContentNum(0);
+                        bookMeta.setStreamCatalog("");
+                        bookMeta.setHasFlow(0);
+                        bookMeta.setIsOptimize(0);
+                        bookMeta.setFlowSource("");
+                        bookMetaDao.updateBookMetaById(bookMeta);
+                        //更新图书元数据，temp表
+                        ApabiBookMetaDataTemp bookMetaDataTemp = new ApabiBookMetaDataTemp();
+                        bookMetaDataTemp.setMetaId(metaId);
+                        bookMetaDataTemp.setChapterNum(0);
+                        bookMetaDataTemp.setStyleUrl("");
+                        bookMetaDataTemp.setContentNum(0);
+                        bookMetaDataTemp.setStreamCatalog("");
+                        bookMetaDataTemp.setHasFlow(0);
+                        bookMetaDataTemp.setIsOptimize(0);
+                        bookMetaDataTemp.setFlowSource("");
+                        bookMetaDataTempDao.update(bookMetaDataTemp);
+                        sum++;
+                    } catch (Exception e) {
+                        log.warn("图书：" + metaId + "内容删除异常{}", e.getMessage());
+                    }
+                }
+                return sum;
+            }
+        }
+        return 0;
     }
 }

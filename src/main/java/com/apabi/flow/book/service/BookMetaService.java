@@ -67,4 +67,7 @@ public interface BookMetaService {
 
     //将指定图书存入爱读爱看
     int insertBookMeta2Mongo(String ids, Map<String, String> conds) throws ParseException;
+
+    //批量删除图书章节内容
+    int deleteBookChapterBatch(String metaIds);
 }
