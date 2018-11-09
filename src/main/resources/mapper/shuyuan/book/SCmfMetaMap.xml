@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.shuyuan.book.dao.SCmfMetaDao">
+    <resultMap id="BaseResultMap" type="com.apabi.shuyuan.book.model.SCmfMeta">
+        <id column="DRID" jdbcType="DECIMAL" property="drid"/>
+        <result column="Title" jdbcType="VARCHAR" property="title"/>
+        <result column="Alternativetitle" jdbcType="VARCHAR" property="alternativeTitle"/>
+        <result column="Creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="Subject" jdbcType="VARCHAR" property="subject"/>
+        <result column="Abstract" jdbcType="VARCHAR" property="Abstract"/>
+        <result column="Publisher" jdbcType="VARCHAR" property="publisher"/>
+        <result column="Type" jdbcType="VARCHAR" property="type"/>
+        <result column="Contributor" jdbcType="VARCHAR" property="contributor"/>
+        <result column="Issueddate" jdbcType="VARCHAR" property="issuedDate"/>
+        <result column="Year" jdbcType="DECIMAL" property="year"/>
+        <result column="IDType" jdbcType="VARCHAR" property="idType"/>
+        <result column="Identifier" jdbcType="VARCHAR" property="identifier"/>
+        <result column="Relation" jdbcType="VARCHAR" property="relation"/>
+        <result column="Price" jdbcType="DECIMAL" property="price"/>
+        <result column="PaperPrice" jdbcType="DECIMAL" property="paperPrice"/>
+        <result column="ForeignPriceType" jdbcType="VARCHAR" property="foreignPriceType"/>
+        <result column="ForeignPrice" jdbcType="DECIMAL" property="foreignPrice"/>
+        <result column="EditionOrder" jdbcType="VARCHAR" property="editionOrder"/>
+        <result column="EditionNote" jdbcType="VARCHAR" property="editionNote"/>
+        <result column="PressOrder" jdbcType="VARCHAR" property="pressOrder"/>
+        <result column="ContentNum" jdbcType="DECIMAL" property="contentNum"/>
+        <result column="ClassCode" jdbcType="VARCHAR" property="classCode"/>
+        <result column="Language" jdbcType="VARCHAR" property="language"/>
+        <result column="ApabiClass" jdbcType="VARCHAR" property="apabiClass"/>
+        <result column="Illustration" jdbcType="VARCHAR" property="illustration"/>
+        <result column="Reditor" jdbcType="VARCHAR" property="reditor"/>
+        <result column="Notes" jdbcType="VARCHAR" property="notes"/>
+        <result column="RealISBN" jdbcType="VARCHAR" property="realISBN"/>
+        <result column="CreatorType" jdbcType="VARCHAR" property="creatorType"/>
+        <result column="RelationType" jdbcType="VARCHAR" property="relationType"/>
+        <result column="ContributorType" jdbcType="VARCHAR" property="contributorType"/>
+        <result column="Place" jdbcType="VARCHAR" property="place"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        DRID,Title,Alternativetitle,Creator,Subject,
+        Abstract,Publisher,Type,Contributor,Issueddate,
+        Year,IDType,Identifier,Relation,Price,PaperPrice,
+        ForeignPriceType,ForeignPrice,EditionOrder,EditionNote,
+        PressOrder,ContentNum,ClassCode,Language,ApabiClass,
+        Illustration,Reditor,Notes,RealISBN,CreatorType,
+        RelationType,ContributorType,Place
+    </sql>
+    <sql id="Base_Value_List">
+        #{drid,jdbcType=DECIMAL },
+        #{title,jdbcType=VARCHAR},
+        #{alternativeTitle,jdbcType=VARCHAR},
+        #{creator,jdbcType=VARCHAR},
+        #{subject,jdbcType=VARCHAR},
+        #{Abstract,jdbcType=VARCHAR},
+        #{publisher,jdbcType=VARCHAR},
+        #{type,jdbcType=VARCHAR},
+        #{contributor,jdbcType=VARCHAR},
+        #{issuedDate,jdbcType=VARCHAR},
+        #{year,jdbcType=DECIMAL},
+        #{idType,jdbcType=VARCHAR},
+        #{identifier,jdbcType=VARCHAR},
+        #{relation,jdbcType=VARCHAR},
+        #{price,jdbcType=DECIMAL},
+        #{paperPrice,jdbcType=DECIMAL},
+        #{foreignPriceType,jdbcType=VARCHAR},
+        #{foreignPrice,jdbcType=DECIMAL},
+        #{editionOrder,jdbcType=VARCHAR},
+        #{editionNote,jdbcType=VARCHAR},
+        #{pressOrder,jdbcType=VARCHAR},
+        #{contentNum,jdbcType=DECIMAL},
+        #{classCode,jdbcType=VARCHAR},
+        #{language,jdbcType=VARCHAR},
+        #{apabiClass,jdbcType=VARCHAR},
+        #{illustration,jdbcType=VARCHAR},
+        #{reditor,jdbcType=VARCHAR},
+        #{notes,jdbcType=VARCHAR},
+        #{realISBN,jdbcType=VARCHAR},
+        #{creatorType,jdbcType=VARCHAR},
+        #{relationType,jdbcType=VARCHAR},
+        #{contributorType,jdbcType=VARCHAR},
+        #{place,jdbcType=VARCHAR}
+    </sql>
+    <select id="getMaxDrid" resultType="java.lang.Integer">
+        SELECT MAX(DRID) FROM CMF_META_0001
+    </select>
+    <select id="getMetaIdByFileName" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT
+            Identifier
+        FROM
+            CMF_META_0001
+        WHERE
+            DRID = (
+        SELECT
+            DRID
+        FROM
+            CMF_DigitObject
+        WHERE
+            FileName = #{fileName})
+    </select>
+    <select id="findSCmfBookMetaByDrid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from CMF_META_0001
+        where DRID = #{drid}
+    </select>
+</mapper>

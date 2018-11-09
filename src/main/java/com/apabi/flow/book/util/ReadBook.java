@@ -3,6 +3,7 @@ package com.apabi.flow.book.util;
 import com.apabi.flow.book.model.BookBatchRes;
 import com.apabi.flow.book.model.EpubookMeta;
 import com.apabi.flow.book.service.BookMetaService;
+import com.apabi.flow.config.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class ReadBook {
 
     @Autowired
     BookMetaService bookMetaService;
+
+    @Autowired
+    ApplicationConfig config;
 
     //读取源文件
     public int readEpubook(String filePath, String metId) throws Exception {
@@ -110,8 +114,12 @@ public class ReadBook {
                         epubookMetas.add(res);
                         return 1;
                     }
-                } catch (IOException e) {
-                    log.warn("解析图书：" + file + "时{}" + e);
+                } catch (Exception e) {
+                    log.warn("解析图书失败：" + file + "时{}" + e);
+                } finally {
+                    File dir = new File(config.getTargetCebxDir());
+                    String[] fileList = dir.list();
+                    deleteFiles(fileList);
                 }
                 //生成文件名和图书id映射表
                 //BookUtil.exportExcel(epubookMetas);
@@ -120,6 +128,19 @@ public class ReadBook {
             }
         }
         return 0;
+    }
+
+    //删除文件
+    private void deleteFiles(String[] filePaths) {
+        if (filePaths != null && filePaths.length > 0) {
+            for (String filePath : filePaths) {
+                File file = new File(config.getTargetCebxDir() + File.separator + filePath);
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            log.info("cebx的html文件删除成功");
+        }
     }
 
     //批量发布Cebx

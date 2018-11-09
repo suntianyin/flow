@@ -62,7 +62,7 @@
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_CHAPTER
-        where COMID LIKE #{comId}||'%'
+        where COMID LIKE #{metaId}||'%'
     </select>
 
     <select id="findAllBookChapterSum" resultMap="BaseResultMapSum" parameterType="java.lang.String">
@@ -91,5 +91,10 @@
             COMID = #{comId}
         </where>
     </update>
+
+    <delete id="deleteAllBookChapter" parameterType="java.lang.String">
+        DELETE APABI_BOOK_CHAPTER
+        WHERE COMID LIKE #{metaId}||'%'
+    </delete>
 
 </mapper>

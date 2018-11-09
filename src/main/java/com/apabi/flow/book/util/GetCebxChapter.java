@@ -183,8 +183,6 @@ public class GetCebxChapter {
                             saveFile(epubookMeta.getMetaid(), fileName);
                             //更新metadata_tmp表
                             updateBookMetaTmp(epubookMeta);
-                            //清空cebxHtml文件夹
-                            deleteFiles(fileList);
                             return epubookMeta;
                         }
                     }
