@@ -1153,7 +1153,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                     return book;
                 }
             } catch (Exception e) {
-                System.out.println("请检查文件" + path);
+                log.warn("请检查文件" + path);
             }
         }
         return null;
