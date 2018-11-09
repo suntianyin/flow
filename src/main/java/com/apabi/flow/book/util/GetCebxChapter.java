@@ -200,17 +200,15 @@ public class GetCebxChapter {
                 SAXReader saxReader = new SAXReader();
                 org.dom4j.Document doc = saxReader.read(new ByteArrayInputStream(cataLog.getBytes("UTF-8")));
                 List<Element> list = doc.getRootElement().elements("catalogRow");
-                List<BookCataRows> bookCataRowsTree = new ArrayList<>();
                 BookCataRows root = new BookCataRows();
                 //清空目录章节对应map
                 cataChapter.clear();
                 for (Element element : list) {
                     createCataTree(element, root);
                 }
-                bookCataRowsTree.add(root);
                 chapterNum = 0;
                 //目录结构树
-                JSONArray json = JSONArray.fromObject(bookCataRowsTree.get(0).getChildren());
+                JSONArray json = JSONArray.fromObject(root.getChildren());
                 return json.toString();
             } else {
                 log.warn("检查文件" + xmlPath + "是否存在问题！");
