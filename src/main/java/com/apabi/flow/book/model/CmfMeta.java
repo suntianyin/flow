@@ -1,15 +1,15 @@
-package com.apabi.shuyuan.book.model;
+package com.apabi.flow.book.model;
 
 import java.util.Date;
 
 /**
  * @author guanpp
- * @date 2018/10/31 16:28
+ * @date 2018/11/6 17:13
  * @description
  */
-public class CmfBookMeta {
+public class CmfMeta {
 
-    private Integer drid;
+    private Integer drId;
 
     private String title;
 
@@ -75,12 +75,12 @@ public class CmfBookMeta {
 
     private String place;
 
-    public Integer getDrid() {
-        return drid;
+    public Integer getDrId() {
+        return drId;
     }
 
-    public void setDrid(Integer drid) {
-        this.drid = drid;
+    public void setDrId(Integer drId) {
+        this.drId = drId;
     }
 
     public String getTitle() {
