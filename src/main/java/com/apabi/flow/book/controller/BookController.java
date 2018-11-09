@@ -523,6 +523,28 @@ public class BookController {
         return "error";
     }
 
+    //跳转到批量删除图书内容页面
+    @RequestMapping(value = "/bookChapterDeleteBatch")
+    public String bookChapterDeleteBatch() {
+        return "book/bookChapterDeleteBatch";
+    }
+
+    //批量删除图书内容
+    @RequestMapping(value = "/bookChapterDeleteBatch", method = RequestMethod.POST)
+    @ResponseBody
+    public String bookChapterDeleteBatch(@RequestParam("metaIds") String metaIds) {
+        if (!StringUtils.isEmpty(metaIds)) {
+            long start = System.currentTimeMillis();
+            int res = bookMetaService.deleteBookChapterBatch(metaIds);
+            if (res > 0) {
+                long end = System.currentTimeMillis();
+                log.info("删除{}本图书流式内容，耗时{}毫秒", res, (end - start));
+                return String.valueOf(res);
+            }
+        }
+        return "error";
+    }
+
     //编辑图书内容
     /*@GetMapping("/bookChapterEdit")
     public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
@@ -913,13 +935,13 @@ public class BookController {
     public Object autoFetchPageData() {
         ResultEntity resultEntity = new ResultEntity();
         int i = bookPageService.autoFetchPageData();
-        if(i==1){
+        if (i == 1) {
             resultEntity.setMsg("采集加密流式内容成功");
             resultEntity.setStatus(i);
-        }else if(i==-1){
+        } else if (i == -1) {
             resultEntity.setMsg("采集加密队列已无数据");
             resultEntity.setStatus(1);
-        }else{
+        } else {
             resultEntity.setMsg("采集加密失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
@@ -936,13 +958,13 @@ public class BookController {
     public Object autoProcessBookFromPage2Chapter() {
         ResultEntity resultEntity = new ResultEntity();
         int i = bookPageService.autoProcessBookFromPage2Chapter();
-        if(i>=1){
-            resultEntity.setMsg("流式内容拼装成功,拼接章节数为"+i);
+        if (i >= 1) {
+            resultEntity.setMsg("流式内容拼装成功,拼接章节数为" + i);
             resultEntity.setStatus(i);
-        }else if(i==-1){
+        } else if (i == -1) {
             resultEntity.setMsg("拼装章节队列已无数据");
             resultEntity.setStatus(1);
-        }else{
+        } else {
             resultEntity.setMsg("流式内容拼装失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
