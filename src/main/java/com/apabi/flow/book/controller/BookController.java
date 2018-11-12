@@ -1,5 +1,6 @@
 package com.apabi.flow.book.controller;
 
+import com.apabi.flow.book.dao.PageAssemblyQueueMapper;
 import com.apabi.flow.book.dao.PageCrawledQueueMapper;
 import com.apabi.flow.book.entity.BookMetaMap;
 import com.apabi.flow.book.model.*;
@@ -10,6 +11,7 @@ import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
@@ -25,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -74,6 +78,9 @@ public class BookController {
 
     @Autowired
     PageCrawledQueueMapper pageCrawledQueueMapper;
+
+    @Autowired
+    PageAssemblyQueueMapper pageAssemblyQueueMapper;
 
     @Autowired
     ApplicationConfig config;
@@ -898,8 +905,23 @@ public class BookController {
 
 
     @RequestMapping("/bookPageManagement")
-    public String getBookPageManagement() {
+    public String getBookPageManagement(Model model) {
+
+        List<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.findAll();
+        List<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.findAll();
+        model.addAttribute("pageCrawledQueues",pageCrawledQueues);
+        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
         return "book/bookPageManagement";
+    }
+    @RequestMapping("/pageCrawledQueuesDelete")
+    public String pageCrawledQueuesDelete(@RequestParam("id")String id) {
+        pageCrawledQueueMapper.deleteByPrimaryKey(id);
+        return "redirect:/book/bookPageManagement";
+    }
+    @RequestMapping("/pageAssemblyQueuesDelete")
+    public String pageAssemblyQueuesDelete(@RequestParam("id")String id) {
+        pageAssemblyQueueMapper.deleteByPrimaryKey(id);
+        return "redirect:/book/bookPageManagement";
     }
 
 
@@ -980,6 +1002,38 @@ public class BookController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @PostMapping("/batch/import")
+    @ResponseBody
+    public String batchImportAuthor(@RequestParam("file")MultipartFile file){
+
+        if (!file.getOriginalFilename().endsWith(".xlsx")){
+            return "文件格式不正确，仅支持 .xlsx 格式的文件";
+        }
+        // 读取Excel工具类
+        Map<Integer, Map<Object, Object>> data = null;
+        try(InputStream inputStream = file.getInputStream()){
+            String fileName = file.getOriginalFilename();
+            ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
+            // 读取Excel中的内容
+            data = readExcelTextUtils.getDataByInputStream();
+            if (data == null || data.isEmpty()){
+                throw new Exception();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return "文件读取出错，请重新尝试或联系管理员！";
+        }catch (Exception e){
+            return "文件出错，请检查文件格式是否正确或内容是否完整！";
+        }
+        Integer addedNum = 0;
+        try {
+            addedNum = bookPageService.batchAddAuthorFromFile(data);
+        }catch (Exception e){
+            log.error("异常信息： {}", e);
+        }
+        return addedNum > 0 ? "成功":"失败";
     }
 
     @GetMapping("/test")

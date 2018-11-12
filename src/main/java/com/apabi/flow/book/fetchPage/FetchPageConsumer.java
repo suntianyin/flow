@@ -67,7 +67,7 @@ public class FetchPageConsumer implements Runnable {
                 cebxPage = Integer.parseInt(meta.getBookPages());
             }
             if (cebxPage == 0) {
-                log.error("获取元数据信息出错，无法得到书本页数信息，退出数据获取");
+                log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取",metaId);
                 return;
             }
             //页数 从 第一页开始，直到 总页数
@@ -113,7 +113,7 @@ public class FetchPageConsumer implements Runnable {
                     continue;
                 }
                 long b = System.currentTimeMillis();
-                log.debug("gethtml请求耗时 {}， url = {}", b - a, url);
+                log.info("gethtml请求耗时 {}， url = {}", b - a, url);
             }
             i1 = pageCrawledQueueMapper.deleteByPrimaryKey(metaId);
             if (i1 > 0) {
