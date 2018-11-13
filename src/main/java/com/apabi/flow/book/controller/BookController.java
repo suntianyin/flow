@@ -835,23 +835,23 @@ public class BookController {
         return resultEntity;
     }
 
-    /**
-     * 从书苑获取 图书每页内容信息
-     *
-     * @param metaId
-     * @return 返回是否成功，fail,success,这里需要重新定义（整体）
-     */
-    @GetMapping("/fetchShuyuanPageData/{metaId}")
-    @ResponseBody
-    public String fetchShuyuanPageData(@PathVariable String metaId) {
-        int res = 0;
-        try {
-            res = bookPageService.insertShuyuanPageData(metaId);
-        } catch (Exception e) {
-            log.error("获取书苑分页数据出错", e);
-        }
-        return res == 0 ? "fail" : "success";
-    }
+//    /**
+//     * 从书苑获取 图书每页内容信息
+//     *
+//     * @param metaId
+//     * @return 返回是否成功，fail,success,这里需要重新定义（整体）
+//     */
+//    @GetMapping("/fetchShuyuanPageData/{metaId}")
+//    @ResponseBody
+//    public String fetchShuyuanPageData(@PathVariable String metaId) {
+//        int res = 0;
+//        try {
+//            res = bookPageService.insertShuyuanPageData(metaId);
+//        } catch (Exception e) {
+//            log.error("获取书苑分页数据出错", e);
+//        }
+//        return res == 0 ? "fail" : "success";
+//    }
 
     /**
      * 获取指定图书的所有分页信息
