@@ -22,7 +22,7 @@ public interface BookPageService {
      * @return 返回插入页数
      * @throws Exception
      */
-    int insertShuyuanPageData(String metaId) throws Exception;
+//    int insertShuyuanPageData(String metaId) throws Exception;
 
     /**
      * 获取 当前 metaId 下的 所有 页码列表信息
