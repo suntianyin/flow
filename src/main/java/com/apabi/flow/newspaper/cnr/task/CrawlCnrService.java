@@ -35,13 +35,14 @@ public class CrawlCnrService {
         // 创建ip池对象
         CnrIpPoolUtils cnrIpPoolUtils = new CnrIpPoolUtils();
         // 获取cnr页码
-        int pageNum = CnrCrawlUtils.getPageNum("http://news.cnr.cn/native/");
+        // int pageNum = CnrCrawlUtils.getPageNum("http://news.cnr.cn/native/");
+        int pageNum = 55;
         CloseableHttpClient httpClient = CnrCrawlUtils.getCloseableHttpClient();
         CountDownLatch countDownLatch = new CountDownLatch(pageNum);
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         ArrayBlockingQueue<String> urlQueue = new ArrayBlockingQueue<String>(100);
         for (int i = 1; i <= pageNum; i++) {
-            String url = "http://news.cnr.cn/native/index_" + i + ".html";
+            String url = "http://www.cnr.cn/chanjing/guancha/index_" + i + ".html";
             try {
                 urlQueue.put(url);
             } catch (InterruptedException e) {

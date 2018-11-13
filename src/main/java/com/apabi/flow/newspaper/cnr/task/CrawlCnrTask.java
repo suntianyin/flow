@@ -37,11 +37,14 @@ public class CrawlCnrTask implements Runnable {
     public void run() {
         try {
             String url = urlQueue.take();
-            List<Newspaper> newspaperResultList = CnrCrawlUtils.crawlByUrl(cnrIpPoolUtils, url, closeableHttpClient);
+            List<Newspaper> newspaperResultList = CnrCrawlUtils.crawlByUrlEduAndSport(cnrIpPoolUtils, url, closeableHttpClient);
             for (Newspaper newspaper : newspaperResultList) {
                 try {
                     newspaperDao.insert(newspaper);
-                    LOGGER.info(Thread.currentThread().getName() + "抓取" + newspaper.getTitle() + "并插入数据库成功");
+                    String host = cnrIpPoolUtils.getIp();
+                    String ip = host.split(":")[0];
+                    String port = host.split(":")[1];
+                    LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "抓取" + newspaper.getTitle() + "并插入数据库成功");
                 } catch (Exception e) {
                 }
             }

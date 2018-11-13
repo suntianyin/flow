@@ -1,6 +1,5 @@
 package com.apabi.flow.newspaper.cnr.util;
 
-import com.apabi.flow.crawlTask.util.UserAgentUtils;
 import com.apabi.flow.newspaper.model.Newspaper;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
@@ -88,9 +87,11 @@ public class CnrCrawlUtils {
         httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet.setHeader("Cache-Control", "max-age=0");
         httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Host", "news.cnr.cn");
+        httpGet.setHeader("Host", "www.cnr.cn");
+        //httpGet.setHeader("Referer","http://sports.cnr.cn/synthesize/news/");
         httpGet.setHeader("Upgrade-Insecure-Requests", "1");
-        httpGet.setHeader("User-Agent", UserAgentUtils.getUserAgent());
+        httpGet.setHeader("Cookie","wdcid=774faac7ea5e7be1; wdses=2f8df3aa34f1d386; wdlast=1542014903");
+        httpGet.setHeader("User-Agent","Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
         return httpGet;
     }
 
@@ -111,7 +112,7 @@ public class CnrCrawlUtils {
     }
 
     // 根据url中的新闻详情进行抓取
-    public static List<Newspaper> crawlByUrl(CnrIpPoolUtils cnrIpPoolUtils, String url, CloseableHttpClient httpClient){
+    public static List<Newspaper> crawlByUrl(CnrIpPoolUtils cnrIpPoolUtils, String url, CloseableHttpClient httpClient) {
         List<Newspaper> newspaperList = new ArrayList<>();
         HttpGet httpGet = generateHttpGet(url);
         // 获取ip
@@ -152,4 +153,43 @@ public class CnrCrawlUtils {
         return newspaperList;
     }
 
+    // 根据url中的新闻详情进行抓取
+    public static List<Newspaper> crawlByUrlEduAndSport(CnrIpPoolUtils cnrIpPoolUtils, String url, CloseableHttpClient httpClient) {
+        List<Newspaper> newspaperList = new ArrayList<>();
+        HttpGet httpGet = generateHttpGet(url);
+        // 获取ip
+        String host = cnrIpPoolUtils.getIp();
+        // 创建RequestConfig对象，切换ip
+        HttpHost httpHost = new HttpHost(host.split(":")[0], Integer.parseInt(host.split(":")[1]));
+        RequestConfig requestConfig = RequestConfig.custom().setProxy(httpHost).build();
+        httpGet.setConfig(requestConfig);
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpGet);
+            String html = EntityUtils.toString(response.getEntity(), "GBK");
+            Document document = Jsoup.parse(html);
+
+            Elements newspaperElements = document.select("div[class='text']");
+            for (Element newspaperElement : newspaperElements) {
+                Newspaper newspaper = new Newspaper();
+                String title = newspaperElement.child(0).child(0).text();
+                String href = newspaperElement.child(0).child(0).attr("href");
+                String abstract_ = newspaperElement.child(1).text();
+                newspaper.setTitle(title);
+                newspaper.setAbstract_(abstract_);
+                newspaper.setUrl(href);
+                newspaper.setSource("中央人民广播电台网");
+                newspaperList.add(newspaper);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return newspaperList;
+    }
+
+
+    public static void main(String[] args) {
+        CnrIpPoolUtils cnrIpPoolUtils = new CnrIpPoolUtils();
+        CloseableHttpClient closeableHttpClient = getCloseableHttpClient();
+        crawlByUrlEduAndSport(cnrIpPoolUtils,"http://sports.cnr.cn/synthesize/news/index_1.html",closeableHttpClient);
+    }
 }

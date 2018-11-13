@@ -104,8 +104,8 @@ public class ChinanewsCrawlUtils {
         httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet.setHeader("Cache-Control", "max-age=0");
         httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Cookie", "cnsuuid=794d06aa-0935-e611-aac7-3290d191bf369669.258034995362_1541131500267; CNZZDATA1263394109=1073150873-1541126433-http%253A%252F%252Fwww.chinanews.com%252F%7C1541573559; Hm_lvt_0da10fbf73cda14a786cd75b91f6beab=1541131501,1541381725,1541574628; Hm_lpvt_0da10fbf73cda14a786cd75b91f6beab=1541574628; cn_1263394109_dplus=%7B%22distinct_id%22%3A%20%22166d299a95a658-08d85c5472284f-414a0029-1fa400-166d299a95b222%22%2C%22sp%22%3A%20%7B%22%24_sessionid%22%3A%200%2C%22%24_sessionTime%22%3A%201541574873%2C%22%24dp%22%3A%200%2C%22%24_sessionPVTime%22%3A%201541574873%7D%7D; UM_distinctid=166d299a95a658-08d85c5472284f-414a0029-1fa400-166d299a95b222");
-        httpGet.setHeader("Host", "www.chinanews.com");
+        httpGet.setHeader("Cookie", "wdcid=774faac7ea5e7be1; wdlast=1542017869");
+        //httpGet.setHeader("Host", "www.chinanews.com");
         httpGet.setHeader("Upgrade-Insecure-Requests", "1");
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
         return httpGet;

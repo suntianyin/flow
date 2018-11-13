@@ -14,4 +14,6 @@ public interface NewspaperDao {
     void update(Newspaper newspaper);
     Page<String> findNoHtmlContentUrlsByPage();
     Integer countNoHtmlContent();
+    Integer countWithHtmlContent();
+    Page<Newspaper> findNewspaperWithoutHtmlContentByPage();
 }

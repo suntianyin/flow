@@ -17,6 +17,8 @@ public class Newspaper {
     private String title;
     private String abstract_;
     private String htmlContent;
+    private String source;
+    private String mainBody;
 
     @Override
     public String toString() {

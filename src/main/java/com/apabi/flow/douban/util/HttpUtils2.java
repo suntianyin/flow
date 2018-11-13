@@ -238,11 +238,4 @@ public class HttpUtils2 {
 		return in;
 	}
 
-	public static void main(String[] args) throws Exception {
-		HttpEntity in = doGetEntityForSolrPaper(
-				"http://rtest1.apabi.com/solr/newspaper/select?q=id%3A%22n.D110000xinhuamrdx%22&fl=nid&start=0&rows=10&wt=xml&indent=true");
-		System.out.println(in.getContentLength());
-		InputStream ins = in.getContent();
-		System.out.println(ins.toString());
-	}
 }
