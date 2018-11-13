@@ -403,7 +403,6 @@ public class BookMetaServiceImpl implements BookMetaService {
                 if (res) {
                     cataRows.setWordSum(jsonObject.getInt("wordSum"));
                 }
-                cataRows.setWordSum(jsonObject.getInt("wordSum"));
                 cataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
                 for (JSONObject child : childE) {
                     createZTree(child, cataRows);
