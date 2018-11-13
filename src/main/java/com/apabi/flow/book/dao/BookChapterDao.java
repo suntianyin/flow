@@ -19,14 +19,17 @@ public interface BookChapterDao {
     BookChapter findBookChapterByComId(String comId);
 
     //查询图书metaid下的所有章节内容
-    List<BookChapter> findAllBookChapter(String metaid);
+    List<BookChapter> findAllBookChapter(String metaId);
 
     //查询图书metaid下的所有章节内容
-    List<BookChapterSum> findAllBookChapterSum(String metaid);
+    List<BookChapterSum> findAllBookChapterSum(String metaId);
 
     //保存图书章节内容
     int insertBookChapter(BookChapter bookChapter);
 
     //更新图书章节内容
     int updateBookChapter(BookChapter bookChapter);
+
+    //删除章节内容
+    int deleteAllBookChapter(String metaId);
 }

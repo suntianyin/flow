@@ -13,14 +13,14 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     primary:
       driver-class-name: oracle.jdbc.OracleDriver
-      url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
+      url: jdbc:oracle:thin:@192.168.0.124:1521/orclpdb
       username: book
       password: book037268
     secondary:
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-      url: jdbc:sqlserver://172.18.89.253:1433;DatabaseName=Dlib_2
-      username: gpp
-      password: Founder123
+      url: jdbc:sqlserver://10.10.11.55:1433;DatabaseName=ApaDlibrary102
+      username: ApaDlibrary102
+      password: idXrs7OW7Hgow0DqAqF7fjT6K
 #    driver-class-name: oracle.jdbc.OracleDriver
 #    url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
 #    username: book

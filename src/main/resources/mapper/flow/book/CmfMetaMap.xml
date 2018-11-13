@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.flow.book.dao.CmfMetaDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.CmfMeta">
+        <id column="DRID" jdbcType="DECIMAL" property="drId"/>
+        <result column="TITLE" jdbcType="VARCHAR" property="title"/>
+        <result column="ALTERNATIVETITLE" jdbcType="VARCHAR" property="alternativeTitle"/>
+        <result column="CREATOR" jdbcType="VARCHAR" property="creator"/>
+        <result column="SUBJECT" jdbcType="VARCHAR" property="subject"/>
+        <result column="ABSTRACT" jdbcType="VARCHAR" property="Abstract"/>
+        <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher"/>
+        <result column="TYPE" jdbcType="VARCHAR" property="type"/>
+        <result column="CONTRIBUTOR" jdbcType="VARCHAR" property="contributor"/>
+        <result column="ISSUEDDATE" jdbcType="VARCHAR" property="issuedDate"/>
+        <result column="YEAR" jdbcType="DECIMAL" property="year"/>
+        <result column="IDTYPE" jdbcType="VARCHAR" property="idType"/>
+        <result column="IDENTIFIER" jdbcType="VARCHAR" property="identifier"/>
+        <result column="RELATION" jdbcType="VARCHAR" property="relation"/>
+        <result column="PRICE" jdbcType="DECIMAL" property="price"/>
+        <result column="PAPERPRICE" jdbcType="DECIMAL" property="paperPrice"/>
+        <result column="FOREIGNPRICETYPE" jdbcType="VARCHAR" property="foreignPriceType"/>
+        <result column="FOREIGNPRICE" jdbcType="DECIMAL" property="foreignPrice"/>
+        <result column="EDITIONORDER" jdbcType="VARCHAR" property="editionOrder"/>
+        <result column="EDITIONNOTE" jdbcType="VARCHAR" property="editionNote"/>
+        <result column="PRESSORDER" jdbcType="VARCHAR" property="pressOrder"/>
+        <result column="CONTENTNUM" jdbcType="DECIMAL" property="contentNum"/>
+        <result column="CLASSCODE" jdbcType="VARCHAR" property="classCode"/>
+        <result column="LANGUAGE" jdbcType="VARCHAR" property="language"/>
+        <result column="APABICLASS" jdbcType="VARCHAR" property="apabiClass"/>
+        <result column="ILLUSTRATION" jdbcType="VARCHAR" property="illustration"/>
+        <result column="REDITOR" jdbcType="VARCHAR" property="reditor"/>
+        <result column="NOTES" jdbcType="VARCHAR" property="notes"/>
+        <result column="REALISBN" jdbcType="VARCHAR" property="realISBN"/>
+        <result column="CREATORTYPE" jdbcType="VARCHAR" property="creatorType"/>
+        <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
+        <result column="CONTRIBUTORTYPE" jdbcType="VARCHAR" property="contributorType"/>
+        <result column="PLACE" jdbcType="VARCHAR" property="place"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        DRID,TITLE,ALTERNATIVETITLE,CREATOR,SUBJECT,ABSTRACT,
+        PUBLISHER,TYPE,CONTRIBUTOR,ISSUEDDATE,YEAR,IDTYPE,
+        IDENTIFIER,RELATION,PRICE,PAPERPRICE,FOREIGNPRICETYPE,
+        FOREIGNPRICE,EDITIONORDER,EDITIONNOTE,PRESSORDER,
+        CONTENTNUM,CLASSCODE,LANGUAGE,APABICLASS,ILLUSTRATION,
+        REDITOR,NOTES,REALISBN,CREATORTYPE,RELATIONTYPE,
+        CONTRIBUTORTYPE,PLACE
+    </sql>
+    <sql id="Base_Value_List">
+        #{drId,jdbcType=DECIMAL },
+        #{title,jdbcType=VARCHAR},
+        #{alternativeTitle,jdbcType=VARCHAR},
+        #{creator,jdbcType=VARCHAR},
+        #{subject,jdbcType=VARCHAR},
+        #{Abstract,jdbcType=VARCHAR},
+        #{publisher,jdbcType=VARCHAR},
+        #{type,jdbcType=VARCHAR},
+        #{contributor,jdbcType=VARCHAR},
+        #{issuedDate,jdbcType=VARCHAR},
+        #{year,jdbcType=DECIMAL},
+        #{idType,jdbcType=VARCHAR},
+        #{identifier,jdbcType=VARCHAR},
+        #{relation,jdbcType=VARCHAR},
+        #{price,jdbcType=DECIMAL},
+        #{paperPrice,jdbcType=DECIMAL},
+        #{foreignPriceType,jdbcType=VARCHAR},
+        #{foreignPrice,jdbcType=DECIMAL},
+        #{editionOrder,jdbcType=VARCHAR},
+        #{editionNote,jdbcType=VARCHAR},
+        #{pressOrder,jdbcType=VARCHAR},
+        #{contentNum,jdbcType=DECIMAL},
+        #{classCode,jdbcType=VARCHAR},
+        #{language,jdbcType=VARCHAR},
+        #{apabiClass,jdbcType=VARCHAR},
+        #{illustration,jdbcType=VARCHAR},
+        #{reditor,jdbcType=VARCHAR},
+        #{notes,jdbcType=VARCHAR},
+        #{realISBN,jdbcType=VARCHAR},
+        #{creatorType,jdbcType=VARCHAR},
+        #{relationType,jdbcType=VARCHAR},
+        #{contributorType,jdbcType=VARCHAR},
+        #{place,jdbcType=VARCHAR}
+    </sql>
+    <sql id="Base_Set_List">
+        <if test="drId != null">
+            DRID = #{drId},
+        </if>
+
+        <if test="title != null">
+            TITLE = #{title},
+        </if>
+
+        <if test="alternativeTitle != null">
+            ALTERNATIVETITLE = #{alternativeTitle},
+        </if>
+
+        <if test="creator != null">
+            CREATOR = #{creator},
+        </if>
+
+        <if test="subject != null">
+            SUBJECT = #{subject},
+        </if>
+
+        <if test="Abstract != null">
+            ABSTRACT = #{Abstract},
+        </if>
+
+        <if test="publisher != null">
+            PUBLISHER = #{publisher},
+        </if>
+
+        <if test="type != null">
+            TYPE = #{type},
+        </if>
+
+        <if test="contributor != null">
+            CONTRIBUTOR = #{contributor},
+        </if>
+
+        <if test="issuedDate != null">
+            ISSUEDDATE = #{issuedDate},
+        </if>
+
+        <if test="year != null">
+            YEAR = #{year},
+        </if>
+
+        <if test="idType != null">
+            IDTYPE = #{idType},
+        </if>
+
+        <if test="identifier != null">
+            IDENTIFIER = #{identifier},
+        </if>
+
+        <if test="relation != null">
+            RELATION = #{relation},
+        </if>
+
+        <if test="price != null">
+            PRICE = #{price},
+        </if>
+
+        <if test="paperPrice != null">
+            PAPERPRICE = #{paperPrice},
+        </if>
+
+        <if test="foreignPriceType != null">
+            FOREIGNPRICETYPE = #{foreignPriceType},
+        </if>
+
+        <if test="foreignPrice != null">
+            FOREIGNPRICE = #{foreignPrice},
+        </if>
+
+        <if test="editionOrder != null">
+            EDITIONORDER = #{editionOrder},
+        </if>
+
+        <if test="editionNote != null">
+            EDITIONNOTE = #{editionNote},
+        </if>
+
+        <if test="pressOrder != null">
+            PRESSORDER = #{pressOrder},
+        </if>
+
+        <if test="contentNum != null">
+            CONTENTNUM = #{contentNum},
+        </if>
+
+        <if test="classCode != null">
+            CLASSCODE = #{classCode},
+        </if>
+
+        <if test="language != null">
+            LANGUAGE = #{language},
+        </if>
+
+        <if test="apabiClass != null">
+            APABICLASS = #{apabiClass},
+        </if>
+
+        <if test="illustration != null">
+            ILLUSTRATION = #{illustration},
+        </if>
+
+        <if test="reditor != null">
+            REDITOR = #{reditor},
+        </if>
+
+        <if test="notes != null">
+            NOTES = #{notes},
+        </if>
+
+        <if test="realISBN != null">
+            REALISBN = #{realISBN},
+        </if>
+
+        <if test="creatorType != null">
+            CREATORTYPE = #{creatorType},
+        </if>
+
+        <if test="relationType != null">
+            RELATIONTYPE = #{relationType},
+        </if>
+
+        <if test="contributorType != null">
+            CONTRIBUTORTYPE = #{contributorType},
+        </if>
+
+        <if test="place != null">
+            PLACE = #{place},
+        </if>
+    </sql>
+    <insert id="insertCmfMeta" parameterType="com.apabi.flow.book.model.CmfMeta">
+        insert into CMF_META_0001 (<include refid="Base_Column_List"/>)
+        values
+        (<include refid="Base_Value_List"/>)
+    </insert>
+    <select id="findCmfMetaByDrid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from CMF_META_0001
+        where DRID = #{drId}
+    </select>
+</mapper>

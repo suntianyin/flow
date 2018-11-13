@@ -1,6 +1,8 @@
 package com.apabi.flow.book.util;
 
+import com.apabi.flow.book.model.BookCataRows;
 import com.apabi.flow.book.model.BookMeta;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -154,27 +156,16 @@ public class Xml2BookMeta {
             BookMeta bookMeta = new BookMeta();
             //获取目录数据
             //List<String> cataRows = new ArrayList<>();
-            String cataRows = "";
+
             List<Element> cataList = (List<Element>) doc.selectNodes("//Catalog/catalogRow");
             if (cataList != null && cataList.size() > 0) {
-                String cata;
+                BookCataRows root = new BookCataRows();
                 for (Element element : cataList) {
-                    cata = "{\"chapterName\":\"" + element.attributeValue("chapterName") +
-                            "\",\"ebookPageNum\":\"" + element.attributeValue("ebookPageNum") + "\"}";
-                    //cataRows.add(cata);
-                    cataRows += cata + ",";
-                    List<Element> catalogRow = element.elements("catalogRow");
-                    if (catalogRow != null && catalogRow.size() > 0) {
-                        for (Element element1 : catalogRow) {
-                            cata = "{\"chapterName\":\"" + element1.attributeValue("chapterName") +
-                                    "\",\"ebookPageNum\":\"" + element1.attributeValue("ebookPageNum") + "\"}";
-                            //cataRows.add(cata);
-                            cataRows += cata + ",";
-                        }
-                    }
+                    getCataTree(element, root);
                 }
+                JSONArray json = JSONArray.fromObject(root.getChildren());
+                bookMeta.setFoamatCatalog(json.toString());
             }
-            bookMeta.setStreamCatalog(cataRows);
             //获取file数据
             List<String> files = new ArrayList<>();
             List<Element> fileList = (List<Element>) doc.selectNodes("//fileSec/file");
@@ -271,6 +262,30 @@ public class Xml2BookMeta {
             return bookMeta;
         }
         return null;
+    }
+
+    //构建目录树
+    //构建目录对象list
+    private static void getCataTree(Element element, BookCataRows parentCata) {
+        if (element != null) {
+            List<Element> childE = element.elements();
+            if (childE != null && childE.size() > 0) {
+                BookCataRows cataRows = new BookCataRows();
+                String chapterName = element.attributeValue("chapterName");
+                cataRows.setChapterName(chapterName);
+                cataRows.setEbookPageNum(Integer.parseInt(element.attributeValue("ebookPageNum")));
+                for (Element child : childE) {
+                    getCataTree(child, cataRows);
+                }
+                parentCata.getChildren().add(cataRows);
+            } else {
+                BookCataRows bookCataRows = new BookCataRows();
+                String chapterName = element.attributeValue("chapterName");
+                bookCataRows.setChapterName(chapterName);
+                bookCataRows.setEbookPageNum(Integer.parseInt(element.attributeValue("ebookPageNum")));
+                parentCata.getChildren().add(bookCataRows);
+            }
+        }
     }
 
     //获取xml文件中的id

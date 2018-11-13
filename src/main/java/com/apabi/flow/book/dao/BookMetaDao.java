@@ -64,10 +64,11 @@ public interface BookMetaDao {
     int getMaxDrid();
 
     //分页查询
-    Page<BookMetaVo> findBookMetaVoByPage(Map<String,String> queryMap);
+    Page<BookMetaVo> findBookMetaVoByPage(Map<String, Object> queryMap);
 
     /**
      * 根据isbn查询 BookMeta
+     *
      * @param isbn
      * @return
      */
@@ -75,6 +76,7 @@ public interface BookMetaDao {
 
     /**
      * 根据isbn13查询 BookMeta
+     *
      * @param isbn13
      * @return
      */

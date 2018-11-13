@@ -191,10 +191,10 @@ public class GetEpubookChapter {
                             epubookMeta.setContentNum(wordSum);
                             //获取目录信息，并添加章节号和章节字数
                             //List<BookCataRows> catalogList = getCataRowData(book, map);
-                            List<BookCataRows> catalogList = getCataRows(book);
-                            if (catalogList != null && catalogList.size() > 0) {
+                            BookCataRows cataTree = getCataRows(book);
+                            if (cataTree != null) {
                                 //目录结构树
-                                JSONArray json = JSONArray.fromObject(catalogList.get(0).getChildren());
+                                JSONArray json = JSONArray.fromObject(cataTree.getChildren());
                                 epubookMeta.setStreamCatalog(json.toString());
                             } else {
                                 log.warn("图书《" + epubookMeta.getTitle() + "》目录获取有误！");
@@ -334,10 +334,9 @@ public class GetEpubookChapter {
     }
 
     //获取层次目录
-    private List<BookCataRows> getCataRows(Book book) {
+    private BookCataRows getCataRows(Book book) {
         if (book != null) {
             try {
-                List<BookCataRows> bookCataRowsTree = new ArrayList<>();
                 List<TOCReference> tocs = book.getTableOfContents().getTocReferences();
                 int startNum = 0;
                 if (tocs != null && tocs.size() > 0) {
@@ -359,9 +358,8 @@ public class GetEpubookChapter {
                 for (TOCReference toc : tocs) {
                     createCataTree(toc, root);
                 }
-                bookCataRowsTree.add(root);
                 cataChapter.clear();
-                return bookCataRowsTree;
+                return root;
             } catch (Exception e) {
                 log.warn("图书" + book.getTitle() + e.getMessage());
                 return null;

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.shuyuan.book.dao.SCmfDigitObjectDao">
+    <resultMap id="BaseResultMap" type="com.apabi.shuyuan.book.model.SCmfDigitObject">
+        <id column="FileID" jdbcType="DECIMAL" property="fileId"/>
+        <result column="DRID" jdbcType="DECIMAL" property="drId"/>
+        <result column="PFileID" jdbcType="DECIMAL" property="pfileId"/>
+        <result column="FileName" jdbcType="VARCHAR" property="fileName"/>
+        <result column="FileDesc" jdbcType="VARCHAR" property="fileDesc"/>
+        <result column="FilePath" jdbcType="VARCHAR" property="filePath"/>
+        <result column="Order" jdbcType="DECIMAL" property="order"/>
+        <result column="ObjID" jdbcType="VARCHAR" property="objId"/>
+        <result column="PObjID" jdbcType="VARCHAR" property="pobjId"/>
+        <result column="DOI" jdbcType="VARCHAR" property="doi"/>
+        <result column="FileSize" jdbcType="DECIMAL" property="fileSize"/>
+        <result column="Format" jdbcType="VARCHAR" property="format"/>
+        <result column="ContentTableInfo" jdbcType="DECIMAL" property="contentTableInfo"/>
+        <result column="EncryptInfo" jdbcType="DECIMAL" property="encryptInfo"/>
+        <result column="ObjType" jdbcType="VARCHAR" property="objType"/>
+        <result column="ImgWidth" jdbcType="DECIMAL" property="imgWidth"/>
+        <result column="ImgHeigth" jdbcType="DECIMAL" property="imgHeigth"/>
+        <result column="ChapterIndex" jdbcType="VARCHAR" property="chapterIndex"/>
+        <result column="FileCreatedDate" jdbcType="TIMESTAMP" property="fileCreatedDate"/>
+        <result column="FileLastModDate" jdbcType="TIMESTAMP" property="fileLastModDate"/>
+        <result column="ContentFormat" jdbcType="DECIMAL" property="contentFormat"/>
+        <result column="CebxSubset" jdbcType="DECIMAL" property="cebxSubset"/>
+        <result column="Security" jdbcType="DECIMAL" property="security"/>
+        <result column="Catalog" jdbcType="VARCHAR" property="catalog"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        FileID,DRID,PFileID,FileName,FileDesc,FilePath,
+        [Order],ObjID,PObjID,DOI,FileSize,Format,ContentTableInfo,
+        EncryptInfo,ObjType,ImgWidth,ImgHeigth,ChapterIndex,
+        FileCreatedDate,FileLastModDate,Catalog,ContentFormat,
+        CebxSubset,Security
+    </sql>
+    <sql id="Base_Value_List">
+        #{fileId,jdbcType=DECIMAL },
+        #{drId,jdbcType=DECIMAL },
+        #{pfileId,jdbcType=DECIMAL },
+        #{fileName,jdbcType=VARCHAR },
+        #{fileDesc,jdbcType=VARCHAR },
+        #{filePath,jdbcType=VARCHAR },
+        #{order,jdbcType=DECIMAL },
+        #{objId,jdbcType=VARCHAR },
+        #{pobjId,jdbcType=VARCHAR },
+        #{doi,jdbcType=VARCHAR },
+        #{fileSize,jdbcType=DECIMAL },
+        #{format,jdbcType=VARCHAR },
+        #{contentTableInfo,jdbcType=DECIMAL },
+        #{encryptInfo,jdbcType=DECIMAL },
+        #{objType,jdbcType=VARCHAR },
+        #{imgWidth,jdbcType=DECIMAL },
+        #{imgHeigth,jdbcType=DECIMAL },
+        #{chapterIndex,jdbcType=VARCHAR },
+        #{fileCreatedDate,jdbcType=VARCHAR },
+        #{fileLastModDate,jdbcType=VARCHAR },
+        #{contentFormat,jdbcType=DECIMAL },
+        #{cebxSubset,jdbcType=DECIMAL },
+        #{security,jdbcType=DECIMAL },
+        #{catalog,jdbcType=VARCHAR }
+    </sql>
+    <sql id="Base_Set_List">
+        <if test="fileId != null">
+            FileID = #{fileId},
+        </if>
+        <if test="drId != null">
+            DRID = #{drId},
+        </if>
+        <if test="pfileId != null">
+            PFileID = #{pfileId},
+        </if>
+        <if test="fileName != null">
+            FileName = #{fileName},
+        </if>
+        <if test="fileDesc != null">
+            FileDesc = #{fileDesc},
+        </if>
+        <if test="filePath != null">
+            FilePath = #{filePath},
+        </if>
+        <if test="order != null">
+            Order = #{order},
+        </if>
+        <if test="objId != null">
+            ObjID = #{objId},
+        </if>
+        <if test="pobjId != null">
+            PObjID = #{pobjId},
+        </if>
+        <if test="doi != null">
+            DOI = #{doi},
+        </if>
+        <if test="fileSize != null">
+            FileSize = #{fileSize},
+        </if>
+        <if test="format != null">
+            Format = #{format},
+        </if>
+        <if test="contentTableInfo != null">
+            ContentTableInfo = #{contentTableInfo},
+        </if>
+        <if test="encryptInfo != null">
+            ENCRYPTINFO = #{encryptInfo},
+        </if>
+        <if test="objType != null">
+            ObjType = #{objType},
+        </if>
+        <if test="imgWidth != null">
+            ImgWidth = #{imgWidth},
+        </if>
+        <if test="imgHeigth != null">
+            ImgHeigth = #{imgHeigth},
+        </if>
+        <if test="chapterIndex != null">
+            ChapterIndex = #{chapterIndex},
+        </if>
+        <if test="fileCreatedDate != null">
+            FileCreatedDate = #{fileCreatedDate},
+        </if>
+        <if test="fileLastModDate != null">
+            FileLastModDate = #{fileLastModDate},
+        </if>
+        <if test="contentFormat != null">
+            ContentFormat = #{contentFormat},
+        </if>
+        <if test="cebxSubset != null">
+            CebxSubset = #{cebxSubset},
+        </if>
+        <if test="security != null">
+            Security = #{security},
+        </if>
+        <if test="catalog != null">
+            Catalog = #{catalog},
+        </if>
+    </sql>
+    <select id="findSCmfDigitObjectByFileId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from CMF_DigitObject
+        where FileID = #{fileId}
+    </select>
+    <select id="findSCmfDigitObjectByDrid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from CMF_DigitObject
+        where DRID = #{drId}
+    </select>
+</mapper>

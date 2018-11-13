@@ -1,6 +1,6 @@
 package com.apabi.flow.book.util;
 
-import com.apabi.shuyuan.book.model.CmfBookMeta;
+import com.apabi.shuyuan.book.model.SCmfMeta;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class SqlServerJdbc {
     }
 
     //获取图书元数据
-    public static CmfBookMeta queryBookMeta(String sql) throws SQLException {
+    public static SCmfMeta queryBookMeta(String sql) throws SQLException {
         if (sql != null && sql.length() > 0) {
             PreparedStatement pstmt = null;
             //建立一个结果集，用来保存查询出来的结果
@@ -100,7 +100,7 @@ public class SqlServerJdbc {
                 //建立一个结果集，用来保存查询出来的结果
                 rs = pstmt.executeQuery();
                 //获取实体对象
-                CmfBookMeta bookMeta = (CmfBookMeta) poplulate(rs, CmfBookMeta.class);
+                SCmfMeta bookMeta = (SCmfMeta) poplulate(rs, SCmfMeta.class);
                 return bookMeta;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -298,7 +298,7 @@ public class SqlServerJdbc {
 
     public static void main(String[] args) throws SQLException, IOException {
         getConn();
-        /*CmfBookMeta bookMeta = queryBookMeta("SELECT * FROM CMF_META_0001 WHERE DRID = '34'");
+        /*SCmfMeta bookMeta = queryBookMeta("SELECT * FROM CMF_META_0001 WHERE DRID = '34'");
         String res = queryDrid("SELECT * FROM CMF_META_0001 WHERE DRID = '22'");
         System.out.println(res);*/
         //System.out.println(ResourceUtils.getURL("log").getPath());

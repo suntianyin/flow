@@ -75,4 +75,10 @@
         </where>
     </update>
 
+    <delete id="deleteAllBookShard" parameterType="java.lang.String">
+        DELETE APABI_BOOK_SHARD
+        WHERE COMID
+        LIKE #{metaId}||'%'
+    </delete>
+
 </mapper>

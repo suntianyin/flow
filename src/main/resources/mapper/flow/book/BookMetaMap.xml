@@ -789,6 +789,9 @@
         <if test="isbn13 != null and isbn13 != ''">
             AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
         </if>
+        <if test="hasFlow != null">
+            AND HASFLOW = #{hasFlow,jdbcType=INTEGER}
+        </if>
     </select>
     <update id="updateBookMetaVo" parameterType="com.apabi.flow.book.model.BookMetaVo">
         UPDATE APABI_BOOK_METADATA

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apabi.flow.book.dao.CmfDigitObjectDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.CmfDigitObject">
+        <id column="FILEID" jdbcType="DECIMAL" property="fileId"/>
+        <result column="DRID" jdbcType="DECIMAL" property="drId"/>
+        <result column="PFILEID" jdbcType="DECIMAL" property="pfileId"/>
+        <result column="FILENAME" jdbcType="VARCHAR" property="fileName"/>
+        <result column="FILEDESC" jdbcType="VARCHAR" property="fileDesc"/>
+        <result column="FILEPATH" jdbcType="VARCHAR" property="filePath"/>
+        <result column="ORDER_NEW" jdbcType="DECIMAL" property="orderNew"/>
+        <result column="OBJID" jdbcType="VARCHAR" property="objId"/>
+        <result column="POBJID" jdbcType="VARCHAR" property="pobjId"/>
+        <result column="DOI" jdbcType="VARCHAR" property="doi"/>
+        <result column="FILESIZE" jdbcType="DECIMAL" property="fileSize"/>
+        <result column="FORMAT_NEW" jdbcType="VARCHAR" property="formatNew"/>
+        <result column="CONTENTTABLEINFO" jdbcType="DECIMAL" property="contentTableInfo"/>
+        <result column="ENCRYPTINFO" jdbcType="DECIMAL" property="encryptInfo"/>
+        <result column="OBJTYPE" jdbcType="VARCHAR" property="objType"/>
+        <result column="IMGWIDTH" jdbcType="DECIMAL" property="imgWidth"/>
+        <result column="IMGHEIGTH" jdbcType="DECIMAL" property="imgHeigth"/>
+        <result column="CHAPTERINDEX" jdbcType="VARCHAR" property="chapterIndex"/>
+        <result column="FILECREATEDDATE" jdbcType="VARCHAR" property="fileCreatedDate"/>
+        <result column="FILELASTMODDATE" jdbcType="VARCHAR" property="fileLastModDate"/>
+        <result column="CONTENTFORMAT" jdbcType="DECIMAL" property="contentFormat"/>
+        <result column="CEBXSUBSET" jdbcType="DECIMAL" property="cebxSubset"/>
+        <result column="SECURITY_NEW" jdbcType="DECIMAL" property="securityNew"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        FILEID,DRID,PFILEID,FILENAME,FILEDESC,FILEPATH,
+        ORDER_NEW,OBJID,POBJID,DOI,FILESIZE,FORMAT_NEW,
+        CONTENTTABLEINFO,ENCRYPTINFO,OBJTYPE,IMGWIDTH,
+        IMGHEIGTH,CHAPTERINDEX,FILECREATEDDATE,FILELASTMODDATE,
+        CONTENTFORMAT,CEBXSUBSET,SECURITY_NEW
+    </sql>
+    <sql id="Base_Value_List">
+        #{fileId,jdbcType=DECIMAL },
+        #{drId,jdbcType=DECIMAL },
+        #{pfileId,jdbcType=DECIMAL },
+        #{fileName,jdbcType=VARCHAR },
+        #{fileDesc,jdbcType=VARCHAR },
+        #{filePath,jdbcType=VARCHAR },
+        #{orderNew,jdbcType=DECIMAL },
+        #{objId,jdbcType=VARCHAR },
+        #{pobjId,jdbcType=VARCHAR },
+        #{doi,jdbcType=VARCHAR },
+        #{fileSize,jdbcType=DECIMAL },
+        #{formatNew,jdbcType=VARCHAR },
+        #{contentTableInfo,jdbcType=DECIMAL },
+        #{encryptInfo,jdbcType=DECIMAL },
+        #{objType,jdbcType=VARCHAR },
+        #{imgWidth,jdbcType=DECIMAL },
+        #{imgHeigth,jdbcType=DECIMAL },
+        #{chapterIndex,jdbcType=VARCHAR },
+        #{fileCreatedDate,jdbcType=VARCHAR },
+        #{fileLastModDate,jdbcType=VARCHAR },
+        #{contentFormat,jdbcType=DECIMAL },
+        #{cebxSubset,jdbcType=DECIMAL },
+        #{securityNew,jdbcType=DECIMAL }
+    </sql>
+    <sql id="Base_Set_List">
+        <if test="fileId != null">
+            FILEID = #{fileId},
+        </if>
+        <if test="drId != null">
+            DRID = #{drId},
+        </if>
+        <if test="pfileId != null">
+            PFILEID = #{pfileId},
+        </if>
+        <if test="fileName != null">
+            FILENAME = #{fileName},
+        </if>
+        <if test="fileDesc != null">
+            FILEDESC = #{fileDesc},
+        </if>
+        <if test="filePath != null">
+            FILEPATH = #{filePath},
+        </if>
+        <if test="orderNew != null">
+            ORDER_NEW = #{orderNew},
+        </if>
+        <if test="objId != null">
+            OBJID = #{objId},
+        </if>
+        <if test="pobjId != null">
+            POBJID = #{pobjId},
+        </if>
+        <if test="doi != null">
+            DOI = #{doi},
+        </if>
+        <if test="fileSize != null">
+            FILESIZE = #{fileSize},
+        </if>
+        <if test="formatNew != null">
+            FORMAT_NEW = #{formatNew},
+        </if>
+        <if test="contentTableInfo != null">
+            CONTENTTABLEINFO = #{contentTableInfo},
+        </if>
+        <if test="encryptInfo != null">
+            ENCRYPTINFO = #{encryptInfo},
+        </if>
+        <if test="objType != null">
+            OBJTYPE = #{objType},
+        </if>
+        <if test="imgWidth != null">
+            IMGWIDTH = #{imgWidth},
+        </if>
+        <if test="imgHeigth != null">
+            IMGHEIGTH = #{imgHeigth},
+        </if>
+        <if test="chapterIndex != null">
+            CHAPTERINDEX = #{chapterIndex},
+        </if>
+        <if test="fileCreatedDate != null">
+            FILECREATEDDATE = #{fileCreatedDate},
+        </if>
+        <if test="fileLastModDate != null">
+            FILELASTMODDATE = #{fileLastModDate},
+        </if>
+        <if test="contentFormat != null">
+            CONTENTFORMAT = #{contentFormat},
+        </if>
+        <if test="cebxSubset != null">
+            CEBXSUBSET = #{cebxSubset},
+        </if>
+        <if test="securityNew != null">
+            SECURITY_NEW = #{securityNew},
+        </if>
+    </sql>
+    <insert id="insertCmfDigitObject" parameterType="com.apabi.flow.book.model.CmfDigitObject">
+        insert into CMF_DIGITOBJECT (<include refid="Base_Column_List"/>)
+        values
+        (<include refid="Base_Value_List"/>)
+    </insert>
+    <select id="findCmfDigitObjectByFileId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from CMF_DIGITOBJECT
+        where FILEID = #{fileId}
+    </select>
+</mapper>

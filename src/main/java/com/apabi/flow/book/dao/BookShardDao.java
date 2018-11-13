@@ -26,4 +26,7 @@ public interface BookShardDao {
 
     //更新图书章节内容
     int updateBookShard(BookShard bookShard);
+
+    //删除章节内容
+    int deleteAllBookShard(String metaId);
 }

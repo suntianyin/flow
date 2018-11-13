@@ -18,8 +18,8 @@ spring:
       password: book
     secondary:
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-      url: jdbc:sqlserver://172.18.89.253:1433;DatabaseName=Dlib_2
-      username: gpp
+      url: jdbc:sqlserver://172.18.83.236:1433;DatabaseName=ApaDlibrary102
+      username: guanpanpan
       password: Founder123
     # 下面为连接池的补充设置，应用到上面所有数据源中
     # 初始化大小，最小，最大
