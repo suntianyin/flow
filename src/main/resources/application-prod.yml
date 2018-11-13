@@ -13,7 +13,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     primary:
       driver-class-name: oracle.jdbc.OracleDriver
-      url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
+      url: jdbc:oracle:thin:@192.168.0.124:1521/orclpdb
       username: book
       password: book037268
     secondary:
