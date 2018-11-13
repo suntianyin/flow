@@ -28,9 +28,11 @@
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
+            var hasFlow = $("#hasFlow").val();
             var pathUrl = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
-                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
+                    + "&publisher=" + publisher + "&isbn=" + isbn
+                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow;
             var totalPages = 1;
             var currentPages = 1;
             <#if page??>
@@ -48,10 +50,12 @@
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
+            var hasFlow = $("#hasFlow").val();
             loading()
             window.location.href = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
-                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
+                    + "&publisher=" + publisher + "&isbn=" + isbn
+                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow;
 
         }
 
@@ -262,6 +266,24 @@
                                 </#if>
                             </select>
                             <input id="isbnVal" type="text" value="${isbnVal!''}" class="txt" style="width: 200px"/>
+                        </td>
+                        <th>是否流式：</th>
+                        <td>
+                            <select id="hasFlow" name="hasFlow" class="txtselect">
+                                <#if hasFlow??>
+                                    <#if hasFlow ==0>
+                                        <option value="0" selected="selected">否</option>
+                                        <option value="1">是</option>
+                                    </#if>
+                                    <#if hasFlow ==1>
+                                        <option value="0">否</option>
+                                        <option value="1" selected="selected">是</option>
+                                    </#if>
+                                <#else>
+                                    <option value="0" selected="selected">否</option>
+                                    <option value="1">是</option>
+                                </#if>
+                            </select>
                         </td>
                         <td>
                             <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>

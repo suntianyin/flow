@@ -614,7 +614,7 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     //分页查询
     @Override
-    public Page<BookMetaVo> findBookMetaVoByPage(Map<String, String> queryMap) {
+    public Page<BookMetaVo> findBookMetaVoByPage(Map<String, Object> queryMap) {
         return bookMetaDao.findBookMetaVoByPage(queryMap);
     }
 

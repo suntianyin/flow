@@ -191,7 +191,7 @@ public class BookController {
         try {
             long start = System.currentTimeMillis();
             Map<String, String[]> params = request.getParameterMap();
-            Map<String, String> queryMap = new HashMap<>();
+            Map<String, Object> queryMap = new HashMap<>();
             String metaId = "";
             if (!StringUtils.isEmpty(params.get("metaId"))) {
                 metaId = params.get("metaId")[0].trim();
@@ -223,6 +223,11 @@ public class BookController {
                 queryMap.put("isbn10", isbnVal);
                 queryMap.put("isbn13", isbnVal);
             }
+            Integer hasFlow = 0;
+            if (!StringUtils.isEmpty(params.get("hasFlow"))) {
+                hasFlow = Integer.valueOf(params.get("hasFlow")[0]);
+                queryMap.put("hasFlow", hasFlow);
+            }
             PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
             Page<BookMetaVo> page = null;
             if (params.size() > 0) {
@@ -242,6 +247,7 @@ public class BookController {
             model.addAttribute("publisher", publisher);
             model.addAttribute("isbn", isbn);
             model.addAttribute("isbnVal", isbnVal);
+            model.addAttribute("hasFlow", hasFlow);
             long end = System.currentTimeMillis();
             log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");
             return "book/bookMeta";

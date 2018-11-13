@@ -57,7 +57,7 @@ public interface BookMetaService {
     /*Page<BookMetaVo> queryPage(Map queryMap, int start, int size);*/
 
     //分页查询
-    Page<BookMetaVo> findBookMetaVoByPage(Map<String, String> queryMap);
+    Page<BookMetaVo> findBookMetaVoByPage(Map<String, Object> queryMap);
 
     //获取epub文件的图书元数据
     List<BookMetaBatch> getBookMetaEpubBatch(String dir);

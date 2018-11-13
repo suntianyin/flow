@@ -91,10 +91,10 @@
                         var obj = JSON.parse(data);
                         //htmlEditor.sync();
                         htmlEditor.html("");
-                        htmlEditor.html(obj.body.content);
                         $('#chapterComid').val(obj.body.comId);
                         $('#wordSum').val(obj.body.wordSum);
                         $('#chapterNum').val(obj.body.chapterNum);
+                        htmlEditor.html(obj.body.content);
                     },
                     error: function (data) {
                         Loading(false);
