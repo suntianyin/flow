@@ -399,6 +399,10 @@ public class BookMetaServiceImpl implements BookMetaService {
                 cataRows.setName(jsonObject.getString("chapterName"));
                 cataRows.setNodeId(jsonObject.getInt("chapterNum"));
                 cataRows.setSrc(jsonObject.getString("url"));
+                boolean res = jsonObject.containsKey("wordSum");
+                if (res) {
+                    cataRows.setWordSum(jsonObject.getInt("wordSum"));
+                }
                 cataRows.setWordSum(jsonObject.getInt("wordSum"));
                 cataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
                 for (JSONObject child : childE) {
@@ -410,7 +414,10 @@ public class BookMetaServiceImpl implements BookMetaService {
                 bookCataRows.setName(jsonObject.getString("chapterName"));
                 bookCataRows.setNodeId(jsonObject.getInt("chapterNum"));
                 bookCataRows.setSrc(jsonObject.getString("url"));
-                bookCataRows.setWordSum(jsonObject.getInt("wordSum"));
+                boolean res = jsonObject.containsKey("wordSum");
+                if (res) {
+                    bookCataRows.setWordSum(jsonObject.getInt("wordSum"));
+                }
                 bookCataRows.setEbookPageNum(jsonObject.getInt("ebookPageNum"));
                 parentCata.getChildren().add(bookCataRows);
             }
