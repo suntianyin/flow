@@ -72,7 +72,6 @@ public final class UniversalEnumHandler<E extends BaseEnum> extends BaseTypeHand
             throws SQLException {
         // 根据数据库存储类型决定获取类型，本例子中数据库中存放String类型
         String s = rs.getString(columnName);
-        System.out.println(rs.getType());
         if (rs.wasNull()) {
             return null;
         } else {

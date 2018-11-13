@@ -1,8 +1,10 @@
 package com.apabi.flow.book.service;
 
 import com.apabi.flow.book.model.BookPage;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 功能描述： <br>
@@ -64,4 +66,6 @@ public interface BookPageService {
 //     * @throws Exception
 //     */
 //    int insertShuyuanData(String metaId) throws Exception;
+
+    int batchAddAuthorFromFile(Map<Integer, Map<Object, Object>> data) throws Exception;
 }
