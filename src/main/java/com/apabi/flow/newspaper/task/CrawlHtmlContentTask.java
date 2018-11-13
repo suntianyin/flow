@@ -72,14 +72,14 @@ public class CrawlHtmlContentTask {
         int success = 0;
         for (int i = 1; i <= pageNum; i++) {
             PageHelper.startPage(i, pageSize);
-            Page<Newspaper> newspaperList = newspaperDao.findNewspaperWithoutHtmlContentByPage();
+            Page<Newspaper> newspaperList = newspaperDao.findNewspaperWithoutMainBodyByPage();
             for (Newspaper newspaper : newspaperList) {
                 String mainBody = ParseHtmlMainBodyUtil.parse(newspaper);
                 newspaper.setMainBody(mainBody);
                 if (mainBody != null) {
-                    newspaperDao.update(newspaper);
-                    System.out.println(newspaper.getTitle() + "插入数据库成功...");
-                    //System.out.println(mainBody);
+                    //newspaperDao.update(newspaper);
+                    //System.out.println(newspaper.getTitle() + "插入数据库成功...");
+                    System.out.println(mainBody);
                     success++;
                 }
             }

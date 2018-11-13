@@ -36,8 +36,8 @@
         where html_content is null
     </select>
 
-    <!-- 查询所有htmlContent不为null的newspaper -->
-    <select id="findNewspaperWithoutHtmlContentByPage" resultMap="BaseResultMap">
+    <!-- 查询所有htmlContent不为null，但是main_body为null的newspaper -->
+    <select id="findNewspaperWithoutMainBodyByPage" resultMap="BaseResultMap">
         select *
         from NEWSPAPER_CRAWL
         where html_content is not null and main_body is null
