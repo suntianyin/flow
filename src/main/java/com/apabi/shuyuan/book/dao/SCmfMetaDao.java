@@ -4,6 +4,8 @@ import com.apabi.shuyuan.book.model.SCmfMeta;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
+
 /**
  * @author guanpp
  * @date 2018/11/5 15:25
@@ -20,5 +22,8 @@ public interface SCmfMetaDao {
     String getMetaIdByFileName(String fileName);
 
     //获取图书元数据
-    SCmfMeta findSCmfBookMetaByDrid(Integer drid)throws Exception;
+    SCmfMeta findSCmfBookMetaByDrid(Integer drid)throws SQLException;
+
+    //获取图书元数据
+    SCmfMeta findSCmfBookMetaById(String id)throws SQLException;
 }

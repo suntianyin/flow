@@ -119,7 +119,7 @@ public class ApabiBookMetaDataTemp {
 
     private String podPricePageUnit;
 
-    private String drId;
+    private Integer drId;
 
     private String doubanId;
 

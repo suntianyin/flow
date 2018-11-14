@@ -536,12 +536,6 @@ public class BookController {
         return "error";
     }
 
-    //跳转到批量删除图书内容页面
-    @RequestMapping(value = "/bookChapterDeleteBatch")
-    public String bookChapterDeleteBatch() {
-        return "book/bookChapterDeleteBatch";
-    }
-
     //批量删除图书内容
     @RequestMapping(value = "/bookChapterDeleteBatch", method = RequestMethod.POST)
     @ResponseBody
@@ -549,68 +543,32 @@ public class BookController {
         if (!StringUtils.isEmpty(metaIds)) {
             long start = System.currentTimeMillis();
             int res = bookMetaService.deleteBookChapterBatch(metaIds);
-            if (res > 0) {
-                long end = System.currentTimeMillis();
-                log.info("删除{}本图书流式内容，耗时{}毫秒", res, (end - start));
-                return String.valueOf(res);
-            }
+            long end = System.currentTimeMillis();
+            log.info("删除{}本图书流式内容，耗时{}毫秒", res, (end - start));
+            return String.valueOf(res);
         }
         return "error";
     }
 
-    //编辑图书内容
-    /*@GetMapping("/bookChapterEdit")
-    public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
-        long start = System.currentTimeMillis();
-        if (!StringUtils.isEmpty(metaid)) {
-            List<BookCataRows> cataRowsList = new ArrayList<>();
-            List<BookCataRows> cataRows = bookMetaService.getCataRowsById(metaid);
-            BookMetaVo bookMetaVo = bookMetaService.selectBookMetaById(metaid);
-            //存放目录的章节编号
-            List<Integer> chapterNums = new ArrayList<>();
-            //存放目录的章节编号和目录
-            Map<Integer, String> cataMap = new HashMap<>();
-            if (cataRows != null && cataRows.size() > 0) {
-                //拼接目录准备
-                for (BookCataRows cata : cataRows) {
-                    chapterNums.add(cata.getChapterNum());
-                    cataMap.put(cata.getChapterNum(), cata.getChapterName());
-                }
-                chapterNums.add(bookMetaVo.getChapterSum());
-                //拼接完整目录
-                int startNum = 0;
-                for (Integer num : chapterNums) {
-                    int index = 1;
-                    for (int i = startNum; i < num; i++) {
-                        BookCataRows cata = new BookCataRows();
-                        cata.setChapterNum(i);
-                        String name = cataMap.get(i);
-                        if (i == 0) {
-                            cata.setChapterName("封面");
-                            index--;
-                        } else if (StringUtils.isEmpty(name)) {
-                            cata.setChapterName("小节" + index);
-                        } else {
-                            cata.setChapterName(name);
-                            index--;
-                        }
-                        cataRowsList.add(cata);
-                        index++;
-                    }
-                    startNum = num;
-                }
+    //跳转到批量操作图书
+    @RequestMapping(value = "/bookMetaBatch")
+    public String bookMetaBatch() {
+        return "book/bookMetaBatch";
+    }
 
-            }
-            BookChapter bookChapter = bookChapterService.selectChapterById(metaid, 0);
-            model.addAttribute("bookMetaVo", bookMetaVo);
-            model.addAttribute("cataRows", cataRowsList);
-            model.addAttribute("bookChapter", bookChapter);
-            model.addAttribute("metaId", metaid);
+    //批量删除图书内容
+    @RequestMapping(value = "/bookMetaBatch", method = RequestMethod.POST)
+    @ResponseBody
+    public String bookMetaBatch(@RequestParam("metaIds") String metaIds) {
+        if (!StringUtils.isEmpty(metaIds)) {
+            long start = System.currentTimeMillis();
+            int res = bookMetaService.bookMetaBatch(metaIds);
+            long end = System.currentTimeMillis();
+            log.info("从书苑获取{}本图书元数据，耗时{}毫秒", res, (end - start));
+            return String.valueOf(res);
         }
-        long end = System.currentTimeMillis();
-        log.info("获取图书" + metaid + "编辑页面耗时：" + (end - start) + "毫秒");
-        return "book/bookChapterEdit";
-    }*/
+        return "error";
+    }
 
     //编辑图书内容
     @GetMapping("/bookChapterEdit")
@@ -937,17 +895,19 @@ public class BookController {
 
         List<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.findAll();
         List<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.findAll();
-        model.addAttribute("pageCrawledQueues",pageCrawledQueues);
-        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
+        model.addAttribute("pageCrawledQueues", pageCrawledQueues);
+        model.addAttribute("pageAssemblyQueues", pageAssemblyQueues);
         return "book/bookPageManagement";
     }
+
     @RequestMapping("/pageCrawledQueuesDelete")
-    public String pageCrawledQueuesDelete(@RequestParam("id")String id) {
+    public String pageCrawledQueuesDelete(@RequestParam("id") String id) {
         pageCrawledQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/bookPageManagement";
     }
+
     @RequestMapping("/pageAssemblyQueuesDelete")
-    public String pageAssemblyQueuesDelete(@RequestParam("id")String id) {
+    public String pageAssemblyQueuesDelete(@RequestParam("id") String id) {
         pageAssemblyQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/bookPageManagement";
     }
@@ -1034,34 +994,34 @@ public class BookController {
 
     @PostMapping("/batch/import")
     @ResponseBody
-    public String batchImportAuthor(@RequestParam("file")MultipartFile file){
+    public String batchImportAuthor(@RequestParam("file") MultipartFile file) {
 
-        if (!file.getOriginalFilename().endsWith(".xlsx")){
+        if (!file.getOriginalFilename().endsWith(".xlsx")) {
             return "文件格式不正确，仅支持 .xlsx 格式的文件";
         }
         // 读取Excel工具类
         Map<Integer, Map<Object, Object>> data = null;
-        try(InputStream inputStream = file.getInputStream()){
+        try (InputStream inputStream = file.getInputStream()) {
             String fileName = file.getOriginalFilename();
             ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
             // 读取Excel中的内容
             data = readExcelTextUtils.getDataByInputStream();
-            if (data == null || data.isEmpty()){
+            if (data == null || data.isEmpty()) {
                 throw new Exception();
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return "文件读取出错，请重新尝试或联系管理员！";
-        }catch (Exception e){
+        } catch (Exception e) {
             return "文件出错，请检查文件格式是否正确或内容是否完整！";
         }
         Integer addedNum = 0;
         try {
             addedNum = bookPageService.batchAddAuthorFromFile(data);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("异常信息： {}", e);
         }
-        return addedNum > 0 ? "成功":"失败";
+        return addedNum > 0 ? "成功" : "失败";
     }
 
     @GetMapping("/test")

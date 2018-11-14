@@ -1,6 +1,10 @@
 package com.apabi.flow.book.util;
 
-import com.apabi.flow.book.model.BookCataRows;
+import com.apabi.flow.book.model.*;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
+import com.apabi.shuyuan.book.model.SCmfDigitObject;
+import com.apabi.shuyuan.book.model.SCmfDigitResfileSite;
+import com.apabi.shuyuan.book.model.SCmfMeta;
 import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.TOCReference;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +24,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.SocketTimeoutException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -275,8 +280,6 @@ public class BookUtil {
         }
     }
 
-
-
     //将document转化成图书meta数据
     public static List docToBookMeta(Document doc) {
         if (doc != null) {
@@ -293,6 +296,206 @@ public class BookUtil {
             //获取目录数据
             List<Element> cataList = (List<Element>) doc.selectNodes("//Record/catalogRow");
             return cataList;
+        }
+        return null;
+    }
+
+    //生成流式服务元数据
+    public static BookMeta createBookMeta(SCmfMeta sCmfMeta) {
+        if (sCmfMeta != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            BookMeta bookMeta = new BookMeta();
+            bookMeta.setMetaId(sCmfMeta.getIdentifier());
+            bookMeta.setDrId(sCmfMeta.getDrid());
+            bookMeta.setTitle(sCmfMeta.getTitle());
+            bookMeta.setAlternativeTitle(sCmfMeta.getAlternativeTitle());
+            bookMeta.setCreator(sCmfMeta.getCreator());
+            bookMeta.setSubject(sCmfMeta.getSubject());
+            bookMeta.setAbstract_(sCmfMeta.getAbstract());
+            bookMeta.setPublisher(sCmfMeta.getPublisher());
+            bookMeta.setType(sCmfMeta.getType());
+            bookMeta.setContributor(sCmfMeta.getContributor());
+            bookMeta.setIssuedDate(sdf.format(sCmfMeta.getIssuedDate()));
+            bookMeta.setIdType(sCmfMeta.getIdType());
+            bookMeta.setRelation(sCmfMeta.getRelation());
+            bookMeta.setEbookPrice(String.valueOf(sCmfMeta.getPrice()));
+            bookMeta.setPaperPrice(String.valueOf(sCmfMeta.getPaperPrice()));
+            bookMeta.setForeignPrice(String.valueOf(sCmfMeta.getForeignPrice()));
+            bookMeta.setForeignPriceType(sCmfMeta.getForeignPriceType());
+            bookMeta.setEditionOrder(sCmfMeta.getEditionOrder());
+            bookMeta.setEditionNote(sCmfMeta.getEditionNote());
+            bookMeta.setPressOrder(sCmfMeta.getPressOrder());
+            bookMeta.setContentNum(sCmfMeta.getContentNum());
+            bookMeta.setClassCode(sCmfMeta.getClassCode());
+            bookMeta.setLanguage(sCmfMeta.getLanguage());
+            bookMeta.setApabiClass(sCmfMeta.getApabiClass());
+            bookMeta.setIllustration(sCmfMeta.getIllustration());
+            bookMeta.setReditor(sCmfMeta.getReditor());
+            bookMeta.setNotes(sCmfMeta.getNotes());
+            String isbn = sCmfMeta.getRealISBN();
+            bookMeta.setIsbn(isbn);
+            if (StringUtils.isNotBlank(isbn)) {
+                isbn = isbn.replace("-", "");
+                if (isbn.length() == 10) {
+                    bookMeta.setIsbn10(isbn);
+                } else if (isbn.length() == 13) {
+                    bookMeta.setIsbn13(isbn);
+                }
+            }
+            bookMeta.setPlace(sCmfMeta.getPlace());
+            //默认值
+            bookMeta.setHasCebx(0);
+            bookMeta.setIsReadEpub(0);
+            bookMeta.setIsReadCebxFlow(0);
+            return bookMeta;
+        }
+        return null;
+    }
+
+    //生成流式服务元数据，temp表
+    public static ApabiBookMetaDataTemp createBookMetaTemp(SCmfMeta sCmfMeta) {
+        if (sCmfMeta != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            ApabiBookMetaDataTemp metaDataTemp = new ApabiBookMetaDataTemp();
+            metaDataTemp.setMetaId(sCmfMeta.getIdentifier());
+            metaDataTemp.setDrId(sCmfMeta.getDrid());
+            metaDataTemp.setTitle(sCmfMeta.getTitle());
+            metaDataTemp.setAlternativeTitle(sCmfMeta.getAlternativeTitle());
+            metaDataTemp.setCreator(sCmfMeta.getCreator());
+            metaDataTemp.setSubject(sCmfMeta.getSubject());
+            metaDataTemp.setAbstract_(sCmfMeta.getAbstract());
+            metaDataTemp.setPublisher(sCmfMeta.getPublisher());
+            metaDataTemp.setType(sCmfMeta.getType());
+            metaDataTemp.setContributor(sCmfMeta.getContributor());
+            metaDataTemp.setIssuedDate(sdf.format(sCmfMeta.getIssuedDate()));
+            metaDataTemp.setIdType(sCmfMeta.getIdType());
+            metaDataTemp.setRelation(sCmfMeta.getRelation());
+            metaDataTemp.setEbookPrice(String.valueOf(sCmfMeta.getPrice()));
+            metaDataTemp.setPaperPrice(String.valueOf(sCmfMeta.getPaperPrice()));
+            metaDataTemp.setForeignPrice(String.valueOf(sCmfMeta.getForeignPrice()));
+            metaDataTemp.setForeignPriceType(sCmfMeta.getForeignPriceType());
+            metaDataTemp.setEditionOrder(sCmfMeta.getEditionOrder());
+            metaDataTemp.setEditionNote(sCmfMeta.getEditionNote());
+            metaDataTemp.setPressOrder(sCmfMeta.getPressOrder());
+            metaDataTemp.setContentNum(sCmfMeta.getContentNum());
+            metaDataTemp.setClassCode(sCmfMeta.getClassCode());
+            metaDataTemp.setLanguage(sCmfMeta.getLanguage());
+            metaDataTemp.setApabiClass(sCmfMeta.getApabiClass());
+            metaDataTemp.setIllustration(sCmfMeta.getIllustration());
+            metaDataTemp.setReditor(sCmfMeta.getReditor());
+            metaDataTemp.setNotes(sCmfMeta.getNotes());
+            String isbn = sCmfMeta.getRealISBN();
+            metaDataTemp.setIsbn(isbn);
+            if (StringUtils.isNotBlank(isbn)) {
+                isbn = isbn.replace("-", "");
+                if (isbn.length() == 10) {
+                    metaDataTemp.setIsbn10(isbn);
+                } else if (isbn.length() == 13) {
+                    metaDataTemp.setIsbn13(isbn);
+                }
+            }
+            metaDataTemp.setPlace(sCmfMeta.getPlace());
+            //默认值
+            metaDataTemp.setHasCebx(0);
+            metaDataTemp.setIsReadEpub(0);
+            metaDataTemp.setIsReadCebxFlow(0);
+            return metaDataTemp;
+        }
+        return null;
+    }
+
+    //生成流式服务CmfDigitResfileSite
+    public static CmfDigitResfileSite createCmfDigitResfileSite(SCmfDigitResfileSite sCmfDigitResfileSite) {
+        if (sCmfDigitResfileSite != null) {
+            CmfDigitResfileSite cmfDigitResfileSite = new CmfDigitResfileSite();
+            cmfDigitResfileSite.setFileId(sCmfDigitResfileSite.getFileId());
+            cmfDigitResfileSite.setSiteId(sCmfDigitResfileSite.getSiteId());
+            cmfDigitResfileSite.setUrlFileName(sCmfDigitResfileSite.getUrlFileName());
+            cmfDigitResfileSite.setUrlFilePath(sCmfDigitResfileSite.getUrlFilePath());
+            return cmfDigitResfileSite;
+        }
+        return null;
+    }
+
+    //生成流式服务cmfDigitObject
+    public static CmfDigitObject createCmfDigitObject(SCmfDigitObject sCmfDigitObject) {
+        if (sCmfDigitObject != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            CmfDigitObject cmfDigitObject = new CmfDigitObject();
+            cmfDigitObject.setFileId(sCmfDigitObject.getFileId());
+            cmfDigitObject.setDrId(sCmfDigitObject.getDrId());
+            cmfDigitObject.setPfileId(sCmfDigitObject.getPfileId());
+            cmfDigitObject.setFileName(sCmfDigitObject.getFileName());
+            cmfDigitObject.setFileDesc(sCmfDigitObject.getFileDesc());
+
+            cmfDigitObject.setFilePath(sCmfDigitObject.getFilePath());
+            cmfDigitObject.setOrderNew(sCmfDigitObject.getOrder());
+            cmfDigitObject.setObjId(sCmfDigitObject.getObjId());
+            cmfDigitObject.setPobjId(sCmfDigitObject.getPobjId());
+            cmfDigitObject.setDoi(sCmfDigitObject.getDoi());
+
+            cmfDigitObject.setFileSize(sCmfDigitObject.getFileSize());
+            cmfDigitObject.setFormatNew(sCmfDigitObject.getFormat());
+            cmfDigitObject.setContentTableInfo(sCmfDigitObject.getContentTableInfo());
+            cmfDigitObject.setEncryptInfo(sCmfDigitObject.getEncryptInfo());
+            cmfDigitObject.setObjType(sCmfDigitObject.getObjType());
+
+            cmfDigitObject.setImgWidth(sCmfDigitObject.getImgWidth());
+            cmfDigitObject.setImgHeigth(sCmfDigitObject.getImgHeigth());
+            cmfDigitObject.setChapterIndex(sCmfDigitObject.getChapterIndex());
+            cmfDigitObject.setFileCreatedDate(sdf.format(sCmfDigitObject.getFileCreatedDate()));
+            cmfDigitObject.setFileLastModDate(sdf.format(sCmfDigitObject.getFileLastModDate()));
+
+            cmfDigitObject.setContentFormat(sCmfDigitObject.getContentFormat());
+            cmfDigitObject.setCebxSubset(sCmfDigitObject.getCebxSubset());
+            cmfDigitObject.setSecurityNew(sCmfDigitObject.getSecurity());
+            //cmfDigitObject.setcatalog
+            return cmfDigitObject;
+        }
+        return null;
+    }
+
+    //生成流式服务CmfMeta
+    public static CmfMeta createCmfMeta(SCmfMeta sCmfMeta) {
+        if (sCmfMeta != null) {
+            CmfMeta cmfMeta = new CmfMeta();
+            cmfMeta.setDrId(sCmfMeta.getDrid());
+            cmfMeta.setTitle(sCmfMeta.getTitle());
+            cmfMeta.setAlternativeTitle(sCmfMeta.getAlternativeTitle());
+            cmfMeta.setCreator(sCmfMeta.getCreator());
+            cmfMeta.setSubject(sCmfMeta.getSubject());
+
+            cmfMeta.setAbstract(sCmfMeta.getAbstract());
+            cmfMeta.setPublisher(sCmfMeta.getPublisher());
+            cmfMeta.setType(sCmfMeta.getType());
+            cmfMeta.setContributor(sCmfMeta.getContributor());
+            cmfMeta.setIssuedDate(sCmfMeta.getIssuedDate());
+
+            cmfMeta.setYear(sCmfMeta.getYear());
+            cmfMeta.setIdType(sCmfMeta.getIdType());
+            cmfMeta.setIdentifier(sCmfMeta.getIdentifier());
+            cmfMeta.setRelation(sCmfMeta.getRelation());
+            cmfMeta.setPrice(sCmfMeta.getPrice());
+
+            cmfMeta.setPaperPrice(sCmfMeta.getPaperPrice());
+            cmfMeta.setForeignPrice(sCmfMeta.getForeignPrice());
+            cmfMeta.setForeignPriceType(sCmfMeta.getForeignPriceType());
+            cmfMeta.setEditionOrder(sCmfMeta.getEditionOrder());
+            cmfMeta.setEditionNote(sCmfMeta.getEditionNote());
+
+            cmfMeta.setPressOrder(sCmfMeta.getPressOrder());
+            cmfMeta.setContentNum(sCmfMeta.getContentNum());
+            cmfMeta.setClassCode(sCmfMeta.getClassCode());
+            cmfMeta.setLanguage(sCmfMeta.getLanguage());
+            cmfMeta.setApabiClass(sCmfMeta.getApabiClass());
+
+            cmfMeta.setIllustration(sCmfMeta.getIllustration());
+            cmfMeta.setReditor(sCmfMeta.getReditor());
+            cmfMeta.setNotes(sCmfMeta.getNotes());
+            cmfMeta.setRealISBN(sCmfMeta.getRealISBN());
+            cmfMeta.setPlace(sCmfMeta.getPlace());
+
+            return cmfMeta;
         }
         return null;
     }

@@ -70,4 +70,7 @@ public interface BookMetaService {
 
     //批量删除图书章节内容
     int deleteBookChapterBatch(String metaIds);
+
+    //批量获取图书元数据
+    int bookMetaBatch(String metaIds);
 }

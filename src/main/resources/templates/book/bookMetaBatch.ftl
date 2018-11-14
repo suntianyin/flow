@@ -6,7 +6,7 @@
     <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
-    <title>批量删除章节内容</title>
+    <title>批量获取图书元数据</title>
     <script type="text/javascript">
 
         //批量删除章节内容
@@ -41,6 +41,36 @@
                 }
             });
         }
+
+        //批量获取
+        function batchAdd() {
+            var ids = $("#metaId").val();
+            var formData = new FormData();
+            formData.append('metaIds', ids);
+            loading();
+            $.ajax({
+                url: RootPath() + "/book/bookMetaBatch",
+                type: "POST",
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $('.load-circle').hide();
+                    if (data == "error") {
+                        tipDialog("获取失败！联系管理员", 3, -1);
+                    } else {
+                        tipDialog(data + "本图书获取成功！", 3, 1);
+                    }
+                },
+                error: function (data) {
+                    $('.load-circle').hide();
+                    Loading(false);
+                    alertDialog(data.responseText, -1);
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -53,6 +83,8 @@
             <div class="PartialButton">
                 <a id="lr-xmlAdd" href="javascript:;" title="批量删除" onclick="batchDelete()"
                    class="tools_btn"><span><i class="fa fa-minus"></i>&nbsp;批量删除</span></a>
+                <a id="lr-xmlAdd" href="javascript:;" title="批量获取" onclick="batchAdd()"
+                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;批量获取</span></a>
             </div>
         </div>
         <!--列表-->

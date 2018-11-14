@@ -103,4 +103,10 @@
         from CMF_META_0001
         where DRID = #{drid}
     </select>
+    <select id="findSCmfBookMetaById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from CMF_META_0001
+        where Identifier = #{id}
+    </select>
 </mapper>

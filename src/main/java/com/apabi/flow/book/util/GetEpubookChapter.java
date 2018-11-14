@@ -9,7 +9,6 @@ import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.TOCReference;

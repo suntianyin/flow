@@ -18,7 +18,12 @@ import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
+import com.apabi.shuyuan.book.dao.SCmfDigitObjectDao;
+import com.apabi.shuyuan.book.dao.SCmfDigitResfileSiteDao;
 import com.apabi.shuyuan.book.dao.SCmfMetaDao;
+import com.apabi.shuyuan.book.model.SCmfDigitObject;
+import com.apabi.shuyuan.book.model.SCmfDigitResfileSite;
+import com.apabi.shuyuan.book.model.SCmfMeta;
 import com.github.pagehelper.Page;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -123,10 +128,25 @@ public class BookMetaServiceImpl implements BookMetaService {
     ApplicationConfig config;
 
     @Autowired
-    SCmfMetaDao SCmfMetaDao;
+    private SCmfMetaDao sCmfMetaDao;
+
+    @Autowired
+    private SCmfDigitResfileSiteDao sCmfDigitResfileSiteDao;
+
+    @Autowired
+    private SCmfDigitObjectDao sCmfDigitObjectDao;
 
     @Autowired
     ApabiBookMetaDataTempDao bookMetaDataTempDao;
+
+    @Autowired
+    private CmfMetaDao cmfMetaDao;
+
+    @Autowired
+    private CmfDigitObjectDao cmfDigitObjectDao;
+
+    @Autowired
+    private CmfDigitResfileSiteDao cmfDigitResfileSiteDao;
 
     //根据图书metaid，获取图书元数据
     @Override
@@ -536,89 +556,6 @@ public class BookMetaServiceImpl implements BookMetaService {
     }
 
     //分页查询
-    /*@Override
-    public Page<BookMetaVo> queryPage(Map queryMap, int pageNumber, int pageSize) {
-        //查询字段
-        String tmp;
-        //获取图书id
-        if (queryMap.get("metaid") != null) {
-            tmp = queryMap.get("metaid").toString();
-        } else {
-            tmp = "";
-        }
-        final String metaid = tmp;
-        //获取书名
-        if (queryMap.get("title") != null) {
-            tmp = queryMap.get("title").toString();
-        } else {
-            tmp = "";
-        }
-        final String title = tmp;
-        //获取作者
-        if (queryMap.get("creator") != null) {
-            tmp = queryMap.get("creator").toString();
-        } else {
-            tmp = "";
-        }
-        final String creator = tmp;
-        //获取出版社
-        if (queryMap.get("publisher") != null) {
-            tmp = queryMap.get("publisher").toString();
-        } else {
-            tmp = "";
-        }
-        final String publisher = tmp;
-        //获取isbn值
-        if (queryMap.get("isbnVal") != null) {
-            tmp = queryMap.get("isbnVal").toString();
-        } else {
-            tmp = "";
-        }
-        final String isbnVal = tmp;
-        //获取isbn类型
-        if (queryMap.get("isbn") != null) {
-            tmp = queryMap.get("isbn").toString();
-        } else {
-            tmp = "";
-        }
-        final String isbn = tmp;
-        //构造分页
-        Sort sort = new Sort(Sort.Direction.DESC, "metaid");
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
-        Specification<BookMetaVo> spec = (Specification<BookMetaVo>) (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (!StringUtils.isEmpty(metaid)) {
-                predicates.add(criteriaBuilder.equal(root.get("metaid"), metaid));
-            }
-            if (!StringUtils.isEmpty(title)) {
-                predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
-            }
-            if (!StringUtils.isEmpty(creator)) {
-                predicates.add(criteriaBuilder.like(root.get("creator"), "%" + creator + "%"));
-            }
-            if (!StringUtils.isEmpty(publisher)) {
-                predicates.add(criteriaBuilder.like(root.get("publisher"), "%" + publisher + "%"));
-            }
-            if (isbn.equals("isbn")) {
-                if (!StringUtils.isEmpty(isbnVal)) {
-                    predicates.add(criteriaBuilder.equal(root.get("isbn"), isbnVal));
-                }
-            } else if (isbn.equals("isbn10")) {
-                if (!StringUtils.isEmpty(isbnVal)) {
-                    predicates.add(criteriaBuilder.equal(root.get("isbn10"), isbnVal));
-                }
-            } else if (isbn.equals("isbn13")) {
-                if (!StringUtils.isEmpty(isbnVal)) {
-                    predicates.add(criteriaBuilder.equal(root.get("isbn13"), isbnVal));
-                }
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-        };
-        Page<BookMetaVo> pages = bookMetaVoRepository.findAll(spec, pageable);
-        return pages;
-    }*/
-
-    //分页查询
     @Override
     public Page<BookMetaVo> findBookMetaVoByPage(Map<String, Object> queryMap) {
         return bookMetaDao.findBookMetaVoByPage(queryMap);
@@ -1012,7 +949,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                     //扫描cebx文件，通过文件名从书苑获取metaId
                     for (String cebxFile : CEBX_FILES) {
                         File newFile = new File(cebxFile);
-                        String metaId = SCmfMetaDao.getMetaIdByFileName(newFile.getName().replace("cebx", "ceb"));
+                        String metaId = sCmfMetaDao.getMetaIdByFileName(newFile.getName().replace("cebx", "ceb"));
                         if (!StringUtils.isEmpty(metaId)) {
                             metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
                             if (metaBatches.size() == 0) {
@@ -1293,5 +1230,96 @@ public class BookMetaServiceImpl implements BookMetaService {
             }
         }
         return 0;
+    }
+
+    //批量获取图书元数据
+    @Override
+    public int bookMetaBatch(String conMetaId) {
+        if (!StringUtils.isEmpty(conMetaId)) {
+            String[] metaIds = conMetaId.split("\r\n");
+            if (metaIds != null && metaIds.length > 0) {
+                int sum = 0;
+                for (String metaId : metaIds) {
+                    try {
+                        BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
+                        //如果磐石没有，则从书苑获取
+                        if (bookMeta == null) {
+                            SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
+                            bookMeta = BookUtil.createBookMeta(sCmfMeta);
+                            //新增到磐石数据库
+                            bookMetaDao.insertBookMeta(bookMeta);
+                            ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                            bookMetaDataTempDao.insert(bookMetaDataTemp);
+                            //获取书苑数据，更新到流式图书
+                            boolean ress = insertShuyuanData(sCmfMeta);
+                            if (ress) {
+                                log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                        0, metaId, "success", new Date());
+                            }else {
+                                log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                        -2, metaId, "新增书苑数据异常", new Date());
+                            }
+                            sum++;
+                        }
+                    } catch (Exception e) {
+                        log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                -1, metaId, e.getMessage(), new Date());
+                    }
+                }
+                return sum;
+            }
+        }
+        return 0;
+    }
+
+    //获取书苑数据cmf_meta、cmf_digitobject、cmf_digitresfile_site，更新到流式图书
+    private boolean insertShuyuanData(SCmfMeta sCmfMeta) throws Exception {
+        if (sCmfMeta != null) {
+            //cmf_meta表新增
+            CmfMeta cmfMeta = BookUtil.createCmfMeta(sCmfMeta);
+            if (cmfMeta != null) {
+                cmfMetaDao.insertCmfMeta(cmfMeta);
+            } else {
+                log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                        -1, sCmfMeta.getIdentifier(), "生成CmfMeta失败", new Date());
+            }
+            List<SCmfDigitObject> sCmfDigitObjects =
+                    sCmfDigitObjectDao.findSCmfDigitObjectByDrid(sCmfMeta.getDrid());
+            if (sCmfDigitObjects != null && sCmfDigitObjects.size() > 0) {
+                for (SCmfDigitObject sCmfDigitObject : sCmfDigitObjects) {
+                    //cmf_digitobject表新增
+                    CmfDigitObject cmfDigitObject = BookUtil.createCmfDigitObject(sCmfDigitObject);
+                    if (cmfDigitObject != null) {
+                        cmfDigitObjectDao.insertCmfDigitObject(cmfDigitObject);
+                        List<SCmfDigitResfileSite> sCmfDigitResfileSites =
+                                sCmfDigitResfileSiteDao.findSCmfDigitResfileSiteByFileId(sCmfDigitObject.getFileId());
+                        if (sCmfDigitResfileSites != null && sCmfDigitResfileSites.size() > 0) {
+                            for (SCmfDigitResfileSite sCmfDigitResfileSite : sCmfDigitResfileSites) {
+                                //cmf_digitresfile_site表新增
+                                CmfDigitResfileSite cmfDigitResfileSite = BookUtil.createCmfDigitResfileSite(sCmfDigitResfileSite);
+                                if (cmfDigitResfileSite != null) {
+                                    cmfDigitResfileSiteDao.insertCmfDigitResfileSite(cmfDigitResfileSite);
+                                } else {
+                                    log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            -1, sCmfMeta.getIdentifier(), "生成CmfDigitResfileSite失败", new Date());
+                                }
+                            }
+                        } else {
+                            log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                    -1, sCmfMeta.getIdentifier(), "获取SCmfDigitResfileSite失败", new Date());
+                        }
+                    } else {
+                        log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                -1, sCmfMeta.getIdentifier(), "生成CmfDigitObject失败", new Date());
+                    }
+                }
+            } else {
+                log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                        -1, sCmfMeta.getIdentifier(), "获取SCmfDigitObject失败", new Date());
+            }
+            return true;
+
+        }
+        return false;
     }
 }
