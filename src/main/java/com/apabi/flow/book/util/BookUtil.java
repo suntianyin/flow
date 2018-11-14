@@ -318,6 +318,7 @@ public class BookUtil {
             bookMeta.setIssuedDate(sdf.format(sCmfMeta.getIssuedDate()));
             bookMeta.setIdType(sCmfMeta.getIdType());
             bookMeta.setRelation(sCmfMeta.getRelation());
+            bookMeta.setRelationType (sCmfMeta.getRelationType());
             bookMeta.setEbookPrice(String.valueOf(sCmfMeta.getPrice()));
             bookMeta.setPaperPrice(String.valueOf(sCmfMeta.getPaperPrice()));
             bookMeta.setForeignPrice(String.valueOf(sCmfMeta.getForeignPrice()));
@@ -370,6 +371,7 @@ public class BookUtil {
             metaDataTemp.setIssuedDate(sdf.format(sCmfMeta.getIssuedDate()));
             metaDataTemp.setIdType(sCmfMeta.getIdType());
             metaDataTemp.setRelation(sCmfMeta.getRelation());
+            metaDataTemp.setRelationType(sCmfMeta.getRelationType());
             metaDataTemp.setEbookPrice(String.valueOf(sCmfMeta.getPrice()));
             metaDataTemp.setPaperPrice(String.valueOf(sCmfMeta.getPaperPrice()));
             metaDataTemp.setForeignPrice(String.valueOf(sCmfMeta.getForeignPrice()));

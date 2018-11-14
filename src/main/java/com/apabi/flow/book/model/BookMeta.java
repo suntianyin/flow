@@ -156,6 +156,9 @@ public class BookMeta implements Serializable{
     @Column(name = "RELATIONID")
     private String relationId;
 
+    @Column(name = "RELATIONTYPE")
+    private String relationType;
+
     @Column(name = "VOLUME")
     private String volume;
 
@@ -674,6 +677,14 @@ public class BookMeta implements Serializable{
 
     public void setRelationId(String relationId) {
         this.relationId = relationId;
+    }
+
+    public String getRelationType() {
+        return relationType;
+    }
+
+    public void setRelationType(String relationType) {
+        this.relationType = relationType;
     }
 
     public String getVolume() {

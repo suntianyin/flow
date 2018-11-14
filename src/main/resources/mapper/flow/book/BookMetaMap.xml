@@ -45,6 +45,7 @@
         <result column="EDITOR" jdbcType="VARCHAR" property="editor"/>
         <result column="RELATION" jdbcType="VARCHAR" property="relation"/>
         <result column="RELATIONID" jdbcType="VARCHAR" property="relationId"/>
+        <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
         <result column="VOLUME" jdbcType="VARCHAR" property="volume"/>
         <result column="ISSERIES" jdbcType="DECIMAL" property="isSeries"/>
         <result column="VOLUMESCOUNT" jdbcType="VARCHAR" property="volumesCount"/>
@@ -103,7 +104,7 @@
         ISSUEDDATEDESC,ABSTRACT,SUBJECT,PREFACE,READER,CLASSCODE,
         APABICLASS,TYPE,ISBN,ISBN10,ISBN13,PAPERPRICE,EBOOKPRICE,
         FOREIGNPRICE,FOREIGNPRICETYPE,PAPERPRICEDESC,BINDING,
-        ILLUSTRATION,PRESSORDER,EDITOR,RELATION,RELATIONID,VOLUME,
+        ILLUSTRATION,PRESSORDER,EDITOR,RELATION,RELATIONID,RELATIONTYPE,VOLUME,
         ISSERIES,VOLUMESCOUNT,ISALLUBLISHED,NOTES,PODPRICE,
         PODPRICETYPE,PODPRICEPAGEUNIT,DRID,DOUBANID,AMAZONID,
         CALISID,NLIBRARYID,DATASOURCE,QUALITYRATING,QRTYPE,
@@ -162,6 +163,7 @@
         #{editor,jdbcType=VARCHAR},
         #{relation,jdbcType=VARCHAR},
         #{relationId,jdbcType=VARCHAR},
+        #{relationType,jdbcType=VARCHAR},
         #{volume,jdbcType=VARCHAR},
         #{isSeries,jdbcType=DECIMAL},
         #{volumesCount,jdbcType=VARCHAR},
@@ -351,6 +353,9 @@
         </if>
         <if test="relationId != null">
             RELATIONID = #{relationId},
+        </if>
+        <if test="relationType != null">
+            RELATIONTYPE = #{relationType},
         </if>
         <if test="volume != null">
             VOLUME = #{volume},

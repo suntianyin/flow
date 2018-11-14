@@ -57,6 +57,7 @@ public class BookMetaMap {
         put("editor", "责任编辑");
         put("relation", "相关文献");
         put("relationId", "丛套书唯一标示符");
+        put("relationType", "相关文献与本文献的联系");
         put("volume", "分卷信息");
         put("isSeries", "是否为从套书");
         put("volumesCount", "总册数");
