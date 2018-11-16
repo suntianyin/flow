@@ -40,7 +40,7 @@
     <select id="findNewspaperWithoutMainBodyByPage" resultMap="BaseResultMap">
         select *
         from NEWSPAPER_CRAWL
-        where html_content is not null and main_body is null
+        where main_body is null and html_content is not null
     </select>
 
     <!-- 查询所有htmlContent不为null的newspaper的数量 -->

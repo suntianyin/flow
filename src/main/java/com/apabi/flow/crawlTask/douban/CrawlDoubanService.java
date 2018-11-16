@@ -13,10 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -46,7 +46,7 @@ public class CrawlDoubanService implements ApplicationRunner {
         int queueSize = 100;
         // 获取cpu的核数
         int cpuProcessorAmount = Runtime.getRuntime().availableProcessors();
-        ArrayBlockingQueue idQueue = new ArrayBlockingQueue(queueSize);
+        LinkedBlockingQueue idQueue = new LinkedBlockingQueue(queueSize);
         List<String> idList = new ArrayList<>();
         List<String> urlList = doubanCrawlUrlDao.findAllUrl();
         // 创建代理ip类

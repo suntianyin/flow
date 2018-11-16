@@ -10,7 +10,7 @@
     <title>图书元数据</title>
     <script type="text/javascript">
         function btn_back() {
-            window.location.href="${ctx}/douban/searchIndex?doubanId=${doubanMetaMap['豆瓣Id']! ''}";
+            history.go(-1);
         }
     </script>
 </head>
@@ -22,7 +22,8 @@
     <tr class="gradeA odd" role="row">
         <td>
             <div class="PartialButton">
-                <a id="lr-leave" title="返回主页" onclick="btn_back()" class="tools_btn"><span><i class="fa fa-arrow-left"></i>&nbsp;返回</span></a>
+                <a id="lr-leave" title="返回" onclick="btn_back()" style="cursor:pointer;"><span><i
+                        class="fa fa-arrow-left"></i>&nbsp;返回</span></a>
             </div>
         </td>
     </tr>

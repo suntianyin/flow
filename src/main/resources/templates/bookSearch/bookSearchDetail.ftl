@@ -11,7 +11,6 @@
     <script type="text/javascript">
         function btn_back() {
             loading();
-            // window.location.href=history.go(-1);
             history.go(-1);
         }
     </script>
@@ -23,9 +22,10 @@
     <thead>
     <tr class="gradeA odd" role="row">
         <td>
-            <input type="button" onclick="btn_back()" value="返回">
+            <div class="PartialButton">
+                <a id="lr-leave" title="返回" onclick="btn_back()" style="cursor:pointer;"><span><i class="fa fa-arrow-left"></i>&nbsp;返回</span></a>
+            </div>
         </td>
-        <td></td>
     </tr>
     <tr role="row">
         <th>字段名</th>

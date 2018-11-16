@@ -14,10 +14,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.scheduling.annotation.Async;
 
 import java.text.SimpleDateFormat;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 在Spring boot初始化完毕后开始执行nlcMarc爬虫代码
@@ -66,7 +66,7 @@ public class CrawlNlcMarcService implements ApplicationRunner {
             PageHelper.startPage(i, pageSize);
             Page<String> isbnList = nlcCrawlIsbnDao.getIsbnList();
             // 将isbn添加到队列中
-            ArrayBlockingQueue<String> isbnQueue = new ArrayBlockingQueue<>(queueSize);
+            LinkedBlockingQueue<String> isbnQueue = new LinkedBlockingQueue<>(queueSize);
             // 创建生产者对象
             NlcMarcProducer producer = new NlcMarcProducer(isbnQueue, "nlcMarcProducer", isbnList);
             // 开启生产者线程

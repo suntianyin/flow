@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -19,12 +19,12 @@ import java.util.concurrent.CountDownLatch;
  **/
 public class AmazonConsumer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AmazonConsumer.class);
-    private ArrayBlockingQueue<String> idQueue;
+    private LinkedBlockingQueue<String> idQueue;
     private AmazonMetaDao amazonMetaDao;
     private IpPoolUtils ipPoolUtils;
     private CountDownLatch countDownLatch;
 
-    public AmazonConsumer(ArrayBlockingQueue<String> idQueue, AmazonMetaDao amazonMetaDao, IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
+    public AmazonConsumer(LinkedBlockingQueue<String> idQueue, AmazonMetaDao amazonMetaDao, IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
         this.idQueue = idQueue;
         this.amazonMetaDao = amazonMetaDao;
         this.ipPoolUtils = ipPoolUtils;

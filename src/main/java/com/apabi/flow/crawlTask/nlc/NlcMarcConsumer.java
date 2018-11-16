@@ -1,10 +1,10 @@
 package com.apabi.flow.crawlTask.nlc;
 
-import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
 import com.apabi.flow.crawlTask.exception.NoSuchIsbnException;
 import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
 import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
+import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
 import com.apabi.flow.nlcmarc.model.NlcBookMarc;
 import com.apabi.flow.nlcmarc.util.CrawlNlcMarcUtil;
 import com.apabi.flow.nlcmarc.util.ParseMarcUtil;
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -24,14 +24,14 @@ import java.util.concurrent.CountDownLatch;
  **/
 public class NlcMarcConsumer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(NlcMarcConsumer.class);
-    private ArrayBlockingQueue<String> isbnQueue;
+    private LinkedBlockingQueue<String> isbnQueue;
     private NlcBookMarcDao nlcBookMarcDao;
     private NlcCrawlIsbnDao nlcCrawlIsbnDao;
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
     private NlcIpPoolUtils ipPoolUtils;
     private CountDownLatch countDownLatch;
 
-    public NlcMarcConsumer(ArrayBlockingQueue<String> isbnQueue, NlcBookMarcDao nlcBookMarcDao, NlcCrawlIsbnDao nlcCrawlIsbnDao, ApabiBookMetaDataDao apabiBookMetaDataDao, NlcIpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
+    public NlcMarcConsumer(LinkedBlockingQueue<String> isbnQueue, NlcBookMarcDao nlcBookMarcDao, NlcCrawlIsbnDao nlcCrawlIsbnDao, ApabiBookMetaDataDao apabiBookMetaDataDao, NlcIpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
         this.isbnQueue = isbnQueue;
         this.nlcBookMarcDao = nlcBookMarcDao;
         this.nlcCrawlIsbnDao = nlcCrawlIsbnDao;

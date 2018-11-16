@@ -13,12 +13,15 @@ public class ParseHtmlMainBodyUtil {
     public static String parse(Newspaper newspaper) {
         String htmlContent = newspaper.getHtmlContent();
         String text = null;
-        if (newspaper.getUrl().contains("news.cnr.cn")) {
+        if (newspaper.getUrl().contains("cnr.cn")) {
             // 对央广网解析
             Document document = Jsoup.parse(htmlContent);
             text = document.select("div[class='Custom_UnionStyle']").text();
             if(StringUtils.isEmpty(text)){
                text = document.select("div[class='TRS_Editor']").text();
+            }
+            if(StringUtils.isEmpty(text)){
+                text = document.select("div[class='btn']").text();
             }
         } else if (newspaper.getUrl().contains("www.chinanews.com")) {
             // 对中新网解析

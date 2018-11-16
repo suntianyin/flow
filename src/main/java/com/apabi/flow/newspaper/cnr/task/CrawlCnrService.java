@@ -11,10 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -40,7 +40,7 @@ public class CrawlCnrService {
         CloseableHttpClient httpClient = CnrCrawlUtils.getCloseableHttpClient();
         CountDownLatch countDownLatch = new CountDownLatch(pageNum);
         ExecutorService executorService = Executors.newFixedThreadPool(10);
-        ArrayBlockingQueue<String> urlQueue = new ArrayBlockingQueue<String>(100);
+        LinkedBlockingQueue<String> urlQueue = new LinkedBlockingQueue<String>(100);
         for (int i = 1; i <= pageNum; i++) {
             String url = "http://www.cnr.cn/chanjing/guancha/index_" + i + ".html";
             try {
@@ -49,7 +49,6 @@ public class CrawlCnrService {
                 e.printStackTrace();
             }
         }
-
         CrawlCnrTask crawlCnrTask = new CrawlCnrTask(urlQueue, newspaperDao, countDownLatch, cnrIpPoolUtils, httpClient);
         for (int i = 0; i < pageNum; i++) {
             executorService.execute(crawlCnrTask);
