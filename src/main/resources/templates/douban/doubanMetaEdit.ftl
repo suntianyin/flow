@@ -20,7 +20,7 @@
 
         // 返回按钮
         function btn_back() {
-            window.location.href = "${ctx}/douban/searchIndex";
+            window.location.href = "${ctx}/douban/searchIndex?doubanId=${doubanMetaMap['豆瓣Id']! ''}";
         }
 
     </script>
@@ -34,13 +34,13 @@
         <tr class="gradeA odd" role="row">
             <td>
                 <div class="PartialButton">
-                    <a href="javascript:;" title="返回主页" onclick="btn_back()" class="tools_btn"><span><i
+                    <a href="javascript:;" title="返回" onclick="btn_back()" class="tools_btn"><span><i
                             class="fa fa-arrow-left"></i>&nbsp;返回</span></a>
                 </div>
             </td>
             <td>
                 <div class="PartialButton">
-                    <a href="javascript:;" title="保存数据" onclick="btn_save()"
+                    <a href="javascript:;" title="保存" onclick="btn_save()"
                        class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;保存</span></a>
                 </div>
             </td>

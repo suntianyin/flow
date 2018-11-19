@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -13,10 +13,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class AmazonProducer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AmazonProducer.class);
     private List<String> idList;
-    private ArrayBlockingQueue<String> arrayBlockingQueue;
+    private LinkedBlockingQueue<String> arrayBlockingQueue;
     private String threadName;
 
-    public AmazonProducer(ArrayBlockingQueue arrayBlockingQueue, String threadName, List<String> idList) {
+    public AmazonProducer(LinkedBlockingQueue arrayBlockingQueue, String threadName, List<String> idList) {
         this.arrayBlockingQueue = arrayBlockingQueue;
         this.threadName = threadName;
         this.idList = idList;

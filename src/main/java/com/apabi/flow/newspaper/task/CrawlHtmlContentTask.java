@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @Author pipi
@@ -34,10 +31,10 @@ public class CrawlHtmlContentTask {
     @RequestMapping("/execute")
     public String updateNoHtml() {
         int total = newspaperDao.countNoHtmlContent();
-        int pageSize = 10000;
+        int pageSize = 20000;
         int pageNum = (total / pageSize) + 1;
-        ArrayBlockingQueue<String> urlQueue = new ArrayBlockingQueue<>(100);
-        ExecutorService executorService = Executors.newFixedThreadPool(800);
+        LinkedBlockingQueue<String> urlQueue = new LinkedBlockingQueue<>(100);
+        ExecutorService executorService = Executors.newFixedThreadPool(1000);
         for (int i = 0; i < pageNum; i++) {
             CnrIpPoolUtils cnrIpPoolUtils = new CnrIpPoolUtils();
             PageHelper.startPage(i, pageSize);
@@ -77,9 +74,9 @@ public class CrawlHtmlContentTask {
                 String mainBody = ParseHtmlMainBodyUtil.parse(newspaper);
                 newspaper.setMainBody(mainBody);
                 if (mainBody != null) {
-                    //newspaperDao.update(newspaper);
-                    //System.out.println(newspaper.getTitle() + "插入数据库成功...");
-                    System.out.println(mainBody);
+                    newspaperDao.update(newspaper);
+                    System.out.println(newspaper.getTitle() + "插入数据库成功...");
+                    //System.out.println(mainBody);
                     success++;
                 }
             }

@@ -1,18 +1,18 @@
 package com.apabi.flow.crawlTask.nlc;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
  * @Date 2018/10/12 15:54
  **/
 public class NlcMarcProducer implements Runnable {
-    private ArrayBlockingQueue<String> isbnQueue;
+    private LinkedBlockingQueue<String> isbnQueue;
     private List<String> isbnList;
     private String threadName;
 
-    public NlcMarcProducer(ArrayBlockingQueue<String> isbnQueue, String threadName, List<String> isbnList) {
+    public NlcMarcProducer(LinkedBlockingQueue<String> isbnQueue, String threadName, List<String> isbnList) {
         this.isbnQueue = isbnQueue;
         this.isbnList = isbnList;
         this.threadName = threadName;

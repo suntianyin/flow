@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -12,11 +12,11 @@ import java.util.concurrent.ArrayBlockingQueue;
  **/
 public class DoubanProducer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(DoubanProducer.class);
-    private ArrayBlockingQueue idQueue;
+    private LinkedBlockingQueue idQueue;
     private String threadName;
     private List<String> idList;
 
-    public DoubanProducer(ArrayBlockingQueue idQueue, String threadName, List<String> idList) {
+    public DoubanProducer(LinkedBlockingQueue idQueue, String threadName, List<String> idList) {
         this.idQueue = idQueue;
         this.threadName = threadName;
         this.idList = idList;

@@ -8,6 +8,7 @@ import com.apabi.flow.newspaper.model.Newspaper;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -33,11 +34,9 @@ import java.util.Date;
  * @Date 2018/11/5 16:02
  **/
 public class ChinanewsCrawlUtils {
-    // 抓取成功状态码
-    private static final int CRAWL_SUCCESS_CODE = 200;
-    // 请求重试切换IP次数
-    private static final int SWITCH_IP_COUNT = 3;
-    // 请求重试次数
+    /**
+     * 请求切换ip重试次数
+     */
     private static final int RETRY_COUNT = 3;
     private static final Logger LOGGER = LoggerFactory.getLogger(ChinanewsCrawlUtils.class);
 
@@ -70,8 +69,6 @@ public class ChinanewsCrawlUtils {
                 // SSL handshake exception
                 return false;
             }
-
-
             HttpClientContext clientContext = HttpClientContext.adapt(context);
             HttpRequest request = clientContext.getRequest();
             boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
@@ -130,9 +127,9 @@ public class ChinanewsCrawlUtils {
         try {
             response = httpClient.execute(httpGet);
             int count = 0;
-            while (response.getStatusLine().getStatusCode() != CRAWL_SUCCESS_CODE) {
-                if (count == SWITCH_IP_COUNT) {
-                    LOGGER.error("Chinanews失败的页面：" + url);
+            while (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                if (count == RETRY_COUNT) {
+                    LOGGER.error("Chinanews抓取失败的页面：" + url);
                     break;
                 }
                 host = cnrIpPoolUtils.getIp();
@@ -163,32 +160,6 @@ public class ChinanewsCrawlUtils {
             }
             count++;
             LOGGER.info(Thread.currentThread().getName() + "抓取" + url + "并插入数据库成功");
-
-
-            /*if (response.getStatusLine().getStatusCode() == 200) {
-                String html = EntityUtils.toString(response.getEntity(), "GBK");
-                html = html.substring(html.indexOf("{"), html.lastIndexOf(";"));
-                JSONObject parse = JSONObject.parseObject(html);
-                Object o = parse.get("docs");
-                JSONArray objects = JSONObject.parseArray(o.toString());
-                for (int i = 0; i < objects.size(); i++) {
-                    Newspaper newspaper = new Newspaper();
-                    Object title = JSONObject.parseObject(objects.get(i).toString()).get("title");
-                    Object content = JSONObject.parseObject(objects.get(i).toString()).get("content");
-                    Object url1 = JSONObject.parseObject(objects.get(i).toString()).get("url");
-                    newspaper.setTitle(title.toString());
-                    newspaper.setAbstract_(content.toString());
-                    newspaper.setUrl(url1.toString());
-                    try {
-                        newspaperDao.insert(newspaper);
-                        LOGGER.info(Thread.currentThread().getName() + "抓取" + newspaper.getTitle() + "并插入数据库成功");
-                    } catch (Exception e) {
-                    }
-                }
-                LOGGER.info(Thread.currentThread().getName() + "抓取" + url + "并插入数据库成功");
-            } else {
-                LOGGER.error("Chinanews失败的页面：" + url);
-            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -5,10 +5,11 @@
     <id column="INDEX_PAGE" jdbcType="VARCHAR" property="indexPage" />
     <result column="COLUMN_NAME" jdbcType="VARCHAR" property="columnName" />
     <result column="SOURCE" jdbcType="VARCHAR" property="source" />
+    <result column="PAGE_NUM" jdbcType="INTEGER" property="pageNum" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    INDEX_PAGE, COLUMN_NAME, SOURCE
+    INDEX_PAGE, COLUMN_NAME, SOURCE,PAGE_NUM
   </sql>
 
   <!-- 根据id查询数据 -->
@@ -17,6 +18,14 @@
     <include refid="Base_Column_List" />
     from NEWSPAPER_CRAWL_URL
     where INDEX_PAGE = #{indexPage,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 根据来源查询该来源的所有页面 -->
+  <select id="findAllBySource" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from NEWSPAPER_CRAWL_URL
+    where SOURCE = #{source,jdbcType=VARCHAR}
   </select>
 
   <!-- 删除数据 -->
@@ -38,6 +47,9 @@
       <if test="source != null">
         SOURCE,
       </if>
+      <if test="pageNum != null">
+        PAGE_NUM,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="indexPage != null">
@@ -48,6 +60,9 @@
       </if>
       <if test="source != null">
         #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="pageNum != null">
+        #{pageNum,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -61,6 +76,9 @@
       </if>
       <if test="source != null">
         SOURCE = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="pageNum != null">
+        PAGE_NUM = #{pageNum,jdbcType=INTEGER},
       </if>
     </set>
     where INDEX_PAGE = #{indexPage,jdbcType=VARCHAR}

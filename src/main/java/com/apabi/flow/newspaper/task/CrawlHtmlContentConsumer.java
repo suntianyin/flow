@@ -1,11 +1,11 @@
 package com.apabi.flow.newspaper.task;
 
-import com.apabi.flow.newspaper.chinanews.util.ChinanewsCrawlUtils;
+import com.apabi.flow.newspaper.chinadaily.util.ChinaDailyCrawlUtils;
 import com.apabi.flow.newspaper.cnr.util.CnrIpPoolUtils;
 import com.apabi.flow.newspaper.dao.NewspaperDao;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 多线程抓取报纸消费者
@@ -14,12 +14,12 @@ import java.util.concurrent.CountDownLatch;
  * @Date 2018/11/7 14:26
  **/
 public class CrawlHtmlContentConsumer implements Runnable {
-    private ArrayBlockingQueue<String> urlQueue;
+    private LinkedBlockingQueue<String> urlQueue;
     private CountDownLatch countDownLatch;
     private CnrIpPoolUtils cnrIpPoolUtils;
     private NewspaperDao newspaperDao;
 
-    public CrawlHtmlContentConsumer(ArrayBlockingQueue urlQueue, CountDownLatch countDownLatch, CnrIpPoolUtils cnrIpPoolUtils, NewspaperDao newspaperDao) {
+    public CrawlHtmlContentConsumer(LinkedBlockingQueue urlQueue, CountDownLatch countDownLatch, CnrIpPoolUtils cnrIpPoolUtils, NewspaperDao newspaperDao) {
         this.urlQueue = urlQueue;
         this.countDownLatch = countDownLatch;
         this.cnrIpPoolUtils = cnrIpPoolUtils;
@@ -33,7 +33,7 @@ public class CrawlHtmlContentConsumer implements Runnable {
     public void run() {
         try {
             String url = urlQueue.take();
-            ChinanewsCrawlUtils.crawlHtmlContentByUrl(url, cnrIpPoolUtils, newspaperDao);
+            ChinaDailyCrawlUtils.crawlHtmlContentByUrl(url, cnrIpPoolUtils, newspaperDao);
         } catch (InterruptedException e) {
             //e.printStackTrace();
         } finally {

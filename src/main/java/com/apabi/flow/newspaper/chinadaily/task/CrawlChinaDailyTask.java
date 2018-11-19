@@ -1,10 +1,9 @@
-package com.apabi.flow.newspaper.cnr.task;
+package com.apabi.flow.newspaper.chinadaily.task;
 
-import com.apabi.flow.newspaper.cnr.util.CnrCrawlUtils;
+import com.apabi.flow.newspaper.chinadaily.util.ChinaDailyCrawlUtils;
 import com.apabi.flow.newspaper.cnr.util.CnrIpPoolUtils;
 import com.apabi.flow.newspaper.dao.NewspaperDao;
 import com.apabi.flow.newspaper.model.Newspaper;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +15,17 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2018/11/2 11:10
  **/
-public class CrawlCnrTask implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlCnrTask.class);
+public class CrawlChinaDailyTask implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlChinaDailyTask.class);
     private LinkedBlockingQueue<String> urlQueue;
     private NewspaperDao newspaperDao;
-
     private CountDownLatch countDownLatch;
     private CnrIpPoolUtils cnrIpPoolUtils;
-    private CloseableHttpClient closeableHttpClient;
 
-    public CrawlCnrTask(LinkedBlockingQueue<String> urlQueue, NewspaperDao newspaperDao, CountDownLatch countDownLatch, CnrIpPoolUtils cnrIpPoolUtils, CloseableHttpClient closeableHttpClient) {
+    public CrawlChinaDailyTask(LinkedBlockingQueue<String> urlQueue, NewspaperDao newspaperDao, CountDownLatch countDownLatch, CnrIpPoolUtils cnrIpPoolUtils) {
         this.countDownLatch = countDownLatch;
         this.urlQueue = urlQueue;
         this.cnrIpPoolUtils = cnrIpPoolUtils;
-        this.closeableHttpClient = closeableHttpClient;
         this.newspaperDao = newspaperDao;
     }
 
@@ -37,21 +33,18 @@ public class CrawlCnrTask implements Runnable {
     public void run() {
         try {
             String url = urlQueue.take();
-            List<Newspaper> newspaperResultList = CnrCrawlUtils.crawlByUrlEduAndSport(cnrIpPoolUtils, url, closeableHttpClient);
+            List<Newspaper> newspaperResultList = ChinaDailyCrawlUtils.crawlByUrl(cnrIpPoolUtils, url);
             for (Newspaper newspaper : newspaperResultList) {
                 try {
                     newspaperDao.insert(newspaper);
-                    String host = cnrIpPoolUtils.getIp();
-                    String ip = host.split(":")[0];
-                    String port = host.split(":")[1];
-                    LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "抓取" + newspaper.getTitle() + "并插入数据库成功");
+                    // LOGGER.info(Thread.currentThread().getName() + "抓取" + newspaper.getTitle() + "并插入数据库成功");
                 } catch (Exception e) {
                 }
             }
         } catch (Exception e) {
-            //e.printStackTrace();
         } finally {
             countDownLatch.countDown();
         }
+        LOGGER.info("队列中剩余" + countDownLatch.getCount() + "条数据");
     }
 }

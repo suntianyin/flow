@@ -20,4 +20,6 @@ public class NewspaperCrawlUrl {
 
     private String source;
 
+    private int pageNum;
+
 }

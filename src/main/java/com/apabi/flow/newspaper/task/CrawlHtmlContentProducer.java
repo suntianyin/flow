@@ -1,7 +1,7 @@
 package com.apabi.flow.newspaper.task;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 多线程抓取报纸生产者
@@ -12,9 +12,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class CrawlHtmlContentProducer implements Runnable {
 
     private List<String> urlList;
-    private ArrayBlockingQueue<String> urlQueue;
+    private LinkedBlockingQueue<String> urlQueue;
 
-    public CrawlHtmlContentProducer(List<String> urlList, ArrayBlockingQueue<String> urlQueue) {
+    public CrawlHtmlContentProducer(List<String> urlList, LinkedBlockingQueue<String> urlQueue) {
         this.urlList = urlList;
         this.urlQueue = urlQueue;
     }

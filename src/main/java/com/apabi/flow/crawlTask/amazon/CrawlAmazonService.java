@@ -13,10 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -47,7 +47,7 @@ public class CrawlAmazonService implements ApplicationRunner {
         int queueSize = 100;
         List<String> idList = new ArrayList<>();
         List<String> urlList = amazonCrawlUrlDao.findAllUrl();
-        ArrayBlockingQueue<String> idQueue = new ArrayBlockingQueue<String>(queueSize);
+        LinkedBlockingQueue<String> idQueue = new LinkedBlockingQueue<String>(queueSize);
         // 代理ip工具类
         IpPoolUtils ipPoolUtils = new IpPoolUtils();
 
