@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.book.dao.PageCrawledTempMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.PageCrawledTemp">
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="PAGE" jdbcType="DECIMAL" property="page" />
+    <result column="DESCE" jdbcType="VARCHAR" property="desce" />
+  </resultMap>
+  <insert id="insert" parameterType="com.apabi.flow.book.model.PageCrawledTemp">
+    insert into APABI_BOOK_PAGE_CRAWLED_TEMP (ID, PAGE, DESCE
+      )
+    values (#{id,jdbcType=VARCHAR}, #{page,jdbcType=DECIMAL}, #{desce,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.book.model.PageCrawledTemp">
+    insert into APABI_BOOK_PAGE_CRAWLED_TEMP
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="page != null">
+        PAGE,
+      </if>
+      <if test="desce != null">
+        DESCE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="page != null">
+        #{page,jdbcType=DECIMAL},
+      </if>
+      <if test="desce != null">
+        #{desce,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="findAll"  resultMap="BaseResultMap">
+    select ID,PAGE,DESCE from APABI_BOOK_PAGE_CRAWLED_TEMP
+  </select>
+  <select id="pageAll"  resultMap="BaseResultMap">
+    select ID,PAGE,DESCE from APABI_BOOK_PAGE_CRAWLED_TEMP
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PAGE_CRAWLED_TEMP
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByIdAndPage" parameterType="com.apabi.flow.book.model.PageCrawledTemp">
+    delete from APABI_BOOK_PAGE_CRAWLED_TEMP
+    where ID = #{id,jdbcType=VARCHAR} and PAGE = #{page,jdbcType=DECIMAL}
+  </delete>
+  <delete id="deleteAll" >
+    delete from APABI_BOOK_PAGE_CRAWLED_TEMP
+  </delete>
+</mapper>
