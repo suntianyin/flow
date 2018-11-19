@@ -157,9 +157,11 @@
                            class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                         <thead>
                         <#if bookMetaList?? >
-                            获取图书元数据${bookMetaList?size }条
-                        <#else>
-                            获取图书元数据0条
+                            <#if bookMetaList?size==0>
+                                获取图书元数据0条，请检查目录是否存在
+                            <#else >
+                                获取图书元数据${bookMetaList?size }条
+                            </#if>
                         </#if>
                         <tr role="row">
                             <th><input id="checkAll" type="checkbox" onclick="selectAll(this);"/></th>
