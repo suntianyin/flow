@@ -158,7 +158,7 @@
                         <thead>
                         <#if bookMetaList?? >
                             <#if bookMetaList?size==0>
-                                获取图书元数据0条，请检查目录是否存在
+                                获取图书元数据0条，请检查目录是否正确
                             <#else >
                                 获取图书元数据${bookMetaList?size }条
                             </#if>

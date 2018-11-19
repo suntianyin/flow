@@ -809,7 +809,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
                                     //如果文件名符合"m."规则，则从数据库中查询
                                     if (fileName.length() > 1 && fileName.substring(0, 2).equals("m.")) {
-                                        metaBatches = bookMetaDao.findBookMetaBatchById(fileName);
+                                        String metaId = fileName.replace(".epub", "");
+                                        metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
                                     } else {
                                         //使用插件获取isbn
                                         isbnMeta = getIsbn4Meta(book);
@@ -934,22 +935,30 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                     }
                                 }
+                                bookMetaBatches.addAll(metaBatches);
                             } else {
                                 BookMetaBatch bookMetaBatch = new BookMetaBatch();
                                 bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                 metaBatches.add(bookMetaBatch);
+                                bookMetaBatches.add(bookMetaBatch);
                             }
                         } catch (Exception e) {
                             log.warn("{\"status\":\"{}\",\"file\":\"{}\",\"message\":\"{}\"}", -1, newFile.getName(), e.getMessage());
                         }
-                        bookMetaBatches.addAll(metaBatches);
-                        metaBatches.clear();
                     }
                 } else {
-                    //扫描cebx文件，通过文件名从书苑获取metaId
+                    //扫描cebx文件
                     for (String cebxFile : CEBX_FILES) {
                         File newFile = new File(cebxFile);
-                        String metaId = sCmfMetaDao.getMetaIdByFileName(newFile.getName().replace("cebx", "ceb"));
+                        String fileName = newFile.getName();
+                        String metaId;
+                        if (fileName.length() > 1 && fileName.substring(0, 2).equals("m.")) {
+                            //如果文件名符合"m."规则，则从数据库中查询
+                            metaId = fileName.replace(".cebx", "");
+                        } else {
+                            //扫描cebx文件，通过文件名从书苑获取metaId
+                            metaId = sCmfMetaDao.getMetaIdByFileName(fileName.replace("cebx", "ceb"));
+                        }
                         if (!StringUtils.isEmpty(metaId)) {
                             metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
                             if (metaBatches.size() == 0) {
@@ -962,14 +971,13 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     bookMetaBatch.setFileName(newFile.getName());
                                 }
                             }
+                            bookMetaBatches.addAll(metaBatches);
                         } else {
                             BookMetaBatch bookMetaBatch = new BookMetaBatch();
                             bookMetaBatch.setFileName(newFile.getName());
-                            metaBatches.add(bookMetaBatch);
+                            bookMetaBatches.add(bookMetaBatch);
                         }
                     }
-                    bookMetaBatches.addAll(metaBatches);
-                    metaBatches.clear();
                 }
                 long end = System.currentTimeMillis();
                 log.info("{\"status\":\"{}\",\"file\":\"{}\",\"useTime\":\"{}\"}", 0, dirPath, (end - start));
@@ -1255,7 +1263,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                             if (ress) {
                                 log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
                                         0, metaId, "success", new Date());
-                            }else {
+                            } else {
                                 log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
                                         -2, metaId, "新增书苑数据异常", new Date());
                             }
