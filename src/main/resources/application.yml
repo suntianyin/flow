@@ -71,11 +71,11 @@ spring:
       max-file-size: 200MB
       max-request-size: 300MB
 
-mybatis:
-  type-aliases-package: com.apabi.flow.*.model
-  mapper-locations: classpath:mapper/**/*.xml
-  configuration:
-    cache-enabled: false
+#mybatis:
+#  type-aliases-package: com.apabi.flow.*.model
+#  mapper-locations: classpath:mapper/**/*.xml
+#  configuration:
+#    cache-enabled: false
 #  configuration:
 #    default-enum-type-handler: com.apabi.flow.common.UniversalEnumHandler
 
