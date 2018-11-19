@@ -65,7 +65,7 @@ public class GetBook4ShuyuanTask {
     private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     //每天0点执行一次
-    //@Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     //@Scheduled(cron = "0 * * * * ?")
     public void insertBook2Oracle() {
         Integer lastDrid = 0;
@@ -74,7 +74,8 @@ public class GetBook4ShuyuanTask {
             //获取上次最后更新的drid
             lastDrid = bookMetaDao.getMaxDrid();
             //获取书苑最大drid
-            maxDrid = sCmfMetaDao.getMaxDrid();
+            //maxDrid = sCmfMetaDao.getMaxDrid();
+            maxDrid = lastDrid + 3;
             //从书苑获取数据，并新增到流式图书服务
             if (lastDrid < maxDrid) {
                 SCmfMeta sCmfMeta;
@@ -94,7 +95,7 @@ public class GetBook4ShuyuanTask {
                                     if (ress) {
                                         logger.info("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
                                                 0, i, "success", new Date());
-                                    }else {
+                                    } else {
                                         logger.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
                                                 -2, i, "新增书苑数据异常", new Date());
                                     }
