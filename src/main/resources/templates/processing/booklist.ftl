@@ -95,46 +95,46 @@
         }
 
         //提交制作审核
-        function uploadMakeAudit(batchId) {
-
-            if (isNull(batchId)){
-                tipDialog("批次号不能为空", 3, -1);
-                return;
-            }
-
-            var url = "/processing/batch/uploadMakeAudit?batchId=" + batchId;
-            confirmDialog("温馨提示", "注：您确定要对当前批次："+ batchId + " 提交制作审核？", function (r) {
-                if (r) {
-                    Loading(true, "正在提交数据...");
-                    window.setTimeout(function () {
-                        try {
-                            $.ajax({
-                                url: RootPath() + url,
-                                type: "get",
-                                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
-                                async: false,
-                                success: function (data) {
-//                                    Loading(false);
-                                    if (data.status == 200){
-                                        tipDialog(data.msg, 3, 1);
-                                        /*top.frames[tabiframeId()].location.reload();
-                                        closeDialog();*/
-                                    }else{
-                                        tipDialog(data.msg, 3, -1);
-                                    }
-                                    location.reload();
-                                },
-                                error: function (data) {
-                                    Loading(false);
-                                    tipDialog("服务器异常！",3, -1);
-                                }
-                            });
-                        } catch (e) {
-                        }
-                    }, 200);
-                }
-            });
-        }
+//         function uploadMakeAudit(batchId) {
+//
+//             if (isNull(batchId)){
+//                 tipDialog("批次号不能为空", 3, -1);
+//                 return;
+//             }
+//
+//             var url = "/processing/batch/uploadMakeAudit?batchId=" + batchId;
+//             confirmDialog("温馨提示", "注：您确定要对当前批次："+ batchId + " 提交制作审核？", function (r) {
+//                 if (r) {
+//                     Loading(true, "正在提交数据...");
+//                     window.setTimeout(function () {
+//                         try {
+//                             $.ajax({
+//                                 url: RootPath() + url,
+//                                 type: "get",
+//                                 contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+//                                 async: false,
+//                                 success: function (data) {
+// //                                    Loading(false);
+//                                     if (data.status == 200){
+//                                         tipDialog(data.msg, 3, 1);
+//                                         /*top.frames[tabiframeId()].location.reload();
+//                                         closeDialog();*/
+//                                     }else{
+//                                         tipDialog(data.msg, 3, -1);
+//                                     }
+//                                     location.reload();
+//                                 },
+//                                 error: function (data) {
+//                                     Loading(false);
+//                                     tipDialog("服务器异常！",3, -1);
+//                                 }
+//                             });
+//                         } catch (e) {
+//                         }
+//                     }, 200);
+//                 }
+//             });
+//         }
 
         function auditBatch(id) {
             var url = "/processing/batch/auditBatch/index?id=" + id;
@@ -243,20 +243,20 @@
                             <td>
                                 <a href="javascript:void(0);" onclick="updateBooklist('${(list.batchId)!''}')">编辑书单</a>
                                 <#if (list.batchState.code)??>
-                                    <#if list.batchState.code == 0 || list.batchState.code == 3>
+                                    <#if list.batchState.code == 1 >
                                         <a href="javascript:void(0);" onclick="uploadBooklistAudit('${list.batchId}')">提交书单审核</a>
                                     <#else>
                                         <span style="color: #7c7c7c;"><i>提交书单审核</i></span>
                                     </#if>
 
-                                    <#if list.batchState.code == 6 || list.batchState.code == 7>
-                                        <span style="color: #7c7c7c;"><i>提交制作审核</i></span>
-                                    <#else>
-                                        <a href="javascript:void(0);" onclick="uploadMakeAudit('${list.batchId}')">提交制作审核</a>
-                                    </#if>
+                                    <#--<#if list.batchState.code == 6 >-->
+                                        <#--<span style="color: #7c7c7c;"><i>提交制作审核</i></span>-->
+                                    <#--<#else>-->
+                                        <#--<a href="javascript:void(0);" onclick="uploadMakeAudit('${list.batchId}')">提交制作审核</a>-->
+                                    <#--</#if>-->
                                 <#else>
                                     <span style="color: #7c7c7c;"><i>提交书单审核</i></span>
-                                    <span style="color: #7c7c7c;"><i>提交制作审核</i></span>
+                                    <#--<span style="color: #7c7c7c;"><i>提交制作审核</i></span>-->
                                 </#if>
 
                                 <#if (list.batchState.code)??>

@@ -1,16 +1,14 @@
 package com.apabi.flow.book.fetchPage;
 
 import com.apabi.flow.book.dao.*;
-import com.apabi.flow.book.model.BookLog;
-import com.apabi.flow.book.model.BookMeta;
-import com.apabi.flow.book.model.BookPage;
-import com.apabi.flow.book.model.PageAssemblyQueue;
+import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.impl.BookMetaServiceImpl;
 import com.apabi.flow.book.service.impl.BookPageServiceImpl;
 import com.apabi.flow.book.util.ApabiIDUtils;
 import com.apabi.flow.book.util.EbookUtil;
 import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.common.UUIDCreater;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
@@ -37,9 +35,15 @@ public class FetchPageConsumer implements Runnable {
     private PageAssemblyQueueMapper pageAssemblyQueueMapper;
     private BookLogMapper bookLogMapper;
     private CountDownLatch countDownLatch;
+    private Integer sleepTime;
+    private PageCrawledTempMapper pageCrawledTempMapper;
+    private String width;
+    private String height;
 
 
-    public FetchPageConsumer(CountDownLatch countDownLatch, String confvalue, ArrayBlockingQueue<String> idQueue, BookMetaDao bookMetaDao, BookPageMapper bookPageMapper, PageCrawledQueueMapper pageCrawledQueueMapper, PageAssemblyQueueMapper pageAssemblyQueueMapper, BookLogMapper bookLogMapper) {
+
+    public FetchPageConsumer(CountDownLatch countDownLatch, String confvalue, ArrayBlockingQueue<String> idQueue, BookMetaDao bookMetaDao, BookPageMapper bookPageMapper, PageCrawledQueueMapper pageCrawledQueueMapper, PageAssemblyQueueMapper pageAssemblyQueueMapper, BookLogMapper bookLogMapper,PageCrawledTempMapper pageCrawledTempMapper,Integer sleepTime,String width,
+    String height) {
         this.confvalue = confvalue;
         this.idQueue = idQueue;
         this.bookMetaDao = bookMetaDao;
@@ -48,6 +52,10 @@ public class FetchPageConsumer implements Runnable {
         this.pageAssemblyQueueMapper = pageAssemblyQueueMapper;
         this.bookLogMapper = bookLogMapper;
         this.countDownLatch=countDownLatch;
+        this.sleepTime=sleepTime;
+        this.pageCrawledTempMapper=pageCrawledTempMapper;
+        this.height=height;
+        this.width=width;
     }
 
     @Override
@@ -63,8 +71,8 @@ public class FetchPageConsumer implements Runnable {
         try {
             metaId=idQueue.take();
             BookMeta meta = bookMetaDao.findBookMetaById(metaId);
-            if (meta != null && meta.getBookPages() != null) {
-                cebxPage = Integer.parseInt(meta.getBookPages());
+            if (meta != null && meta.getCebxPage() != null) {
+                cebxPage = Integer.parseInt(meta.getCebxPage());
             }
             if (cebxPage == 0) {
                 log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取",metaId);
@@ -78,18 +86,29 @@ public class FetchPageConsumer implements Runnable {
                 try {
                     //计数需要放在最上面才能保证数据的正确性，在后或中间都有可能会执行不到
                     num++;
-//                    Thread.sleep(1000);
-                    url = EbookUtil.makePageUrl(confvalue, BookMetaServiceImpl.shuyuanOrgCode, metaId, BookMetaServiceImpl.urlType, BookMetaServiceImpl.serviceType, "1920", "1080", i);
+                    Thread.sleep(sleepTime);
+                    url = EbookUtil.makePageUrl(confvalue, BookMetaServiceImpl.shuyuanOrgCode, metaId, BookMetaServiceImpl.urlType, BookMetaServiceImpl.serviceType, width, height, i);
                     httpEntity = HttpUtils.doGetEntity(url);
                     String tmp = EntityUtils.toString(httpEntity);
-                    org.jsoup.nodes.Document doc;
-                    int word;
-                    doc = Jsoup.parse(tmp.toString());
-                    word = doc.body().children().text().replaceAll("\\u3000|\\s*", "").length();
+                    int word=0;
+                    if(StringUtils.isBlank(tmp)){
+                        log.info("获取图书：{} 的第{}页时出现错误，错误信息：内容为空将跳过", metaId, i);
+                        PageCrawledTemp pageCrawledTemp=new PageCrawledTemp();
+                        pageCrawledTemp.setId(metaId);
+                        pageCrawledTemp.setDesce("当前页无信息");
+                        pageCrawledTemp.setPage(i);
+                        pageCrawledTempMapper.insert(pageCrawledTemp);
+                        log.info("记录表pageCrawledTemp：{} 的第{}页时超时或出现错误", metaId, i);
+                        tmp="<span></span>";
+                    }else{
+                        org.jsoup.nodes.Document doc;
+                        doc = Jsoup.parse(tmp.toString());
+                        word = doc.body().children().text().replaceAll("\\u3000|\\s*", "").length();
+                    }
                     BookPage bookpage1 = bookPageMapper.findBookPageByMetaIdAndPageId(metaId, (int) i);
                     if (bookpage1 == null) {
                         BookPage bookPage = new BookPage();
-                        bookPage.setId(ApabiIDUtils.nextId());
+                        bookPage.setId(metaId+"-p"+i);
                         bookPage.setMetaId(metaId);
                         bookPage.setPageId(i);
                         bookPage.setWordSum((long) word);
@@ -107,8 +126,19 @@ public class FetchPageConsumer implements Runnable {
                         saveBookLog(metaId, DataType.PAGEUPDATE, num, cebxPage, start, start + num - 1);
                     }
                 } catch (Exception e) {
-                    log.info("获取图书：{} 的第{}页时超时或出现错误，错误信息：{}，将重新发起请求", metaId, i, e);
-                    i--;
+                    log.info("获取图书：{} 的第{}页时超时或出现错误，错误信息：{}，将放弃发起请求", metaId, i, e);
+                    try {
+                        PageCrawledTemp pageCrawledTemp=new PageCrawledTemp();
+                        pageCrawledTemp.setId(metaId);
+                        pageCrawledTemp.setDesce("请求超时");
+                        pageCrawledTemp.setPage(i);
+                        pageCrawledTempMapper.insert(pageCrawledTemp);
+                        log.info("记录表pageCrawledTemp：{} 的第{}页时超时或出现错误", metaId, i);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        num--;
+                        continue;
+                    }
                     num--;
                     continue;
                 }

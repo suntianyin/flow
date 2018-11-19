@@ -56,6 +56,12 @@
             })
 
         });
+        $(function () {
+            var pathurl = "bookPageManagement?";
+            var totalPages = ${pages?c};
+            var currentPages = ${pageNum?c};
+            jqPaging(pathurl, totalPages, currentPages);
+        });
 
         function btn_upload() {
             var metaId = document.getElementById("metaIds").value;
@@ -105,6 +111,27 @@
                 }
             });
         }
+        function btn_Again() {
+            // window.location.href = "autoFetchPageData";
+            var url = "/book/autoFetchPageDataAgain";
+            loading();
+            $.ajax({
+                url: RootPath() + url,
+                type: "get",
+                dataType: "json",
+                cache: false,
+                contentType: false,
+                async: false,
+                success: function (data) {
+                    alertDialog(data.msg, data.status);
+                    window.location.href = "bookPageManagement";
+                },
+                error: function (data) {
+                    alertDialog(data.msg, data.status);
+                    $(".load-circle").hide();
+                }
+            });
+        }
 
         function btn_Assembly() {
             // window.location.href = "autoProcessBookFromPage2Chapter";
@@ -122,7 +149,7 @@
                     window.location.href = "bookPageManagement";
                 },
                 error: function (data) {
-                    alertDialog("上传失败，网络传输出现异常", -1);
+                    alertDialog("章节拼装失败，请联系管理员", -1);
                     $(".load-circle").hide();
                 }
             });
@@ -130,6 +157,9 @@
 
         function btn_flush() {
             window.location.href = "bookPageManagement";
+        }
+        function btn_fetch(){
+            window.location.href = "fetch";
         }
 
         function isNull(str) {
@@ -189,8 +219,11 @@
             </table>
         </div>
         <input id="Crawled" type="button" class="btnSearch" value="刷新" onclick="btn_flush()"/>
+        <input id="fetch" type="button" class="btnSearch" value="整理去重" onclick="btn_fetch()"/>
         <input id="Crawled" type="button" class="btnSearch" value="采集加密流式内容" onclick="btn_Crawled()"/>
+        <input id="again" type="button" class="btnSearch" value="重新抽取失败内容" onclick="btn_Again()"/>
         <input id="Assembly" type="button" class="btnSearch" value="分页流式内容拼装" onclick="btn_Assembly()"/>
+        <p>重新抽取失败内容条数：${num}</p>
         <div class="panel-body">
             <div class="row">
                 <table id="table-list"
@@ -220,7 +253,10 @@
                 </table>
 
             </div>
-        <#--<ul class="pagination" style="float:right;" id="pagination"></ul>-->
+            <ul class="pagination">
+                <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
+            </ul>
+            <ul class="pagination" style="float:right;" id="pagination"></ul>
         </div>
     </div>
 </div>

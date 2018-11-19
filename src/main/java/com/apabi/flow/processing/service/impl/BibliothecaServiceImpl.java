@@ -6,14 +6,11 @@ import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.StringToolUtil;
-import com.apabi.flow.processing.constant.BibliothecaStateEnum;
-import com.apabi.flow.processing.constant.BizException;
-import com.apabi.flow.processing.constant.DeleteFlagEnum;
-import com.apabi.flow.processing.constant.DuplicateFlagEnum;
+import com.apabi.flow.processing.constant.*;
+import com.apabi.flow.processing.dao.BatchMapper;
 import com.apabi.flow.processing.dao.BibliothecaMapper;
-import com.apabi.flow.processing.model.Bibliotheca;
-import com.apabi.flow.processing.model.BibliothecaExcelModel;
-import com.apabi.flow.processing.model.DuplicationCheckEntity;
+import com.apabi.flow.processing.dao.OutUnitMapper;
+import com.apabi.flow.processing.model.*;
 import com.apabi.flow.processing.service.BibliothecaService;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
@@ -69,6 +66,13 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Autowired
     private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
+    @Autowired
+    private BatchMapper batchMapper;
+
+    @Autowired
+    private OutUnitMapper outUnitMapper;
+
+
     /**
      * 根据 书目 id 逻辑删除当前批次
      * 暂时不提供逻辑删除的功能
@@ -100,7 +104,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 bibliotheca.setId(UUIDCreater.nextId());
                 bibliotheca.setCreateTime(new Date());
                 bibliotheca.setUpdateTime(new Date());
-                bibliotheca.setBibliothecaState(BibliothecaStateEnum.EDITABLE);
+//                bibliotheca.setBibliothecaState(bibliotheca.getBibliothecaState());
                 bibliotheca.setDeleteFlag(DeleteFlagEnum.NORMAL);
                 UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 if (userDetails != null){
@@ -216,7 +220,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         try {
             //1. 查询该批次下的所有书目
             Map paramMap = new HashMap();
-            paramMap.put("bibliothecaStateNotEq", BibliothecaStateEnum.EXCLUDED);
+            paramMap.put("bibliothecaState", BibliothecaStateEnum.NEW);
             paramMap.put("batchId", batchId);
             List<Bibliotheca> bibliothecaList = bibliothecaMapper.listBibliothecaSelective(paramMap);
             if (bibliothecaList == null || bibliothecaList.isEmpty()){
@@ -416,6 +420,44 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
                     bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca1);
                     sum++;
+
+                    //判断是否是待排产
+                    Map map=new HashMap();
+                    map.put("batchId",bibliotheca.getBatchId());
+                    List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
+                    int num=0;
+                    for (Bibliotheca bibliotheca2:bibliothecas) {
+                        if(bibliotheca2.getBibliothecaState().getCode()!=0){
+                            num++;
+                        }
+                    }
+                    if(num==bibliothecas.size()){
+                        Map map1=new HashMap();
+                        map1.put("batchId",bibliotheca.getBatchId());
+                        List<Batch> batches = batchMapper.listBatchSelective(map1);
+                        Batch batch = batches.get(0);
+                        batch.setBatchState(BatchStateEnum.WAITING_PRODUCTION);
+                        batch.setUpdateTime(new Date());
+                        //外协一致坑
+                        if(StringUtils.isNotBlank(batch.getOutUnit())){
+                            List<OutUnit> outUnits = outUnitMapper.selectAll();
+                            for (OutUnit o:outUnits) {
+                                if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
+                                    batch.setOutUnit(o.getUnitId());
+                                }
+                            }
+                        }
+                        //出版社一致坑
+                        if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
+                            List<Publisher> all = publisherDao.findAll();
+                            for (Publisher p:all) {
+                                if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
+                                    batch.setCopyrightOwner(p.getId());
+                                }
+                            }
+                        }
+                        batchMapper.updateByPrimaryKey(batch);
+                    }
                 }
             }else if ("noMatch".equals(dataType) && "duplicate".equals(btnType)){
                 // 数据为 noMatch 和 操作类型为 duplicate 类型时，只需要进行查询和更新即可

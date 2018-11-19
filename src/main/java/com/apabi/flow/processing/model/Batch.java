@@ -44,6 +44,50 @@ public class Batch {
 
     private DeleteFlagEnum deleteFlag;
 
+    private String documentFormat;//文档格式
+
+    private Date distributionOutTime;//分配外协
+
+    private Date submitTime;//书单提交时间
+
+    private Date productionSchedulingTime;//排产时间
+
+    public Date getDistributionOutTime() {
+        return distributionOutTime;
+    }
+
+    public void setDistributionOutTime(Date distributionOutTime) {
+        this.distributionOutTime = distributionOutTime;
+    }
+
+    public Date getSubmitTime() {
+        return submitTime;
+    }
+
+    public void setSubmitTime(Date submitTime) {
+        this.submitTime = submitTime;
+    }
+
+    public Date getProductionSchedulingTime() {
+        return productionSchedulingTime;
+    }
+
+    public void setProductionSchedulingTime(Date productionSchedulingTime) {
+        this.productionSchedulingTime = productionSchedulingTime;
+    }
+
+    public void setCopyrightOwner(String copyrightOwner) {
+        this.copyrightOwner = copyrightOwner;
+    }
+
+    public String getDocumentFormat() {
+        return documentFormat;
+    }
+
+    public void setDocumentFormat(String documentFormat) {
+        this.documentFormat = documentFormat;
+    }
+
     public String getId() {
         return id;
     }

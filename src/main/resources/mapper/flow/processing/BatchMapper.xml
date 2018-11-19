@@ -21,6 +21,11 @@
     <result column="AUDIT_TIME" jdbcType="TIMESTAMP" property="auditTime" />
     <result column="CHECK_TIME" jdbcType="TIMESTAMP" property="checkTime" />
     <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="DOCUMENT_FORMAT" jdbcType="VARCHAR" property="documentFormat" />
+    <result column="DISTRIBUTION_OUT_TIME" jdbcType="TIMESTAMP" property="distributionOutTime" />
+    <result column="SUBMIT_TIME" jdbcType="TIMESTAMP" property="submitTime" />
+    <result column="PRODUCTION_SCHEDULING_TIME" jdbcType="TIMESTAMP" property="productionSchedulingTime" />
+
     <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="DELETE_FLAG" jdbcType="DECIMAL" property="deleteFlag"
             typeHandler="com.apabi.flow.common.UniversalEnumHandler"
@@ -29,7 +34,7 @@
   <sql id="Base_Column_List">
     ID, MANAGER, BATCH_ID, OUT_UNIT, SOURCE_TYPE, COPYRIGHT_OWNER, DOCUMENT_NUM, BATCH_STATE,
     CREATOR, AUDITOR, CHECKER, MEMO, AUDIT_TIME, CHECK_TIME, CREATE_TIME, UPDATE_TIME, 
-    DELETE_FLAG
+    DELETE_FLAG,DOCUMENT_FORMAT,DISTRIBUTION_OUT_TIME,SUBMIT_TIME,PRODUCTION_SCHEDULING_TIME
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
@@ -71,7 +76,7 @@
   <select id="listBatchSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.TITLE COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
     pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
-    pb.DELETE_FLAG
+    pb.DELETE_FLAG,DOCUMENT_FORMAT,DISTRIBUTION_OUT_TIME,SUBMIT_TIME,PRODUCTION_SCHEDULING_TIME
     FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
     ON pb.COPYRIGHT_OWNER = pi.ID LEFT JOIN APABI_BOOK_PRO_OUT_UNIT po ON pb.OUT_UNIT = po.UNIT_ID
     WHERE 1=1
@@ -108,7 +113,7 @@
   <select id="listBatchSelective" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.TITLE COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
     pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
-    pb.DELETE_FLAG
+    pb.DELETE_FLAG,DOCUMENT_FORMAT,DISTRIBUTION_OUT_TIME,SUBMIT_TIME,PRODUCTION_SCHEDULING_TIME
     FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
     ON pb.COPYRIGHT_OWNER = pi.ID LEFT JOIN APABI_BOOK_PRO_OUT_UNIT po ON pb.OUT_UNIT = po.UNIT_ID
     WHERE 1=1
@@ -152,7 +157,7 @@
       DOCUMENT_NUM, BATCH_STATE, CREATOR, 
       AUDITOR, CHECKER, MEMO, 
       AUDIT_TIME, CHECK_TIME, CREATE_TIME, 
-      UPDATE_TIME, DELETE_FLAG)
+      UPDATE_TIME, DELETE_FLAG,DOCUMENT_FORMAT,DISTRIBUTION_OUT_TIME,SUBMIT_TIME,PRODUCTION_SCHEDULING_TIME)
     values (#{id,jdbcType=VARCHAR}, #{manager,jdbcType=VARCHAR}, #{batchId,jdbcType=VARCHAR}, 
       #{outUnit,jdbcType=VARCHAR}, #{sourceType,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
       #{copyrightOwner,jdbcType=VARCHAR},
@@ -160,7 +165,8 @@
       #{creator,jdbcType=VARCHAR},
       #{auditor,jdbcType=VARCHAR}, #{checker,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
       #{auditTime,jdbcType=TIMESTAMP}, #{checkTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler})
+      #{updateTime,jdbcType=TIMESTAMP}, #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler}
+      , #{documentFormat,jdbcType=VARCHAR}, #{distributionOutTime,jdbcType=TIMESTAMP}, #{submitTime,jdbcType=TIMESTAMP}, #{productionSchedulingTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.apabi.flow.processing.model.Batch">
     insert into APABI_BOOK_PRO_BATCH
@@ -269,6 +275,18 @@
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
       </if>
+      <if test="documentFormat != null">
+        #{documentFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="distributionOutTime != null">
+        #{distributionOutTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitTime != null">
+        #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productionSchedulingTime != null">
+        #{productionSchedulingTime,jdbcType=TIMESTAMP}
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.processing.model.Batch">
@@ -322,6 +340,18 @@
       <if test="deleteFlag != null">
         DELETE_FLAG = #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
       </if>
+      <if test="documentFormat != null">
+        DOCUMENT_FORMAT = #{documentFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="distributionOutTime != null">
+        DISTRIBUTION_OUT_TIME = #{distributionOutTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitTime != null">
+        SUBMIT_TIME = #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productionSchedulingTime != null">
+        PRODUCTION_SCHEDULING_TIME = #{productionSchedulingTime,jdbcType=TIMESTAMP}
+      </if>
     </set>
     where ID = #{id,jdbcType=VARCHAR}
   </update>
@@ -342,7 +372,11 @@
       CHECK_TIME = #{checkTime,jdbcType=TIMESTAMP},
       CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
       UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
-      DELETE_FLAG = #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler}
+      DELETE_FLAG = #{deleteFlag,jdbcType=DECIMAL,typeHandler=com.apabi.flow.common.UniversalEnumHandler},
+      DOCUMENT_FORMAT = #{documentFormat,jdbcType=VARCHAR},
+      DISTRIBUTION_OUT_TIME = #{distributionOutTime,jdbcType=TIMESTAMP},
+      SUBMIT_TIME = #{submitTime,jdbcType=TIMESTAMP},
+      PRODUCTION_SCHEDULING_TIME = #{productionSchedulingTime,jdbcType=TIMESTAMP}
     where ID = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -1,7 +1,9 @@
 package com.apabi.flow.book.controller;
 
+import com.apabi.flow.book.dao.BookPageMapper;
 import com.apabi.flow.book.dao.PageAssemblyQueueMapper;
 import com.apabi.flow.book.dao.PageCrawledQueueMapper;
+import com.apabi.flow.book.dao.PageCrawledTempMapper;
 import com.apabi.flow.book.entity.BookMetaMap;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.*;
@@ -12,6 +14,8 @@ import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
+import com.apabi.flow.systemconf.dao.SystemConfMapper;
+import com.apabi.flow.systemconf.model.SystemConf;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
@@ -68,6 +72,9 @@ public class BookController {
     ReadBook readBook;
 
     @Autowired
+    BookPageMapper bookPageMapper;
+
+    @Autowired
     private BookPageService bookPageService;
 
     @Autowired
@@ -83,7 +90,12 @@ public class BookController {
     PageAssemblyQueueMapper pageAssemblyQueueMapper;
 
     @Autowired
+    PageCrawledTempMapper pageCrawledTempMapper;
+
+    @Autowired
     ApplicationConfig config;
+    @Autowired
+    SystemConfMapper systemConfMapper;
 
     @RequestMapping(value = "/index")
     public String index() {
@@ -891,23 +903,27 @@ public class BookController {
 
 
     @RequestMapping("/bookPageManagement")
-    public String getBookPageManagement(Model model) {
-
-        List<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.findAll();
+    public String getBookPageManagement(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
+        PageHelper.startPage(pageNum, 10);
+        Page<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.pageAll();
         List<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.findAll();
-        model.addAttribute("pageCrawledQueues", pageCrawledQueues);
-        model.addAttribute("pageAssemblyQueues", pageAssemblyQueues);
+        List<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.findAll();
+        model.addAttribute("num",pageCrawledTemps.size());
+        model.addAttribute("pageCrawledQueues",pageCrawledQueues);
+        model.addAttribute("pages", pageCrawledQueues.getPages());
+        model.addAttribute("pageNum", pageCrawledQueues.getPageNum());
+        model.addAttribute("pageSize", 10);
+        model.addAttribute("total", pageCrawledQueues.getTotal());
+        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
         return "book/bookPageManagement";
     }
-
     @RequestMapping("/pageCrawledQueuesDelete")
-    public String pageCrawledQueuesDelete(@RequestParam("id") String id) {
+    public String pageCrawledQueuesDelete(@RequestParam("id")String id) {
         pageCrawledQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/bookPageManagement";
     }
-
     @RequestMapping("/pageAssemblyQueuesDelete")
-    public String pageAssemblyQueuesDelete(@RequestParam("id") String id) {
+    public String pageAssemblyQueuesDelete(@RequestParam("id")String id) {
         pageAssemblyQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/bookPageManagement";
     }
@@ -922,15 +938,73 @@ public class BookController {
     @RequestMapping("/autoFetchPageData")
     public Object autoFetchPageData() {
         ResultEntity resultEntity = new ResultEntity();
-        int i = bookPageService.autoFetchPageData();
+        //前端多次点击按钮控制
+        SystemConf systemConf2 = systemConfMapper.selectByConfKey("switch");
+        if (systemConf2 == null) {
+            log.error("获取系统参数信息出错，无法查询线程池开关");
+        }
+        int i=0;
+        int swith = Integer.parseInt(systemConf2.getConfValue());
+        if(swith==0){
+            i=1;
+            systemConf2.setConfValue("1");
+            systemConfMapper.updateByPrimaryKey(systemConf2);
+            i = bookPageService.autoFetchPageData();
+        }else if(swith==1){
+            i=-1;
+        }
         if (i == 1) {
-            resultEntity.setMsg("采集加密流式内容成功");
+            resultEntity.setMsg("采集加密流式内容完成");
             resultEntity.setStatus(i);
         } else if (i == -1) {
-            resultEntity.setMsg("采集加密队列已无数据");
+            resultEntity.setMsg("采集加密流式内容正在进行请勿再次操作");
+            resultEntity.setStatus(1);
+        }else if (i == 2) {
+            resultEntity.setMsg("采集加密流式内容队列没有内容");
             resultEntity.setStatus(1);
         } else {
-            resultEntity.setMsg("采集加密失败！请联系管理员");
+            resultEntity.setMsg("采集加密失败！请联系管理员，系统参数被修改");
+            resultEntity.setStatus(-1);
+        }
+        return resultEntity;
+    }
+
+    /**
+     * 根据配置文件自动拉取分页数据
+     *
+     * @return 返回本次拉取的总页数
+     */
+    @ResponseBody
+    @RequestMapping("/autoFetchPageDataAgain")
+    public Object autoFetchPageDataAgain() {
+        ResultEntity resultEntity = new ResultEntity();
+
+        //前端多次点击按钮控制
+        SystemConf systemConf2 = systemConfMapper.selectByConfKey("switch");
+        if (systemConf2 == null) {
+            log.error("获取系统参数信息出错，无法查询线程池开关");
+        }
+        int i=0;
+        int swith = Integer.parseInt(systemConf2.getConfValue());
+        if(swith==0){
+            i=1;
+            systemConf2.setConfValue("1");
+            systemConfMapper.updateByPrimaryKey(systemConf2);
+            i = bookPageService.autoFetchPageDataAgain();
+        }else if(swith==1){
+            i=-1;
+        }
+        if (i == 1) {
+            resultEntity.setMsg("重新采集加密流式内容完成");
+            resultEntity.setStatus(i);
+        } else if (i == -1) {
+            resultEntity.setMsg("重新采集加密流式内容正在进行请勿再次操作");
+            resultEntity.setStatus(1);
+        }else if (i == 2) {
+            resultEntity.setMsg("重新采集加密流式队列没有内容");
+            resultEntity.setStatus(1);
+        }  else {
+            resultEntity.setMsg("重新抽取失败内容失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
         return resultEntity;
@@ -991,37 +1065,59 @@ public class BookController {
         }
         return null;
     }
+    @RequestMapping("/fetch")
+    public String fetch() {
+        try {
+            List<PageCrawledQueue> all = pageCrawledQueueMapper.findAll();
+            HashSet<String> hashSet = new HashSet();
+                for (PageCrawledQueue a : all) {
+                    hashSet.add(a.getId());
+                }
+            pageCrawledQueueMapper.deleteAll();
+                int num = 0;
+                for (String b : hashSet) {
+                    PageCrawledQueue pageCrawledQueue = new PageCrawledQueue();
+                    pageCrawledQueue.setId(b);
+                    int i = pageCrawledQueueMapper.insert(pageCrawledQueue);
+                    num += i;
+                }
+                return "redirect:/book/bookPageManagement";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @PostMapping("/batch/import")
     @ResponseBody
-    public String batchImportAuthor(@RequestParam("file") MultipartFile file) {
+    public String batchImportAuthor(@RequestParam("file")MultipartFile file){
 
-        if (!file.getOriginalFilename().endsWith(".xlsx")) {
+        if (!file.getOriginalFilename().endsWith(".xlsx")){
             return "文件格式不正确，仅支持 .xlsx 格式的文件";
         }
         // 读取Excel工具类
         Map<Integer, Map<Object, Object>> data = null;
-        try (InputStream inputStream = file.getInputStream()) {
+        try(InputStream inputStream = file.getInputStream()){
             String fileName = file.getOriginalFilename();
             ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
             // 读取Excel中的内容
             data = readExcelTextUtils.getDataByInputStream();
-            if (data == null || data.isEmpty()) {
+            if (data == null || data.isEmpty()){
                 throw new Exception();
             }
-        } catch (IOException e) {
+        }catch (IOException e){
             e.printStackTrace();
             return "文件读取出错，请重新尝试或联系管理员！";
-        } catch (Exception e) {
+        }catch (Exception e){
             return "文件出错，请检查文件格式是否正确或内容是否完整！";
         }
         Integer addedNum = 0;
         try {
             addedNum = bookPageService.batchAddAuthorFromFile(data);
-        } catch (Exception e) {
+        }catch (Exception e){
             log.error("异常信息： {}", e);
         }
-        return addedNum > 0 ? "成功" : "失败";
+        return addedNum > 0 ? "成功":"失败";
     }
 
     @GetMapping("/test")

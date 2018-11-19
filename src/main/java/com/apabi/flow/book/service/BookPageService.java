@@ -53,6 +53,8 @@ public interface BookPageService {
      */
     int autoFetchPageData();
 
+    int autoFetchPageDataAgain();
+
     /**
      * 根据配置文件自动组装章节数据数据
      * @return 返回本次拉取的总页数

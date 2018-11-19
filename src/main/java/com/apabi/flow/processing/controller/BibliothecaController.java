@@ -4,14 +4,14 @@ import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.util.ParamsUtils;
 import com.apabi.flow.processing.constant.*;
-import com.apabi.flow.processing.model.Batch;
-import com.apabi.flow.processing.model.Bibliotheca;
-import com.apabi.flow.processing.model.BibliothecaExcelModel;
-import com.apabi.flow.processing.model.DuplicationCheckEntity;
+import com.apabi.flow.processing.dao.BatchMapper;
+import com.apabi.flow.processing.dao.OutUnitMapper;
+import com.apabi.flow.processing.model.*;
 import com.apabi.flow.processing.service.BatchService;
 import com.apabi.flow.processing.service.BibliothecaService;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.publisher.dao.PublisherDao;
+import com.apabi.flow.publisher.model.Publisher;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +63,13 @@ public class BibliothecaController {
 
     @Autowired
     private PublisherDao publisherDao;
+
+    @Autowired
+    private BatchMapper batchMapper;
+
+    @Autowired
+    private OutUnitMapper outUnitMapper;
+
 
     /**
      * 外协 书目信息 页面
@@ -184,6 +191,8 @@ public class BibliothecaController {
                     paramBatch.setId(id);
                     paramBatch.setUpdateTime(new Date());
                     paramBatch.setChecker(userDetails.getUsername());
+                    paramBatch.setCreateTime(new Date());
+                    paramBatch.setCheckTime(new Date());
                     batchService.updateBatch(paramBatch);
                 }
 
@@ -255,11 +264,13 @@ public class BibliothecaController {
             if (StringUtils.isBlank(bibliotheca.getIdentifier())
                     || StringUtils.isBlank(bibliotheca.getBatchId())
                     || StringUtils.isBlank(bibliotheca.getTitle())
-                    || StringUtils.isBlank(bibliotheca.getOriginalFilename())){
+                    || StringUtils.isBlank(bibliotheca.getOriginalFilename())
+                    || StringUtils.isBlank(bibliotheca.getBibliothecaState().getDesc())
+            ){
                 return new ResultEntity(400,"请检查必填项是否完整！");
             }
             //书目添加
-            bibliotheca.setBibliothecaState(BibliothecaStateEnum.EDITABLE);
+//            bibliotheca.setBibliothecaState(BibliothecaStateEnum.NEW);
             if (bibliothecaService.addBibliothecaList(Arrays.asList(bibliotheca))){
                 return new ResultEntity(200, "添加成功");
             }
@@ -331,7 +342,10 @@ public class BibliothecaController {
             Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(id);
             model.addAttribute("bibliotheca", bibliotheca);
             model.addAttribute("publisherList",publisherDao.findAll());
-
+            List<BibliothecaStateEnum> list=new ArrayList();
+            list.add(BibliothecaStateEnum.NEW);
+            list.add(BibliothecaStateEnum.INFORMATION_NO);
+            model.addAttribute("bibliothecaStateList",list);
             long end = System.currentTimeMillis();
             logger.info("修改书目信息耗时：" + (end - start) + "毫秒");
         } catch (Exception e) {
@@ -389,7 +403,7 @@ public class BibliothecaController {
             return new ResultEntity(500, e.getMessage());
         }
     }
-
+    //分拣
     @GetMapping("/updateBibliothecaExclude")
     @ResponseBody
     public ResultEntity updateBibliothecaExclude(@RequestParam("id") String id){
@@ -399,7 +413,7 @@ public class BibliothecaController {
             }
             Bibliotheca bibliotheca = new Bibliotheca();
             bibliotheca.setId(id);
-            bibliotheca.setBibliothecaState(BibliothecaStateEnum.EXCLUDED);
+            bibliotheca.setBibliothecaState(BibliothecaStateEnum.SORTING);
             bibliotheca.setUpdateTime(new Date());
             if (bibliothecaService.updateBibliotheca(bibliotheca) == 1){
                 return new ResultEntity(200, "操作成功");
@@ -421,10 +435,11 @@ public class BibliothecaController {
     public ResultEntity makeSuccess(@RequestBody List<Bibliotheca> bibliothecas){
         try{
             List<Bibliotheca> bibliothecaList = bibliothecas.stream()
-                    .filter(b -> ((b.getBibliothecaState() == BibliothecaStateEnum.WAITING_PROCESS) && StringUtils.isNotBlank(b.getId())))
+                    .filter(b -> ((b.getBibliothecaState() == BibliothecaStateEnum.HAS_PROCESS) && StringUtils.isNotBlank(b.getId())))
                     .map(bi -> {
                         bi.setUpdateTime(new Date());
                         bi.setCompletedFlag(CompletedFlagEnum.YES);
+                        bi.setBibliothecaState(BibliothecaStateEnum.MAKESUC);
                         return bi;
                     })
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -434,6 +449,121 @@ public class BibliothecaController {
             }
 
             bibliothecaService.listUpdateBibliotheca(bibliothecaList);
+            //更改状态 制作中/已完成
+            Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(bibliothecaList.get(0).getId());
+            String batchId = bibliotheca.getBatchId();
+            Map map1=new HashMap();
+            map1.put("batchId",bibliotheca.getBatchId());
+            List<Batch> batches = batchMapper.listBatchSelective(map1);
+            Batch batch = batches.get(0);
+            batch.setUpdateTime(new Date());
+            //外协一致坑
+            if(StringUtils.isNotBlank(batch.getOutUnit())){
+                List<OutUnit> outUnits = outUnitMapper.selectAll();
+                for (OutUnit o:outUnits) {
+                    if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
+                        batch.setOutUnit(o.getUnitId());
+                    }
+                }
+            }
+            //出版社一致坑
+            if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
+                List<Publisher> all = publisherDao.findAll();
+                for (Publisher p:all) {
+                    if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
+                        batch.setCopyrightOwner(p.getId());
+                    }
+                }
+            }
+            Map map=new HashMap();
+            map.put("batchId",batchId);
+            List<Bibliotheca> bibliothecas1 = bibliothecaService.listBibliotheca(map);
+            int num=0;
+            for (Bibliotheca b:bibliothecas1) {
+                if(b.getBibliothecaState().getCode()==4){
+                    num++;
+                }
+            }
+            if(num==0){
+                batch.setBatchState(BatchStateEnum.COMPLETED);
+            }else{
+                batch.setBatchState(BatchStateEnum.PROCESSING);
+            }
+            batchService.updateBatch(batch);
+            return new ResultEntity(200, "操作成功！");
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResultEntity(500, e.getMessage());
+        }
+    }
+    /**
+     * 书目查重# 制作失败
+     * @param bibliothecas
+     * @return
+     */
+    @PostMapping("/makeFail")
+    @ResponseBody
+    public ResultEntity makeFail(@RequestBody List<Bibliotheca> bibliothecas){
+        try{
+            List<Bibliotheca> bibliothecaList = bibliothecas.stream()
+                    .filter(b -> ((b.getBibliothecaState() == BibliothecaStateEnum.HAS_PROCESS) && StringUtils.isNotBlank(b.getId())))
+                    .map(bi -> {
+                        bi.setUpdateTime(new Date());
+                        bi.setCompletedFlag(CompletedFlagEnum.YES);
+                        bi.setBibliothecaState(BibliothecaStateEnum.MAKEFAIL);
+                        return bi;
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            if (bibliothecaList == null || bibliothecaList.isEmpty()){
+                return new ResultEntity(500, "更新 0 条数据！");
+            }
+
+            bibliothecaService.listUpdateBibliotheca(bibliothecaList);
+            //更改状态 制作中/已完成
+            //获取batchId
+            Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(bibliothecaList.get(0).getId());
+            String batchId = bibliotheca.getBatchId();
+            //获取batch
+            Map map1=new HashMap();
+            map1.put("batchId",bibliotheca.getBatchId());
+            List<Batch> batches = batchMapper.listBatchSelective(map1);
+            Batch batch = batches.get(0);
+            batch.setUpdateTime(new Date());
+            //外协一致坑
+            if(StringUtils.isNotBlank(batch.getOutUnit())){
+                List<OutUnit> outUnits = outUnitMapper.selectAll();
+                for (OutUnit o:outUnits) {
+                    if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
+                        batch.setOutUnit(o.getUnitId());
+                    }
+                }
+            }
+            //出版社一致坑
+            if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
+                List<Publisher> all = publisherDao.findAll();
+                for (Publisher p:all) {
+                    if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
+                        batch.setCopyrightOwner(p.getId());
+                    }
+                }
+            }
+
+            Map map=new HashMap();
+            map.put("batchId",batchId);
+            List<Bibliotheca> bibliothecas1 = bibliothecaService.listBibliotheca(map);
+            int num=0;
+            for (Bibliotheca b:bibliothecas1) {
+                if(b.getBibliothecaState().getCode()==4){
+                    num++;
+                }
+            }
+            if(num==0){
+                batch.setBatchState(BatchStateEnum.COMPLETED);
+            }else{
+                batch.setBatchState(BatchStateEnum.PROCESSING);
+            }
+            batchService.updateBatch(batch);
             return new ResultEntity(200, "操作成功！");
         }catch (Exception e){
             e.printStackTrace();
@@ -495,11 +625,11 @@ public class BibliothecaController {
             //确认重复
             if ("duplicate".equals(btnType)){
                 bibliothecaService.listSureOperation(bibliothecaIdList, metaIdList, dataType, btnType,
-                        BibliothecaStateEnum.DUPLICATE_CHECKED, DuplicateFlagEnum.YES);
+                        BibliothecaStateEnum.REPEAT, DuplicateFlagEnum.YES);
             }else{
-                //确认制作
+                //确认不重复
                 bibliothecaService.listSureOperation(bibliothecaIdList, metaIdList, dataType, btnType,
-                        BibliothecaStateEnum.WAITING_PROCESS, DuplicateFlagEnum.NO);
+                        BibliothecaStateEnum.NOREPEAT, DuplicateFlagEnum.NO);
             }
             return new ResultEntity(200, "操作成功！");
         }catch (Exception e){

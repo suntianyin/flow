@@ -179,7 +179,7 @@ public class SystemConfController {
             long end = System.currentTimeMillis();
             log.info("查询系统参数" + id + "耗时：" + (end - start) + "毫秒");
         }
-        return "systemConf/ConfShow";
+        return "systemConf/confShow";
     }
     /*根据属性名获取属性值*/
     private static Object getFieldValueByName(String fieldName, Object o) {

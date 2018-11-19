@@ -18,9 +18,9 @@ spring:
       password: book037268
     secondary:
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-      url: jdbc:sqlserver://10.10.11.55:1433;DatabaseName=ApaDlibrary102
-      username: ApaDlibrary102
-      password: idXrs7OW7Hgow0DqAqF7fjT6K
+      url: jdbc:sqlserver://10.10.11.58:1433;DatabaseName=ApaDlibrary102
+      username: panshi
+      password: K!AM1%m#GZYCkbtq
 #    driver-class-name: oracle.jdbc.OracleDriver
 #    url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
 #    username: book

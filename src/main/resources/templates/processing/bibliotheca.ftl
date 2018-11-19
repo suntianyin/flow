@@ -62,7 +62,7 @@
             });
         }
 
-        //书单排除
+        //书单分拣
         function updateBibliothecaExclude(id) {
 
             if (isNull(id)){
@@ -71,7 +71,7 @@
             }
 
             var url = "/processing/bibliotheca/updateBibliothecaExclude?id=" + id;
-            confirmDialog("温馨提示", "注：您确定要对排除当前书目？", function (r) {
+            confirmDialog("温馨提示", "注：您确定要对分拣当前书目？", function (r) {
                 if (r) {
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
@@ -146,6 +146,18 @@
                 }
             });
         }
+        //单本书目添加
+        function btn_addBibliotheca() {
+            var batchId = $('#batchId').val();
+            if (isNull(batchId)){
+                tipDialog("批次号不能为空", 3, -1);
+                return;
+            }
+            var url = "/processing/bibliotheca/add/index?batchId=" + batchId;
+            openDialog(url, "addBibliotheca", "新增书目", 440, 400, function (iframe) {
+                top.frames[iframe].AcceptClick();
+            });
+        }
 
         function btn_exportOutUnitData() {
             if (isNull($('#batchId').val())){
@@ -186,6 +198,11 @@
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
+                <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
+                        class="fa fa-plus"></i>&nbsp;新增</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
                 <button id="batch-import" title="导出查询结果" class="tools_btn" onclick="btn_exportOutUnitData()">
                     <span><i class="fa fa-outdent"></i>&nbsp;导出查询结果</span></button>
                 <div class="tools_separator"></div>
@@ -205,14 +222,14 @@
                         <input id="publisher" name="publisher" type="text" value="${publisher!'' }" class="txt" style="width: 200px"/>
                     </td>
 
-                    <th>是否重复：</th>
-                    <td>
-                        <select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">
-                            <option value="">--请选择批次状态--</option>
-                            <option value="0">否</option>
-                            <option value="1">是</option>
-                        </select>
-                    </td>
+                    <#--<th>是否重复：</th>-->
+                    <#--<td>-->
+                        <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
+                            <#--<option value="">--请选择批次状态--</option>-->
+                            <#--<option value="0">否</option>-->
+                            <#--<option value="1">是</option>-->
+                        <#--</select>-->
+                    <#--</td>-->
 
                     <th>书目状态：</th>
                     <td>
@@ -255,9 +272,9 @@
                         <th>原始文件名</th>
                         <th>文档格式</th>
                         <th>备注</th>
-                        <th>是否重复</th>
+                        <#--<th>是否重复</th>-->
                         <th>书目状态</th>
-                        <th>是否制作成功</th>
+                        <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
                         <th>操作</th>
@@ -282,15 +299,15 @@
                             <td>${(list.originalFilename)!'' }</td>
                             <td>${(list.documentFormat)! '' }</td>
                             <td>${(list.memo)! '' }</td>
-                            <td>${(list.duplicateFlag.getDesc())! '' }</td>
+                            <#--<td>${(list.duplicateFlag.getDesc())! '' }</td>-->
                             <td>${(list.bibliothecaState.getDesc())! '' }</td>
-                            <td>${(list.completedFlag.getDesc())! '' }</td>
+                            <#--<td>${(list.completedFlag.getDesc())! '' }</td>-->
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
                                 <a href="javascript:void(0);" onclick="updateBibliotheca('${(list.id)!''}')">编辑</a>
                                 <a href="javascript:void(0);" onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
-                                <a href="javascript:void(0);" onclick="updateBibliothecaExclude('${(list.id)!''}')" ">排除</a>
+                                <a href="javascript:void(0);" onclick="updateBibliothecaExclude('${(list.id)!''}')" ">分拣</a>
                             </td>
                         </tr>
                         </#list>

@@ -119,19 +119,61 @@
             window.location.href = "${ctx}/processing/bibliotheca/bibliothecaDuplication/index?id=" + $.trim(id);
         }
 
-        function updateBatchState(id) {
-            var url = "/processing/batch/editBatchState/index?id=" + id;
-            openDialog(url, "updateBatchState", "编辑批次状态", 350, 100, function (iframe) {
-                top.frames[iframe].AcceptClick();
+        // function updateBatchState(id) {
+        //     var url = "/processing/batch/editBatchState/index?id=" + id;
+        //     openDialog(url, "updateBatchState", "确认是否排产", 350, 100, function (iframe) {
+        //         top.frames[iframe].AcceptClick();
+        //     });
+        // }
+        // 排产
+        function updateBatchState(id, identifier) {
+            if (isNull(id)){
+                tipDialog("数据异常！", 3, -1);
+                return;
+            }
+
+            var note = "注：您确定要排产当前批次信息？";
+            if (!isNull(identifier)){
+                note = "注：您确定要排产 批次号为：" + identifier + " 的批次信息？";
+            }
+
+            var url = "${ctx}/processing/batch/editBatchState?id=" + id;
+            confirmDialog("温馨提示", note, function (r) {
+                if (r) {
+                    Loading(true, "正在提交数据...");
+                    window.setTimeout(function () {
+                        try {
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+                                async: false,
+                                success: function (data) {
+                                    if (data.status == 200){
+                                        tipDialog(data.msg, 3, 1);
+                                    }else{
+                                        tipDialog(data.msg, 3, -1);
+                                    }
+                                    location.reload();
+                                },
+                                error: function (data) {
+                                    Loading(false);
+                                    tipDialog("服务器异常！",3, -1);
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
             });
         }
 
-        function auditBatch(id) {
-            var url = "/processing/batch/auditBatch/index?id=" + id;
-            openDialog(url, "auditBatch", "书单审核", 350, 150, function (iframe) {
-                top.frames[iframe].AcceptClick();
-            });
-        }
+        // function auditBatch(id) {
+        //     var url = "/processing/batch/auditBatch/index?id=" + id;
+        //     openDialog(url, "auditBatch", "书单审核", 350, 150, function (iframe) {
+        //         top.frames[iframe].AcceptClick();
+        //     });
+        // }
 
         function btn_addBatch() {
             var url = "/processing/batch/add/index";
@@ -189,14 +231,13 @@
                     <td>
                         <select id="batchState" name="batchState" underline="true" style="height: 24px;">
                             <option value="">--请选择批次状态--</option>
-                            <option value="0">待录入书单</option>
-                            <option value="1">书单录入完成</option>
-                            <option value="2">书单已审核</option>
-                            <option value="3">书单审核失败</option>
-                            <option value="4">已查重</option>
+                            <option value="0">待分配</option>
+                            <option value="1">待书单</option>
+                            <option value="2">待查重</option>
+                            <option value="3">待排产</option>
+                            <option value="4">已排产</option>
                             <option value="5">制作中</option>
-                            <option value="6">制作完成待审核</option>
-                            <option value="7">生产完成</option>
+                            <option value="6">已完成</option>
                         </select>
                     </td>
 
@@ -228,13 +269,18 @@
                         <th>外协单位</th>
                         <th>资源类型</th>
                         <th>版权所有者</th>
+                        <th>文档格式</th>
                         <th>文档大概数量</th>
                         <th>批次状态</th>
                         <th>创建人</th>
-                        <th>书单审核人</th>
-                        <th>书单查重人</th>
+                        <#--<th>书单审核人</th>-->
+                        <#--<th>书单查重人</th>-->
                         <th>备注</th>
                         <th>创建时间</th>
+                        <th>分配给外协时间</th>
+                        <th>书单提交时间</th>
+                        <th>查重时间</th>
+                        <th>排产时间</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -247,19 +293,24 @@
                             <td>${(list.outUnit)! '' }</td>
                             <td>${(list.sourceType.getDesc())!'' }</td>
                             <td>${(list.copyrightOwner)! '' }</td>
+                            <td>${(list.documentFormat)! '' }</td>
                             <td>${(list.documentNum)! '' }</td>
                             <td>${(list.batchState.getDesc())! '' }</td>
                             <td>${(list.creator)! '' }</td>
-                            <td>${(list.auditor)! '' }</td>
-                            <td>${(list.checker) !''}</td>
+                            <#--<td>${(list.auditor)! '' }</td>-->
+                            <#--<td>${(list.checker) !''}</td>-->
                             <td>${(list.memo)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
+                            <td>${(list.distributionOutTime?datetime)! '' }</td>
+                            <td>${(list.submitTime?datetime)! '' }</td>
+                            <td>${(list.checkTime?datetime)! '' }</td>
+                            <td>${(list.productionSchedulingTime?datetime)! '' }</td>
                             <td>
                                 <a href="javascript:void(0);" onclick="updateBatch('${(list.id)!''}')">编辑</a>
                                 <#--<a href="javascript:void(0);" ">删除</a>-->
                                 <a href="javascript:void(0);" onclick="checkBibliotheca('${(list.batchId)!''}')">查看书单</a>
-                                <a href="javascript:void(0);" onclick="auditBatch('${(list.id)!''}')">书单审核</a>
-                                <a href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}')">修改状态</a>
+                                <#--<a href="javascript:void(0);" onclick="auditBatch('${(list.id)!''}')">书单审核</a>-->
+                                <a href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}','${(list.batchId)!''}')">排产</a>
                                 <a href="javascript:void(0);" onclick="checkDuplication('${(list.id)!''}','${(list.batchId)!''}')">查重</a>
                             </td>
                         </tr>

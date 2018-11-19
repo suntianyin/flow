@@ -5,7 +5,7 @@
 <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
-    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet" />
+    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet"/>
     <script src="${ctx}/js/select2/select2.min.js"></script>
     <meta charset="UTF-8">
     <title>编辑书目</title>
@@ -16,7 +16,7 @@
         });
 
         //下拉列表 模糊查询
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.js-example-basic-single').select2();
         });
 
@@ -32,15 +32,15 @@
             $("#loading").show();
             Loading(true, "正在提交数据...");
 
-            if (isNull($('#identifier').val())){
+            if (isNull($('#identifier').val())) {
                 tipDialog("编号 不能为空！", 3, -1);
                 return;
             }
-            if (isNull($('#title').val())){
+            if (isNull($('#title').val())) {
                 tipDialog("标题 不能为空！", 3, -1);
                 return;
             }
-            if (isNull($('#originalFilename').val())){
+            if (isNull($('#originalFilename').val())) {
                 tipDialog("原文件名 不能为空！", 3, -1);
                 return;
             }
@@ -55,11 +55,11 @@
                     data: postData,
                     async: false,
                     success: function (data) {
-                        if (data.status == 200){
+                        if (data.status == 200) {
                             tipDialog(data.msg, 3, 1);
                             top.frames[tabiframeId()].location.reload();
                             closeDialog();
-                        }else{
+                        } else {
                             tipDialog(data.msg, 3, -1);
                         }
 
@@ -81,35 +81,56 @@
         </div>
         <form id="form1" enctype="multipart/form-data" method="post">
             <table border="0" class="form-find" style="height: 45px;">
-                <#--<tr>
-                    <td>作者id:</td>
-                    <td>
-                        <input id="id" name="id" type="text" class="txt" style="width: 200px"/>
-                    </td>
-                </tr>-->
+            <#--<tr>
+                <td>作者id:</td>
+                <td>
+                    <input id="id" name="id" type="text" class="txt" style="width: 200px"/>
+                </td>
+            </tr>-->
                 <tr>
                     <td>编号:</td>
                     <td>
-                        <input id="id" name="id" value="${(bibliotheca.id)!''}" class="txt" hidden />
-                        <input id="identifier" name="identifier" value="${(bibliotheca.identifier)!''}" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                        <input id="id" name="id" value="${(bibliotheca.id)!''}" class="txt" hidden/>
+                        <input id="identifier" name="identifier" value="${(bibliotheca.identifier)!''}" type="text"
+                               class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
                 </tr>
                 <tr>
                     <td>标题:</td>
                     <td>
-                        <input id="title" name="title" type="text" value="${(bibliotheca.title)!''}" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                        <input id="title" name="title" type="text" value="${(bibliotheca.title)!''}" class="txt"
+                               style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
                 </tr>
                 <tr>
                     <td>原文件名:</td>
                     <td>
-                        <input id="originalFilename" name="originalFilename" value="${(bibliotheca.originalFilename)!''}" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                        <input id="originalFilename" name="originalFilename"
+                               value="${(bibliotheca.originalFilename)!''}" type="text" class="txt"
+                               style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>书目状态:</td>
+                    <td>
+                        <select id="bibliothecaState" name="bibliothecaState" class="js-example-basic-single"
+                                underline="true"
+                                style="width: 307px;">
+                           <#if bibliothecaStateList??>
+                                <#list bibliothecaStateList as list>
+                                    <option <#if list.code==bibliotheca.bibliothecaState.code>selected=selected"</#if> value="${(list.code)!''}">${(list.desc)!''}</option>
+                                </#list>
+                           </#if>
+
+
+                        </select>
                     </td>
                 </tr>
                 <tr>
                     <td>作者:</td>
                     <td>
-                        <input id="author" name="author" value="${(bibliotheca.author)!''}" type="text" class="txt" style="width: 300px"/>
+                        <input id="author" name="author" value="${(bibliotheca.author)!''}" type="text" class="txt"
+                               style="width: 300px"/>
                     </td>
                 </tr>
                 <tr>
@@ -129,31 +150,36 @@
                 <tr>
                     <td>ISBN:</td>
                     <td>
-                        <input id="isbn" name="isbn" value="${(bibliotheca.isbn)!''}" type="text" class="txt" style="width: 300px"/>
+                        <input id="isbn" name="isbn" value="${(bibliotheca.isbn)!''}" type="text" class="txt"
+                               style="width: 300px"/>
                     </td>
                 </tr>
                 <tr>
                     <td>出版时间:</td>
                     <td>
-                        <input id="publishTime" name="publishTime" value="${(bibliotheca.publishTime)!''}" type="text" class="txt" style="width: 300px"/>
+                        <input id="publishTime" name="publishTime" value="${(bibliotheca.publishTime)!''}" type="text"
+                               class="txt" style="width: 300px"/>
                     </td>
                 </tr>
                 <tr>
                     <td>版次:</td>
                     <td>
-                        <input id="edition" name="edition" value="${(bibliotheca.edition)!''}" type="text" class="txt" style="width: 300px"/>
+                        <input id="edition" name="edition" value="${(bibliotheca.edition)!''}" type="text" class="txt"
+                               style="width: 300px"/>
                     </td>
                 </tr>
                 <tr>
                     <td>纸书价格:</td>
                     <td>
-                        <input id="paperPrice" name="paperPrice" value="${(bibliotheca.paperPrice)!''}" type="text" class="txt" style="width: 300px"/>
+                        <input id="paperPrice" name="paperPrice" value="${(bibliotheca.paperPrice)!''}" type="text"
+                               class="txt" style="width: 300px"/>
                     </td>
                 </tr>
                 <tr>
                     <td>文档格式:</td>
                     <td>
-                        <input id="documentFormat" name="documentFormat" value="${(bibliotheca.documentFormat)!''}" type="text" class="txt" style="width: 300px"/>
+                        <input id="documentFormat" name="documentFormat" value="${(bibliotheca.documentFormat)!''}"
+                               type="text" class="txt" style="width: 300px"/>
                     </td>
                 </tr>
             </table>

@@ -93,4 +93,6 @@ public interface BookPageMapper {
      * @return
      */
     Integer updateBookPageByMetaIdAndPageId(BookPage bookPage);
+
+    Integer updataOrInsert(BookPage bookPage);
 }

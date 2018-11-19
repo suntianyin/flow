@@ -15,13 +15,15 @@ import java.util.Map;
  * @since 1.0.0
  */
 public enum BibliothecaStateEnum implements BaseEnum<BibliothecaStateEnum, Integer>,CodeBaseEnum {
-    EDITABLE(0, "可编辑"),
-    WAITING_AUDIT(1, "待审核"),
-    AUDITED(2, "已审核"),
-    EXCLUDED(3, "已排除"),
-    DUPLICATE_CHECKED(4, "已查重"),
-    WAITING_PROCESS(5, "待加工"),
-    COMPLETED(6, "加工完成");
+    NEW(0, "新建"),
+    REPEAT(1, "重复"),
+    NOREPEAT(2, "不重复"),
+    SORTING(3, "已分拣"),
+    INFORMATION_NO(4, "信息不全"),
+    HAS_PROCESS(5, "已排产"),
+    MAKESUC(6, "制作完成"),
+    MAKEFAIL(7, "制作失败");
+
 
     private Integer code;
     private String desc;

@@ -5,14 +5,14 @@
 <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
-    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet" />
+    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet"/>
     <script src="${ctx}/js/select2/select2.min.js"></script>
     <meta charset="UTF-8">
     <title>单本书目录入</title>
     <script type="text/javascript">
 
         //下拉列表 模糊查询
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.js-example-basic-single').select2();
         });
 
@@ -28,15 +28,15 @@
             $("#loading").show();
             Loading(true, "正在提交数据...");
 
-            if (isNull($('#identifier').val())){
+            if (isNull($('#identifier').val())) {
                 tipDialog("编号 不能为空！", 3, -1);
                 return;
             }
-            if (isNull($('#title').val())){
+            if (isNull($('#title').val())) {
                 tipDialog("标题 不能为空！", 3, -1);
                 return;
             }
-            if (isNull($('#originalFilename').val())){
+            if (isNull($('#originalFilename').val())) {
                 tipDialog("原文件名 不能为空！", 3, -1);
                 return;
             }
@@ -51,11 +51,11 @@
                     data: postData,
                     async: false,
                     success: function (data) {
-                        if (data.status == 200){
+                        if (data.status == 200) {
                             tipDialog(data.msg, 3, 1);
                             top.frames[tabiframeId()].location.reload();
                             closeDialog();
-                        }else{
+                        } else {
                             tipDialog(data.msg, 3, -1);
                         }
 
@@ -77,29 +77,42 @@
         </div>
         <form id="form1" enctype="multipart/form-data" method="post">
             <table border="0" class="form-find" style="height: 45px;">
-                <#--<tr>
-                    <td>作者id:</td>
-                    <td>
-                        <input id="id" name="id" type="text" class="txt" style="width: 200px"/>
-                    </td>
-                </tr>-->
+            <#--<tr>
+                <td>作者id:</td>
+                <td>
+                    <input id="id" name="id" type="text" class="txt" style="width: 200px"/>
+                </td>
+            </tr>-->
                 <tr>
                     <td>编号:</td>
                     <td>
-                        <input type="text" id="batchId" name="batchId" hidden value="${batchId}" />
-                        <input id="identifier" name="identifier" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                        <input type="text" id="batchId" name="batchId" hidden value="${batchId}"/>
+                        <input id="identifier" name="identifier" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span
+                            style="color:red">*</span>
                     </td>
                 </tr>
                 <tr>
                     <td>标题:</td>
                     <td>
-                        <input id="title" name="title" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                        <input id="title" name="title" type="text" class="txt"
+                               style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
                 </tr>
                 <tr>
                     <td>原文件名:</td>
                     <td>
-                        <input id="originalFilename" name="originalFilename" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                        <input id="originalFilename" name="originalFilename" type="text" class="txt"
+                               style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>书目状态:</td>
+                    <td>
+                        <select id="bibliothecaState" name="bibliothecaState" class="js-example-basic-single" underline="true"
+                                style="width: 307px;" >
+                            <option value="0">新建</option>
+                            <option value="4">信息不全</option>
+                        </select>
                     </td>
                 </tr>
                 <tr>

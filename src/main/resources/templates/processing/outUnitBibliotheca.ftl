@@ -124,6 +124,7 @@
             });
         }
 
+
         //制作成功
         function btn_makeSuccess() {
 
@@ -135,6 +136,49 @@
 
             var url = "/processing/bibliotheca/makeSuccess";
             confirmDialog("温馨提示", "注：您确定要对选中项提交 制作成功？", function (r) {
+                if (r) {
+                    Loading(true, "正在提交数据...");
+                    window.setTimeout(function () {
+                        try {
+                            $.ajax({
+                                url: RootPath() + url,
+                                type: "POST",
+                                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+                                data: JSON.stringify(checkID),
+//                                data: checkID,
+                                async: false,
+                                success: function (data) {
+//                                    Loading(false);
+                                    if (data.status == 200){
+                                        tipDialog(data.msg, 3, 1);
+                                    }else{
+                                        tipDialog(data.msg, 3, -1);
+                                    }
+                                    location.reload();
+                                },
+                                error: function (data) {
+                                    Loading(false);
+                                    tipDialog("服务器异常！",3, -1);
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
+            });
+        }
+
+        //制作失败
+        function btn_makeFail() {
+
+            var checkID = [];//定义一个空数组，用于存放选中的值
+
+            $("input[type='checkbox'][name='bibliotheca']:checked").each(function (i) {
+                checkID[i] = eval('(' + $(this).val() + ')');
+            })
+
+            var url = "/processing/bibliotheca/makeFail";
+            confirmDialog("温馨提示", "注：您确定要对选中项提交 制作失败？", function (r) {
                 if (r) {
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
@@ -278,6 +322,11 @@
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
+                <a id="lr-make" title="制作失败" onclick="btn_makeFail()" class="tools_btn"><span><i
+                        class="fa fa-adjust"></i>&nbsp;制作失败</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
                 <input id="importFile" type="file" class="tools_btn" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file""/>
                 <div class="tools_separator"></div>
             </div>
@@ -286,6 +335,7 @@
                     <span><i class="fa fa-plus"></i>&nbsp;批量导入</span></button>
                 <div class="tools_separator"></div>
             </div>
+
             <div class="PartialButton">
                 <button id="batch-import" title="导出查询结果" class="tools_btn" onclick="btn_exportOutUnitData()">
                     <span><i class="fa fa-outdent"></i>&nbsp;导出查询结果</span></button>
@@ -306,14 +356,14 @@
                         <input id="publisher" name="publisher" type="text" value="${publisher!'' }" class="txt" style="width: 200px"/>
                     </td>
 
-                    <th>是否重复：</th>
-                    <td>
-                        <select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">
-                            <option value="">--请选择批次状态--</option>
-                            <option value="0">否</option>
-                            <option value="1">是</option>
-                        </select>
-                    </td>
+                    <#--<th>是否重复：</th>-->
+                    <#--<td>-->
+                        <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
+                            <#--<option value="">--请选择批次状态--</option>-->
+                            <#--<option value="0">否</option>-->
+                            <#--<option value="1">是</option>-->
+                        <#--</select>-->
+                    <#--</td>-->
 
                     <th>书目状态：</th>
                     <td>
@@ -356,9 +406,9 @@
                         <th>原始文件名</th>
                         <th>文档格式</th>
                         <th>备注</th>
-                        <th>是否重复</th>
+                        <#--<th>是否重复</th>-->
                         <th>书目状态</th>
-                        <th>是否制作成功</th>
+                        <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
                         <th>操作</th>
@@ -383,14 +433,14 @@
                             <td>${(list.originalFilename)!'' }</td>
                             <td>${(list.documentFormat)! '' }</td>
                             <td>${(list.memo)! '' }</td>
-                            <td>${(list.duplicateFlag.getDesc())! '' }</td>
+                            <#--<td>${(list.duplicateFlag.getDesc())! '' }</td>-->
                             <td>${(list.bibliothecaState.getDesc())! '' }</td>
-                            <td>${(list.completedFlag.getDesc())! '' }</td>
+                            <#--<td>${(list.completedFlag.getDesc())! '' }</td>-->
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
                                 <#if (list.bibliothecaState.desc)??>
-                                    <#if list.bibliothecaState.desc == "可编辑">
+                                    <#if list.bibliothecaState.desc == "新建"||list.bibliothecaState.desc == "信息不全">
                                         <a href="javascript:void(0);" onclick="updateBibliotheca('${(list.id)!''}')">编辑</a>
                                         <a href="javascript:void(0);" onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
                                     <#else>
