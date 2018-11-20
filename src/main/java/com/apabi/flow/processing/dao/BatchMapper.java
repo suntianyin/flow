@@ -19,6 +19,7 @@ public interface BatchMapper {
     int insertSelective(Batch record) throws DataAccessException;
 
     Batch selectByPrimaryKey(String id);
+    Batch selectByBatchId(String batchId);
 
     int updateByPrimaryKeySelective(Batch record) throws DataAccessException;
 

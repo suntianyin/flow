@@ -19,4 +19,5 @@ public interface PageCrawledTempMapper {
     Page<PageCrawledTemp> pageAll();
 
     void deleteAll();
+    int insertList(List<PageCrawledTemp> list);
 }

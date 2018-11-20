@@ -73,6 +73,11 @@ public class BatchServiceImpl implements BatchService {
         return batchMapper.selectByPrimaryKey(id);
     }
 
+    @Override
+    public Batch selectByBatchId(String batchId) {
+        return batchMapper.selectByBatchId(batchId);
+    }
+
     /**
      * 查询所有批次的列表信息
      *

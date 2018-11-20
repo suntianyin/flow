@@ -467,48 +467,19 @@ public class BatchController {
             if (StringUtils.isBlank(batchId)) {
                 return new ResultEntity(400, "数据异常！");
             }
-
             UserUnit userUnit = getUserUnit();
 
             if (userUnit == null) {
                 return new ResultEntity(403, "您与单位没有绑定外协关系，请联系管理员！");
             }
-
-            //查询当前用户所属外协单位 和 参数批次号 所匹配的批次信息，防止通过参数修改到其他外协单位的批次状态信息
-            Map paramMap = new HashMap();
-            paramMap.put("outUnitId", userUnit.getUnitId());
-            paramMap.put("batchId", batchId);
-            List<Batch> list = batchService.listBatch(paramMap);
-
-            //涉及到的批次号是唯一的，故只需取 index = 0 的批次信息即可
-            if (list != null || !list.isEmpty()) {
-                Batch batch = list.get(0);
+            Batch batch = batchService.selectByBatchId(batchId);
                 batch.setUpdateTime(new Date());
                 batch.setBatchId(batch.getBatchId());
-                //外协一致坑
-                if(StringUtils.isNotBlank(batch.getOutUnit())){
-                    List<OutUnit> outUnits = outUnitMapper.selectAll();
-                    for (OutUnit o:outUnits) {
-                        if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
-                            batch.setOutUnit(o.getUnitId());
-                        }
-                    }
-                }
-                //出版社一致坑
-                if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
-                    List<Publisher> all = publisherDao.findAll();
-                    for (Publisher p:all) {
-                        if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
-                            batch.setCopyrightOwner(p.getId());
-                        }
-                    }
-                }
                 //当 提交书单审核时，则设置 当前批次为待查从
                 batch.setBatchState(BatchStateEnum.WAITING_CHECKED);
                 batch.setSubmitTime(new Date());
                 batchService.updateBatch(batch);
                 return new ResultEntity(200, "提交书单审核成功！");
-            }
         } catch (Exception e) {
             logger.error("修改批次状态出现异常： {}", e);
         }

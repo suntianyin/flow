@@ -40,6 +40,14 @@ public interface BatchService {
      * @return
      */
     Batch getBatchById(String id);
+    /**
+     * 根据主键获取批次实体信息
+     * @param batchId
+     * @return
+     */
+    Batch selectByBatchId(String batchId);
+
+
 
     /**
      * 查询所有批次的列表信息

@@ -1120,7 +1120,8 @@ public class BookController {
         return addedNum > 0 ? "成功":"失败";
     }
 
-    @GetMapping("/test")
+
+//    @GetMapping("/autoProcessBookFromPage2Chapter")
     @ResponseBody
     public String test() throws Exception {
         //bookChapterService.deleteAllChapterByMetaid("mm.20110920-DT-889-0295");
@@ -1131,6 +1132,17 @@ public class BookController {
         //BookMeta bookMeta = bookMetaService.selectBookMetaDetailById("mm.20110920-DT-889-0295");
         //bookShardService.deleteAllShardByMetaid("m.201806141534996901459");
         //bookMetaService.exportMongo2Orlc();
+        BookPage bookPage=new BookPage();
+        bookPage.setId("aaa");
+        bookPage.setMetaId("bbb");
+        bookPage.setContent("bbb");
+        bookPage.setUpdateTime(new Date());
+        bookPage.setCreateTime(new Date());
+        bookPage.setPageId(10l);
+
+       bookPageMapper.updataOrInsert(bookPage);
+
+
         return "success";
     }
 }

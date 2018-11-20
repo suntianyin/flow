@@ -3,8 +3,6 @@ package com.apabi.flow.book.fetchPage;
 import com.apabi.flow.book.dao.*;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.impl.BookMetaServiceImpl;
-import com.apabi.flow.book.service.impl.BookPageServiceImpl;
-import com.apabi.flow.book.util.ApabiIDUtils;
 import com.apabi.flow.book.util.EbookUtil;
 import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.common.UUIDCreater;
@@ -15,7 +13,9 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
@@ -41,9 +41,8 @@ public class FetchPageConsumer implements Runnable {
     private String height;
 
 
-
-    public FetchPageConsumer(CountDownLatch countDownLatch, String confvalue, ArrayBlockingQueue<String> idQueue, BookMetaDao bookMetaDao, BookPageMapper bookPageMapper, PageCrawledQueueMapper pageCrawledQueueMapper, PageAssemblyQueueMapper pageAssemblyQueueMapper, BookLogMapper bookLogMapper,PageCrawledTempMapper pageCrawledTempMapper,Integer sleepTime,String width,
-    String height) {
+    public FetchPageConsumer(CountDownLatch countDownLatch, String confvalue, ArrayBlockingQueue<String> idQueue, BookMetaDao bookMetaDao, BookPageMapper bookPageMapper, PageCrawledQueueMapper pageCrawledQueueMapper, PageAssemblyQueueMapper pageAssemblyQueueMapper, BookLogMapper bookLogMapper, PageCrawledTempMapper pageCrawledTempMapper, Integer sleepTime, String width,
+                             String height) {
         this.confvalue = confvalue;
         this.idQueue = idQueue;
         this.bookMetaDao = bookMetaDao;
@@ -51,11 +50,11 @@ public class FetchPageConsumer implements Runnable {
         this.pageCrawledQueueMapper = pageCrawledQueueMapper;
         this.pageAssemblyQueueMapper = pageAssemblyQueueMapper;
         this.bookLogMapper = bookLogMapper;
-        this.countDownLatch=countDownLatch;
-        this.sleepTime=sleepTime;
-        this.pageCrawledTempMapper=pageCrawledTempMapper;
-        this.height=height;
-        this.width=width;
+        this.countDownLatch = countDownLatch;
+        this.sleepTime = sleepTime;
+        this.pageCrawledTempMapper = pageCrawledTempMapper;
+        this.height = height;
+        this.width = width;
     }
 
     @Override
@@ -69,66 +68,59 @@ public class FetchPageConsumer implements Runnable {
         int i1 = 0;
         int i2 = 0;
         try {
-            metaId=idQueue.take();
+            metaId = idQueue.take();
             BookMeta meta = bookMetaDao.findBookMetaById(metaId);
             if (meta != null && meta.getCebxPage() != null) {
                 cebxPage = Integer.parseInt(meta.getCebxPage());
             }
             if (cebxPage == 0) {
-                log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取",metaId);
+                log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取", metaId);
                 return;
             }
-            //页数 从 第一页开始，直到 总页数
+            List<BookPage> lists=new ArrayList<>();
+            //页数 从 第一页开始，直到 总页数 添加到集合
             for (long i = start; i <= cebxPage; i++) {
-                long a = System.currentTimeMillis();
                 HttpEntity httpEntity = null;
                 String url = null;
                 try {
                     //计数需要放在最上面才能保证数据的正确性，在后或中间都有可能会执行不到
                     num++;
                     Thread.sleep(sleepTime);
+                    long a = System.currentTimeMillis();
                     url = EbookUtil.makePageUrl(confvalue, BookMetaServiceImpl.shuyuanOrgCode, metaId, BookMetaServiceImpl.urlType, BookMetaServiceImpl.serviceType, width, height, i);
                     httpEntity = HttpUtils.doGetEntity(url);
+                    long b = System.currentTimeMillis();
+                    log.info("获取图书：{},总页数{},第{}页,请求接口耗时 {}ms, url = {}",metaId,cebxPage,i, b - a,url);
                     String tmp = EntityUtils.toString(httpEntity);
-                    int word=0;
-                    if(StringUtils.isBlank(tmp)){
-                        log.info("获取图书：{} 的第{}页时出现错误，错误信息：内容为空将跳过", metaId, i);
-                        PageCrawledTemp pageCrawledTemp=new PageCrawledTemp();
-                        pageCrawledTemp.setId(metaId);
-                        pageCrawledTemp.setDesce("当前页无信息");
-                        pageCrawledTemp.setPage(i);
-                        pageCrawledTempMapper.insert(pageCrawledTemp);
-                        log.info("记录表pageCrawledTemp：{} 的第{}页时超时或出现错误", metaId, i);
-                        tmp="<span></span>";
-                    }else{
+                    int word = 0;
+                    if (StringUtils.isBlank(tmp)) {
+//                        log.info("获取图书：{} 的第{}页时出现错误，错误信息：内容为空将跳过", metaId, i);
+//                        PageCrawledTemp pageCrawledTemp = new PageCrawledTemp();
+//                        pageCrawledTemp.setId(metaId);
+//                        pageCrawledTemp.setDesce("当前页无信息");
+//                        pageCrawledTemp.setPage(i);
+//                        pageCrawledTempMapper.insert(pageCrawledTemp);
+//                        log.info("记录表pageCrawledTemp：{} 的第{}页时超时或出现错误", metaId, i);
+                        tmp = "<span></span>";
+                    } else {
                         org.jsoup.nodes.Document doc;
                         doc = Jsoup.parse(tmp.toString());
                         word = doc.body().children().text().replaceAll("\\u3000|\\s*", "").length();
                     }
-                    BookPage bookpage1 = bookPageMapper.findBookPageByMetaIdAndPageId(metaId, (int) i);
-                    if (bookpage1 == null) {
-                        BookPage bookPage = new BookPage();
-                        bookPage.setId(metaId+"-p"+i);
-                        bookPage.setMetaId(metaId);
-                        bookPage.setPageId(i);
-                        bookPage.setWordSum((long) word);
-                        bookPage.setContent(tmp);
-                        bookPage.setCreateTime(new Date());
-                        bookPageMapper.insert(bookPage);
-                        saveBookLog(metaId, DataType.PAGEINSERT, num, cebxPage, start, start + num - 1);
-                    } else {
-                        bookpage1.setContent(tmp);
-                        bookpage1.setMetaId(metaId);
-                        bookpage1.setWordSum((long) word);
-                        bookpage1.setPageId(i);
-                        bookpage1.setUpdateTime(new Date());
-                        bookPageMapper.updateByPrimaryKeyWithBLOBs(bookpage1);
-                        saveBookLog(metaId, DataType.PAGEUPDATE, num, cebxPage, start, start + num - 1);
-                    }
+                    BookPage bookPage = new BookPage();
+                    bookPage.setId(metaId + "-p" + i);
+                    bookPage.setMetaId(metaId);
+                    bookPage.setPageId(i);
+                    bookPage.setWordSum((long) word);
+                    bookPage.setContent(tmp);
+                    bookPage.setCreateTime(new Date());
+                    bookPage.setUpdateTime(new Date());
+                    lists.add(bookPage);
                 } catch (Exception e) {
+                    //获取失败添加到记录表
                     log.info("获取图书：{} 的第{}页时超时或出现错误，错误信息：{}，将放弃发起请求", metaId, i, e);
                     try {
-                        PageCrawledTemp pageCrawledTemp=new PageCrawledTemp();
+                        PageCrawledTemp pageCrawledTemp = new PageCrawledTemp();
                         pageCrawledTemp.setId(metaId);
                         pageCrawledTemp.setDesce("请求超时");
                         pageCrawledTemp.setPage(i);
@@ -142,9 +134,28 @@ public class FetchPageConsumer implements Runnable {
                     num--;
                     continue;
                 }
-                long b = System.currentTimeMillis();
-                log.info("gethtml请求耗时 {}， url = {}", b - a, url);
             }
+            //写入数据库
+            try {
+                long c = System.currentTimeMillis();
+                int i = bookPageMapper.insertList(lists);
+                long d = System.currentTimeMillis();
+                log.info("metaId：{},插入数据库耗时{}ms",metaId,d-c );
+            } catch (Exception e) {
+                //写入失败
+                List<PageCrawledTemp> list=new ArrayList<>();
+                for (long i = start; i <= cebxPage; i++) {
+                    PageCrawledTemp pageCrawledTemp = new PageCrawledTemp();
+                    pageCrawledTemp.setId(metaId);
+                    pageCrawledTemp.setDesce("插入错误");
+                    pageCrawledTemp.setPage(i);
+                    list.add(pageCrawledTemp);
+                }
+                pageCrawledTempMapper.insertList(list);
+                log.info("记录表pageCrawledTemp：{} 因插入错误被全部添加", metaId);
+                e.printStackTrace();
+            }
+            saveBookLog(metaId, DataType.PAGEINSERT, cebxPage, cebxPage, start, cebxPage);
             i1 = pageCrawledQueueMapper.deleteByPrimaryKey(metaId);
             if (i1 > 0) {
                 log.info("删除pageCrawledQueue的id:{}成功", metaId);
@@ -159,10 +170,10 @@ public class FetchPageConsumer implements Runnable {
             } else {
                 log.info("添加pageAssemblyQueue的id:{}失败", metaId);
             }
-            log.info(Thread.currentThread().getName() +  "在抓取" + metaId + "并添加至数据库成功，列表中剩余：" + (countDownLatch.getCount()-1) + "个数据...");
+            log.info(Thread.currentThread().getName() + "在抓取" + metaId + "并添加至数据库成功，列表中剩余：" + (countDownLatch.getCount() - 1) + "个数据...");
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             countDownLatch.countDown();
         }
     }

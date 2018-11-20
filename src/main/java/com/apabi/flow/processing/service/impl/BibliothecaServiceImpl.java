@@ -220,9 +220,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         try {
             //1. 查询该批次下的所有书目
             Map paramMap = new HashMap();
+            List<Bibliotheca> bibliothecaList=new ArrayList<>();
             paramMap.put("bibliothecaState", BibliothecaStateEnum.NEW);
             paramMap.put("batchId", batchId);
-            List<Bibliotheca> bibliothecaList = bibliothecaMapper.listBibliothecaSelective(paramMap);
+            List<Bibliotheca> bibliothecaList1 = bibliothecaMapper.listBibliothecaSelective(paramMap);
+            bibliothecaList.addAll(bibliothecaList1);
+            paramMap.put("bibliothecaState", BibliothecaStateEnum.REPEAT);
+            paramMap.put("batchId", batchId);
+            List<Bibliotheca> bibliothecaList2 = bibliothecaMapper.listBibliothecaSelective(paramMap);
+            bibliothecaList.addAll(bibliothecaList2);
+            paramMap.put("bibliothecaState", BibliothecaStateEnum.NOREPEAT);
+            paramMap.put("batchId", batchId);
+            List<Bibliotheca> bibliothecaList3 = bibliothecaMapper.listBibliothecaSelective(paramMap);
+            bibliothecaList.addAll(bibliothecaList3);
             if (bibliothecaList == null || bibliothecaList.isEmpty()){
                 return null;
             }
@@ -432,30 +442,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                         }
                     }
                     if(num==bibliothecas.size()){
-                        Map map1=new HashMap();
-                        map1.put("batchId",bibliotheca.getBatchId());
-                        List<Batch> batches = batchMapper.listBatchSelective(map1);
-                        Batch batch = batches.get(0);
+                        Batch batch = batchMapper.selectByBatchId(bibliotheca.getBatchId());
                         batch.setBatchState(BatchStateEnum.WAITING_PRODUCTION);
                         batch.setUpdateTime(new Date());
-                        //外协一致坑
-                        if(StringUtils.isNotBlank(batch.getOutUnit())){
-                            List<OutUnit> outUnits = outUnitMapper.selectAll();
-                            for (OutUnit o:outUnits) {
-                                if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
-                                    batch.setOutUnit(o.getUnitId());
-                                }
-                            }
-                        }
-                        //出版社一致坑
-                        if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
-                            List<Publisher> all = publisherDao.findAll();
-                            for (Publisher p:all) {
-                                if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
-                                    batch.setCopyrightOwner(p.getId());
-                                }
-                            }
-                        }
                         batchMapper.updateByPrimaryKey(batch);
                     }
                 }

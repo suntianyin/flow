@@ -94,5 +94,8 @@ public interface BookPageMapper {
      */
     Integer updateBookPageByMetaIdAndPageId(BookPage bookPage);
 
-    Integer updataOrInsert(BookPage bookPage);
+    void updataOrInsert(BookPage bookPage);
+
+    void updataOrInsertByMidAndPid(BookPage bookPage);
+    int insertList(List<BookPage> list);
 }

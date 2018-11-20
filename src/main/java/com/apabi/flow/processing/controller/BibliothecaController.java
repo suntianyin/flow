@@ -100,6 +100,11 @@ public class BibliothecaController {
             paramsMap.put("bibliothecaState", bibliothecaState);
 
             List<Bibliotheca> list = bibliothecaService.listBibliotheca(paramsMap);
+            Batch batch = batchService.selectByBatchId(batchId);
+            if(batch.getSubmitTime()!=null){
+                model.addAttribute("timeState",11);
+
+            }
             model.addAttribute("bibliothecaList", list);
             if (list != null){
                 model.addAttribute("total", list.size());
@@ -148,6 +153,8 @@ public class BibliothecaController {
             paramsMap.put("duplicateFlag", duplicateFlag);
             paramsMap.put("bibliothecaState", bibliothecaState);
             List<Bibliotheca> list = bibliothecaService.listBibliotheca(paramsMap);
+            Batch batch = batchService.selectByBatchId(batchId);
+            model.addAttribute("BatchStateEnum",batch.getBatchState().getCode());
             model.addAttribute("bibliothecaList", list);
             if (list != null){
                 model.addAttribute("total", list.size());
@@ -168,7 +175,7 @@ public class BibliothecaController {
     }
 
     /**
-     * 管理员 书目信息 页面
+     * 管理员 书目查重信息 页面
      * @param id
      * @param model
      * @return
@@ -195,7 +202,6 @@ public class BibliothecaController {
                     paramBatch.setCheckTime(new Date());
                     batchService.updateBatch(paramBatch);
                 }
-
                 //查重列表
                 list = bibliothecaService.listDuplicationCheckEntity(batch.getBatchId());
             }
@@ -411,14 +417,27 @@ public class BibliothecaController {
             if (StringUtils.isBlank(id)){
                 return new ResultEntity(400,"数据异常！");
             }
-            Bibliotheca bibliotheca = new Bibliotheca();
-            bibliotheca.setId(id);
+            Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(id);
             bibliotheca.setBibliothecaState(BibliothecaStateEnum.SORTING);
             bibliotheca.setUpdateTime(new Date());
-            if (bibliothecaService.updateBibliotheca(bibliotheca) == 1){
-                return new ResultEntity(200, "操作成功");
+            bibliothecaService.updateBibliotheca(bibliotheca);
+            String batchId = bibliotheca.getBatchId();
+            Map map=new HashMap();
+            map.put("batchId",batchId);
+            List<Bibliotheca> bibliothecas = bibliothecaService.listBibliotheca(map);
+            int num=0;
+            for (Bibliotheca b:bibliothecas) {
+                if(b.getBibliothecaState().getCode()==0){
+                    num++;
+                }
             }
-            return new ResultEntity(500, "操作失败，请重新尝试或联系管理员！");
+            if(num==0){
+                Batch batch = batchMapper.selectByBatchId(batchId);
+                batch.setUpdateTime(new Date());
+                batch.setBatchState(BatchStateEnum.WAITING_PRODUCTION);
+                batchService.updateBatch(batch);
+            }
+            return new ResultEntity(200, "操作成功");
         }catch (Exception e){
             e.printStackTrace();
             return new ResultEntity(500, e.getMessage());
@@ -452,35 +471,14 @@ public class BibliothecaController {
             //更改状态 制作中/已完成
             Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(bibliothecaList.get(0).getId());
             String batchId = bibliotheca.getBatchId();
-            Map map1=new HashMap();
-            map1.put("batchId",bibliotheca.getBatchId());
-            List<Batch> batches = batchMapper.listBatchSelective(map1);
-            Batch batch = batches.get(0);
+            Batch batch = batchMapper.selectByBatchId(batchId);
             batch.setUpdateTime(new Date());
-            //外协一致坑
-            if(StringUtils.isNotBlank(batch.getOutUnit())){
-                List<OutUnit> outUnits = outUnitMapper.selectAll();
-                for (OutUnit o:outUnits) {
-                    if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
-                        batch.setOutUnit(o.getUnitId());
-                    }
-                }
-            }
-            //出版社一致坑
-            if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
-                List<Publisher> all = publisherDao.findAll();
-                for (Publisher p:all) {
-                    if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
-                        batch.setCopyrightOwner(p.getId());
-                    }
-                }
-            }
             Map map=new HashMap();
             map.put("batchId",batchId);
             List<Bibliotheca> bibliothecas1 = bibliothecaService.listBibliotheca(map);
             int num=0;
             for (Bibliotheca b:bibliothecas1) {
-                if(b.getBibliothecaState().getCode()==4){
+                if(b.getBibliothecaState().getCode()==5){
                     num++;
                 }
             }
@@ -522,39 +520,18 @@ public class BibliothecaController {
             bibliothecaService.listUpdateBibliotheca(bibliothecaList);
             //更改状态 制作中/已完成
             //获取batchId
+
             Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(bibliothecaList.get(0).getId());
             String batchId = bibliotheca.getBatchId();
             //获取batch
-            Map map1=new HashMap();
-            map1.put("batchId",bibliotheca.getBatchId());
-            List<Batch> batches = batchMapper.listBatchSelective(map1);
-            Batch batch = batches.get(0);
+            Batch batch = batchMapper.selectByBatchId(batchId);
             batch.setUpdateTime(new Date());
-            //外协一致坑
-            if(StringUtils.isNotBlank(batch.getOutUnit())){
-                List<OutUnit> outUnits = outUnitMapper.selectAll();
-                for (OutUnit o:outUnits) {
-                    if(o.getUnitName().equalsIgnoreCase(batch.getOutUnit())){
-                        batch.setOutUnit(o.getUnitId());
-                    }
-                }
-            }
-            //出版社一致坑
-            if(StringUtils.isNotBlank(batch.getCopyrightOwner())){
-                List<Publisher> all = publisherDao.findAll();
-                for (Publisher p:all) {
-                    if(p.getTitle().equalsIgnoreCase(batch.getCopyrightOwner())){
-                        batch.setCopyrightOwner(p.getId());
-                    }
-                }
-            }
-
             Map map=new HashMap();
             map.put("batchId",batchId);
             List<Bibliotheca> bibliothecas1 = bibliothecaService.listBibliotheca(map);
             int num=0;
             for (Bibliotheca b:bibliothecas1) {
-                if(b.getBibliothecaState().getCode()==4){
+                if(b.getBibliothecaState().getCode()==5){
                     num++;
                 }
             }
@@ -588,7 +565,7 @@ public class BibliothecaController {
             //检测数据是否属于在当前范围
 
             boolean dataTypeFlag = dataType.equals("gtEqYes")
-                    || dataType.equals("gtEqYes")
+                    || dataType.equals("gtEqNo")
                     || dataType.equals("ltYes")
                     || dataType.equals("ltNo")
                     || dataType.equals("noMatch");

@@ -12,6 +12,16 @@
     values (#{id,jdbcType=VARCHAR}, #{page,jdbcType=DECIMAL}, #{desce,jdbcType=VARCHAR}
       )
   </insert>
+  <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into APABI_BOOK_PAGE_CRAWLED_TEMP (ID, PAGE, DESCE
+      )
+
+    <foreach collection="list" item="temp" index="index" separator="UNION ALL">
+      SELECT
+    #{temp.id,jdbcType=VARCHAR}, #{temp.page,jdbcType=DECIMAL}, #{temp.desce,jdbcType=VARCHAR}
+      from dual
+    </foreach>
+  </insert>
   <insert id="insertSelective" parameterType="com.apabi.flow.book.model.PageCrawledTemp">
     insert into APABI_BOOK_PAGE_CRAWLED_TEMP
     <trim prefix="(" suffix=")" suffixOverrides=",">

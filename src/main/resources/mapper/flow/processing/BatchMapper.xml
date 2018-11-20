@@ -42,6 +42,12 @@
     from APABI_BOOK_PRO_BATCH
     where ID = #{id,jdbcType=VARCHAR}
   </select>
+  <select id="selectByBatchId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_BATCH
+    where BATCH_ID = #{batchId,jdbcType=VARCHAR}
+  </select>
 
   <!--<select id="listBatchSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT pb.ID, pb.MANAGER, pi.TITLE as BATCH_ID, pb.OUT_UNIT, pb.SOURCE_TYPE, pb.COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,

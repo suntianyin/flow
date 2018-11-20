@@ -73,6 +73,46 @@
       #{pageId,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{wordSum,jdbcType=DECIMAL}, 
       #{content,jdbcType=CLOB})
   </insert>
+    <insert id="batchInsert" parameterType="java.util.List">
+        begin
+        <foreach collection="list" item="item" index="index" separator=";">
+            insert into APABI_BOOK_PAGE (ID, CREATE_TIME, META_ID,
+            PAGE_ID, UPDATE_TIME, WORD_SUM,
+            CONTENT)
+            values (#{item.id,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.metaId,jdbcType=VARCHAR},
+            #{item.pageId,jdbcType=DECIMAL}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.wordSum,jdbcType=DECIMAL},
+            #{item.content,jdbcType=CLOB})
+        </foreach>
+        ;end;
+    </insert>
+    <insert id="insertByList" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into APABI_BOOK_PAGE (ID, CREATE_TIME, META_ID,
+        PAGE_ID, UPDATE_TIME, WORD_SUM,CONTENT)
+
+        <foreach collection="list" item="page" index="index" separator="UNION ALL">
+            SELECT
+            #{page.id,jdbcType=VARCHAR}, #{page.createTime,jdbcType=TIMESTAMP}, #{page.metaId,jdbcType=VARCHAR},
+            #{page.pageId,jdbcType=DECIMAL}, #{page.updateTime,jdbcType=TIMESTAMP}, #{page.wordSum,jdbcType=DECIMAL},
+            #{page.content,jdbcType=CLOB}
+            from dual
+        </foreach>
+    </insert>
+    <insert id="insertList" parameterType="java.util.List">
+        insert all
+        <foreach collection="list" item="page" index="index" separator="" >
+            into APABI_BOOK_PAGE
+            (ID, CREATE_TIME, META_ID,
+            PAGE_ID, UPDATE_TIME, WORD_SUM,CONTENT)
+            VALUES
+            (
+            #{page.id,jdbcType=VARCHAR}, #{page.createTime,jdbcType=TIMESTAMP}, #{page.metaId,jdbcType=VARCHAR},
+            #{page.pageId,jdbcType=DECIMAL}, #{page.updateTime,jdbcType=TIMESTAMP}, #{page.wordSum,jdbcType=DECIMAL},
+            #{page.content,jdbcType=CLOB}
+            )
+        </foreach>
+        select 1 from dual
+    </insert>
+
     <insert id="insertSelective" parameterType="com.apabi.flow.book.model.BookPage">
         insert into APABI_BOOK_PAGE
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -171,12 +211,31 @@ update APABI_BOOK_PAGE set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
       META_ID = #{metaId,jdbcType=VARCHAR},
       PAGE_ID = #{pageId,jdbcType=DECIMAL},
       UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
-      WORD_SUM = #{wordSum,jdbcType=DECIMAL} where ID = #{id,jdbcType=VARCHAR};
+      WORD_SUM = #{wordSum,jdbcType=DECIMAL},CONTENT = #{content,jdbcType=CLOB} where META_ID = #{metaId,jdbcType=VARCHAR};
 IF SQL%NOTFOUND THEN
    insert into APABI_BOOK_PAGE(ID, CREATE_TIME, META_ID,
       PAGE_ID, UPDATE_TIME, WORD_SUM,
       CONTENT)
-    values (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{metaId,jdbcType=VARCHAR},
+    values
+    (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{metaId,jdbcType=VARCHAR},
+      #{pageId,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{wordSum,jdbcType=DECIMAL},
+      #{content,jdbcType=CLOB});
+END IF;
+end;
+  </update>
+    <update id="updataOrInsertByMidAndPid" parameterType="com.apabi.flow.book.model.BookPage">
+    begin
+update APABI_BOOK_PAGE set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      META_ID = #{metaId,jdbcType=VARCHAR},
+      PAGE_ID = #{pageId,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      WORD_SUM = #{wordSum,jdbcType=DECIMAL},CONTENT = #{content,jdbcType=CLOB} where META_ID = #{metaId,jdbcType=VARCHAR} and PAGE_ID = #{pageId,jdbcType=DECIMAL};
+IF SQL%NOTFOUND THEN
+   insert into APABI_BOOK_PAGE(ID, CREATE_TIME, META_ID,
+      PAGE_ID, UPDATE_TIME, WORD_SUM,
+      CONTENT)
+    values
+    (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{metaId,jdbcType=VARCHAR},
       #{pageId,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{wordSum,jdbcType=DECIMAL},
       #{content,jdbcType=CLOB});
 END IF;

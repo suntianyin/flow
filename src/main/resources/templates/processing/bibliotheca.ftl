@@ -9,7 +9,7 @@
     <title>管理员书目信息</title>
     <script type="text/javascript">
 
-        $(function(){
+        $(function () {
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
@@ -22,7 +22,7 @@
             $("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");
             $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
 
-            jqPaging(pathurl,totalPages,currentPages);
+            jqPaging(pathurl, totalPages, currentPages);
 
         });
 
@@ -35,7 +35,7 @@
 
         //检索
         function btn_Search() {
-            if (isNull($('#batchId').val())){
+            if (isNull($('#batchId').val())) {
                 tipDialog("批次号不能为空，信息异常", 3, -1);
                 return;
             }
@@ -65,7 +65,7 @@
         //书单分拣
         function updateBibliothecaExclude(id) {
 
-            if (isNull(id)){
+            if (isNull(id)) {
                 tipDialog("数据异常", 3, -1);
                 return;
             }
@@ -83,18 +83,18 @@
                                 async: false,
                                 success: function (data) {
 //                                    Loading(false);
-                                    if (data.status == 200){
+                                    if (data.status == 200) {
                                         tipDialog(data.msg, 3, 1);
                                         /*top.frames[tabiframeId()].location.reload();
                                         closeDialog();*/
-                                    }else{
+                                    } else {
                                         tipDialog(data.msg, 3, -1);
                                     }
                                     location.reload();
                                 },
                                 error: function (data) {
                                     Loading(false);
-                                    tipDialog("服务器异常！",3, -1);
+                                    tipDialog("服务器异常！", 3, -1);
                                 }
                             });
                         } catch (e) {
@@ -106,13 +106,13 @@
 
         // 删除书目
         function removeBibliotheca(id, identifier) {
-            if (isNull(id)){
+            if (isNull(id)) {
                 tipDialog("数据异常！", 3, -1);
                 return;
             }
 
             var note = "注：您确定要删除当前书目信息？";
-            if (!isNull(identifier)){
+            if (!isNull(identifier)) {
                 note = "注：您确定要删除 编号为：" + identifier + " 的书目信息？";
             }
 
@@ -128,16 +128,16 @@
                                 contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
                                 async: false,
                                 success: function (data) {
-                                    if (data.status == 200){
+                                    if (data.status == 200) {
                                         tipDialog(data.msg, 3, 1);
-                                    }else{
+                                    } else {
                                         tipDialog(data.msg, 3, -1);
                                     }
                                     location.reload();
                                 },
                                 error: function (data) {
                                     Loading(false);
-                                    tipDialog("服务器异常！",3, -1);
+                                    tipDialog("服务器异常！", 3, -1);
                                 }
                             });
                         } catch (e) {
@@ -146,10 +146,11 @@
                 }
             });
         }
+
         //单本书目添加
         function btn_addBibliotheca() {
             var batchId = $('#batchId').val();
-            if (isNull(batchId)){
+            if (isNull(batchId)) {
                 tipDialog("批次号不能为空", 3, -1);
                 return;
             }
@@ -160,7 +161,7 @@
         }
 
         function btn_exportOutUnitData() {
-            if (isNull($('#batchId').val())){
+            if (isNull($('#batchId').val())) {
                 tipDialog("批次号不能为空，信息异常", 3, -1);
                 return;
             }
@@ -198,8 +199,11 @@
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
-                <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp;新增</span></a>
+                <#if BatchStateEnum=4||BatchStateEnum=5||BatchStateEnum=6>
+                    <a id="lr-add" class="tools_btn"><span style="color: #7c7c7c;"><i class="fa fa-plus"></i>&nbsp;新增</span></a>
+                <#else>
+                    <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;新增</span></a>
+                </#if>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
@@ -213,23 +217,25 @@
                 <tr>
                     <th>标题：</th>
                     <td>
-                        <input id="batchId" name="batchId" value="${batchId!''}" hidden class="txt" />
-                        <input id="title" name="title" type="text" value="${title!'' }" class="txt" style="width: 200px"/>
+                        <input id="batchId" name="batchId" value="${batchId!''}" hidden class="txt"/>
+                        <input id="title" name="title" type="text" value="${title!'' }" class="txt"
+                               style="width: 200px"/>
                     </td>
 
                     <th>出版社：</th>
                     <td>
-                        <input id="publisher" name="publisher" type="text" value="${publisher!'' }" class="txt" style="width: 200px"/>
+                        <input id="publisher" name="publisher" type="text" value="${publisher!'' }" class="txt"
+                               style="width: 200px"/>
                     </td>
 
-                    <#--<th>是否重复：</th>-->
-                    <#--<td>-->
-                        <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
-                            <#--<option value="">--请选择批次状态--</option>-->
-                            <#--<option value="0">否</option>-->
-                            <#--<option value="1">是</option>-->
-                        <#--</select>-->
-                    <#--</td>-->
+                <#--<th>是否重复：</th>-->
+                <#--<td>-->
+                <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
+                <#--<option value="">--请选择批次状态--</option>-->
+                <#--<option value="0">否</option>-->
+                <#--<option value="1">是</option>-->
+                <#--</select>-->
+                <#--</td>-->
 
                     <th>书目状态：</th>
                     <td>
@@ -244,7 +250,7 @@
                     </td>
 
                     <td>
-                        <input id="btnSearch" type="button" class="btnSearch" value="查 询" onclick="btn_Search()" />
+                        <input id="btnSearch" type="button" class="btnSearch" value="查 询" onclick="btn_Search()"/>
                     </td>
                 </tr>
             </table>
@@ -272,9 +278,9 @@
                         <th>原始文件名</th>
                         <th>文档格式</th>
                         <th>备注</th>
-                        <#--<th>是否重复</th>-->
+                    <#--<th>是否重复</th>-->
                         <th>书目状态</th>
-                        <#--<th>是否制作成功</th>-->
+                    <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
                         <th>操作</th>
@@ -284,7 +290,7 @@
                     <#if bibliothecaList??>
                         <#list bibliothecaList as list>
                         <tr class="gradeA odd" role="row">
-                            <td><input type="checkbox" name="bibliotheca" value="${(list.id)!''}" /></td>
+                            <td><input type="checkbox" name="bibliotheca" value="${(list.id)!''}"/></td>
                             <td>${(list.identifier)!''}</td>
                             <td>${(list.metaId)! '' }</td>
                             <td>${(list.batchId)! '' }</td>
@@ -299,15 +305,23 @@
                             <td>${(list.originalFilename)!'' }</td>
                             <td>${(list.documentFormat)! '' }</td>
                             <td>${(list.memo)! '' }</td>
-                            <#--<td>${(list.duplicateFlag.getDesc())! '' }</td>-->
+                        <#--<td>${(list.duplicateFlag.getDesc())! '' }</td>-->
                             <td>${(list.bibliothecaState.getDesc())! '' }</td>
-                            <#--<td>${(list.completedFlag.getDesc())! '' }</td>-->
+                        <#--<td>${(list.completedFlag.getDesc())! '' }</td>-->
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
+                            <#if BatchStateEnum=4||BatchStateEnum=5||BatchStateEnum=6>
+                                <span style="color: #7c7c7c;">编辑</span>
+                                <span style="color: #7c7c7c;">删除</span>
+                                <span style="color: #7c7c7c;">分拣</span>
+                            <#else>
                                 <a href="javascript:void(0);" onclick="updateBibliotheca('${(list.id)!''}')">编辑</a>
-                                <a href="javascript:void(0);" onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
-                                <a href="javascript:void(0);" onclick="updateBibliothecaExclude('${(list.id)!''}')" ">分拣</a>
+                                <a href="javascript:void(0);"
+                                   onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
+                                <a href="javascript:void(0);"
+                                   onclick="updateBibliothecaExclude('${(list.id)!''}')">分拣</a>
+                            </#if>
                             </td>
                         </tr>
                         </#list>
@@ -315,10 +329,10 @@
                     </tbody>
                 </table>
             </div>
-            <#--<ul class="pagination">
-                <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
-            </ul>
-            <ul class="pagination" style="float:right;" id="pagination"></ul>-->
+        <#--<ul class="pagination">
+            <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
+        </ul>
+        <ul class="pagination" style="float:right;" id="pagination"></ul>-->
         </div>
     </div>
 </div>
