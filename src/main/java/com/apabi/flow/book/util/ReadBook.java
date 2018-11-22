@@ -23,7 +23,7 @@ import java.util.List;
 @Service("readBook")
 public class ReadBook {
 
-    private static final Logger log = LoggerFactory.getLogger(GetEpubookChapter.class);
+    private static final Logger log = LoggerFactory.getLogger(ReadBook.class);
 
     @Autowired
     GetEpubookChapter getEpubookChapter;
