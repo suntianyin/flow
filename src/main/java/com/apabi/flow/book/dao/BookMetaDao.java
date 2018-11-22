@@ -6,6 +6,7 @@ import com.apabi.flow.book.model.BookMetaVo;
 import com.apabi.flow.book.model.EpubookMeta;
 import com.apabi.flow.bookSearch.model.BookSearchModel;
 import com.github.pagehelper.Page;
+import oracle.sql.ROWID;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +63,9 @@ public interface BookMetaDao {
 
     //获取最大drid
     int getMaxDrid();
+
+    //获取总条数
+    int getTotal();
 
     //分页查询
     Page<BookMetaVo> findBookMetaVoByPage(Map<String, Object> queryMap);

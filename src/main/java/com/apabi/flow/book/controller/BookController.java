@@ -235,10 +235,12 @@ public class BookController {
                 queryMap.put("isbn10", isbnVal);
                 queryMap.put("isbn13", isbnVal);
             }
-            Integer hasFlow = 0;
+            Integer hasFlow = null;
             if (!StringUtils.isEmpty(params.get("hasFlow"))) {
-                hasFlow = Integer.valueOf(params.get("hasFlow")[0]);
-                queryMap.put("hasFlow", hasFlow);
+                if (!StringUtils.isEmpty(params.get("hasFlow")[0])) {
+                    hasFlow = Integer.valueOf(params.get("hasFlow")[0]);
+                    queryMap.put("hasFlow", hasFlow);
+                }
             }
             PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
             Page<BookMetaVo> page = null;
@@ -568,6 +570,19 @@ public class BookController {
         return "book/bookMetaBatch";
     }
 
+    //跳转到流式内容检查
+    @RequestMapping(value = "/flowBookDetect")
+    public String flowBookDetect() {
+        return "book/flowBookDetect";
+    }
+
+    //乱码检查
+    @RequestMapping(value = "/codeDetect")
+    public String codeDetect() {
+        bookChapterService.detectBookChapter();
+        return "book/flowBookDetect";
+    }
+
     //批量删除图书内容
     @RequestMapping(value = "/bookMetaBatch", method = RequestMethod.POST)
     @ResponseBody
@@ -701,109 +716,6 @@ public class BookController {
         return resultEntity;
     }
 
-    @GetMapping("/getShardById")
-    @ResponseBody
-    public ResultEntity getShardById(@RequestParam("metaid") String metaId,
-                                     @RequestParam("chapterNum") Integer chapterNum,
-                                     @RequestParam("index") Integer index) {
-        long start = System.currentTimeMillis();
-        BookShard bookShard = bookShardService.selectShardById(metaId, chapterNum, index);
-        ResultEntity resultEntity = new ResultEntity();
-        if (bookShard == null) {
-            resultEntity.setMsg("error");
-            resultEntity.setStatus(-1);
-        } else {
-            resultEntity.setMsg("success");
-            resultEntity.setStatus(0);
-            resultEntity.setBody(bookShard);
-        }
-        long end = System.currentTimeMillis();
-        log.info("获取图书" + metaId + "，第" + chapterNum + "章节，第" +
-                index + "分组耗时：" + (end - start) + "毫秒");
-        return resultEntity;
-    }
-
-    @GetMapping("/getBookMetaSum")
-    @ResponseBody
-    public ResultEntity getBookMetaSum(@RequestParam("metaid") String metaId) {
-        long start = System.currentTimeMillis();
-        BookMetaVo bookMeta = bookMetaService.selectBookMetaById(metaId);
-        List<BookChapterSum> chapterSums = bookChapterService.selectBookChapterSum(metaId);
-        List<BookCataRows> bookCataRows = bookMetaService.getCataRowsById(metaId);
-        Map<String, Object> metaMap = new HashMap<>();
-        metaMap.put("bookMeta", bookMeta);
-        metaMap.put("chapterSums", chapterSums);
-        metaMap.put("bookCataRows", bookCataRows);
-        ResultEntity resultEntity = new ResultEntity();
-        if (bookMeta == null && chapterSums == null && bookCataRows == null) {
-            resultEntity.setMsg("error");
-            resultEntity.setStatus(-1);
-        } else {
-            resultEntity.setMsg("success");
-            resultEntity.setStatus(0);
-            resultEntity.setBody(metaMap);
-        }
-        long end = System.currentTimeMillis();
-        log.info("获取图书章节及分组简要信息，耗时" + (end - start) + "毫秒");
-        return resultEntity;
-    }
-
-    @GetMapping("/getBookChapterSum")
-    @ResponseBody
-    public ResultEntity getBookChapterSum(@RequestParam("metaid") String metaId) {
-        long start = System.currentTimeMillis();
-        List<BookChapterSum> chapterSums = bookChapterService.selectBookChapterSum(metaId);
-        ResultEntity resultEntity = new ResultEntity();
-        if (chapterSums == null) {
-            resultEntity.setMsg("error");
-            resultEntity.setStatus(-1);
-        } else {
-            resultEntity.setMsg("success");
-            resultEntity.setStatus(0);
-            resultEntity.setBody(chapterSums);
-        }
-        long end = System.currentTimeMillis();
-        log.info("获取图书章节及分组简要信息，耗时" + (end - start) + "毫秒");
-        return resultEntity;
-    }
-
-    @GetMapping("/getBookMeta")
-    @ResponseBody
-    public ResultEntity getBookMeta(@RequestParam("metaid") String metaId) {
-        long start = System.currentTimeMillis();
-        BookMetaVo bookMeta = bookMetaService.selectBookMetaById(metaId);
-        ResultEntity resultEntity = new ResultEntity();
-        if (bookMeta == null) {
-            resultEntity.setMsg("error");
-            resultEntity.setStatus(-1);
-        } else {
-            resultEntity.setMsg("success");
-            resultEntity.setStatus(0);
-            resultEntity.setBody(bookMeta);
-        }
-        long end = System.currentTimeMillis();
-        log.info("获取图书元数据信息，耗时" + (end - start) + "毫秒");
-        return resultEntity;
-    }
-
-    @GetMapping("/getCataRowsById")
-    @ResponseBody
-    public ResultEntity getCataRowsById(@RequestParam("metaid") String metaId) {
-        long start = System.currentTimeMillis();
-        List<BookCataRows> bookCataRows = bookMetaService.getCataRowsById(metaId);
-        ResultEntity resultEntity = new ResultEntity();
-        if (bookCataRows == null) {
-            resultEntity.setMsg("error");
-            resultEntity.setStatus(-1);
-        } else {
-            resultEntity.setMsg("success");
-            resultEntity.setStatus(0);
-            resultEntity.setBody(bookCataRows);
-        }
-        long end = System.currentTimeMillis();
-        log.info("获取图书元目录信息，耗时" + (end - start) + "毫秒");
-        return resultEntity;
-    }
 
 //    /**
 //     * 从书苑获取 图书每页内容信息
@@ -903,27 +815,29 @@ public class BookController {
 
 
     @RequestMapping("/bookPageManagement")
-    public String getBookPageManagement(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
+    public String getBookPageManagement(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum, Model model) {
         PageHelper.startPage(pageNum, 10);
         Page<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.pageAll();
         List<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.findAll();
         List<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.findAll();
-        model.addAttribute("num",pageCrawledTemps.size());
-        model.addAttribute("pageCrawledQueues",pageCrawledQueues);
+        model.addAttribute("num", pageCrawledTemps.size());
+        model.addAttribute("pageCrawledQueues", pageCrawledQueues);
         model.addAttribute("pages", pageCrawledQueues.getPages());
         model.addAttribute("pageNum", pageCrawledQueues.getPageNum());
         model.addAttribute("pageSize", 10);
         model.addAttribute("total", pageCrawledQueues.getTotal());
-        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
+        model.addAttribute("pageAssemblyQueues", pageAssemblyQueues);
         return "book/bookPageManagement";
     }
+
     @RequestMapping("/pageCrawledQueuesDelete")
-    public String pageCrawledQueuesDelete(@RequestParam("id")String id) {
+    public String pageCrawledQueuesDelete(@RequestParam("id") String id) {
         pageCrawledQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/bookPageManagement";
     }
+
     @RequestMapping("/pageAssemblyQueuesDelete")
-    public String pageAssemblyQueuesDelete(@RequestParam("id")String id) {
+    public String pageAssemblyQueuesDelete(@RequestParam("id") String id) {
         pageAssemblyQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/bookPageManagement";
     }
@@ -943,15 +857,15 @@ public class BookController {
         if (systemConf2 == null) {
             log.error("获取系统参数信息出错，无法查询线程池开关");
         }
-        int i=0;
+        int i = 0;
         int swith = Integer.parseInt(systemConf2.getConfValue());
-        if(swith==0){
-            i=1;
+        if (swith == 0) {
+            i = 1;
             systemConf2.setConfValue("1");
             systemConfMapper.updateByPrimaryKey(systemConf2);
             i = bookPageService.autoFetchPageData();
-        }else if(swith==1){
-            i=-1;
+        } else if (swith == 1) {
+            i = -1;
         }
         if (i == 1) {
             resultEntity.setMsg("采集加密流式内容完成");
@@ -959,7 +873,7 @@ public class BookController {
         } else if (i == -1) {
             resultEntity.setMsg("采集加密流式内容正在进行请勿再次操作");
             resultEntity.setStatus(1);
-        }else if (i == 2) {
+        } else if (i == 2) {
             resultEntity.setMsg("采集加密流式内容队列没有内容");
             resultEntity.setStatus(1);
         } else {
@@ -984,15 +898,15 @@ public class BookController {
         if (systemConf2 == null) {
             log.error("获取系统参数信息出错，无法查询线程池开关");
         }
-        int i=0;
+        int i = 0;
         int swith = Integer.parseInt(systemConf2.getConfValue());
-        if(swith==0){
-            i=1;
+        if (swith == 0) {
+            i = 1;
             systemConf2.setConfValue("1");
             systemConfMapper.updateByPrimaryKey(systemConf2);
             i = bookPageService.autoFetchPageDataAgain();
-        }else if(swith==1){
-            i=-1;
+        } else if (swith == 1) {
+            i = -1;
         }
         if (i == 1) {
             resultEntity.setMsg("重新采集加密流式内容完成");
@@ -1000,10 +914,10 @@ public class BookController {
         } else if (i == -1) {
             resultEntity.setMsg("重新采集加密流式内容正在进行请勿再次操作");
             resultEntity.setStatus(1);
-        }else if (i == 2) {
+        } else if (i == 2) {
             resultEntity.setMsg("重新采集加密流式队列没有内容");
             resultEntity.setStatus(1);
-        }  else {
+        } else {
             resultEntity.setMsg("重新抽取失败内容失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
@@ -1065,23 +979,24 @@ public class BookController {
         }
         return null;
     }
+
     @RequestMapping("/fetch")
     public String fetch() {
         try {
             List<PageCrawledQueue> all = pageCrawledQueueMapper.findAll();
             HashSet<String> hashSet = new HashSet();
-                for (PageCrawledQueue a : all) {
-                    hashSet.add(a.getId());
-                }
+            for (PageCrawledQueue a : all) {
+                hashSet.add(a.getId());
+            }
             pageCrawledQueueMapper.deleteAll();
-                int num = 0;
-                for (String b : hashSet) {
-                    PageCrawledQueue pageCrawledQueue = new PageCrawledQueue();
-                    pageCrawledQueue.setId(b);
-                    int i = pageCrawledQueueMapper.insert(pageCrawledQueue);
-                    num += i;
-                }
-                return "redirect:/book/bookPageManagement";
+            int num = 0;
+            for (String b : hashSet) {
+                PageCrawledQueue pageCrawledQueue = new PageCrawledQueue();
+                pageCrawledQueue.setId(b);
+                int i = pageCrawledQueueMapper.insert(pageCrawledQueue);
+                num += i;
+            }
+            return "redirect:/book/bookPageManagement";
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1090,38 +1005,37 @@ public class BookController {
 
     @PostMapping("/batch/import")
     @ResponseBody
-    public String batchImportAuthor(@RequestParam("file")MultipartFile file){
+    public String batchImportAuthor(@RequestParam("file") MultipartFile file) {
 
-        if (!file.getOriginalFilename().endsWith(".xlsx")){
+        if (!file.getOriginalFilename().endsWith(".xlsx")) {
             return "文件格式不正确，仅支持 .xlsx 格式的文件";
         }
         // 读取Excel工具类
         Map<Integer, Map<Object, Object>> data = null;
-        try(InputStream inputStream = file.getInputStream()){
+        try (InputStream inputStream = file.getInputStream()) {
             String fileName = file.getOriginalFilename();
             ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
             // 读取Excel中的内容
             data = readExcelTextUtils.getDataByInputStream();
-            if (data == null || data.isEmpty()){
+            if (data == null || data.isEmpty()) {
                 throw new Exception();
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return "文件读取出错，请重新尝试或联系管理员！";
-        }catch (Exception e){
+        } catch (Exception e) {
             return "文件出错，请检查文件格式是否正确或内容是否完整！";
         }
         Integer addedNum = 0;
         try {
             addedNum = bookPageService.batchAddAuthorFromFile(data);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("异常信息： {}", e);
         }
-        return addedNum > 0 ? "成功":"失败";
+        return addedNum > 0 ? "成功" : "失败";
     }
 
-
-//    @GetMapping("/autoProcessBookFromPage2Chapter")
+    @GetMapping("/test")
     @ResponseBody
     public String test() throws Exception {
         //bookChapterService.deleteAllChapterByMetaid("mm.20110920-DT-889-0295");
@@ -1132,17 +1046,6 @@ public class BookController {
         //BookMeta bookMeta = bookMetaService.selectBookMetaDetailById("mm.20110920-DT-889-0295");
         //bookShardService.deleteAllShardByMetaid("m.201806141534996901459");
         //bookMetaService.exportMongo2Orlc();
-        BookPage bookPage=new BookPage();
-        bookPage.setId("aaa");
-        bookPage.setMetaId("bbb");
-        bookPage.setContent("bbb");
-        bookPage.setUpdateTime(new Date());
-        bookPage.setCreateTime(new Date());
-        bookPage.setPageId(10l);
-
-       bookPageMapper.updataOrInsert(bookPage);
-
-
         return "success";
     }
 }

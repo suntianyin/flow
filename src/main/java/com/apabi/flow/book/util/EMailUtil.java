@@ -1,0 +1,90 @@
+package com.apabi.flow.book.util;
+
+import com.apabi.flow.systemconf.dao.SystemConfMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+
+/**
+ * @author guanpp
+ * @date 2018/11/21 16:41
+ * @description
+ */
+@Service("EMailUtil")
+public class EMailUtil {
+
+    // SMTP邮件服务器
+    private String SERVER;
+
+    // SMTP邮件服务器端口
+    private Integer PORT;
+
+    // 发件人
+    private String SENDER;
+
+    // 收件人
+    private String TO;
+
+    // SMTP邮件用户
+    private String USER;
+
+    // SMTP邮件用户密码
+    private String PASSWORD;
+
+    private JavaMailSenderImpl sender;
+
+    //初始化邮箱
+    public EMailUtil(SystemConfMapper systemConfMapper) {
+        this.SERVER = systemConfMapper.selectByConfKey("mail_smtp_server").getConfValue();
+        this.PORT = Integer.valueOf(systemConfMapper.selectByConfKey("mail_smtp_port").getConfValue());
+        this.SENDER = systemConfMapper.selectByConfKey("mail_sender").getConfValue();
+        this.TO = systemConfMapper.selectByConfKey("flowcontent_check_notice_mail").getConfValue();
+        this.USER = systemConfMapper.selectByConfKey("mail_smtp_user").getConfValue();
+        this.PASSWORD = systemConfMapper.selectByConfKey("mail_smtp_password").getConfValue();
+    }
+
+    //添加配置
+    public void createSender() {
+        try {
+
+            sender = new JavaMailSenderImpl();
+            sender.setHost(SERVER);
+            sender.setPort(PORT);
+            sender.setUsername(USER);
+            sender.setPassword(PASSWORD);
+            sender.testConnection();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //发送带附件的邮件
+    public void sendAttachmentsMail(String attach) {
+        MimeMessage message;
+        try {
+            message = sender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(SENDER, "北京方正阿帕比技术有限公司");
+            if (StringUtils.isNotBlank(TO)) {
+                helper.setTo(TO.split(";"));
+            }
+            helper.setSubject("主题：带附件的邮件");
+            helper.setText("图书乱码检查结果");
+            //附件加入邮件
+            FileSystemResource file = new FileSystemResource(new File(attach));
+            helper.addAttachment(file.getFilename(), file);
+            sender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+}

@@ -27,4 +27,7 @@ public interface BookChapterService {
     //更新图书章节内容
     int updateBookChapter(BookChapter bookChapter) ;
 
+    //流式图书内容乱码检测
+    void detectBookChapter();
+
 }

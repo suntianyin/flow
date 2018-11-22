@@ -807,6 +807,9 @@
             METAID = #{metaId}
         </where>
     </update>
+    <select id="getTotal" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM APABI_BOOK_METADATA
+    </select>
 
     <resultMap id="BaseResultMap3" type="com.apabi.flow.book.model.BookMetaBatch">
         <id column="METAID" property="metaId" jdbcType="VARCHAR"/>

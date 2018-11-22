@@ -1,14 +1,21 @@
 package com.apabi.flow.book.service.impl;
 
+import com.apabi.flow.admin.util.EmailUtil;
 import com.apabi.flow.book.dao.BookChapterDao;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.dao.BookShardDao;
-import com.apabi.flow.book.model.BookChapter;
-import com.apabi.flow.book.model.BookChapterSum;
-import com.apabi.flow.book.model.BookMetaVo;
-import com.apabi.flow.book.model.BookShard;
+import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookChapterService;
 import com.apabi.flow.book.util.BookConstant;
+import com.apabi.flow.book.util.BookUtil;
+import com.apabi.flow.book.util.EMailUtil;
+import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.config.DicWordData;
+import com.apabi.flow.systemconf.dao.SystemConfMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,13 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +54,15 @@ public class BookChapterServiceImpl implements BookChapterService {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    DicWordData dicWordData;
+
+    @Autowired
+    ApplicationConfig config;
+
+    @Autowired
+    SystemConfMapper systemConfMapper;
 
     //根据图书id和章节号，获取章节内容
     @Override
@@ -168,5 +185,170 @@ public class BookChapterServiceImpl implements BookChapterService {
                 bookShardDao.updateBookShard(bookShard);
             }
         }
+    }
+
+    //检查图书章节中乱码
+    @Override
+    @Async
+    public void detectBookChapter() {
+        //获取总条数
+        long start = System.currentTimeMillis();
+        int total = bookChapterDao.getTotal();
+        if (total > 0) {
+            //获取字典
+            String words = dicWordData.getWords();
+            byte[] dicArray = createDic(words);
+            //存放乱码
+            List<BookChapterDetect> detectList = new ArrayList<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            int pageSize = 100;
+            int pages = total / pageSize + 1;
+            for (int i = 1; i < pages + 1; i++) {
+                Map<String, String> codeMap = new HashMap<>();
+                PageHelper.startPage(i, pageSize);
+                Page<BookChapter> page = bookChapterDao.findBookChapterByPage();
+                List<BookChapter> chapterList = page.getResult();
+                //检测乱码
+                for (BookChapter chapter : chapterList) {
+                    try {
+                        String content = chapter.getContent();
+                        if (org.apache.commons.lang3.StringUtils.isNotBlank(content)) {
+                            char[] chars = content.toCharArray();
+                            for (int j = 0; j < chars.length; j++) {
+                                if (dicArray[chars[j]] == 0) {
+                                    if (codeMap.containsKey(chapter.getComId())) {
+                                        String code = codeMap.get(chapter.getComId());
+                                        code += String.valueOf(chars[j]);
+                                        codeMap.put(chapter.getComId(), code);
+                                    } else {
+                                        codeMap.put(chapter.getComId(), String.valueOf(chars[j]));
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.warn("检测章节{}乱码信息异常：{}", chapter.getComId(), e.getMessage());
+                    }
+                }
+                List<BookChapterDetect> tmp = collectCodeInfo(codeMap);
+                detectList.addAll(tmp);
+                long end = System.currentTimeMillis();
+                log.info("总批次为：{}，已完成批次：{}，耗时：{}", pages, i, (end - start));
+            }
+            long end = System.currentTimeMillis();
+            log.info("检测图书章节内容乱码耗时：{}", (end - start));
+            //生成表格
+            List<BookChapterDetect> bookChapterDetects = detectList.stream()
+                    .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
+                    .collect(Collectors.toList());
+            String resultPath = config.getBookDetect() + File.separator + sdf.format(new Date()) + "codeDetect.xls";
+            BookUtil.exportExcel(bookChapterDetects, resultPath);
+            log.info("检查结果已生成到{}", config.getBookDetect());
+            //发送邮件
+            EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+            eMailUtil.createSender();
+            eMailUtil.sendAttachmentsMail(resultPath);
+            log.info("检查结果已发送邮件{}", resultPath);
+        }
+    }
+
+    //乱码信息整合
+    private List collectCodeInfo(Map<String, String> codeMap) {
+        if (codeMap != null) {
+            //存储乱码整合信息
+            List<BookChapterDetect> detectList = new ArrayList<>();
+            for (String comId : codeMap.keySet()) {
+                try {
+                    BookChapterSum bookChapterSum = bookChapterDao.findChapterByComId(comId);
+                    //获取图书id
+                    int chapterNum = bookChapterSum.getChapterNum();
+                    String metaId = comId.substring(0, comId.lastIndexOf(String.valueOf(chapterNum)));
+                    //获取章节标题
+                    EpubookMeta epubookMeta = bookMetaDao.findEpubookMetaById(metaId);
+                    String chapterName = getChapterName(epubookMeta.getStreamCatalog(), chapterNum);
+                    //合成信息
+                    BookChapterDetect bookChapterDetect = new BookChapterDetect();
+                    bookChapterDetect.setMetaId(metaId);
+                    bookChapterDetect.setTitle(epubookMeta.getTitle());
+                    bookChapterDetect.setChapterNum(chapterNum);
+                    bookChapterDetect.setChapterName(chapterName);
+                    bookChapterDetect.setMessage(codeMap.get(comId));
+                    detectList.add(bookChapterDetect);
+                } catch (Exception e) {
+                    log.warn("整合章节{}乱码信息异常：{}", comId, e.getMessage());
+                }
+            }
+            return detectList;
+        }
+        return null;
+    }
+
+    //获取章节标题
+    private String getChapterName(String cataLog, int chapterNum) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(cataLog)) {
+            String tmp = String.valueOf(cataLog.charAt(0));
+            if (tmp.equals("[")) {
+                //获取层次目录
+                JSONArray jsonArray = JSONArray.fromObject(cataLog);
+                Iterator it = jsonArray.iterator();
+                while (it.hasNext()) {
+                    JSONObject jsonObject = (JSONObject) it.next();
+                    return createCataTree(jsonObject, chapterNum);
+                }
+            } else {
+                //获取非层次目录
+                List<String> cataRows = Arrays.asList(cataLog.split("},"));
+                //生成目录
+                JSONObject jsonObject;
+                for (String cata : cataRows) {
+                    jsonObject = JSONObject.fromObject(cata + "}");
+                    BookCataRows bookCataRows = (BookCataRows) JSONObject.toBean(jsonObject, BookCataRows.class);
+                    if (bookCataRows.getChapterNum() == chapterNum) {
+                        return bookCataRows.getChapterName();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    //遍历目录
+    private String createCataTree(JSONObject jsonObject, int chapterNum) {
+        if (jsonObject != null) {
+            List<JSONObject> childE = jsonObject.getJSONArray("children");
+            if (childE != null && childE.size() > 0) {
+                if (jsonObject.getInt("chapterNum") == chapterNum) {
+                    return jsonObject.getString("chapterName");
+                }
+                for (JSONObject child : childE) {
+                    createCataTree(child, chapterNum);
+                }
+            } else {
+                if (jsonObject.getInt("chapterNum") == chapterNum) {
+                    return jsonObject.getString("chapterName");
+                }
+            }
+        }
+        return null;
+    }
+
+    //生成字典
+    private byte[] createDic(String words) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(words)) {
+            char[] dicWords = words.toCharArray();
+            char max = 0;
+            for (char word : dicWords) {
+                if (word > max) {
+                    max = word;
+                }
+            }
+            //定义字典
+            byte[] dicArray = new byte[max + 1];
+            for (int i = 0; i < dicWords.length; i++) {
+                dicArray[dicWords[i]] = 1;
+            }
+            return dicArray;
+        }
+        return null;
     }
 }

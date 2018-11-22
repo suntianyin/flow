@@ -274,14 +274,17 @@
                                     <#if hasFlow ==0>
                                         <option value="0" selected="selected">否</option>
                                         <option value="1">是</option>
+                                        <option value="">全部</option>
                                     </#if>
                                     <#if hasFlow ==1>
                                         <option value="0">否</option>
                                         <option value="1" selected="selected">是</option>
+                                        <option value="">全部</option>
                                     </#if>
                                 <#else>
-                                    <option value="0" selected="selected">否</option>
+                                    <option value="0">否</option>
                                     <option value="1">是</option>
+                                    <option value="" selected="selected">全部</option>
                                 </#if>
                             </select>
                         </td>

@@ -31,6 +31,10 @@ public class ApplicationConfig {
     @Value("${uploadCebx}")
     private String uploadCebx;
 
+    //流式内容检查结果存放路径
+    @Value("${bookDetect}")
+    private String bookDetect;
+
     public String getCebxHtmlExe() {
         return cebxHtmlExe;
     }
@@ -77,5 +81,13 @@ public class ApplicationConfig {
 
     public void setUploadCebx(String uploadCebx) {
         this.uploadCebx = uploadCebx;
+    }
+
+    public String getBookDetect() {
+        return bookDetect;
+    }
+
+    public void setBookDetect(String bookDetect) {
+        this.bookDetect = bookDetect;
     }
 }
