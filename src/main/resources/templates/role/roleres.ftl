@@ -99,11 +99,11 @@
         <ul class="sys_spec_text">
 
 	        <#list listremain as listremain>
-            <li title="${listremain.name!'' }"><a id="${listremain.id!'' }"><img src="${ctx}/images/role.png">${listremain.name !''}</a><i></i></li>
+            <li title="${listremain.name!'' }"><a id="${listremain.id?c }"><img src="${ctx}/images/role.png">${listremain.name !''}</a><i></i></li>
             </#list >
 
             <#list listthis as listthis>
-	        <li title="${listthis.name!'' }" class="selected"><a id="${listthis.id !''}"><img src="${ctx}/images/role.png">${listthis.name!'' }</a><i></i></li>
+	        <li title="${listthis.name!'' }" class="selected"><a id="${listthis.id?c}"><img src="${ctx}/images/role.png">${listthis.name!'' }</a><i></i></li>
             </#list >
         </ul>
     </div>

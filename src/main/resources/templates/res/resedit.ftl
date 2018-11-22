@@ -29,7 +29,7 @@
         	var formObj = $("#form1");
             var postData = formObj.serializeJson();
 
-            $.ajax({                
+            $.ajax({
                 url: "resupdate",
                 type: "POST",
                 data: postData,                
@@ -67,7 +67,7 @@
         <!--基本信息-->
         <div id="basic" class="tabPanel">
             <table class="form">
-            	<input id="id" name="id" class="txt" value="${ar.id!'' }" type="hidden"/>
+            	<input id="id" name="id" class="txt" value="${ar.id?c }" type="hidden"/>
                 <tr>	                
 	                <th class="formTitle">资源名称：</th>
 	                <td class="formValue">
