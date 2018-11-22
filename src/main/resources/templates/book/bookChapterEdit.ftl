@@ -210,18 +210,16 @@
                     </div>
                 </div>
                 <div style=" float:left;width: 78%;height: 90%;border: #2d2625 solid 1px;">
-                    <#if bookChapter??>
-                        <input id="chapterComid" value="${bookChapter.comId}" type="hidden"/>
-                        <input id="chapterNum" value="${bookChapter.chapterNum}" type="hidden"/>
-                        <input id="wordSum" value="${bookChapter.wordSum}" type="hidden"/>
                         <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
+                            <#if bookChapter??>
+                                <input id="chapterComid" value="${bookChapter.comId}" type="hidden"/>
+                                <input id="chapterNum" value="${bookChapter.chapterNum}" type="hidden"/>
+                                <input id="wordSum" value="${bookChapter.wordSum}" type="hidden"/>
                                 ${bookChapter.content}
+                            <#else >
+                                    流式内容存在问题，请联系管理员
+                            </#if>
                         </textarea>
-                    <#else >
-                        <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
-                            暂无内容，联系管理员
-                        </textarea>
-                    </#if>
                 </div>
             </div>
         </div>
