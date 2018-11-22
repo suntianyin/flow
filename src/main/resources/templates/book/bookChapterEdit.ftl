@@ -125,7 +125,7 @@
                         tipDialog("保存成功！", 3, 1);
                         top.frames[tabiframeId()].location.reload();
                         closeDialog();
-                    }else{
+                    } else {
                         tipDialog("更新失败，联系管理员！", 3, -1);
                     }
                 },
@@ -215,7 +215,11 @@
                         <input id="chapterNum" value="${bookChapter.chapterNum}" type="hidden"/>
                         <input id="wordSum" value="${bookChapter.wordSum}" type="hidden"/>
                         <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
-                            ${bookChapter.content}
+                                ${bookChapter.content}
+                        </textarea>
+                    <#else >
+                        <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
+                            暂无内容，联系管理员
                         </textarea>
                     </#if>
                 </div>
