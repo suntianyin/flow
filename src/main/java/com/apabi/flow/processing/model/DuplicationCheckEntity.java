@@ -26,6 +26,18 @@ public class DuplicationCheckEntity {
      * 对应元数据信息
      */
     private BookMeta bookMeta;
+    /**
+     * 检测批次信息
+     */
+    private Bibliotheca bibliotheca2;
+
+    public Bibliotheca getBibliotheca2() {
+        return bibliotheca2;
+    }
+
+    public void setBibliotheca2(Bibliotheca bibliotheca2) {
+        this.bibliotheca2 = bibliotheca2;
+    }
 
     /**
      * 是否重复标识

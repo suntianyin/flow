@@ -6,7 +6,7 @@
     <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
-    <title>流式内容管理</title>
+    <title>cebx流式内容管理</title>
     <script type="text/javascript">
         $(function () {
 
@@ -71,6 +71,32 @@
                 result += metaIds[i] + ",";
             }
             var url = "/book/getBookMetaIds?metaIds=" + result;
+            loading();
+            $.ajax({
+                url: RootPath() + url,
+                type: "get",
+                dataType: "json",
+                cache: false,
+                contentType: false,
+                async: false,
+                success: function (data) {
+                    alertDialog(data.msg, data.status);
+                    window.location.href = "bookPageManagement";
+                },
+                error: function (data) {
+                    alertDialog(data.msg, data.status);
+                    $(".load-circle").hide();
+                }
+            });
+        }
+        function btn_uploadToChapter() {
+            var metaId = document.getElementById("metaIds2").value;
+            var result = "";
+            var metaIds = metaId.split("\n");
+            for (var i = 0; i < metaIds.length; i++) {
+                result += metaIds[i] + ",";
+            }
+            var url = "/book/getBookMetaIdsToChapter?metaIds=" + result;
             loading();
             $.ajax({
                 url: RootPath() + url,
@@ -201,7 +227,7 @@
 
             <div class="PartialButton">
                 <button id="batch-import" title="批量导入" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp批量导入</span></button>
+                        class="fa fa-plus"></i>&nbsp批量导入抓取队列</span></button>
                 <div class="tools_separator"></div>
             </div>
         </div>
@@ -213,7 +239,20 @@
                         <textarea id="metaIds" name="metaIds" rows="10" cols="50"></textarea>
                     </td>
                     <td>
-                        <input id="btnSearch" type="button" class="btnSearch" value="上传" onclick="btn_upload()"/>（METAID之间以回车键换行分隔）
+                        <input id="btnSearch" type="button" class="btnSearch" value="上传至抓取队列" onclick="btn_upload()"/>（METAID之间以回车键换行分隔）
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
+            <table border="0" class="form-find" style="height: 45px;">
+                <tr align="center">
+                    <th>METAID：</th>
+                    <td>
+                        <textarea id="metaIds2" name="metaIds2" rows="10" cols="50"></textarea>
+                    </td>
+                    <td>
+                        <input id="btnSearch" type="button" class="btnSearch" value="上传至拼装队列" onclick="btn_uploadToChapter()"/>（METAID之间以回车键换行分隔）
                     </td>
                 </tr>
             </table>
@@ -223,7 +262,9 @@
         <input id="Crawled" type="button" class="btnSearch" value="采集加密流式内容" onclick="btn_Crawled()"/>
         <input id="again" type="button" class="btnSearch" value="重新抽取失败内容" onclick="btn_Again()"/>
         <input id="Assembly" type="button" class="btnSearch" value="分页流式内容拼装" onclick="btn_Assembly()"/>
+        <p>分页流式内容拼装条数：${numer}</p>
         <p>重新抽取失败内容条数：${num}</p>
+
         <div class="panel-body">
             <div class="row">
                 <table id="table-list"

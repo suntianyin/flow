@@ -13,13 +13,13 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            var duplicateFlag = $("#duplicateFlag").val();
+            // var duplicateFlag = $("#duplicateFlag").val();
             var bibliothecaState = $("#bibliothecaState").val();
-            var pathurl = "index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;
+            var pathurl = "index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
-            $("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");
+            <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
             $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
 
             jqPaging(pathurl, totalPages, currentPages);
@@ -42,9 +42,9 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            var duplicateFlag = $("#duplicateFlag").val().trim();
+            // var duplicateFlag = $("#duplicateFlag").val().trim();
             var bibliothecaState = $("#bibliothecaState").val();
-            window.location.href = "${ctx}/processing/bibliotheca/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;
+            window.location.href = "${ctx}/processing/bibliotheca/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
         }
 
         //编辑书目
@@ -168,7 +168,7 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            var duplicateFlag = $("#duplicateFlag").val();
+            // var duplicateFlag = $("#duplicateFlag").val();
             var bibliothecaState = $("#bibliothecaState").val();
 
             confirmDialog("温馨提示", "注：您确定要对当前查询结果导出到Excel文件？", function (r) {
@@ -176,7 +176,7 @@
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
                         try {
-                            window.location.href = "${ctx}/processing/bibliotheca/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;
+                            window.location.href = "${ctx}/processing/bibliotheca/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
                         } catch (e) {
                         }
                     }, 200);

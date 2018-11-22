@@ -10,7 +10,10 @@ import com.apabi.flow.processing.constant.*;
 import com.apabi.flow.processing.dao.BatchMapper;
 import com.apabi.flow.processing.dao.BibliothecaMapper;
 import com.apabi.flow.processing.dao.OutUnitMapper;
-import com.apabi.flow.processing.model.*;
+import com.apabi.flow.processing.model.Batch;
+import com.apabi.flow.processing.model.Bibliotheca;
+import com.apabi.flow.processing.model.BibliothecaExcelModel;
+import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
@@ -94,12 +97,12 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public boolean addBibliothecaList(List<Bibliotheca> bibliothecaList) throws Exception {
-        if (bibliothecaList == null){
+        if (bibliothecaList == null) {
             return false;
         }
 
         int size = 0;
-        for (Bibliotheca bibliotheca : bibliothecaList){
+        for (Bibliotheca bibliotheca : bibliothecaList) {
             try {
                 bibliotheca.setId(UUIDCreater.nextId());
                 bibliotheca.setCreateTime(new Date());
@@ -107,19 +110,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 //                bibliotheca.setBibliothecaState(bibliotheca.getBibliothecaState());
                 bibliotheca.setDeleteFlag(DeleteFlagEnum.NORMAL);
                 UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (userDetails != null){
+                if (userDetails != null) {
                     bibliotheca.setCreator(userDetails.getUsername());
                 }
                 size += bibliothecaMapper.insertSelective(bibliotheca);
-            }catch (DuplicateKeyException e){
+            } catch (DuplicateKeyException e) {
                 throw new Exception("identifier : " + bibliotheca.getIdentifier() + " 已存在！", e);
-            }catch (DataAccessException e){
+            } catch (DataAccessException e) {
                 throw new Exception("操作失败！", e);
             }
         }
-        if (size == bibliothecaList.size()){
+        if (size == bibliothecaList.size()) {
             return true;
-        }else{
+        } else {
             throw new Exception("数据条目不一致！");
         }
     }
@@ -169,9 +172,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         try {
             bibliotheca.setUpdateTime(new Date());
             return bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
-        }catch (DataAccessException e){
+        } catch (DataAccessException e) {
             throw new Exception("identifier : " + bibliotheca.getIdentifier() + " 已存在！", e);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("操作失败！", e);
         }
     }
@@ -184,25 +187,25 @@ public class BibliothecaServiceImpl implements BibliothecaService {
      */
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
-    public void listUpdateBibliotheca(List<Bibliotheca> bibliothecaList) throws Exception{
+    public void listUpdateBibliotheca(List<Bibliotheca> bibliothecaList) throws Exception {
 
         int size = 0;
 
         Bibliotheca b = null;
         try {
-            for (Bibliotheca bibliotheca: bibliothecaList){
+            for (Bibliotheca bibliotheca : bibliothecaList) {
                 b = bibliotheca;
                 size += bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
             }
-        }catch (DuplicateKeyException e){
+        } catch (DuplicateKeyException e) {
             throw new Exception("identifier : " + b.getIdentifier() + " 已存在！", e);
-        }catch (DataAccessException e){
+        } catch (DataAccessException e) {
             throw new Exception("数据更新出现异常，请重新尝试或联系管理员！");
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("服务器异常，请重新尝试或联系管理员！");
         }
 
-        if (size != bibliothecaList.size()){
+        if (size != bibliothecaList.size()) {
             throw new Exception("数据更新不一致，请重新尝试或联系管理员！");
         }
     }
@@ -220,7 +223,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         try {
             //1. 查询该批次下的所有书目
             Map paramMap = new HashMap();
-            List<Bibliotheca> bibliothecaList=new ArrayList<>();
+            List<Bibliotheca> bibliothecaList = new ArrayList<>();
             paramMap.put("bibliothecaState", BibliothecaStateEnum.NEW);
             paramMap.put("batchId", batchId);
             List<Bibliotheca> bibliothecaList1 = bibliothecaMapper.listBibliothecaSelective(paramMap);
@@ -233,54 +236,86 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             paramMap.put("batchId", batchId);
             List<Bibliotheca> bibliothecaList3 = bibliothecaMapper.listBibliothecaSelective(paramMap);
             bibliothecaList.addAll(bibliothecaList3);
-            if (bibliothecaList == null || bibliothecaList.isEmpty()){
+            if (bibliothecaList == null || bibliothecaList.isEmpty()) {
                 return null;
             }
 
             List<DuplicationCheckEntity> duplicationCheckEntities = new ArrayList<>();
 
             //循环
-            for (Bibliotheca bibliotheca: bibliothecaList){
+            for (Bibliotheca bibliotheca : bibliothecaList) {
                 //2. 数据为空时，则插入空项
-                if (StringUtils.isBlank(bibliotheca.getIsbn())){
+                if (StringUtils.isBlank(bibliotheca.getIsbn())) {
                     //NO_DATA
-                    duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, null, DuplicationCheckEntity.RateFlag.NO_DATA,
+                    duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, null, DuplicationCheckEntity.RateFlag.NO_DATA,
                             DuplicationCheckEntity.CheckFlag.EMPTY));
                     continue;
+                }
+                //根据所有书目进行筛选去掉本身
+                Map map = new HashMap();
+                map.put("isbn", bibliotheca.getIsbn());
+                List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
+                Iterator<Bibliotheca> iterator = bibliothecas.iterator();
+                while(iterator.hasNext()){
+                    Bibliotheca b = iterator.next();
+                    if(b.getBatchId().equalsIgnoreCase(batchId))
+                        iterator.remove();   //注意这个地方
                 }
 
                 //3. 根据 isbn 或 isbn13 查询 bookMeta 信息
                 List<BookMeta> bookMetas = bookMetaDao.listBookMetaByIsbn(bibliotheca.getIsbn());
-                if (bookMetas == null || bookMetas.isEmpty()){
-                    String isbn13 = bibliotheca.getIsbn().replaceAll("-","");
+                if (bookMetas == null || bookMetas.isEmpty()) {
+                    String isbn13 = bibliotheca.getIsbn().replaceAll("-", "");
                     //换 isbn13 来查
                     bookMetas = bookMetaDao.listBookMetaByIsbn13(isbn13);
-                    if (bookMetas == null || bookMetas.isEmpty()){
+                    if (bookMetas == null || bookMetas.isEmpty() && bibliothecas.size() == 0) {
                         //NO_DATA
-                        duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, null, DuplicationCheckEntity.RateFlag.NO_DATA,
+                        duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, null, DuplicationCheckEntity.RateFlag.NO_DATA,
                                 DuplicationCheckEntity.CheckFlag.EMPTY));
                         continue;
+                    } else if (bookMetas == null || bookMetas.isEmpty() && bibliothecas.size() > 0) {
+                        for (Bibliotheca b : bibliothecas) {
+                            duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, null, DuplicationCheckEntity.RateFlag.NO_DATA,
+                                    DuplicationCheckEntity.CheckFlag.EMPTY));
+                        }
                     }
                 }
 
                 //4. 查到 bookMeta 数据，然后进行重叠率查询匹配
-                for (BookMeta bookMeta : bookMetas){
+                for (BookMeta bookMeta : bookMetas) {
                     //5. 这其中有一个为空，则不可能达到 95% 以上的重叠率，故为空时，则添加 空的 查重对象
                     if (StringUtils.isBlank(bibliotheca.getTitle())
                             || StringUtils.isBlank(bibliotheca.getAuthor())
                             || StringUtils.isBlank(bibliotheca.getPublisher())
                             || StringUtils.isBlank(bookMeta.getTitle())
                             || StringUtils.isBlank(bookMeta.getCreator())
-                            || StringUtils.isBlank(bookMeta.getPublisher())){
+                            || StringUtils.isBlank(bookMeta.getPublisher())) {
                         //LT RATE
-                        if (bookMeta.getHasCebx() == 1){
+                        if (bookMeta.getHasCebx() == 1) {
                             //has CEBX
-                            duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
-                                    DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
-                        }else {
+                            if (bibliothecas.size() == 0) {
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                        DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
+                            } else {
+                                for (Bibliotheca b : bibliothecas) {
+                                    duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                            DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
+                                }
+                            }
+
+
+                        } else {
                             //no CEBX
-                            duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
-                                    DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                            if (bibliothecas.size() == 0) {
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                        DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                            } else {
+                                for (Bibliotheca b : bibliothecas) {
+                                    duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                            DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                                }
+                            }
+
                         }
                         continue;
                     }
@@ -293,30 +328,63 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     double resultRate = titleRate * 0.5d + authorRate * 0.4d + publisherRate * 0.1d;
 
                     //7. 当重叠率未达到 0.95，则添加 小于标识
-                    if (resultRate < DuplicationCheckEntity.RateFlag.RATE){
+                    if (resultRate < DuplicationCheckEntity.RateFlag.RATE) {
                         //LT RATE
-                        if (bookMeta.getHasCebx() == 1){
+                        if (bookMeta.getHasCebx() == 1) {
                             //has CEBX
-                            duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
-                                    DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
-                        }else {
+                            if (bibliothecas.size() == 0) {
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                        DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
+                            } else {
+                                for (Bibliotheca b : bibliothecas) {
+                                    duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                            DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
+                                }
+                            }
+
+                        } else {
                             //no CEBX
-                            duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
-                                    DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                            if (bibliothecas.size() == 0) {
+
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(null,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                        DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                            } else {
+                                for (Bibliotheca b : bibliothecas) {
+                                    duplicationCheckEntities.add(genDuplicationCheckEntity(b,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                            DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                                }
+                            }
+
                         }
                         continue;
                     }
 
                     //8. 达到0.95，则需要匹配 cebx
                     //GT EQ RATE
-                    if (bookMeta.getHasCebx() == 1){
+                    if (bookMeta.getHasCebx() == 1) {
                         //has CEBX
-                        duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
-                                DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
-                    }else {
+                        if (bibliothecas.size() == 0) {
+                            duplicationCheckEntities.add(genDuplicationCheckEntity(null,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                                    DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
+                        } else {
+                            for (Bibliotheca b : bibliothecas) {
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(b,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                                        DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
+                            }
+                        }
+
+                    } else {
                         //no CEBX
-                        duplicationCheckEntities.add(genDuplicationCheckEntity(bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
-                                DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                        if (bibliothecas.size() == 0) {
+                            duplicationCheckEntities.add(genDuplicationCheckEntity(null,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                                    DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                        } else {
+                            for (Bibliotheca b : bibliothecas) {
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(b,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                                        DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
+                            }
+                        }
+
                     }
                 /*DuplicationCheckEntity dce = new DuplicationCheckEntity();
                 dce.setBibliotheca(bibliotheca);
@@ -334,7 +402,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 }
             }
             return duplicationCheckEntities;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("操作出现异常！");
         }
@@ -342,12 +410,13 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
     }
 
-    private DuplicationCheckEntity genDuplicationCheckEntity(Bibliotheca bibliotheca, BookMeta bookMeta, int rateFlag, int checkFlag) {
+    private DuplicationCheckEntity genDuplicationCheckEntity(Bibliotheca bibliotheca2, Bibliotheca bibliotheca, BookMeta bookMeta, int rateFlag, int checkFlag) {
         DuplicationCheckEntity dce = new DuplicationCheckEntity();
         dce.setBibliotheca(bibliotheca);
         dce.setBookMeta(bookMeta);
         dce.setRateFlag(rateFlag);
         dce.setFlag(checkFlag);
+        dce.setBibliotheca2(bibliotheca2);
         return dce;
     }
 
@@ -368,19 +437,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             int sum = 0;
 
             //当数据为 noMatch 和 按钮为 make 类型时，需要做 元数据 插入 TEMP 库操作
-            if ("noMatch".equals(dataType) && "make".equals(btnType)){
-                for (String id : bibliothecaIdList){
+            if ("noMatch".equals(dataType) && "make".equals(btnType)) {
+                for (String id : bibliothecaIdList) {
                     //ApabiBookMetaTempPublish2 apabiBookMetaTempPublish2 = new ApabiBookMetaTempPublish2();
                     ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();
                     Bibliotheca bibliotheca = bibliothecaMapper.selectByPrimaryKey(id);
 
                     String issuedDate = StringToolUtil.issuedDateFormat(bibliotheca.getPublishTime());
 
-                    if (StringUtils.isBlank(issuedDate)){
+                    if (StringUtils.isBlank(issuedDate)) {
                         throw new Exception("请检查出版日期是否完整！");
                     }
                     String metaId = StringToolUtil.metaidFormat(issuedDate);
-                    if (StringUtils.isBlank(metaId)){
+                    if (StringUtils.isBlank(metaId)) {
                         throw new Exception("请检查数据出版日期是否存在或符合 2018-10-01 格式");
                     }
                     // 元数据库中，不用修改电子书价格
@@ -415,8 +484,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     bibliotheca1.setUpdateTime(new Date());
                     try {
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
-                        bibliotheca1.seteBookPrice(decimalFormat.format(Double.valueOf(bibliotheca.getPaperPrice()) * (1/3.0d)));
-                    }catch (Exception e){
+                        bibliotheca1.seteBookPrice(decimalFormat.format(Double.valueOf(bibliotheca.getPaperPrice()) * (1 / 3.0d)));
+                    } catch (Exception e) {
                         System.out.println("价格计算错误 : 纸书价格=" + bibliotheca.getPaperPrice());
                     }
                     //区分 确认重复和确认制作的区别
@@ -430,27 +499,12 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
                     bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca1);
                     sum++;
+                    production(bibliotheca);
 
-                    //判断是否是待排产
-                    Map map=new HashMap();
-                    map.put("batchId",bibliotheca.getBatchId());
-                    List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
-                    int num=0;
-                    for (Bibliotheca bibliotheca2:bibliothecas) {
-                        if(bibliotheca2.getBibliothecaState().getCode()!=0){
-                            num++;
-                        }
-                    }
-                    if(num==bibliothecas.size()){
-                        Batch batch = batchMapper.selectByBatchId(bibliotheca.getBatchId());
-                        batch.setBatchState(BatchStateEnum.WAITING_PRODUCTION);
-                        batch.setUpdateTime(new Date());
-                        batchMapper.updateByPrimaryKey(batch);
-                    }
                 }
-            }else if ("noMatch".equals(dataType) && "duplicate".equals(btnType)){
+            } else if ("noMatch".equals(dataType) && "duplicate".equals(btnType)) {
                 // 数据为 noMatch 和 操作类型为 duplicate 类型时，只需要进行查询和更新即可
-                for (int i=0; i < bibliothecaIdList.size(); i++){
+                for (int i = 0; i < bibliothecaIdList.size(); i++) {
 
                     Bibliotheca bibliotheca = bibliothecaMapper.selectByPrimaryKey(bibliothecaIdList.get(i));
 
@@ -463,18 +517,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 //                    bibliotheca1.setMetaId(bookMeta.getMetaId());
                     try {
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
-                        bibliotheca1.seteBookPrice(decimalFormat.format(Double.valueOf(bibliotheca.getPaperPrice()) * (1/3.0d)));
-                    }catch (Exception e){
+                        bibliotheca1.seteBookPrice(decimalFormat.format(Double.valueOf(bibliotheca.getPaperPrice()) * (1 / 3.0d)));
+                    } catch (Exception e) {
                         System.out.println("价格计算错误 : 纸书价格=" + bibliotheca.getPaperPrice());
                     }
 
                     sum += bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca1);
+                    production(bibliotheca);
                 }
-            }else {
+            } else {
                 // 其它类型，只需要进行查询和更新即可
-                for (int i=0; i < bibliothecaIdList.size(); i++){
+                for (int i = 0; i < bibliothecaIdList.size(); i++) {
                     BookMeta bookMeta = bookMetaDao.findBookMetaById(metaIdList.get(i));
-                    if (bookMeta == null){
+                    if (bookMeta == null) {
                         throw new Exception("元数据异常，请检查数据并重新尝试或联系管理员！");
                     }
 
@@ -490,20 +545,40 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
                     try {
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
-                        bibliotheca1.seteBookPrice(decimalFormat.format(Double.valueOf(bibliotheca.getPaperPrice()) * (1/3.0d)));
-                    }catch (Exception e){
+                        bibliotheca1.seteBookPrice(decimalFormat.format(Double.valueOf(bibliotheca.getPaperPrice()) * (1 / 3.0d)));
+                    } catch (Exception e) {
                         System.out.println("价格计算错误 : 纸书价格=" + bibliotheca.getPaperPrice());
                     }
 
                     sum += bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca1);
+                    production(bibliotheca);
                 }
             }
 
-            if (sum != bibliothecaIdList.size()){
+
+            if (sum != bibliothecaIdList.size()) {
                 throw new Exception("数据更新异常，请检查数据并重新尝试或联系管理员！");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("服务器异常，请重新尝试或联系管理员");
+        }
+    }
+    public void production(Bibliotheca bibliotheca){
+        //判断是否是待排产
+        Map map = new HashMap();
+        map.put("batchId", bibliotheca.getBatchId());
+        List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
+        int num = 0;
+        for (Bibliotheca bibliotheca2 : bibliothecas) {
+            if (bibliotheca2.getBibliothecaState().getCode() != 0) {
+                num++;
+            }
+        }
+        if (num == bibliothecas.size()) {
+            Batch batch = batchMapper.selectByBatchId(bibliotheca.getBatchId());
+            batch.setBatchState(BatchStateEnum.WAITING_PRODUCTION);
+            batch.setUpdateTime(new Date());
+            batchMapper.updateByPrimaryKey(batch);
         }
     }
 
@@ -519,7 +594,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         List<Bibliotheca> list = new ArrayList<>(data.size());
 
         List<Publisher> publishers = publisherDao.findAll();
-        if (publishers == null){
+        if (publishers == null) {
             throw new BizException("出版社校验出错，请重新尝试或联系管理员！");
         }
 
@@ -530,13 +605,13 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 String title = (String) entry.getValue().get("标题");
                 String originalFilename = (String) entry.getValue().get("原文件名");
 
-                if (StringUtils.isBlank(identifier)){
+                if (StringUtils.isBlank(identifier)) {
                     throw new BizException("编号不能为空，请检查数据重新导入！");
                 }
-                if (StringUtils.isBlank(title)){
+                if (StringUtils.isBlank(title)) {
                     throw new BizException("标题不能为空，请检查数据重新导入！");
                 }
-                if (StringUtils.isBlank(originalFilename)){
+                if (StringUtils.isBlank(originalFilename)) {
                     throw new BizException("原文件名不能为空，请检查数据重新导入！");
                 }
 
@@ -544,21 +619,21 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 String publisher = (String) entry.getValue().get("出版社");
 
                 // 书目信息中存储的是 出版社id
-                if (StringUtils.isNotBlank(publisher) && publishers != null){
+                if (StringUtils.isNotBlank(publisher) && publishers != null) {
                     List<String> idList =
                             publishers.stream()
                                     .filter(p -> publisher.equals(p.getTitle()))
                                     .map(p -> p.getId())
                                     .collect(Collectors.toCollection(ArrayList::new));
-                    if (idList != null && idList.size() == 1){
+                    if (idList != null && idList.size() == 1) {
                         bibliotheca.setPublisher(idList.get(0));
                     }
                 }
                 String isbn = (String) entry.getValue().get("ISBN");
                 String publishTime = (String) entry.getValue().get("出版时间");
-                if(StringUtils.isNotBlank(publishTime)){
+                if (StringUtils.isNotBlank(publishTime)) {
                     publishTime = StringToolUtil.issuedDateFormat(publishTime);
-                    publishTime = publishTime.replaceAll(" 00:00:00","");
+                    publishTime = publishTime.replaceAll(" 00:00:00", "");
                 }
                 String edition = (String) entry.getValue().get("版次");
                 String paperPrice = (String) entry.getValue().get("纸书价格");
@@ -578,10 +653,10 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
                 list.add(bibliotheca);
             }
-        }catch (Exception e){
-            if (e instanceof BizException){
+        } catch (Exception e) {
+            if (e instanceof BizException) {
                 throw new Exception(e.getMessage());
-            }else{
+            } else {
                 throw new Exception("数据解析异常，请检查文件合适是否正确或联系管理员！");
             }
         }
@@ -633,9 +708,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         } catch (IOException e) {
             e.printStackTrace();
             throw new Exception("服务器异常！");
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("数据解析异常！");
-        }finally {
+        } finally {
             if (out != null) {
                 try {
                     out.close();
@@ -648,6 +723,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
     /**
      * 自动添加 excel 行数据
+     *
      * @param sheet
      * @param excelModelList
      */
@@ -655,19 +731,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
         List<String> list = null;
         // 遍历所有数据
-        for (int i =0; i < excelModelList.size(); i++){
+        for (int i = 0; i < excelModelList.size(); i++) {
             BibliothecaExcelModel bem = excelModelList.get(i);
 
             list = Arrays.asList(bem.getIdentifier(), bem.getMetaId(), bem.getBatchId(), bem.getOriginalFilename(), bem.getTitle(),
                     bem.getAuthor(), bem.getPublisher(), bem.getIsbn(), bem.getPublishTime(), bem.getEdition(),
-                    bem.getPaperPrice(), bem.geteBookPrice(), bem.getDocumentFormat(), bem.getMemo(), bem.getDuplicateFlag() == null ? "":bem.getDuplicateFlag().getDesc(),
-                    bem.getBibliothecaState() == null ? "":bem.getBibliothecaState().getDesc(), bem.getCompletedFlag() == null?"":bem.getCompletedFlag().getDesc(),
-                    bem.getCreator(), bem.getCreateTime() == null? "":new SimpleDateFormat("yyyy-MM-dd").format(bem.getCreateTime()));
+                    bem.getPaperPrice(), bem.geteBookPrice(), bem.getDocumentFormat(), bem.getMemo(), bem.getDuplicateFlag() == null ? "" : bem.getDuplicateFlag().getDesc(),
+                    bem.getBibliothecaState() == null ? "" : bem.getBibliothecaState().getDesc(), bem.getCompletedFlag() == null ? "" : bem.getCompletedFlag().getDesc(),
+                    bem.getCreator(), bem.getCreateTime() == null ? "" : new SimpleDateFormat("yyyy-MM-dd").format(bem.getCreateTime()));
             // 创建 excel 行
-            Row row = sheet.createRow(i+1);
+            Row row = sheet.createRow(i + 1);
 
             // 逐个单元格添加数据
-            for (int j=0; j<list.size(); j++){
+            for (int j = 0; j < list.size(); j++) {
                 row.createCell(j).setCellValue(list.get(j));
             }
         }
@@ -675,68 +751,71 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
     /**
      * null to ""
+     *
      * @param s
      * @return
      */
-    private String null2EmptyString(String s){
-        if (s == null){
+    private String null2EmptyString(String s) {
+        if (s == null) {
             return "";
-        }else{
+        } else {
             return s;
         }
     }
 
     /**
      * 计算 重叠率
+     *
      * @param s1
      * @param s2
      * @return
      */
-    private double overlapRate(String s1, String s2){
+    private double overlapRate(String s1, String s2) {
 
         //去除特殊字符
         s1 = noSignCheckPattern(s1);
         s2 = noSignCheckPattern(s2);
 
         // str1 长度大于 str2
-        String str1,str2;
+        String str1, str2;
 
-        if (s1.length() > s2.length()){
+        if (s1.length() > s2.length()) {
             str1 = s1;
             str2 = s2;
-        }else {
+        } else {
             str1 = s2;
             str2 = s1;
         }
 
         int len = str2.length();
         int sum = 0;
-        for (int i = 0; i < len; i++){
-            if (str1.charAt(i) == str2.charAt(i)){
+        for (int i = 0; i < len; i++) {
+            if (str1.charAt(i) == str2.charAt(i)) {
                 sum++;
-            }else {
+            } else {
                 break;
             }
         }
         //计算重叠率，上下字符串相同索引匹配，不能跨下标
         DecimalFormat df = new DecimalFormat("0.000");
-        double rate = Double.parseDouble(df.format((float)sum/str1.length()));
+        double rate = Double.parseDouble(df.format((float) sum / str1.length()));
         return rate;
     }
 
     /**
      * 无特殊符号正则匹配提取
+     *
      * @param str
      * @return
      */
-    private String noSignCheckPattern(String str){
+    private String noSignCheckPattern(String str) {
         //只提取其中的字母，数字和汉字
         String regExp = "[a-zA-Z0-9\\u4e00-\\u9fa5]";
 
         Pattern p = Pattern.compile(regExp);
         Matcher matcher = p.matcher(str);
         StringBuilder sb = new StringBuilder();
-        while (matcher.find()){
+        while (matcher.find()) {
             sb.append(matcher.group());
         }
         return sb.toString();

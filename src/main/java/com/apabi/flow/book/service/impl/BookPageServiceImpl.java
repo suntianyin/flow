@@ -47,7 +47,6 @@ import java.util.concurrent.Executors;
  * @since 1.0.0
  */
 @Service
-@Transactional
 public class BookPageServiceImpl implements BookPageService {
 
     private static final Logger log = LoggerFactory.getLogger(BookPageServiceImpl.class);
@@ -321,12 +320,15 @@ public class BookPageServiceImpl implements BookPageService {
         }
         for (PageAssemblyQueue pageAssemblyQueue : list) {
             try {
+                long a = System.currentTimeMillis();
                 totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId());
+                long b = System.currentTimeMillis();
+                log.info("metaId：{},章节拼装一共耗时{}ms",pageAssemblyQueue.getId(),b-a );
             } catch (Exception e) {
                 log.error("metaid = {} 的图书组装出错，错误信息：{}", pageAssemblyQueue.getId(), e);
             }
         }
-        log.info("成功组装图书数 - {}", totalNum);
+        log.info("成功组装图书章节数 - {}", totalNum);
         return totalNum;
     }
     /**
@@ -448,6 +450,10 @@ public class BookPageServiceImpl implements BookPageService {
                 //递归获取目录结构的页码
                 if (meta != null) {
                     String foamatCatalog = meta.getFoamatCatalog();
+                    if(StringUtils.isBlank(foamatCatalog)){
+                        log.info("图书分页表中 metaid = {} 的目录结构不存在", metaId);
+                        return 0;
+                    }
                     JSONArray jsonArray = JSONArray.fromObject(foamatCatalog);
                     getPageNums(jsonArray, pageNums);
                 }
@@ -469,7 +475,7 @@ public class BookPageServiceImpl implements BookPageService {
                     saveBookLog(metaId, DataType.CHAPTERINSERT, chapterList.size(), chapterList.size(), 0, chapterList.size() - 1);
                     return 0;
                 }
-                //总字数
+                //总字数  1 3 5 5
                 int wordSum = 0;
                 for (Integer pageNum : pageNums) {
                     if (pageNum == 1) {

@@ -17,13 +17,13 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            var duplicateFlag = $("#duplicateFlag").val();
+            // var duplicateFlag = $("#duplicateFlag").val();
             var bibliothecaState = $("#bibliothecaState").val();
-            var pathurl = "outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;
+            var pathurl = "outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
-            $("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");
+            <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
             $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
 
             jqPaging(pathurl, totalPages, currentPages);
@@ -46,9 +46,9 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            var duplicateFlag = $("#duplicateFlag").val().trim();
+            // var duplicateFlag = $("#duplicateFlag").val().trim();
             var bibliothecaState = $("#bibliothecaState").val();
-            window.location.href = "${ctx}/processing/bibliotheca/outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;
+            window.location.href = "${ctx}/processing/bibliotheca/outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher +  "&bibliothecaState=" + bibliothecaState;
         }
 
         function updateBibliotheca(id) {
@@ -271,7 +271,7 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            var duplicateFlag = $("#duplicateFlag").val();
+            // var duplicateFlag = $("#duplicateFlag").val();
             var bibliothecaState = $("#bibliothecaState").val();
 
             confirmDialog("温馨提示", "注：您确定要对当前查询结果导出到Excel文件？", function (r) {
@@ -279,7 +279,7 @@
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
                         try {
-                            window.location.href = "${ctx}/processing/bibliotheca/outUnit/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;
+                            window.location.href = "${ctx}/processing/bibliotheca/outUnit/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
                         } catch (e) {
                         }
                     }, 200);
@@ -311,11 +311,19 @@
                         class="fa fa-backward"></i>&nbsp;返回</span></a>
                 <div class="tools_separator"></div>
             </div>
+        <#if (timeState)??>
+                <div class="PartialButton">
+                    <a id="lr-add1" class="tools_btn"><span style="color: #7c7c7c;"><i
+                            class="fa fa-plus"></i>&nbsp;新增</span></a>
+                    <div class="tools_separator"></div>
+                </div>
+        <#else>
             <div class="PartialButton">
                 <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
                         class="fa fa-plus"></i>&nbsp;新增</span></a>
                 <div class="tools_separator"></div>
             </div>
+        </#if>
             <div class="PartialButton">
                 <a id="lr-make" title="制作成功" onclick="btn_makeSuccess()" class="tools_btn"><span><i
                         class="fa fa-adjust"></i>&nbsp;制作成功</span></a>

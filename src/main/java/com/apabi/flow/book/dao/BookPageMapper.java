@@ -98,4 +98,5 @@ public interface BookPageMapper {
 
     void updataOrInsertByMidAndPid(BookPage bookPage);
     int insertList(List<BookPage> list);
+    int deleteByMetaId(String metaId);
 }
