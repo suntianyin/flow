@@ -217,7 +217,7 @@
                         <th>文档大概数量</th>
                         <th>批次状态</th>
                         <th>创建人</th>
-                        <th>书单审核人</th>
+                        <#--<th>书单审核人</th>-->
                         <th>书单查重人</th>
                         <th>备注</th>
                         <th>创建时间</th>
@@ -236,7 +236,7 @@
                             <td>${(list.documentNum)! '' }</td>
                             <td>${(list.batchState.getDesc())! '' }</td>
                             <td>${(list.creator)! '' }</td>
-                            <td>${(list.auditor)! '' }</td>
+                            <#--<td>${(list.auditor)! '' }</td>-->
                             <td>${(list.checker) !''}</td>
                             <td>${(list.memo)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>

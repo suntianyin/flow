@@ -77,8 +77,10 @@ public class FetchPageConsumer implements Runnable {
                 log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取", metaId);
                 return;
             }
+//            int i3 = bookPageMapper.deleteByMetaId(metaId);
             List<BookPage> lists=new ArrayList<>();
             //页数 从 第一页开始，直到 总页数 添加到集合
+            long f = System.currentTimeMillis();
             for (long i = start; i <= cebxPage; i++) {
                 HttpEntity httpEntity = null;
                 String url = null;
@@ -138,6 +140,7 @@ public class FetchPageConsumer implements Runnable {
             //写入数据库
             try {
                 long c = System.currentTimeMillis();
+                log.info("metaId：{},请求接口一共耗时{}ms",metaId,c-f );
                 int i = bookPageMapper.insertList(lists);
                 long d = System.currentTimeMillis();
                 log.info("metaId：{},插入数据库耗时{}ms",metaId,d-c );

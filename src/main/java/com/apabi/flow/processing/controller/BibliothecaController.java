@@ -87,7 +87,7 @@ public class BibliothecaController {
     public String outUnitIndex(@RequestParam(value = "batchId", required = true)String batchId,
                         @RequestParam(value = "title", required = false)String title,
                         @RequestParam(value = "publisher", required = false)String publisher,
-                        @RequestParam(value = "duplicateFlag", required = false)DuplicateFlagEnum duplicateFlag,
+//                        @RequestParam(value = "duplicateFlag", required = false)DuplicateFlagEnum duplicateFlag,
                         @RequestParam(value = "bibliothecaState", required = false)BibliothecaStateEnum bibliothecaState,
                         @RequestParam(value = "page", required = false, defaultValue = "1")Integer pageNum,
                         @RequestParam(value = "pageSize", required = false, defaultValue = "10")Integer pageSize,
@@ -96,7 +96,7 @@ public class BibliothecaController {
             long start = System.currentTimeMillis();
             Map<String, Object> paramsMap = new HashMap<>();
             ParamsUtils.checkParameterAndPut2Map(paramsMap,"batchId",batchId,"title",title,"publisher",publisher);
-            paramsMap.put("duplicateFlag", duplicateFlag);
+//            paramsMap.put("duplicateFlag", duplicateFlag);
             paramsMap.put("bibliothecaState", bibliothecaState);
 
             List<Bibliotheca> list = bibliothecaService.listBibliotheca(paramsMap);
@@ -114,7 +114,7 @@ public class BibliothecaController {
 
             model.addAttribute("title", title);
             model.addAttribute("publisher", publisher);
-            model.addAttribute("duplicateFlag", duplicateFlag);
+//            model.addAttribute("duplicateFlag", duplicateFlag);
             model.addAttribute("bibliothecaState", bibliothecaState);
             //动态改变前端 书目状态 下拉列表信息展示
             model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
@@ -130,7 +130,6 @@ public class BibliothecaController {
      * @param batchId
      * @param title
      * @param publisher
-     * @param duplicateFlag
      * @param bibliothecaState
      * @param pageNum
      * @param pageSize
@@ -141,7 +140,7 @@ public class BibliothecaController {
     public String Index(@RequestParam(value = "batchId", required = true)String batchId,
                                @RequestParam(value = "title", required = false)String title,
                                @RequestParam(value = "publisher", required = false)String publisher,
-                               @RequestParam(value = "duplicateFlag", required = false)DuplicateFlagEnum duplicateFlag,
+//                               @RequestParam(value = "duplicateFlag", required = false)DuplicateFlagEnum duplicateFlag,
                                @RequestParam(value = "bibliothecaState", required = false)BibliothecaStateEnum bibliothecaState,
                                @RequestParam(value = "page", required = false, defaultValue = "1")Integer pageNum,
                                @RequestParam(value = "pageSize", required = false, defaultValue = "10")Integer pageSize,
@@ -150,7 +149,7 @@ public class BibliothecaController {
             long start = System.currentTimeMillis();
             Map<String, Object> paramsMap = new HashMap<>();
             ParamsUtils.checkParameterAndPut2Map(paramsMap,"batchId",batchId,"title",title,"publisher",publisher);
-            paramsMap.put("duplicateFlag", duplicateFlag);
+//            paramsMap.put("duplicateFlag", duplicateFlag);
             paramsMap.put("bibliothecaState", bibliothecaState);
             List<Bibliotheca> list = bibliothecaService.listBibliotheca(paramsMap);
             Batch batch = batchService.selectByBatchId(batchId);
@@ -163,7 +162,7 @@ public class BibliothecaController {
             model.addAttribute("batchId", batchId);
 
             model.addAttribute("publisher", publisher);
-            model.addAttribute("duplicateFlag", duplicateFlag);
+//            model.addAttribute("duplicateFlag", duplicateFlag);
             model.addAttribute("bibliothecaState", bibliothecaState);
             //动态改变前端 书目状态 下拉列表信息展示
             model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
@@ -175,7 +174,7 @@ public class BibliothecaController {
     }
 
     /**
-     * 管理员 书目查重信息 页面
+     * 管理员 `1 页面
      * @param id
      * @param model
      * @return
@@ -206,8 +205,8 @@ public class BibliothecaController {
                 list = bibliothecaService.listDuplicationCheckEntity(batch.getBatchId());
             }
 
-            List<DuplicationCheckEntity> gtRateCheckFlagYesList = new ArrayList<>();
-            List<DuplicationCheckEntity> gtRateCheckFlagNoList = new ArrayList<>();
+//            List<DuplicationCheckEntity> gtRateCheckFlagYesList = new ArrayList<>();
+//            List<DuplicationCheckEntity> gtRateCheckFlagNoList = new ArrayList<>();
             List<DuplicationCheckEntity> ltRateCheckFlagYesList = new ArrayList<>();
             List<DuplicationCheckEntity> ltRateCheckFlagNoList = new ArrayList<>();
 
@@ -216,25 +215,27 @@ public class BibliothecaController {
             //数据分组：1. 重复率>=95,有cebx  2. 重复率>=95,无cebx  3. 重复率<95,有cebx  4. 重复率<95,无cebx  5.isbn 不匹配
             for (DuplicationCheckEntity dce: list){
 
-                if (dce.getRateFlag() == DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG){
-                    if (dce.getFlag() == DuplicationCheckEntity.CheckFlag.DUPLICATE_YES){
-                        gtRateCheckFlagYesList.add(dce);
-                    }else {
-                        gtRateCheckFlagNoList.add(dce);
-                    }
-                }else if (dce.getRateFlag() == DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG){
-                    if (dce.getFlag() == DuplicationCheckEntity.CheckFlag.DUPLICATE_YES){
-                        ltRateCheckFlagYesList.add(dce);
-                    }else {
-                        ltRateCheckFlagNoList.add(dce);
-                    }
+                if (dce.getFlag() == DuplicationCheckEntity.CheckFlag.DUPLICATE_YES){
+//                    if (dce.getFlag() == DuplicationCheckEntity.CheckFlag.DUPLICATE_YES){
+//                        gtRateCheckFlagYesList.add(dce);
+//                    }else {
+//                        gtRateCheckFlagNoList.add(dce);
+//                    }
+                    ltRateCheckFlagYesList.add(dce);//有cebx
+                }else if (dce.getFlag() == DuplicationCheckEntity.CheckFlag.DUPLICATE_NO){
+//                    if (dce.getFlag() == DuplicationCheckEntity.CheckFlag.DUPLICATE_YES){
+//                        ltRateCheckFlagYesList.add(dce);
+//                    }else {
+//                        ltRateCheckFlagNoList.add(dce);
+//                    }
+                    ltRateCheckFlagNoList.add(dce);//无ceb
                 }else {
                     noMetaDataList.add(dce);
                 }
             }
 
-            model.addAttribute("gtRateCheckFlagYesList",gtRateCheckFlagYesList);
-            model.addAttribute("gtRateCheckFlagNoList",gtRateCheckFlagNoList);
+//            model.addAttribute("gtRateCheckFlagYesList",gtRateCheckFlagYesList);
+//            model.addAttribute("gtRateCheckFlagNoList",gtRateCheckFlagNoList);
             model.addAttribute("ltRateCheckFlagYesList",ltRateCheckFlagYesList);
             model.addAttribute("ltRateCheckFlagNoList",ltRateCheckFlagNoList);
             model.addAttribute("noMetaDataList",noMetaDataList);
@@ -464,7 +465,7 @@ public class BibliothecaController {
                     .collect(Collectors.toCollection(ArrayList::new));
 
             if (bibliothecaList == null || bibliothecaList.isEmpty()){
-                return new ResultEntity(500, "更新 0 条数据！");
+                return new ResultEntity(500, "请制作已排产的书目");
             }
 
             bibliothecaService.listUpdateBibliotheca(bibliothecaList);
@@ -514,7 +515,7 @@ public class BibliothecaController {
                     .collect(Collectors.toCollection(ArrayList::new));
 
             if (bibliothecaList == null || bibliothecaList.isEmpty()){
-                return new ResultEntity(500, "更新 0 条数据！");
+                return new ResultEntity(500, "请制作已排产的书目！");
             }
 
             bibliothecaService.listUpdateBibliotheca(bibliothecaList);
@@ -564,9 +565,8 @@ public class BibliothecaController {
             }
             //检测数据是否属于在当前范围
 
-            boolean dataTypeFlag = dataType.equals("gtEqYes")
-                    || dataType.equals("gtEqNo")
-                    || dataType.equals("ltYes")
+            boolean dataTypeFlag =
+                     dataType.equals("ltYes")
                     || dataType.equals("ltNo")
                     || dataType.equals("noMatch");
 
@@ -574,6 +574,7 @@ public class BibliothecaController {
 
             //当两条个条件都满足时，正常路过，否则抛出异常
             if ( dataTypeFlag && btnTypeFlag){
+
             }else {
                 return new ResultEntity(403, "数据异常");
             }
@@ -620,7 +621,7 @@ public class BibliothecaController {
     public String exportData(@RequestParam(value = "batchId", required = true)String batchId,
                              @RequestParam(value = "title", required = false)String title,
                              @RequestParam(value = "publisher", required = false)String publisher,
-                             @RequestParam(value = "duplicateFlag", required = false)DuplicateFlagEnum duplicateFlag,
+//                             @RequestParam(value = "duplicateFlag", required = false)DuplicateFlagEnum duplicateFlag,
                              @RequestParam(value = "bibliothecaState", required = false)BibliothecaStateEnum bibliothecaState,
                              HttpServletResponse response) throws IOException {
         try {
@@ -632,7 +633,7 @@ public class BibliothecaController {
             // 获取所有的isbn列表
             Map<String, Object> paramsMap = new HashMap<>();
             ParamsUtils.checkParameterAndPut2Map(paramsMap,"batchId",batchId,"title",title,"publisher",publisher);
-            paramsMap.put("duplicateFlag", duplicateFlag);
+//            paramsMap.put("duplicateFlag", duplicateFlag);
             paramsMap.put("bibliothecaState", bibliothecaState);
             List<Bibliotheca> list = bibliothecaService.listBibliotheca(paramsMap);
 

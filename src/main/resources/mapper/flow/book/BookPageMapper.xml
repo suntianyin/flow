@@ -65,6 +65,10 @@
     delete from APABI_BOOK_PAGE
     where ID = #{id,jdbcType=VARCHAR}
   </delete>
+    <delete id="deleteByMetaId" parameterType="java.lang.String">
+    delete from APABI_BOOK_PAGE
+    where META_ID = #{META_ID,jdbcType=VARCHAR}
+  </delete>
     <insert id="insert" parameterType="com.apabi.flow.book.model.BookPage">
     insert into APABI_BOOK_PAGE (ID, CREATE_TIME, META_ID, 
       PAGE_ID, UPDATE_TIME, WORD_SUM, 
