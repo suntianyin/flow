@@ -27,7 +27,6 @@ import java.util.List;
  * @date 2018/11/21 16:41
  * @description
  */
-@Service("EMailUtil")
 public class EMailUtil {
 
     // SMTP邮件服务器

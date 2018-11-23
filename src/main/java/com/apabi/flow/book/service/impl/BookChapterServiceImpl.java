@@ -1,11 +1,11 @@
 package com.apabi.flow.book.service.impl;
 
-import com.apabi.flow.admin.util.EmailUtil;
 import com.apabi.flow.book.dao.BookChapterDao;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.dao.BookShardDao;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookChapterService;
+import com.apabi.flow.book.task.DetectBookCode;
 import com.apabi.flow.book.util.BookConstant;
 import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.EMailUtil;
@@ -23,14 +23,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -193,164 +197,79 @@ public class BookChapterServiceImpl implements BookChapterService {
     @Override
     @Async
     public void detectBookChapter() {
-        //获取总条数
-        long start = System.currentTimeMillis();
-        int total = bookChapterDao.getTotal();
-        if (total > 0) {
-            //获取字典
-            String words = dicWordData.getWords();
-            byte[] dicArray = createDic(words);
-            //存放乱码
-            List<BookChapterDetect> detectList = new ArrayList<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            List<String> results = new ArrayList<>();
-            int pageSize = config.getBatchSize();
-            int pages = total / pageSize + 1;
-            for (int i = 1; i < pages + 1; i++) {
-                long start1 = System.currentTimeMillis();
-                Map<String, String> codeMap = new HashMap<>();
-                PageHelper.startPage(i, pageSize);
-                Page<BookChapter> page = bookChapterDao.findBookChapterByPage();
-                List<BookChapter> chapterList = page.getResult();
-                //检测乱码
-                for (BookChapter chapter : chapterList) {
-                    try {
-                        String content = chapter.getContent();
-                        if (org.apache.commons.lang3.StringUtils.isNotBlank(content)) {
-                            char[] chars = content.toCharArray();
-                            for (int j = 0; j < chars.length; j++) {
-                                if (dicArray[chars[j]] == 0) {
-                                    if (codeMap.containsKey(chapter.getComId())) {
-                                        String code = codeMap.get(chapter.getComId());
-                                        code += String.valueOf(chars[j]);
-                                        codeMap.put(chapter.getComId(), code);
-                                    } else {
-                                        codeMap.put(chapter.getComId(), String.valueOf(chars[j]));
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.warn("检测章节{}乱码信息异常：{}", chapter.getComId(), e.getMessage());
-                    }
+        try {
+            //获取总条数
+            long start = System.currentTimeMillis();
+            int total = bookChapterDao.getTotal();
+            if (total > 0) {
+                //获取字典
+                String words = dicWordData.getWords();
+                byte[] dicArray = createDic(words);
+                //存放乱码
+                List<BookChapterDetect> detectList = new ArrayList<>();
+                //获取日期格式转换
+                ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+                DateFormat df = threadLocal.get();
+                if (df == null) {
+                    df = new SimpleDateFormat("yyyyMMddHHmmss");
+                    threadLocal.set(df);
                 }
-                List<BookChapterDetect> tmp = collectCodeInfo(codeMap);
-                detectList.addAll(tmp);
-                long end1 = System.currentTimeMillis();
-                log.info("总批次为：{}，已完成批次：{}，耗时：{}", pages, i, (end1 - start1));
-                if (i == pages) {
-                    //生成表格
-                    List<BookChapterDetect> bookChapterDetects = detectList.stream()
-                            .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
-                            .collect(Collectors.toList());
-                    String resultPath = config.getBookDetect() + File.separator + sdf.format(new Date()) + "code.xls";
-                    BookUtil.exportExcel(bookChapterDetects, resultPath);
-                    //保存表格路径到总表
-                    results.add(resultPath);
-                    log.info("检查结果已生成到{}", config.getBookDetect());
+                List<String> results = new ArrayList<>();
+                int pageSize = config.getBatchSize();
+                int pages = total / pageSize + 1;
+                //将页码存入队列
+                LinkedBlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
+                for (int i = 1; i < pages + 1; i++) {
+                    queue.put(i);
                 }
-                //如果行数大于60000，则输出
-                if (detectList.size() > 60000) {
-                    //生成表格
-                    List<BookChapterDetect> bookChapterDetects = detectList.stream()
-                            .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
-                            .collect(Collectors.toList());
-                    String resultPath = config.getBookDetect() + File.separator + sdf.format(new Date()) + "code.xls";
-                    BookUtil.exportExcel(bookChapterDetects, resultPath);
-                    //清空乱码结果总表
-                    detectList.clear();
-                    //保存表格路径到总表
-                    results.add(resultPath);
-                    log.info("检查结果已生成到{}", config.getBookDetect());
+                //创建乱码检查任务
+                DetectBookCode detectBookCode = new DetectBookCode(queue,
+                        bookChapterDao,
+                        bookMetaDao,
+                        chapterNameCode,
+                        pages,
+                        detectList,
+                        config,
+                        results,
+                        dicArray,
+                        df,
+                        pageSize);
+                //获取cpu的核数
+                int cpuSum = Runtime.getRuntime().availableProcessors();
+                ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
+                        3 * cpuSum,
+                        60,
+                        TimeUnit.SECONDS,
+                        new LinkedBlockingDeque<Runnable>());
+                for (int i = 0; i < pages; i++) {
+                    executor.execute(detectBookCode);
                 }
-            }
-            long end = System.currentTimeMillis();
-            log.info("检测图书章节内容乱码总耗时：{}", (end - start));
-            //发送邮件
-            EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
-            eMailUtil.createSender();
-            eMailUtil.sendAttachmentsMail(results);
-            log.info("检查结果已发送邮件");
-        }
-    }
-
-    //乱码信息整合
-    private List collectCodeInfo(Map<String, String> codeMap) {
-        if (codeMap != null) {
-            //存储乱码整合信息
-            List<BookChapterDetect> detectList = new ArrayList<>();
-            for (String comId : codeMap.keySet()) {
-                try {
-                    BookChapterSum bookChapterSum = bookChapterDao.findChapterByComId(comId);
-                    //获取图书id
-                    int chapterNum = bookChapterSum.getChapterNum();
-                    String metaId = comId.substring(0, comId.lastIndexOf(String.valueOf(chapterNum)));
-                    //获取章节标题
-                    EpubookMeta epubookMeta = bookMetaDao.findEpubookMetaById(metaId);
-                    String chapterName = getChapterName(epubookMeta.getStreamCatalog(), chapterNum);
-                    //合成信息
-                    BookChapterDetect bookChapterDetect = new BookChapterDetect();
-                    bookChapterDetect.setMetaId(metaId);
-                    bookChapterDetect.setTitle(epubookMeta.getTitle());
-                    bookChapterDetect.setChapterNum(chapterNum);
-                    bookChapterDetect.setChapterName(chapterName);
-                    bookChapterDetect.setMessage(codeMap.get(comId));
-                    detectList.add(bookChapterDetect);
-                } catch (Exception e) {
-                    log.warn("整合章节{}乱码信息异常：{}", comId, e.getMessage());
-                }
-            }
-            return detectList;
-        }
-        return null;
-    }
-
-    //获取章节标题
-    private String getChapterName(String cataLog, int chapterNum) {
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(cataLog)) {
-            String tmp = String.valueOf(cataLog.charAt(0));
-            if (tmp.equals("[")) {
-                //获取层次目录
-                JSONArray jsonArray = JSONArray.fromObject(cataLog);
-                Iterator it = jsonArray.iterator();
-                while (it.hasNext()) {
-                    JSONObject jsonObject = (JSONObject) it.next();
-                    createCataTree(jsonObject, chapterNum);
-                }
-                return chapterNameCode;
-            } else {
-                //获取非层次目录
-                List<String> cataRows = Arrays.asList(cataLog.split("},"));
-                //生成目录
-                JSONObject jsonObject;
-                for (String cata : cataRows) {
-                    jsonObject = JSONObject.fromObject(cata + "}");
-                    BookCataRows bookCataRows = (BookCataRows) JSONObject.toBean(jsonObject, BookCataRows.class);
-                    if (bookCataRows.getChapterNum() == chapterNum) {
-                        return bookCataRows.getChapterName();
+                executor.shutdown();
+                while (true) {
+                    if (executor.isTerminated()) {
+                        log.info("所有线程结束");
+                        long end = System.currentTimeMillis();
+                        log.info("检测图书章节内容乱码总耗时：{}", (end - start));
+                        //生成检测结果
+                        List<BookChapterDetect> bookChapterDetects = detectList.stream()
+                                .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
+                                .collect(Collectors.toList());
+                        String resultPath = config.getBookDetect() + File.separator + df.format(new Date()) + "code.xls";
+                        BookUtil.exportExcel(bookChapterDetects, resultPath);
+                        //保存表格路径到总表
+                        results.add(resultPath);
+                        log.info("检查结果已生成到{}", config.getBookDetect());
+                        //发送邮件
+                        EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+                        eMailUtil.createSender();
+                        eMailUtil.sendAttachmentsMail(results);
+                        log.info("检查结果已发送邮件");
+                        break;
                     }
                 }
             }
-        }
-        return null;
-    }
-
-    //遍历目录
-    private void createCataTree(JSONObject jsonObject, int chapterNum) {
-        if (jsonObject != null) {
-            List<JSONObject> childE = jsonObject.getJSONArray("children");
-            if (childE != null && childE.size() > 0) {
-                if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
-                }
-                for (JSONObject child : childE) {
-                    createCataTree(child, chapterNum);
-                }
-            } else {
-                if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
-                }
-            }
+        } catch (Exception e) {
+            log.warn("乱码检查时出现异常{}", e.getMessage());
         }
     }
 
