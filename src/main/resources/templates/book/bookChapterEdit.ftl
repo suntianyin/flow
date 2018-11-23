@@ -197,6 +197,10 @@
         <div class="panel panel-default">
             <div class="panel-heading" style="text-align: center; font-size: 18px;height: 35px;">
                 <span style="font-size: larger">${bookMetaVo.title!''}</span>
+                <#if bookChapter??>
+                <#else >
+                    <span style="color:red">${bookChapter!"该书流式内容存在问题，请联系管理员"}</span>
+                </#if>
             </div>
             <div class="panel-body">
                 <div style=" float:left;width: 20%;height: 90%;border: #2d2625 solid 1px;">
@@ -210,16 +214,14 @@
                     </div>
                 </div>
                 <div style=" float:left;width: 78%;height: 90%;border: #2d2625 solid 1px;">
-                        <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
+                    <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
                             <#if bookChapter??>
                                 <input id="chapterComid" value="${bookChapter.comId}" type="hidden"/>
                                 <input id="chapterNum" value="${bookChapter.chapterNum}" type="hidden"/>
                                 <input id="wordSum" value="${bookChapter.wordSum}" type="hidden"/>
                                 ${bookChapter.content}
-                            <#else >
-                                    流式内容存在问题，请联系管理员
                             </#if>
-                        </textarea>
+                    </textarea>
                 </div>
             </div>
         </div>
