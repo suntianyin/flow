@@ -6,3 +6,4 @@ uploadXml: F:\upload\flow\xml
 uploadEpub: F:\upload\flow\epub
 uploadCebx: F:\upload\flow\cebx
 bookDetect: F:\bookDetect
+batchSize: 100

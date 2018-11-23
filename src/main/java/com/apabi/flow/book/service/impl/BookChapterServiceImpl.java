@@ -64,6 +64,8 @@ public class BookChapterServiceImpl implements BookChapterService {
     @Autowired
     SystemConfMapper systemConfMapper;
 
+    private static String chapterNameCode;
+
     //根据图书id和章节号，获取章节内容
     @Override
     public BookChapter selectChapterById(String metaid, Integer chapterNum) {
@@ -200,10 +202,12 @@ public class BookChapterServiceImpl implements BookChapterService {
             byte[] dicArray = createDic(words);
             //存放乱码
             List<BookChapterDetect> detectList = new ArrayList<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            int pageSize = 100;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            List<String> results = new ArrayList<>();
+            int pageSize = config.getBatchSize();
             int pages = total / pageSize + 1;
             for (int i = 1; i < pages + 1; i++) {
+                long start1 = System.currentTimeMillis();
                 Map<String, String> codeMap = new HashMap<>();
                 PageHelper.startPage(i, pageSize);
                 Page<BookChapter> page = bookChapterDao.findBookChapterByPage();
@@ -232,23 +236,41 @@ public class BookChapterServiceImpl implements BookChapterService {
                 }
                 List<BookChapterDetect> tmp = collectCodeInfo(codeMap);
                 detectList.addAll(tmp);
-                long end = System.currentTimeMillis();
-                log.info("总批次为：{}，已完成批次：{}，耗时：{}", pages, i, (end - start));
+                long end1 = System.currentTimeMillis();
+                log.info("总批次为：{}，已完成批次：{}，耗时：{}", pages, i, (end1 - start1));
+                if (i == pages) {
+                    //生成表格
+                    List<BookChapterDetect> bookChapterDetects = detectList.stream()
+                            .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
+                            .collect(Collectors.toList());
+                    String resultPath = config.getBookDetect() + File.separator + sdf.format(new Date()) + "code.xls";
+                    BookUtil.exportExcel(bookChapterDetects, resultPath);
+                    //保存表格路径到总表
+                    results.add(resultPath);
+                    log.info("检查结果已生成到{}", config.getBookDetect());
+                }
+                //如果行数大于60000，则输出
+                if (detectList.size() > 60000) {
+                    //生成表格
+                    List<BookChapterDetect> bookChapterDetects = detectList.stream()
+                            .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
+                            .collect(Collectors.toList());
+                    String resultPath = config.getBookDetect() + File.separator + sdf.format(new Date()) + "code.xls";
+                    BookUtil.exportExcel(bookChapterDetects, resultPath);
+                    //清空乱码结果总表
+                    detectList.clear();
+                    //保存表格路径到总表
+                    results.add(resultPath);
+                    log.info("检查结果已生成到{}", config.getBookDetect());
+                }
             }
             long end = System.currentTimeMillis();
-            log.info("检测图书章节内容乱码耗时：{}", (end - start));
-            //生成表格
-            List<BookChapterDetect> bookChapterDetects = detectList.stream()
-                    .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
-                    .collect(Collectors.toList());
-            String resultPath = config.getBookDetect() + File.separator + sdf.format(new Date()) + "codeDetect.xls";
-            BookUtil.exportExcel(bookChapterDetects, resultPath);
-            log.info("检查结果已生成到{}", config.getBookDetect());
+            log.info("检测图书章节内容乱码总耗时：{}", (end - start));
             //发送邮件
             EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
             eMailUtil.createSender();
-            eMailUtil.sendAttachmentsMail(resultPath);
-            log.info("检查结果已发送邮件{}", resultPath);
+            eMailUtil.sendAttachmentsMail(results);
+            log.info("检查结果已发送邮件");
         }
     }
 
@@ -293,8 +315,9 @@ public class BookChapterServiceImpl implements BookChapterService {
                 Iterator it = jsonArray.iterator();
                 while (it.hasNext()) {
                     JSONObject jsonObject = (JSONObject) it.next();
-                    return createCataTree(jsonObject, chapterNum);
+                    createCataTree(jsonObject, chapterNum);
                 }
+                return chapterNameCode;
             } else {
                 //获取非层次目录
                 List<String> cataRows = Arrays.asList(cataLog.split("},"));
@@ -313,23 +336,22 @@ public class BookChapterServiceImpl implements BookChapterService {
     }
 
     //遍历目录
-    private String createCataTree(JSONObject jsonObject, int chapterNum) {
+    private void createCataTree(JSONObject jsonObject, int chapterNum) {
         if (jsonObject != null) {
             List<JSONObject> childE = jsonObject.getJSONArray("children");
             if (childE != null && childE.size() > 0) {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    return jsonObject.getString("chapterName");
+                    chapterNameCode = jsonObject.getString("chapterName");
                 }
                 for (JSONObject child : childE) {
                     createCataTree(child, chapterNum);
                 }
             } else {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    return jsonObject.getString("chapterName");
+                    chapterNameCode = jsonObject.getString("chapterName");
                 }
             }
         }
-        return null;
     }
 
     //生成字典

@@ -35,6 +35,10 @@ public class ApplicationConfig {
     @Value("${bookDetect}")
     private String bookDetect;
 
+    //获取流式内容获取批次
+    @Value("${batchSize}")
+    private Integer batchSize;
+
     public String getCebxHtmlExe() {
         return cebxHtmlExe;
     }
@@ -89,5 +93,13 @@ public class ApplicationConfig {
 
     public void setBookDetect(String bookDetect) {
         this.bookDetect = bookDetect;
+    }
+
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
     }
 }

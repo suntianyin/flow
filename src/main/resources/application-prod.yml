@@ -6,6 +6,7 @@ uploadXml: D:\upload\flow\xml
 uploadEpub: D:\upload\flow\epub
 uploadCebx: D:\upload\flow\cebx
 bookDetect: D:\bookDetect
+batchSize: 1000
 spring:
   data:
       mongodb:

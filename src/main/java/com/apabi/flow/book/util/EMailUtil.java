@@ -9,9 +9,18 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import java.io.File;
+import java.util.List;
 
 /**
  * @author guanpp
@@ -67,7 +76,7 @@ public class EMailUtil {
     }
 
     //发送带附件的邮件
-    public void sendAttachmentsMail(String attach) {
+    public void sendAttachmentsMail(List<String> attachs) {
         MimeMessage message;
         try {
             message = sender.createMimeMessage();
@@ -76,11 +85,20 @@ public class EMailUtil {
             if (StringUtils.isNotBlank(TO)) {
                 helper.setTo(TO.split(";"));
             }
-            helper.setSubject("主题：带附件的邮件");
-            helper.setText("图书乱码检查结果");
+            helper.setSubject("主题：图书乱码检查结果");
             //附件加入邮件
-            FileSystemResource file = new FileSystemResource(new File(attach));
-            helper.addAttachment(file.getFilename(), file);
+            Multipart multipart = new MimeMultipart();
+            if (attachs != null) {
+                for (String file : attachs){
+                    BodyPart attachmentPart = new MimeBodyPart();
+                    DataSource source = new FileDataSource(file);
+                    attachmentPart.setDataHandler(new DataHandler(source));
+                    attachmentPart.setFileName(source.getName());
+                    multipart.addBodyPart(attachmentPart);
+                }
+            }
+            message.setContent(multipart);
+            message.saveChanges();
             sender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
