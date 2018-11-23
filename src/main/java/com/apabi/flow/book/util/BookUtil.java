@@ -355,6 +355,7 @@ public class BookUtil {
             bookMeta.setHasCebx(0);
             bookMeta.setIsReadEpub(0);
             bookMeta.setIsReadCebxFlow(0);
+            bookMeta.setCreateTime(new Date());
             return bookMeta;
         }
         return null;
@@ -408,6 +409,7 @@ public class BookUtil {
             metaDataTemp.setHasCebx(0);
             metaDataTemp.setIsReadEpub(0);
             metaDataTemp.setIsReadCebxFlow(0);
+            metaDataTemp.setCreateTime(new Date());
             return metaDataTemp;
         }
         return null;
