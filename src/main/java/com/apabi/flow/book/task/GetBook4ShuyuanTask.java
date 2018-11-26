@@ -9,6 +9,7 @@ import com.apabi.flow.book.model.CmfDigitObject;
 import com.apabi.flow.book.model.CmfDigitResfileSite;
 import com.apabi.flow.book.model.CmfMeta;
 import com.apabi.flow.book.util.BookUtil;
+import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.shuyuan.book.dao.SCmfDigitObjectDao;
@@ -17,6 +18,9 @@ import com.apabi.shuyuan.book.dao.SCmfMetaDao;
 import com.apabi.shuyuan.book.model.SCmfDigitObject;
 import com.apabi.shuyuan.book.model.SCmfDigitResfileSite;
 import com.apabi.shuyuan.book.model.SCmfMeta;
+import net.sf.json.JSONObject;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,10 @@ import java.util.List;
 public class GetBook4ShuyuanTask {
 
     private Logger logger = LoggerFactory.getLogger(GetBook4ShuyuanTask.class);
+
+    private final String getCataLog = "http://flow.apabi.com/flow/book/getFoamatCatalogByMetaId?metaid=";
+
+    private final String getCebxPage= "http://flow.apabi.com/flow/book/getCebxPageByMetaId?metaid=";
 
     @Autowired
     private BookMetaDao bookMetaDao;
@@ -66,7 +74,6 @@ public class GetBook4ShuyuanTask {
 
     //每天0点执行一次
     @Scheduled(cron = "0 0 0 * * ?")
-    //@Scheduled(cron = "0 * * * * ?")
     public void insertBook2Oracle() {
         Integer lastDrid = 0;
         Integer maxDrid;
@@ -84,10 +91,19 @@ public class GetBook4ShuyuanTask {
                         if (sCmfMeta != null) {
                             BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                             if (bookMeta != null) {
+                                //从接口获取目录和页码
+                                String cata = getCebxData(getCataLog);
+                                String cebxPage = getCebxData(getCebxPage);
+                                bookMeta.setStreamCatalog(cata);
+                                bookMeta.setFoamatCatalog(cata);
+                                bookMeta.setCebxPage(cebxPage);
                                 int res = bookMetaDao.insertBookMeta(bookMeta);
                                 if (res > 0) {
                                     ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                     //新增到图书元数据temp表
+                                    metaDataTemp.setStreamCatalog(cata);
+                                    metaDataTemp.setFoamatCatalog(cata);
+                                    metaDataTemp.setCebxPage(cebxPage);
                                     apabiBookMetaDataTempDao.insert(metaDataTemp);
                                     //获取书苑数据，更新到流式图书
                                     boolean ress = insertShuyuanData(sCmfMeta);
@@ -171,6 +187,21 @@ public class GetBook4ShuyuanTask {
 
         }
         return false;
+    }
+
+    //调用接口获取数据
+    private String getCebxData(String url) {
+        if (!StringUtils.isEmpty(url)) {
+            try {
+                HttpEntity httpEntity = HttpUtils.doGetEntity(url);
+                String body = EntityUtils.toString(httpEntity);
+                JSONObject jsonObject = JSONObject.fromObject(body);
+                return jsonObject.get("body").toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     //写文件
