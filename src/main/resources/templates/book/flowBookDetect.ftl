@@ -11,6 +11,11 @@
             window.location.href = "codeDetect";
             tipDialog("乱码检查已开始，请注意查看邮件！", 3, 1);
         }
+        //公众号和QQ检查
+        function sourceDetect() {
+            window.location.href = "sourceDetect";
+            tipDialog("公众号和QQ检查已开始，请注意查看邮件！", 3, 1);
+        }
     </script>
 </head>
 <body>
@@ -26,6 +31,10 @@
                         <td>
                             <input id="codeDetect" type="button" class="btnSearch" value="乱码检查"
                                    onclick="codeDetect()"/>
+                        </td>
+                        <td>
+                            <input id="sourceDetect" type="button" class="btnSearch" value="公众号和QQ检查"
+                                   onclick="sourceDetect()"/>
                         </td>
                     </tr>
                 </table>

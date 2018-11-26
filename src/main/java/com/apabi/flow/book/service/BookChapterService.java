@@ -28,6 +28,9 @@ public interface BookChapterService {
     int updateBookChapter(BookChapter bookChapter) ;
 
     //流式图书内容乱码检测
-    void detectBookChapter();
+    void detectBookCode();
+
+    //流式图书公众号和QQ检测
+    void detectBookSource();
 
 }

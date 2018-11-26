@@ -62,20 +62,23 @@ public class BookConstant {
     public static final String ORIGINAL = "true";
 
     //isbn正则
-    public static Pattern REG_ISBN1 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{2}[-\\s]?[0-9]{6}[-\\s]?[0-9])");
+    public static final Pattern REG_ISBN1 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{2}[-\\s]?[0-9]{6}[-\\s]?[0-9])");
 
-    public static Pattern REG_ISBN2 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{3}[-\\s]?[0-9]{5}[-\\s]?[0-9])");
+    public static final Pattern REG_ISBN2 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{3}[-\\s]?[0-9]{5}[-\\s]?[0-9])");
 
-    public static Pattern REG_ISBN3 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{4}[-\\s]?[0-9]{4}[-\\s]?[0-9])");
+    public static final Pattern REG_ISBN3 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{4}[-\\s]?[0-9]{4}[-\\s]?[0-9])");
 
-    public static Pattern REG_ISBN4 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9])");
+    public static final Pattern REG_ISBN4 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9])");
 
-    public static Pattern REG_ISBN5 = Pattern.compile("([0-9][-\\s]?[0-9]{2}[-\\s]?[0-9]{6}[-\\s]?[0-9x])");
+    public static final Pattern REG_ISBN5 = Pattern.compile("([0-9][-\\s]?[0-9]{2}[-\\s]?[0-9]{6}[-\\s]?[0-9x])");
 
-    public static Pattern REG_ISBN6 = Pattern.compile("([0-9][-\\s]?[0-9]{3}[-\\s]?[0-9]{5}[-\\s]?[0-9x])");
+    public static final Pattern REG_ISBN6 = Pattern.compile("([0-9][-\\s]?[0-9]{3}[-\\s]?[0-9]{5}[-\\s]?[0-9x])");
 
-    public static Pattern REG_ISBN7 = Pattern.compile("([0-9][-\\s]?[0-9]{4}[-\\s]?[0-9]{4}[-\\s]?[0-9x])");
+    public static final Pattern REG_ISBN7 = Pattern.compile("([0-9][-\\s]?[0-9]{4}[-\\s]?[0-9]{4}[-\\s]?[0-9x])");
 
-    public static Pattern REG_ISBN8 = Pattern.compile("([0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9x])");
+    public static final Pattern REG_ISBN8 = Pattern.compile("([0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9x])");
     //public static Pattern REG_ISBN4 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9])|([0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9x])");
+
+    //公众号和qq正则
+    public static final Pattern DETECT_SOURCE = Pattern.compile("([\\s\\S]{0,10}公众号[\\s\\S]{0,10})|([\\s\\S]{0,10}(?i:qq)((:|：| )?)[\\d]{5,11}[\\s\\S]{5,11})");
 }

@@ -579,7 +579,14 @@ public class BookController {
     //乱码检查
     @RequestMapping(value = "/codeDetect")
     public String codeDetect() {
-        bookChapterService.detectBookChapter();
+        bookChapterService.detectBookCode();
+        return "book/flowBookDetect";
+    }
+
+    //公众号和QQ检测
+    @RequestMapping(value = "/sourceDetect")
+    public String sourceDetect() {
+        bookChapterService.detectBookSource();
         return "book/flowBookDetect";
     }
 

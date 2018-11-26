@@ -5,6 +5,7 @@ import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.shuyuan.book.model.SCmfDigitObject;
 import com.apabi.shuyuan.book.model.SCmfDigitResfileSite;
 import com.apabi.shuyuan.book.model.SCmfMeta;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.TOCReference;
 import org.apache.commons.lang3.StringUtils;
@@ -13,10 +14,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -28,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.SocketTimeoutException;
@@ -513,36 +513,37 @@ public class BookUtil {
 
     //生成图书名和图书id的映射表
     public static void exportExcel(List<BookChapterDetect> chapterDetects, String excelPath) {
-
-        Workbook book = new HSSFWorkbook();
-        Sheet sheet = book.createSheet("sheet1");
-        //日期格式
-        /*HSSFCellStyle cellStyle = (HSSFCellStyle) book.createCellStyle();
-        HSSFDataFormat format = (HSSFDataFormat) book.createDataFormat();
-        cellStyle.setDataFormat(format.getFormat("yyyy-MM-dd"));*/
-        // 在对应的Excel中建立一个分表
-        for (int i = 0; i < chapterDetects.size(); i++) {
-            Row row = sheet.createRow(i);
-
-            // 在所在的行设置所在的单元格（相当于列，初始从0开始,对应的就是A列）
-            Cell cell = row.createCell(0);
-            Cell cell1 = row.createCell(1);
-            Cell cell2 = row.createCell(2);
-            Cell cell3 = row.createCell(3);
-            Cell cell4 = row.createCell(4);
-
-            cell.setCellValue(chapterDetects.get(i).getMetaId());
-            cell1.setCellValue(chapterDetects.get(i).getTitle());
-            cell2.setCellValue(chapterDetects.get(i).getChapterNum());
-            cell3.setCellValue(chapterDetects.get(i).getChapterName());
-            cell4.setCellValue(chapterDetects.get(i).getMessage());
-
-        }
-
-        // 保存到计算机相应路径
+        FileOutputStream fos;
         try {
-            book.write(new FileOutputStream(excelPath));
-        } catch (IOException e) {
+            //Workbook book = new HSSFWorkbook();
+            Workbook book = new SXSSFWorkbook();
+            Sheet sheet = book.createSheet("sheet1");
+            //日期格式
+            /*HSSFCellStyle cellStyle = (HSSFCellStyle) book.createCellStyle();
+            HSSFDataFormat format = (HSSFDataFormat) book.createDataFormat();
+            cellStyle.setDataFormat(format.getFormat("yyyy-MM-dd"));*/
+            // 在对应的Excel中建立一个分表
+            for (int i = 0; i < chapterDetects.size(); i++) {
+                Row row = sheet.createRow(i);
+
+                // 在所在的行设置所在的单元格（相当于列，初始从0开始,对应的就是A列）
+                Cell cell = row.createCell(0);
+                Cell cell1 = row.createCell(1);
+                Cell cell2 = row.createCell(2);
+                Cell cell3 = row.createCell(3);
+                Cell cell4 = row.createCell(4);
+
+                cell.setCellValue(chapterDetects.get(i).getMetaId());
+                cell1.setCellValue(chapterDetects.get(i).getTitle());
+                cell2.setCellValue(chapterDetects.get(i).getChapterNum());
+                cell3.setCellValue(chapterDetects.get(i).getChapterName());
+                cell4.setCellValue(chapterDetects.get(i).getMessage());
+
+            }
+            fos = new FileOutputStream(excelPath);
+            book.write(fos);
+            fos.close();
+        } catch (Exception e) {
             log.warn("流式内容检查结果生成异常{}", e.getMessage());
         }
     }

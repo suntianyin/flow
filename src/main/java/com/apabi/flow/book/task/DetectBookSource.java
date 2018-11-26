@@ -3,8 +3,6 @@ package com.apabi.flow.book.task;
 import com.apabi.flow.book.dao.BookChapterDao;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.*;
-import com.apabi.flow.book.service.impl.BookChapterServiceImpl;
-import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.config.ApplicationConfig;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -13,32 +11,36 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author guanpp
- * @date 2018/11/23 14:23
+ * @date 2018/11/26 13:35
  * @description
  */
-public class DetectBookCode implements Runnable {
+public class DetectBookSource implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(DetectBookCode.class);
+    private static final Logger log = LoggerFactory.getLogger(DetectBookSource.class);
 
     private LinkedBlockingQueue<Integer> pageNumqQueue;
+
+    private Integer pageSize;
 
     private BookChapterDao bookChapterDao;
 
     private BookMetaDao bookMetaDao;
 
-    private String chapterNameCode;
+    private Pattern pattern;
+
+    private List<BookChapterDetect> detectList;
 
     private int pages;
 
-    private List<BookChapterDetect> detectList;
+    private String chapterNameCode;
 
     private ApplicationConfig config;
 
@@ -46,32 +48,30 @@ public class DetectBookCode implements Runnable {
 
     private DateFormat df;
 
-    private byte[] dicArray;
 
-    private Integer pageSize;
-
-    public DetectBookCode(LinkedBlockingQueue<Integer> pageNumqQueue,
-                          BookChapterDao bookChapterDao,
-                          BookMetaDao bookMetaDao,
-                          String chapterNameCode,
-                          int pages,
-                          List<BookChapterDetect> detectList,
-                          ApplicationConfig config,
-                          List<String> results,
-                          byte[] dicArray,
-                          DateFormat df,
-                          Integer pageSize) {
+    public DetectBookSource(LinkedBlockingQueue<Integer> pageNumqQueue,
+                            Integer pageSize,
+                            BookChapterDao bookChapterDao,
+                            BookMetaDao bookMetaDao,
+                            Pattern pattern,
+                            List<BookChapterDetect> detectList,
+                            int pages,
+                            String chapterNameCode,
+                            ApplicationConfig config,
+                            List<String> results,
+                            DateFormat df) {
         this.pageNumqQueue = pageNumqQueue;
         this.bookChapterDao = bookChapterDao;
         this.bookMetaDao = bookMetaDao;
+        this.pattern = pattern;
         this.chapterNameCode = chapterNameCode;
         this.pages = pages;
         this.detectList = detectList;
         this.config = config;
         this.results = results;
         this.df = df;
-        this.dicArray = dicArray;
         this.pageSize = pageSize;
+
     }
 
     @Override
@@ -90,21 +90,19 @@ public class DetectBookCode implements Runnable {
                 try {
                     String content = chapter.getContent();
                     if (org.apache.commons.lang3.StringUtils.isNotBlank(content)) {
-                        char[] chars = content.toCharArray();
-                        for (int j = 0; j < chars.length; j++) {
-                            if (dicArray[chars[j]] == 0) {
-                                if (codeMap.containsKey(chapter.getComId())) {
-                                    String code = codeMap.get(chapter.getComId());
-                                    code += String.valueOf(chars[j]);
-                                    codeMap.put(chapter.getComId(), code);
-                                } else {
-                                    codeMap.put(chapter.getComId(), String.valueOf(chars[j]));
-                                }
+                        Matcher matcher = pattern.matcher(content);
+                        while (matcher.find()) {
+                            if (codeMap.containsKey(chapter.getComId())) {
+                                String code = codeMap.get(chapter.getComId());
+                                code += matcher.group();
+                                codeMap.put(chapter.getComId(), code);
+                            } else {
+                                codeMap.put(chapter.getComId(), matcher.group());
                             }
                         }
                     }
                 } catch (Exception e) {
-                    log.warn("检测章节{}乱码信息异常：{}", chapter.getComId(), e.getMessage());
+                    log.warn("检测章节{}公众号和QQ异常：{}", chapter.getComId(), e.getMessage());
                 }
             }
             List<BookChapterDetect> tmp = collectCodeInfo(codeMap);
@@ -112,30 +110,16 @@ public class DetectBookCode implements Runnable {
                 detectList.addAll(tmp);
             }
             long end = System.currentTimeMillis();
-            log.info("乱码检测总批次为：{}，已完成批次：{}，耗时：{}", pages, pageNum, (end - start));
-           /* if (detectList.size() > 60000) {
-                //如果行数大于60000，则输出
-                //生成表格
-                List<BookChapterDetect> bookChapterDetects = detectList.stream()
-                        .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
-                        .collect(Collectors.toList());
-                String resultPath = config.getBookDetect() + File.separator + df.format(new Date()) + "code.xls";
-                BookUtil.exportExcel(bookChapterDetects, resultPath);
-                //清空乱码结果总表
-                detectList.clear();
-                //保存表格路径到总表
-                results.add(resultPath);
-                log.info("检查结果已生成到{}", config.getBookDetect());
-            }*/
+            log.info("公众号和QQ总批次为：{}，已完成批次：{}，耗时：{}", pages, pageNum, (end - start));
         } catch (Exception e) {
-            log.warn("检查乱码信息第{}批次，出现异常{}", pageNum, e.getMessage());
+            log.warn("检查公众号和QQ第{}批次，出现异常{}", pageNum, e.getMessage());
         }
     }
 
-    //乱码信息整合
+    //公众号和QQ检查结果信息整合
     private List collectCodeInfo(Map<String, String> codeMap) {
         if (codeMap != null) {
-            //存储乱码整合信息
+            //存储结果整合信息
             List<BookChapterDetect> detectList = new ArrayList<>();
             for (String comId : codeMap.keySet()) {
                 try {
@@ -155,7 +139,7 @@ public class DetectBookCode implements Runnable {
                     bookChapterDetect.setMessage(codeMap.get(comId));
                     detectList.add(bookChapterDetect);
                 } catch (Exception e) {
-                    log.warn("整合章节{}乱码信息异常：{}", comId, e.getMessage());
+                    log.warn("整合章节{}公众号和QQ检查结果信息异常：{}", comId, e.getMessage());
                 }
             }
             return detectList;
