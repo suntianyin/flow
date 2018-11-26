@@ -110,7 +110,7 @@ public class DetectBookSource implements Runnable {
                 detectList.addAll(tmp);
             }
             long end = System.currentTimeMillis();
-            log.info("公众号和QQ总批次为：{}，已完成批次：{}，耗时：{}", pages, pageNum, (end - start));
+            log.info("检查公众号和QQ总批次为：{}，已完成批次：{}，耗时：{}", pages, pageNum, (end - start));
         } catch (Exception e) {
             log.warn("检查公众号和QQ第{}批次，出现异常{}", pageNum, e.getMessage());
         }
