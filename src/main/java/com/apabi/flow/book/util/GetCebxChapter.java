@@ -79,17 +79,17 @@ public class GetCebxChapter {
     public EpubookMeta insertCebx(String path, EpubookMeta epubookMeta, String fileName) throws Exception {
         if (StringUtils.isNotBlank(path)) {
             //解析cebx文件
-            boolean res = getHtmlCss(path);
-            if (res) {
+            String target = getHtmlCss(path);
+            if (target != null) {
                 //获取层次目录
-                String xmlPath = config.getTargetCebxDir() + File.separator + CATA_XML;
+                String xmlPath = target + File.separator + CATA_XML;
                 String cataLog = getCatalog(xmlPath);
                 if (StringUtils.isBlank(cataLog)) {
                     log.warn("检查文件" + xmlPath + "是否存在问题！");
                     return null;
                 }
                 //解析html文件
-                File dir = new File(config.getTargetCebxDir());
+                File dir = new File(target);
                 if (!dir.exists()) {
                     return null;
                 }
@@ -108,7 +108,7 @@ public class GetCebxChapter {
                         //只获取html文件
                         if (file.toLowerCase().contains(FILE_HTML)) {
                             //获取章节内容
-                            content = readToString(config.getTargetCebxDir() + File.separator + file);
+                            content = readToString(target + File.separator + file);
                             doc = Jsoup.parse(content, BookConstant.CODE_UTF8);
                             if (StringUtils.isNotBlank(content)) {
                                 wordSum = doc.body().children().text().replaceAll("\\u3000|\\s*", "").length();
@@ -160,7 +160,7 @@ public class GetCebxChapter {
                     long end = System.currentTimeMillis();
                     log.info("图书章节及分组拆分耗时：" + (end - start) + "毫秒");
                     //获取样式文件
-                    boolean res1 = saveCss(epubookMeta);
+                    boolean res1 = saveCss(epubookMeta, target);
                     if (res1) {
                         //样式连接
                         String styleUrl = "<link href=\"" +
@@ -260,7 +260,7 @@ public class GetCebxChapter {
     }
 
     //获取样式文件
-    private boolean saveCss(EpubookMeta epubookMeta) throws IOException {
+    private boolean saveCss(EpubookMeta epubookMeta, String targetPath) throws IOException {
         if (epubookMeta != null) {
             long start = System.currentTimeMillis();
             String issuedDate = epubookMeta.getIssueddate().replace("-", "");
@@ -276,7 +276,7 @@ public class GetCebxChapter {
             if (target.exists()) {
                 target.delete();
             }
-            File source = new File(config.getTargetCebxDir() + sp + BookConstant.CEBX_STYLE_DIR + sp + BookConstant.CEBX_STYLE_NAME);
+            File source = new File(targetPath + sp + BookConstant.CEBX_STYLE_DIR + sp + BookConstant.CEBX_STYLE_NAME);
             Files.copy(source.toPath(), target.toPath());
             long end = System.currentTimeMillis();
             log.info("样式文件已提取到" + target.getPath() + "耗时：" + (end - start) + "毫秒");
@@ -313,14 +313,20 @@ public class GetCebxChapter {
     }
 
     //解析cebx文件
-    private boolean getHtmlCss(String path) throws IOException {
+    private String getHtmlCss(String path) throws IOException {
         if (StringUtils.isNotBlank(path)) {
             long start = System.currentTimeMillis();
+            //获取文件名
+            File file = new File(path);
+            String fileName = file.getName();
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+            String target = config.getTargetCebxDir() + File.separator + fileName;
             //调用命令
-            /*String cmd = CEBX_HTML_EXE + "\"" + path + "\"" + " -target " + "\"" + BookConstant.TARGET_CEBX_DIR + "\""
-                    + " -width " + BookConstant.imgWidth + " -height " + BookConstant.imgHeigth;*/
-            String cmd = config.getCebxHtmlExe() + " -source " + "\"" + path + "\"" + " -target " + "\"" + config.getTargetCebxDir() + "\""
-                    + " -width " + BookConstant.imgWidth + " -height " + BookConstant.imgHeigth;
+            String cmd = config.getCebxHtmlExe() +
+                    " -source " + "\"" + path + "\"" +
+                    " -target " + "\"" + target + "\"" +
+                    " -width " + BookConstant.imgWidth +
+                    " -height " + BookConstant.imgHeigth;
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
             BufferedReader bufferedReader = new BufferedReader(
@@ -334,14 +340,14 @@ public class GetCebxChapter {
             if (StringUtils.isNotBlank(res)) {
                 if (res.toLowerCase().contains(RES_SUCCESS)) {
                     long end = System.currentTimeMillis();
-                    log.info("生成html文件耗时：" + (end - start) + "毫秒");
-                    return true;
+                    log.info("生成html文件到" + target + "耗时：" + (end - start) + "毫秒");
+                    return target;
                 } else {
                     log.warn(res);
                 }
             }
         }
-        return false;
+        return null;
     }
 
     //保存和更新图书内容

@@ -264,7 +264,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();
-                        eMailUtil.sendAttachmentsMail(results);
+                        eMailUtil.sendAttachmentsMail(results,"检查乱码结果");
                         log.info("检查乱码结果已发送邮件");
                         break;
                     }
@@ -364,7 +364,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();
-                        eMailUtil.sendAttachmentsMail(results);
+                        eMailUtil.sendAttachmentsMail(results,"检查公众号和QQ结果");
                         log.info("检查公众号和QQ结果已发送邮件");
                         break;
                     }

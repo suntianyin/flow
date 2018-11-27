@@ -75,7 +75,7 @@ public class EMailUtil {
     }
 
     //发送带附件的邮件
-    public void sendAttachmentsMail(List<String> attachs) {
+    public void sendAttachmentsMail(List<String> attachs, String subject) {
         MimeMessage message;
         try {
             message = sender.createMimeMessage();
@@ -84,11 +84,11 @@ public class EMailUtil {
             if (StringUtils.isNotBlank(TO)) {
                 helper.setTo(TO.split(";"));
             }
-            helper.setSubject("主题：图书乱码检查结果");
+            helper.setSubject(subject);
             //附件加入邮件
             Multipart multipart = new MimeMultipart();
             if (attachs != null) {
-                for (String file : attachs){
+                for (String file : attachs) {
                     BodyPart attachmentPart = new MimeBodyPart();
                     DataSource source = new FileDataSource(file);
                     attachmentPart.setDataHandler(new DataHandler(source));

@@ -169,8 +169,9 @@ public class ReadBook {
                     log.warn("解析图书失败：" + file + "时{}" + e);
                 } finally {
                     File dir = new File(config.getTargetCebxDir());
-                    String[] fileList = dir.list();
+                    File[] fileList = dir.listFiles();
                     deleteFiles(fileList);
+                    log.info("cebx的html文件删除成功");
                 }
                 //生成文件名和图书id映射表
                 //BookUtil.exportExcel(epubookMetas);
@@ -179,6 +180,22 @@ public class ReadBook {
             }
         }
         return 0;
+    }
+
+    //删除文件
+    private void deleteFiles(File[] files) {
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                File[] children = file.listFiles();
+                if (children != null && children.length > 0) {
+                    deleteFiles(children);
+                } else {
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
+        }
     }
 
     //删除文件

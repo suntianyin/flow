@@ -148,8 +148,8 @@ public class BookController {
                 try {
                     List<BookBatchRes> bookBatchResList = new ArrayList<>();
                     if (fileType.equals("epub")) {
-                        bookBatchResList = readBook.batchChapterEpub(fileInfo, filePath);
-                        //bookBatchResList = readBook.batchEpub(fileInfo, filePath);
+                        //bookBatchResList = readBook.batchChapterEpub(fileInfo, filePath);
+                        bookBatchResList = readBook.batchEpub(fileInfo, filePath);
                     } else if (fileType.equals("cebx")) {
                         bookBatchResList = readBook.batchChapterCebx(fileInfo, filePath);
                     }
