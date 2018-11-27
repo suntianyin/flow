@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -38,7 +39,12 @@ public class ReadExcelTextUtils {
             if (".xls".equals(ext)) {
                 wb = new HSSFWorkbook(is);
             } else if (".xlsx".equals(ext)) {
-                wb = new XSSFWorkbook(is);
+//                wb = new XSSFWorkbook(is);
+                try {
+                    wb = WorkbookFactory.create(is);
+                } catch (InvalidFormatException e) {
+                    e.printStackTrace();
+                }
             } else {
                 wb = null;
             }
@@ -59,7 +65,12 @@ public class ReadExcelTextUtils {
             if (".xls".equals(ext)) {
                 wb = new HSSFWorkbook(in);
             } else if (".xlsx".equals(ext)) {
-                wb = new XSSFWorkbook(in);
+//                wb = new XSSFWorkbook(in);
+                try {
+                    wb = WorkbookFactory.create(in);
+                } catch (InvalidFormatException e) {
+                    e.printStackTrace();
+                }
             } else {
                 wb = null;
             }

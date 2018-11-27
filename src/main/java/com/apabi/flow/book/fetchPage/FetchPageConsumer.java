@@ -3,16 +3,20 @@ package com.apabi.flow.book.fetchPage;
 import com.apabi.flow.book.dao.*;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.impl.BookMetaServiceImpl;
+import com.apabi.flow.book.util.CebxUtils;
 import com.apabi.flow.book.util.EbookUtil;
 import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.common.UUIDCreater;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,11 +78,14 @@ public class FetchPageConsumer implements Runnable {
                 cebxPage = Integer.parseInt(meta.getCebxPage());
             }
             if (cebxPage == 0) {
-                log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取", metaId);
-                return;
+                cebxPage = CebxUtils.getCebxPage(metaId, BookMetaServiceImpl.shuyuanOrgCode);
+                if (cebxPage == 0) {
+                    log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取", metaId);
+                    return;
+                }
             }
 //            int i3 = bookPageMapper.deleteByMetaId(metaId);
-            List<BookPage> lists=new ArrayList<>();
+            List<BookPage> lists = new ArrayList<>();
             //页数 从 第一页开始，直到 总页数 添加到集合
             long f = System.currentTimeMillis();
             for (long i = start; i <= cebxPage; i++) {
@@ -92,7 +99,7 @@ public class FetchPageConsumer implements Runnable {
                     url = EbookUtil.makePageUrl(confvalue, BookMetaServiceImpl.shuyuanOrgCode, metaId, BookMetaServiceImpl.urlType, BookMetaServiceImpl.serviceType, width, height, i);
                     httpEntity = HttpUtils.doGetEntity(url);
                     long b = System.currentTimeMillis();
-                    log.info("获取图书：{},总页数{},第{}页,请求接口耗时 {}ms, url = {}",metaId,cebxPage,i, b - a,url);
+                    log.info("获取图书：{},总页数{},第{}页,请求接口耗时 {}ms, url = {}", metaId, cebxPage, i, b - a, url);
                     String tmp = EntityUtils.toString(httpEntity);
                     int word = 0;
                     if (StringUtils.isBlank(tmp)) {
@@ -140,13 +147,13 @@ public class FetchPageConsumer implements Runnable {
             //写入数据库
             try {
                 long c = System.currentTimeMillis();
-                log.info("metaId：{},请求接口一共耗时{}ms",metaId,c-f );
+                log.info("metaId：{},请求接口一共耗时{}ms", metaId, c - f);
                 int i = bookPageMapper.insertList(lists);
                 long d = System.currentTimeMillis();
-                log.info("metaId：{},插入数据库耗时{}ms",metaId,d-c );
+                log.info("metaId：{},插入数据库耗时{}ms", metaId, d - c);
             } catch (Exception e) {
                 //写入失败
-                List<PageCrawledTemp> list=new ArrayList<>();
+                List<PageCrawledTemp> list = new ArrayList<>();
                 for (long i = start; i <= cebxPage; i++) {
                     PageCrawledTemp pageCrawledTemp = new PageCrawledTemp();
                     pageCrawledTemp.setId(metaId);
@@ -180,6 +187,8 @@ public class FetchPageConsumer implements Runnable {
             countDownLatch.countDown();
         }
     }
+
+
 
     private interface DataType {
         String PAGEINSERT = "pageinsert";

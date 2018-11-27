@@ -9,8 +9,8 @@ import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookPageService;
 import com.apabi.flow.book.service.BookShardService;
 import com.apabi.flow.book.util.BookConstant;
-import com.apabi.flow.book.util.EbookUtil;
-import com.apabi.flow.book.util.HttpUtils;
+import com.apabi.flow.book.util.CebxUtils;
+import com.apabi.flow.book.util.GetCebxChapter;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.DataConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
@@ -20,15 +20,12 @@ import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import com.apabi.flow.systemconf.model.SystemConf;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +34,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * 功能描述： <br>
@@ -50,6 +48,7 @@ import java.util.concurrent.Executors;
 public class BookPageServiceImpl implements BookPageService {
 
     private static final Logger log = LoggerFactory.getLogger(BookPageServiceImpl.class);
+    private static ExecutorService executorService;
 
     @Autowired
     private DataConfig dataConfig;
@@ -84,6 +83,8 @@ public class BookPageServiceImpl implements BookPageService {
 
     @Autowired
     BookShardDao bookShardDao;
+    @Autowired
+    GetCebxChapter getCebxChapter;
 
     @Autowired
     private PageCrawledTempMapper pageCrawledTempMapper;
@@ -141,6 +142,12 @@ public class BookPageServiceImpl implements BookPageService {
         }
     }
 
+
+    public int shutdownNow() {
+        executorService.shutdownNow();
+        return 1;
+    }
+
     /**
      * 流式内容抓取
      *
@@ -154,13 +161,17 @@ public class BookPageServiceImpl implements BookPageService {
             int queueSize = 100;
             ArrayBlockingQueue idQueue = new ArrayBlockingQueue(queueSize);
             List<String> idList = new ArrayList<>();
-            List<PageCrawledQueue> list = pageCrawledQueueMapper.findAll();
-            if (list.size() == 0) {
+            List<PageCrawledQueue> list1 = pageCrawledQueueMapper.findAll();
+            if (list1.size() == 0) {
                 return 2;
             }
-            for (PageCrawledQueue p : list) {
-                idList.add(p.getId());
-            }
+            List<PageCrawledQueue> list = list1.stream().filter(v -> {
+                boolean flag = !idList.contains(v.getId());
+                if (flag) {
+                    idList.add(v.getId());
+                }
+                return flag;
+            }).collect(Collectors.toList());
             FetchPageProducer fetchPageProducer = new FetchPageProducer(idQueue, "fetchPageProducer", idList);
             new Thread(fetchPageProducer).start();
             // id列表中数据计数器
@@ -182,50 +193,59 @@ public class BookPageServiceImpl implements BookPageService {
                 log.error("获取系统参数信息出错，无法查询图片宽度");
                 return 0;
             }
-            String width= systemConf3.getConfValue();
+            String width = systemConf3.getConfValue();
             SystemConf systemConf4 = systemConfMapper.selectByConfKey("height");
             if (systemConf4 == null) {
                 log.error("获取系统参数信息出错，无法查询图片高度");
                 return 0;
             }
-            String height= systemConf4.getConfValue();
+            String height = systemConf4.getConfValue();
             SystemConf systemConf5 = systemConfMapper.selectByConfKey("threadNum");
             if (systemConf5 == null) {
                 log.error("获取系统参数信息出错，无法查询线程数");
                 return 0;
             }
-            Integer threadNum= Integer.parseInt(systemConf5.getConfValue());
-            // 创建消费者对象
-            FetchPageConsumer consumer = new FetchPageConsumer(idCountDownLatch, confvalue, idQueue, bookMetaDao, bookPageMapper, pageCrawledQueueMapper, pageAssemblyQueueMapper, bookLogMapper, pageCrawledTempMapper, sleepTime,width,height);
-            // 创建线程池对象
-            ExecutorService executorService = Executors.newFixedThreadPool(threadNum);
-            // 开启threadAmount个线程消费者线程，让线程池管理消费者线程
-            for (int i = 0; i < idList.size(); i++) {
-                // 执行线程中的任务
-                executorService.execute(consumer);
-            }
-            try {
-                idCountDownLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            // 关闭线程池
-            executorService.shutdown();
-            //前端多次点击按钮控制
-            SystemConf systemConf6 = systemConfMapper.selectByConfKey("switch");
-            systemConf6.setConfValue("0");
-            systemConfMapper.updateByPrimaryKey(systemConf6);
 
-            // ******************多线程抓取page结束******************
-            log.info(" 流式分页抓取执行完毕....----修改系统状态值为0");
+            Integer threadNum = Integer.parseInt(systemConf5.getConfValue());
+
+            new Thread() {
+                public void run() {
+                    // 创建消费者对象
+                    FetchPageConsumer consumer = new FetchPageConsumer(idCountDownLatch, confvalue, idQueue, bookMetaDao, bookPageMapper, pageCrawledQueueMapper, pageAssemblyQueueMapper, bookLogMapper, pageCrawledTempMapper, sleepTime, width, height);
+                    // 创建线程池对象
+                    executorService = Executors.newFixedThreadPool(threadNum);
+                    // 开启threadAmount个线程消费者线程，让线程池管理消费者线程
+                    for (int i = 0; i < idList.size(); i++) {
+                        // 执行线程中的任务
+                        executorService.execute(consumer);
+                    }
+                    try {
+                        idCountDownLatch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    // 关闭线程池
+                    executorService.shutdown();
+                    //前端多次点击按钮控制
+                    SystemConf systemConf6 = systemConfMapper.selectByConfKey("switch");
+                    systemConf6.setConfValue("0");
+                    systemConfMapper.updateByPrimaryKey(systemConf6);
+
+                    // ******************多线程抓取page结束******************
+                    log.info(" 流式分页抓取执行完毕....----修改系统状态值为0");
+                }
+            }.start();
+
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
         return 1;
     }
+
     /**
      * 失败数据重新抓取
+     *
      * @return 状态值
      */
     @Override
@@ -255,49 +275,54 @@ public class BookPageServiceImpl implements BookPageService {
                 log.error("获取系统参数信息出错，无法查询图片宽度");
                 return 0;
             }
-            String width= systemConf3.getConfValue();
+            String width = systemConf3.getConfValue();
 
             SystemConf systemConf4 = systemConfMapper.selectByConfKey("height");
             if (systemConf4 == null) {
                 log.error("获取系统参数信息出错，无法查询图片高度");
                 return 0;
             }
-            String height= systemConf4.getConfValue();
+            String height = systemConf4.getConfValue();
 
             SystemConf systemConf5 = systemConfMapper.selectByConfKey("threadNum");
             if (systemConf5 == null) {
                 log.error("获取系统参数信息出错，无法查询线程数");
                 return 0;
             }
-            Integer threadNum= Integer.parseInt(systemConf5.getConfValue());
-            //阻塞队列
-            ArrayBlockingQueue<PageCrawledTemp> idQueue = new ArrayBlockingQueue(100);
-            //生产者
-            FetchPageAgainProducer fetchPageAgainProducer=new FetchPageAgainProducer(idQueue,"fetchPageAgainProducer",all);
-            new Thread(fetchPageAgainProducer).start();
-            //计数器
-            CountDownLatch idCountDownLatch = new CountDownLatch(all.size());
-            //线程池
-            ExecutorService executorService = Executors.newFixedThreadPool(threadNum);
-            //消费者
-            FetchPageAgainConsumer fetchPageAgainConsumer=new FetchPageAgainConsumer(idCountDownLatch,confvalue,idQueue,bookPageMapper,pageCrawledTempMapper,sleepTime,width,height);
-            // 开启threadAmount个线程消费者线程，让线程池管理消费者线程
-            for (int i = 0; i < all.size(); i++) {
-                // 执行线程中的任务
-                executorService.execute(fetchPageAgainConsumer);
-            }
-            try {
-                idCountDownLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            // 关闭线程池
-            executorService.shutdown();
-            //前端多次点击按钮控制 更改系统参数控制值
-            SystemConf systemConf6 = systemConfMapper.selectByConfKey("switch");
-            systemConf6.setConfValue("0");
-            systemConfMapper.updateByPrimaryKey(systemConf6);
-            log.info(  "流式分页重新抓取执行完毕，----修改系统状态值为0");
+            Integer threadNum = Integer.parseInt(systemConf5.getConfValue());
+
+            new Thread() {
+                public void run() {
+                    //阻塞队列
+                    ArrayBlockingQueue<PageCrawledTemp> idQueue = new ArrayBlockingQueue(100);
+                    //生产者
+                    FetchPageAgainProducer fetchPageAgainProducer = new FetchPageAgainProducer(idQueue, "fetchPageAgainProducer", all);
+                    new Thread(fetchPageAgainProducer).start();
+                    //计数器
+                    CountDownLatch idCountDownLatch = new CountDownLatch(all.size());
+                    //线程池
+                    executorService = Executors.newFixedThreadPool(threadNum);
+                    //消费者
+                    FetchPageAgainConsumer fetchPageAgainConsumer = new FetchPageAgainConsumer(idCountDownLatch, confvalue, idQueue, bookPageMapper, pageCrawledTempMapper, sleepTime, width, height);
+                    // 开启threadAmount个线程消费者线程，让线程池管理消费者线程
+                    for (int i = 0; i < all.size(); i++) {
+                        // 执行线程中的任务
+                        executorService.execute(fetchPageAgainConsumer);
+                    }
+                    try {
+                        idCountDownLatch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    // 关闭线程池
+                    executorService.shutdown();
+                    //前端多次点击按钮控制 更改系统参数控制值
+                    SystemConf systemConf6 = systemConfMapper.selectByConfKey("switch");
+                    systemConf6.setConfValue("0");
+                    systemConfMapper.updateByPrimaryKey(systemConf6);
+                    log.info("流式分页重新抓取执行完毕，----修改系统状态值为0");
+                }
+            }.start();
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return 0;
@@ -313,24 +338,38 @@ public class BookPageServiceImpl implements BookPageService {
      */
     @Override
     public int autoProcessBookFromPage2Chapter() {
-        int totalNum = 0;
-        List<PageAssemblyQueue> list = pageAssemblyQueueMapper.findAll();
+        List<String> idList = new ArrayList<>();
+        List<PageAssemblyQueue> list1 = pageAssemblyQueueMapper.findAll();
+        List<PageAssemblyQueue> list = list1.stream().filter(v -> {
+            boolean flag = !idList.contains(v.getId());
+            if (flag) {
+                idList.add(v.getId());
+            }
+            return flag;
+        }).collect(Collectors.toList());
         if (list.size() == 0) {
             return -1;
         }
-        for (PageAssemblyQueue pageAssemblyQueue : list) {
-            try {
-                long a = System.currentTimeMillis();
-                totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId());
-                long b = System.currentTimeMillis();
-                log.info("metaId：{},章节拼装一共耗时{}ms",pageAssemblyQueue.getId(),b-a );
-            } catch (Exception e) {
-                log.error("metaid = {} 的图书组装出错，错误信息：{}", pageAssemblyQueue.getId(), e);
+        new Thread() {
+            public void run() {
+                //子线程去干自己的事情
+                int totalNum = 0;
+                for (PageAssemblyQueue pageAssemblyQueue : list) {
+                    try {
+                        long a = System.currentTimeMillis();
+                        totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId());
+                        long b = System.currentTimeMillis();
+                        log.info("metaId：{},章节拼装一共耗时{}ms", pageAssemblyQueue.getId(), b - a);
+                    } catch (Exception e) {
+                        log.error("metaid = {} 的图书组装出错，错误信息：{}", pageAssemblyQueue.getId(), e);
+                    }
+                }
             }
-        }
-        log.info("成功组装图书章节数 - {}", totalNum);
-        return totalNum;
+        }.start();
+
+        return 1;
     }
+
     /**
      * 批量上传excel中metaId到抓取表
      *
@@ -339,7 +378,7 @@ public class BookPageServiceImpl implements BookPageService {
      * @throws Exception
      */
     @Override
-    public int batchAddAuthorFromFile(Map<Integer, Map<Object, Object>> data) throws Exception {
+    public int batchAddCrawFromFile(Map<Integer, Map<Object, Object>> data) throws Exception {
         int i = 0;
         HashSet<String> set = new HashSet<>();
         try {
@@ -365,6 +404,35 @@ public class BookPageServiceImpl implements BookPageService {
         }
         return i;
     }
+
+    @Override
+    public int batchAddAssemblyFromFile(Map<Integer, Map<Object, Object>> data) throws Exception {
+        int i = 0;
+        HashSet<String> set = new HashSet<>();
+        try {
+            for (Map.Entry<Integer, Map<Object, Object>> entry : data.entrySet()) {
+                String id = (String) entry.getValue().get("ID");
+                if (StringUtils.isBlank(id)) {
+                    throw new BizException("编号不能为空，请检查数据重新导入！");
+                } else {
+                    set.add(id);
+                }
+            }
+            for (String id : set) {
+                PageAssemblyQueue pageAssemblyQueue = new PageAssemblyQueue();
+                pageAssemblyQueue.setId(id);
+                i += pageAssemblyQueueMapper.insert(pageAssemblyQueue);
+            }
+        } catch (Exception e) {
+            if (e instanceof BizException) {
+                throw new Exception(e.getMessage());
+            } else {
+                throw new Exception("数据解析异常，请检查文件合适是否正确或联系管理员！");
+            }
+        }
+        return i;
+    }
+
     /**
      * 获取 当前 metaId 下的 所有 页码列表信息
      *
@@ -425,10 +493,24 @@ public class BookPageServiceImpl implements BookPageService {
             if (StringUtils.isNotBlank(metaId)) {
                 List<Integer> pageNums = new ArrayList<>();
                 BookMeta meta = bookMetaDao.findBookMetaById(metaId);
+                if (meta == null) {
+                    log.info("图书meta表中 metaid = {} 的不存在", metaId);
+                    return 0;
+                }
                 ApabiBookMetaDataTemp metaDataTemp = apabiBookMetaDataTempDao.findById(metaId);
                 // 从本地数据源中获取当前metaid 的所有页面内容信息列表
                 List<BookPage> bookPageList = bookPageMapper.findAllByMetaIdOrderByPageIdWithContent(metaId);
-                int cebxPage = Integer.parseInt(meta.getCebxPage());
+                int cebxPage = 0;
+                if (StringUtils.isBlank(meta.getCebxPage())) {
+                    log.info("图书meta表中 metaid = {} 的cebxPage不存在", metaId);
+                    cebxPage = CebxUtils.getCebxPage(metaId, BookMetaServiceImpl.shuyuanOrgCode);
+                    if (cebxPage == 0) {
+                        log.info(" {} --获取元数据信息出错，无法得到书本页数信息，退出数据获取", metaId);
+                        return 0;
+                    }
+                } else {
+                    cebxPage = Integer.parseInt(meta.getCebxPage());
+                }
                 if (bookPageList == null) {
                     log.info("图书分页表中没有 metaid = {} 的数据列表", metaId);
                     saveBookLog(metaId, DataType.CHAPTERINSERT, 0, -1, 0, -1);
@@ -447,12 +529,17 @@ public class BookPageServiceImpl implements BookPageService {
                     log.info("图书分页表中 metaid = {} 的每页数据不全", metaId);
                     return 0;
                 }
+                String foamatCatalog = "";
                 //递归获取目录结构的页码
                 if (meta != null) {
-                    String foamatCatalog = meta.getFoamatCatalog();
-                    if(StringUtils.isBlank(foamatCatalog)){
-                        log.info("图书分页表中 metaid = {} 的目录结构不存在", metaId);
-                        return 0;
+                    foamatCatalog = meta.getFoamatCatalog();
+                    if (StringUtils.isBlank(foamatCatalog)) {
+                        log.info("图书meta表中 metaid = {} 的目录结构不存在", metaId);
+                        foamatCatalog = CebxUtils.getStreamCatalog(metaId);
+                        if ("[]".equalsIgnoreCase(foamatCatalog) || StringUtils.isBlank(foamatCatalog)) {
+                            log.info("书院接口获取 metaid = {} 的目录结构不存在", metaId);
+                            return 0;
+                        }
                     }
                     JSONArray jsonArray = JSONArray.fromObject(foamatCatalog);
                     getPageNums(jsonArray, pageNums);
@@ -594,14 +681,20 @@ public class BookPageServiceImpl implements BookPageService {
                     meta.setHasFlow(1);
                     meta.setContentNum(wordSum);
                     meta.setChapterNum(chapterNum);
-                    meta.setStreamCatalog(meta.getFoamatCatalog());
+                    meta.setStreamCatalog(foamatCatalog);
                     meta.setUpdateTime(new Date());
+                    meta.setFoamatCatalog(foamatCatalog);
+                    meta.setBookPages(Integer.toString(cebxPage));
+                    meta.setCebxPage(Integer.toString(cebxPage));
 
                     metaDataTemp.setHasFlow(1);
                     metaDataTemp.setContentNum(wordSum);
                     metaDataTemp.setChapterNum(chapterNum);
-                    metaDataTemp.setStreamCatalog(meta.getFoamatCatalog());
+                    metaDataTemp.setStreamCatalog(foamatCatalog);
+                    metaDataTemp.setFoamatCatalog(foamatCatalog);
+                    metaDataTemp.setBookPages(Integer.toString(cebxPage));
                     metaDataTemp.setUpdateTime(new Date());
+                    metaDataTemp.setCebxPage(Integer.toString(cebxPage));
                     //修改metaData和metaDataTemp的状态值
                     int i1 = bookMetaDao.updateBookMetaById(meta);
                     apabiBookMetaDataTempDao.update(metaDataTemp);

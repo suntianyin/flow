@@ -69,5 +69,8 @@ public interface BookPageService {
 //     */
 //    int insertShuyuanData(String metaId) throws Exception;
 
-    int batchAddAuthorFromFile(Map<Integer, Map<Object, Object>> data) throws Exception;
+    int batchAddCrawFromFile(Map<Integer, Map<Object, Object>> data) throws Exception;
+    int batchAddAssemblyFromFile(Map<Integer, Map<Object, Object>> data) throws Exception;
+
+    int shutdownNow();
 }

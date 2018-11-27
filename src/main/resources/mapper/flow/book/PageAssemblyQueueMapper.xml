@@ -28,4 +28,10 @@
   <select id="findAll"  resultMap="BaseResultMap">
     select ID from APABI_BOOK_PAGE_ASSEMBLY_QUEUE
   </select>
+  <select id="pageAll"  resultMap="BaseResultMap">
+    select ID from APABI_BOOK_PAGE_ASSEMBLY_QUEUE
+  </select>
+  <delete id="deleteAll" >
+    delete from APABI_BOOK_PAGE_ASSEMBLY_QUEUE
+  </delete>
 </mapper>

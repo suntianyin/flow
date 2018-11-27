@@ -22,7 +22,7 @@ public class HttpUtils {
 
     private static int connectionRequestTimeout = 100000;
     private static int connectTimeout = 60000;
-    private static int socketTimeout = 250000;
+    private static int socketTimeout = 130000;
 
     public static HttpEntity doGetEntity(String url) throws Exception {
         return doGetEntity(url, null);

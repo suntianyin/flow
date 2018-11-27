@@ -11,13 +11,20 @@ import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.ReadBook;
 import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
+import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.processing.constant.BizException;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import com.apabi.flow.systemconf.model.SystemConf;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +36,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -821,40 +831,66 @@ public class BookController {
     public int processBookFromPage2Chapter(@RequestParam("metaid") String metaid) throws Exception {
         return bookPageService.processBookFromPage2Chapter(metaid);
     }
-
-
+    //跳转首页cebx流式内容管理
     @RequestMapping("/bookPageManagement")
-    public String getBookPageManagement(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
+    public String bookPageManagement() {
+        return "book/bookPageManagement";
+    }
+//跳转抓取页
+    @RequestMapping("/pageCrawled")
+    public String pageCrawled(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
         PageHelper.startPage(pageNum, 10);
         Page<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.pageAll();
-        List<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.findAll();
         List<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.findAll();
         model.addAttribute("num",pageCrawledTemps.size());
-        model.addAttribute("numer",pageAssemblyQueues.size());
         model.addAttribute("pageCrawledQueues",pageCrawledQueues);
         model.addAttribute("pages", pageCrawledQueues.getPages());
         model.addAttribute("pageNum", pageCrawledQueues.getPageNum());
         model.addAttribute("pageSize", 10);
         model.addAttribute("total", pageCrawledQueues.getTotal());
-        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
-        return "book/bookPageManagement";
+        return "book/bookPageManagementCrawled";
     }
+    //跳转拼装页
+    @RequestMapping("/pageAssembly")
+    public String pageAssembly(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
+        PageHelper.startPage(pageNum, 10);
+        Page<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.pageAll();
+        model.addAttribute("pages", pageAssemblyQueues.getPages());
+        model.addAttribute("pageNum", pageAssemblyQueues.getPageNum());
+        model.addAttribute("pageSize", 10);
+        model.addAttribute("total", pageAssemblyQueues.getTotal());
+        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
+        return "book/bookPageManagementAssemBly";
+    }
+    //单个删除
     @RequestMapping("/pageCrawledQueuesDelete")
     public String pageCrawledQueuesDelete(@RequestParam("id")String id) {
         pageCrawledQueueMapper.deleteByPrimaryKey(id);
-        return "redirect:/book/bookPageManagement";
+        return "redirect:/book/pageCrawled";
     }
+    //全部删除
+    @RequestMapping("/pageCrawledQueuesDeleteAll")
+    public String pageCrawledQueuesDeleteAll() {
+        pageCrawledQueueMapper.deleteAll();
+        return "redirect:/book/pageCrawled";
+    }
+    //单个删除
     @RequestMapping("/pageAssemblyQueuesDelete")
     public String pageAssemblyQueuesDelete(@RequestParam("id")String id) {
         pageAssemblyQueueMapper.deleteByPrimaryKey(id);
-        return "redirect:/book/bookPageManagement";
+        return "redirect:/book/pageAssembly";
+    }
+    //全部删除
+    @RequestMapping("/pageAssemblyDeleteAll")
+    public String pageAssemblyDeleteAll() {
+        pageAssemblyQueueMapper.deleteAll();
+        return "redirect:/book/pageAssembly";
     }
 
-
     /**
-     * 根据配置文件自动拉取分页数据
+     * 采集加密流式内容
      *
-     * @return 返回本次拉取的总页数
+     * @return
      */
     @ResponseBody
     @RequestMapping("/autoFetchPageData")
@@ -876,7 +912,7 @@ public class BookController {
             i=-1;
         }
         if (i == 1) {
-            resultEntity.setMsg("采集加密流式内容完成");
+            resultEntity.setMsg("采集加密流式内容已开始，请勿再次操作，耐心等待");
             resultEntity.setStatus(i);
         } else if (i == -1) {
             resultEntity.setMsg("采集加密流式内容正在进行请勿再次操作");
@@ -892,9 +928,9 @@ public class BookController {
     }
 
     /**
-     * 根据配置文件自动拉取分页数据
+     * 重新采集加密流式内容
      *
-     * @return 返回本次拉取的总页数
+     * @return
      */
     @ResponseBody
     @RequestMapping("/autoFetchPageDataAgain")
@@ -917,7 +953,7 @@ public class BookController {
             i=-1;
         }
         if (i == 1) {
-            resultEntity.setMsg("重新采集加密流式内容完成");
+            resultEntity.setMsg("重新采集加密流式内容已开始，请勿再次操作，耐心等待");
             resultEntity.setStatus(i);
         } else if (i == -1) {
             resultEntity.setMsg("重新采集加密流式内容正在进行请勿再次操作");
@@ -933,9 +969,9 @@ public class BookController {
     }
 
     /**
-     * 根据配置文件自动拉取分页数据
+     * 流式内容拼装
      *
-     * @return 返回本次组装成功的图书数
+     * @return
      */
     @ResponseBody
     @RequestMapping("/autoProcessBookFromPage2Chapter")
@@ -943,7 +979,7 @@ public class BookController {
         ResultEntity resultEntity = new ResultEntity();
         int i = bookPageService.autoProcessBookFromPage2Chapter();
         if (i >= 1) {
-            resultEntity.setMsg("流式内容拼装成功,拼接章节数为" + i);
+            resultEntity.setMsg("流式内容拼装已开始，请勿再次操作，耐心等待");
             resultEntity.setStatus(i);
         } else if (i == -1) {
             resultEntity.setMsg("拼装章节队列已无数据");
@@ -988,6 +1024,96 @@ public class BookController {
         return null;
     }
     /**
+     * 批量导出metaid
+     *
+     * @return 返回上传数据成功书id数
+     */
+    @ResponseBody
+    @RequestMapping("/exportData")
+    public Object exportData(@RequestParam("type") String type,HttpServletResponse response) {
+        try {
+            // 设置响应头
+            response.setContentType("application/binary;charset=UTF-8");
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("multipart/form-data");
+            List list=null;
+            if("Crawled".equalsIgnoreCase(type)){
+                List<PageCrawledQueue>  list1 = pageCrawledQueueMapper.findAll();
+                list=list1.stream().map(id -> id.getId()).collect(Collectors.toList());
+            }else if("Assembly".equalsIgnoreCase(type)){
+                List<PageAssemblyQueue> list1 = pageAssemblyQueueMapper.findAll();
+                list=list1.stream().map(id -> id.getId()).collect(Collectors.toList());
+            }
+            if (list == null || list.isEmpty()){
+                return "<script type='text/javascript'>alert('当前列表为空！');history.back();</script>";
+            }
+            // 设置文件名
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HHmmss");
+            String time = simpleDateFormat.format(date);
+            File file = new File(time + "-" + UUIDCreater.nextId() + ".xlsx");
+            String fileName = new String(file.getName().getBytes("UTF-8"), "ISO-8859-1");
+
+            // 设置excel的表头
+            String[] excelTitle = {"ID"};
+            // 将内存中读取到的内容写入到excel
+            Workbook workbook = null;
+            if (fileName.toLowerCase().endsWith("xls")) {//2003
+                workbook = new XSSFWorkbook();
+            } else if (fileName.toLowerCase().endsWith("xlsx")) {//2007
+                workbook = new HSSFWorkbook();
+            } else {
+                throw new BizException("文件名后缀必须是 .xls 或 .xlsx");
+            }
+
+            ServletOutputStream out = null;
+
+            //create sheet
+            Sheet sheet = workbook.createSheet("sheet1");
+            //遍历数据集，将其写入excel中
+            try {
+                //写表头数据
+                Row titleRow = sheet.createRow(0);
+                for (int i = 0; i < excelTitle.length; i++) {
+                    //创建表头单元格,填值
+                    titleRow.createCell(i).setCellValue(excelTitle[i]);
+
+                }
+                //自动添加 excel 行数据
+                for (int i = 0; i < list.size(); i++) {
+                    // 创建 excel 行
+                    Row row = sheet.createRow(i + 1);
+                    row.createCell(0).setCellValue(list.get(i).toString());
+                }
+                // 设置响应头
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+                out = response.getOutputStream();
+                workbook.write(out);
+                out.flush();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                throw new Exception("文件未找到！");
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new Exception("服务器异常！");
+            } catch (Exception e) {
+                throw new Exception("数据解析异常！");
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return "<script type='text/javascript'>alert('导出成功！');history.back();</script>";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "<script type='text/javascript'>alert('" + e.getMessage() + "');history.back();</script>";
+        }
+    }
+    /**
      * 批量上传metaid
      *
      * @return 返回上传数据成功书id数
@@ -1019,32 +1145,10 @@ public class BookController {
         }
         return null;
     }
-    @RequestMapping("/fetch")
-    public String fetch() {
-        try {
-            List<PageCrawledQueue> all = pageCrawledQueueMapper.findAll();
-            HashSet<String> hashSet = new HashSet();
-                for (PageCrawledQueue a : all) {
-                    hashSet.add(a.getId());
-                }
-            pageCrawledQueueMapper.deleteAll();
-                int num = 0;
-                for (String b : hashSet) {
-                    PageCrawledQueue pageCrawledQueue = new PageCrawledQueue();
-                    pageCrawledQueue.setId(b);
-                    int i = pageCrawledQueueMapper.insert(pageCrawledQueue);
-                    num += i;
-                }
-                return "redirect:/book/bookPageManagement";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     @PostMapping("/batch/import")
     @ResponseBody
-    public String batchImportAuthor(@RequestParam("file")MultipartFile file){
+    public String batchImportCraw(@RequestParam("file")MultipartFile file){
 
         if (!file.getOriginalFilename().endsWith(".xlsx")){
             return "文件格式不正确，仅支持 .xlsx 格式的文件";
@@ -1067,12 +1171,76 @@ public class BookController {
         }
         Integer addedNum = 0;
         try {
-            addedNum = bookPageService.batchAddAuthorFromFile(data);
+            addedNum = bookPageService.batchAddCrawFromFile(data);
         }catch (Exception e){
             log.error("异常信息： {}", e);
         }
         return addedNum > 0 ? "成功":"失败";
     }
+    @PostMapping("/batch/import2")
+    @ResponseBody
+    public String batchImportChapter(@RequestParam("file")MultipartFile file){
+
+        if (!file.getOriginalFilename().endsWith(".xlsx")){
+            return "文件格式不正确，仅支持 .xlsx 格式的文件";
+        }
+        // 读取Excel工具类
+        Map<Integer, Map<Object, Object>> data = null;
+        try(InputStream inputStream = file.getInputStream()){
+            String fileName = file.getOriginalFilename();
+            ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
+            // 读取Excel中的内容
+            data = readExcelTextUtils.getDataByInputStream();
+            if (data == null || data.isEmpty()){
+                throw new Exception();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return "文件读取出错，请重新尝试或联系管理员！";
+        }catch (Exception e){
+            return "文件出错，请检查文件格式是否正确或内容是否完整！";
+        }
+        Integer addedNum = 0;
+        try {
+            addedNum = bookPageService.batchAddAssemblyFromFile(data);
+        }catch (Exception e){
+            log.error("异常信息： {}", e);
+        }
+        return addedNum > 0 ? "成功":"失败";
+    }
+    @ResponseBody
+    @RequestMapping("/shutdownNow")
+    public Object shutdownNow() {
+        ResultEntity resultEntity = new ResultEntity();
+
+        //前端多次点击按钮控制
+        SystemConf systemConf2 = systemConfMapper.selectByConfKey("switch");
+        if (systemConf2 == null) {
+            log.error("获取系统参数信息出错，无法查询线程池开关");
+        }
+        int i=0;
+        int swith = Integer.parseInt(systemConf2.getConfValue());
+        if(swith==0){
+            i=-1;
+        }else if(swith==1){
+            i = bookPageService.shutdownNow();
+            systemConf2.setConfValue("0");
+            systemConfMapper.updateByPrimaryKey(systemConf2);
+        }
+        if (i == 1) {
+            resultEntity.setMsg("已关闭完成");
+            resultEntity.setStatus(i);
+        } else if (i == -1) {
+            resultEntity.setMsg("无正在运行的线程池");
+            resultEntity.setStatus(1);
+        } else {
+            resultEntity.setMsg("关闭失败！请联系管理员");
+            resultEntity.setStatus(-1);
+        }
+        return resultEntity;
+    }
+
+
 
     @GetMapping("/test")
     @ResponseBody
