@@ -26,6 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,16 +42,16 @@ public class GetEpubookChapter {
 
     private static final Logger log = LoggerFactory.getLogger(GetEpubookChapter.class);
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    //private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    /*//章节编号
-    private static int chapterNum = 0;*/
+    //章节编号
+    //private static int chapterNum = 0;
 
     //目录和章节的对应关系
-    private static Map<String, Integer> cataChapter = new HashMap<>();
+    //private Map<String, Integer> cataChapter = new Hashtable<>();
 
     //样式和图片文件的生成路径
-    private String styleUrl;
+    //private String styleUrl;
 
     @Autowired
     BookMetaService bookMetaService;
@@ -77,11 +78,19 @@ public class GetEpubookChapter {
     public EpubookMeta insertEpubook(String path, EpubookMeta epubookMeta, String fileName) throws IOException, ParseException {
         if (path != null && path.length() > 0) {
             //String fileName = epubookMeta.getFileName();
+            ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+            DateFormat df = threadLocal.get();
+            if (df == null) {
+                df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                threadLocal.set(df);
+            }
             if (epubookMeta != null && fileName != null && fileName.length() > 0) {
                 Book book = getEpubook(path);
                 if (book != null) {
                     //获取meta数据
-                    epubookMeta = getMetaData(epubookMeta, book);
+                    epubookMeta = getMetaData(epubookMeta, book, df);
+                    //该书样式文件根目录
+                    String styleUrl = epubookMeta.getTmp();
                     if (epubookMeta != null) {
                         //获取head标签中的样式引用路径
                         Document doc;
@@ -127,6 +136,7 @@ public class GetEpubookChapter {
                             List<BookChapter> chapterList = new ArrayList<>();
                             //对章节进行分组存放
                             List<BookShard> chapterShardList = new ArrayList<>();
+                            Map<String, Integer> cataChapter = new Hashtable<>();
                             for (int i = 0; i < contents.size(); i++) {
                                 BookChapter chapter = new BookChapter();
                                 //图书号和章节号拼接id
@@ -148,11 +158,11 @@ public class GetEpubookChapter {
                                 chapter.setWordSum(word);
                                 wordSum += word;
                                 //替换图书内容中的图片路径
-                                String content = replaceImgeUrl(body.toString());
+                                String content = replaceImgeUrl(body.toString(), styleUrl);
                                 chapter.setContent(content);
                                 chapter.setBodyClass(body.attr("class"));
-                                chapter.setCreateTime(sdf.parse(sdf.format(new Date())));
-                                chapter.setUpdateTime(sdf.parse(sdf.format(new Date())));
+                                chapter.setCreateTime(df.parse(df.format(new Date())));
+                                chapter.setUpdateTime(df.parse(df.format(new Date())));
                                 //对章节内容进行分片
                                 Elements children = body.children();
                                 List<String> tags = new ArrayList<>();
@@ -174,13 +184,13 @@ public class GetEpubookChapter {
                                     chapterShard.setChapterNum(i);
                                     chapterShard.setIndex(k);
                                     chapterShard.setBodyClass(body.attr("class"));
-                                    chapterShard.setCreateTime(sdf.parse(sdf.format(new Date())));
-                                    chapterShard.setUpdateTime(sdf.parse(sdf.format(new Date())));
+                                    chapterShard.setCreateTime(df.parse(df.format(new Date())));
+                                    chapterShard.setUpdateTime(df.parse(df.format(new Date())));
                                     Document shards = Jsoup.parse(tags.get(k), "utf-8");
                                     int wordS = shards.text().replaceAll("\\u3000|\\s*", "").length();
                                     chapterShard.setWordSum(wordS);
                                     //替换图书内容中的图片路径
-                                    String contentS = replaceImgeUrl(tags.get(k));
+                                    String contentS = replaceImgeUrl(tags.get(k), styleUrl);
                                     /*String contentS = tags.get(k);
                                     contentS = contentS.replaceAll("..(?i)/images/", BookConstant.BASE_URL + styleUrl + "/imgs/");*/
                                     chapterShard.setContent(contentS);
@@ -190,7 +200,7 @@ public class GetEpubookChapter {
                             epubookMeta.setContentNum(wordSum);
                             //获取目录信息，并添加章节号和章节字数
                             //List<BookCataRows> catalogList = getCataRowData(book, map);
-                            BookCataRows cataTree = getCataRows(book);
+                            BookCataRows cataTree = getCataRows(book, cataChapter);
                             if (cataTree != null) {
                                 //目录结构树
                                 JSONArray json = JSONArray.fromObject(cataTree.getChildren());
@@ -204,11 +214,11 @@ public class GetEpubookChapter {
                             //抽取文件
                             long start1 = System.currentTimeMillis();
                             //抽取css样式文件，并保存
-                            saveCssFile(book);
+                            saveCssFile(book, styleUrl);
                             //抽取图片文件，并保存
-                            saveImageFile(book, epubookMeta);
+                            saveImageFile(book, epubookMeta, styleUrl);
                             //抽取字体文件，并保存
-                            saveTtfFile(book);
+                            saveTtfFile(book, styleUrl);
                             long end1 = System.currentTimeMillis();
                             log.info("获取图书：" + epubookMeta.getTitle() + "，样式文件及图片，耗时：" + (end1 - start1) + "毫秒");
 
@@ -234,7 +244,7 @@ public class GetEpubookChapter {
     }
 
     //替换图片路径
-    private String replaceImgeUrl(String content) {
+    private String replaceImgeUrl(String content, String styleUrl) {
         if (!StringUtils.isEmpty(content)) {
             Document doc = Jsoup.parse(content);
             Elements imgs = doc.body().select("img");
@@ -279,16 +289,16 @@ public class GetEpubookChapter {
     }
 
     //获取图书标题、作者、出版社、出版日期、类型、语言等数据
-    private EpubookMeta getMetaData(EpubookMeta epubookMeta, Book book) throws ParseException {
+    private EpubookMeta getMetaData(EpubookMeta epubookMeta, Book book, DateFormat df) throws ParseException {
         if (book != null) {
             //获取日期
             String date = epubookMeta.getIssueddate().substring(0, 10);
             //获取图书号
             String id = epubookMeta.getMetaid();
             epubookMeta.setChapterNum(book.getContents().size());
-            epubookMeta.setUpdatetime(sdf.parse(sdf.format(new Date())));
+            epubookMeta.setUpdatetime(df.parse(df.format(new Date())));
             if (!StringUtils.isEmpty(id) && !StringUtils.isEmpty(date)) {
-                styleUrl = "/" + date.replace("-", "") + "/" + id;
+                epubookMeta.setTmp("/" + date.replace("-", "") + "/" + id);
                 return epubookMeta;
             }
         }
@@ -333,7 +343,7 @@ public class GetEpubookChapter {
     }
 
     //获取层次目录
-    private BookCataRows getCataRows(Book book) {
+    private BookCataRows getCataRows(Book book, Map<String, Integer> cataChapter) {
         if (book != null) {
             try {
                 List<TOCReference> tocs = book.getTableOfContents().getTocReferences();
@@ -355,12 +365,13 @@ public class GetEpubookChapter {
                     }
                 }
                 for (TOCReference toc : tocs) {
-                    createCataTree(toc, root);
+                    createCataTree(toc, root, cataChapter);
                 }
-                cataChapter.clear();
+                //cataChapter.clear();
                 return root;
             } catch (Exception e) {
                 log.warn("图书" + book.getTitle() + e.getMessage());
+                e.printStackTrace();
                 return null;
             }
         }
@@ -368,7 +379,7 @@ public class GetEpubookChapter {
     }
 
     //构建目录树
-    private void createCataTree(TOCReference toc, BookCataRows parentCata) {
+    private void createCataTree(TOCReference toc, BookCataRows parentCata, Map<String, Integer> cataChapter) {
         if (toc != null) {
             List<TOCReference> childTocs = toc.getChildren();
             if (childTocs != null && childTocs.size() > 0) {
@@ -378,7 +389,7 @@ public class GetEpubookChapter {
                 cataRows.setUrl(url);
                 cataRows.setChapterNum(cataChapter.get(url));
                 for (TOCReference child : childTocs) {
-                    createCataTree(child, cataRows);
+                    createCataTree(child, cataRows, cataChapter);
                 }
                 parentCata.getChildren().add(cataRows);
             } else {
@@ -393,7 +404,7 @@ public class GetEpubookChapter {
     }
 
     //获取css文件，并保存
-    private void saveCssFile(Book book) throws IOException {
+    private void saveCssFile(Book book, String styleUrl) throws IOException {
         FileOutputStream fos = null;
         try {
             //ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
@@ -443,7 +454,7 @@ public class GetEpubookChapter {
     }
 
     //获取图片文件，并保存
-    private void saveImageFile(Book book, EpubookMeta bookMeta) throws IOException {
+    private void saveImageFile(Book book, EpubookMeta bookMeta, String styleUrl) throws IOException {
         FileOutputStream fos = null;
         try {
             //ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
@@ -505,7 +516,7 @@ public class GetEpubookChapter {
     }
 
     //获取ttf文件，并保存
-    private void saveTtfFile(Book book) throws IOException {
+    private void saveTtfFile(Book book, String styleUrl) throws IOException {
         FileOutputStream fos = null;
         try {
             //ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();

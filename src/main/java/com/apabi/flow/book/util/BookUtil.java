@@ -558,7 +558,7 @@ public class BookUtil {
      * @param prevfix   生成缩略图的前缀
      * @param force     是否强制依照宽高生成缩略图(假设为false，则生成最佳比例缩略图)
      */
-    public static void thumbnailImage(String imagePath, int w, int h, String prevfix, boolean force) {
+    public synchronized static void thumbnailImage(String imagePath, int w, int h, String prevfix, boolean force) {
         File imgFile = new File(imagePath);
         if (imgFile.exists()) {
             try {

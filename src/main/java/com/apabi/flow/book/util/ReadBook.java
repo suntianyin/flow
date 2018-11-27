@@ -1,8 +1,10 @@
 package com.apabi.flow.book.util;
 
 import com.apabi.flow.book.model.BookBatchRes;
+import com.apabi.flow.book.model.BookChapterDetect;
 import com.apabi.flow.book.model.EpubookMeta;
 import com.apabi.flow.book.service.BookMetaService;
+import com.apabi.flow.book.task.ReadEpubook;
 import com.apabi.flow.config.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +14,12 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author guanpp
@@ -91,6 +97,51 @@ public class ReadBook {
                     }
                 }
                 return bookBatchResList;
+            }
+        }
+        return null;
+    }
+
+    //多线程上传epub
+    public List<BookBatchRes> batchEpub(String fileInfo, String filePath) throws Exception {
+        if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
+            String[] fileInfos = fileInfo.split(";");
+            if (fileInfos != null && fileInfos.length > 0) {
+                List<BookBatchRes> bookBatchResList = new ArrayList<>();
+                LinkedBlockingQueue<String> filePathQueue = new LinkedBlockingQueue<>();
+                Map<String, String> fileInfoMap = new Hashtable<>();
+                //将文件信息存入队列
+                for (String file : fileInfos) {
+                    String[] fileId = file.split(",");
+                    if (fileId != null && fileId.length == 2) {
+                        filePathQueue.put(filePath + File.separator + fileId[1]);
+                        fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                    }
+                }
+                //创建上传epub任务
+                ReadEpubook readEpubook = new ReadEpubook(filePathQueue,
+                        fileInfoMap,
+                        bookBatchResList,
+                        bookMetaService,
+                        getEpubookChapter);
+                //获取cpu的核数
+                int cpuSum = Runtime.getRuntime().availableProcessors();
+                ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
+                        3 * cpuSum,
+                        60,
+                        TimeUnit.SECONDS,
+                        new LinkedBlockingDeque<>());
+                //创建线程任务
+                int threadSum = filePathQueue.size();
+                for (int i = 0; i < threadSum; i++) {
+                    executor.execute(readEpubook);
+                }
+                executor.shutdown();
+                while (true) {
+                    if (executor.isTerminated()) {
+                        return bookBatchResList;
+                    }
+                }
             }
         }
         return null;

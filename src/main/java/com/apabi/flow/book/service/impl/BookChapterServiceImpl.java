@@ -13,8 +13,6 @@ import com.apabi.flow.book.util.EMailUtil;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.config.DicWordData;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -36,7 +34,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -71,7 +68,7 @@ public class BookChapterServiceImpl implements BookChapterService {
     @Autowired
     SystemConfMapper systemConfMapper;
 
-    private static String chapterNameCode;
+    private static String chapterNameDetect;
 
     //根据图书id和章节号，获取章节内容
     @Override
@@ -231,7 +228,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                 DetectBookCode detectBookCode = new DetectBookCode(queue,
                         bookChapterDao,
                         bookMetaDao,
-                        chapterNameCode,
+                        chapterNameDetect,
                         pages,
                         detectList,
                         config,
@@ -335,7 +332,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                         pattern,
                         detectList,
                         pages,
-                        chapterNameCode,
+                        chapterNameDetect,
                         config,
                         results,
                         df);
@@ -421,7 +418,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                     JSONObject jsonObject = (JSONObject) it.next();
                     createCataTree(jsonObject, chapterNum);
                 }
-                return chapterNameCode;
+                return chapterNameDetect;
             } else {
                 //获取非层次目录
                 List<String> cataRows = Arrays.asList(cataLog.split("},"));
@@ -445,14 +442,14 @@ public class BookChapterServiceImpl implements BookChapterService {
             List<JSONObject> childE = jsonObject.getJSONArray("children");
             if (childE != null && childE.size() > 0) {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
+                    chapterNameDetect = jsonObject.getString("chapterName");
                 }
                 for (JSONObject child : childE) {
                     createCataTree(child, chapterNum);
                 }
             } else {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
+                    chapterNameDetect = jsonObject.getString("chapterName");
                 }
             }
         }

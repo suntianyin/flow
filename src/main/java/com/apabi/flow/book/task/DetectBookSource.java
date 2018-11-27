@@ -40,7 +40,7 @@ public class DetectBookSource implements Runnable {
 
     private int pages;
 
-    private String chapterNameCode;
+    private String chapterName;
 
     private ApplicationConfig config;
 
@@ -56,7 +56,7 @@ public class DetectBookSource implements Runnable {
                             Pattern pattern,
                             List<BookChapterDetect> detectList,
                             int pages,
-                            String chapterNameCode,
+                            String chapterName,
                             ApplicationConfig config,
                             List<String> results,
                             DateFormat df) {
@@ -64,7 +64,7 @@ public class DetectBookSource implements Runnable {
         this.bookChapterDao = bookChapterDao;
         this.bookMetaDao = bookMetaDao;
         this.pattern = pattern;
-        this.chapterNameCode = chapterNameCode;
+        this.chapterName = chapterName;
         this.pages = pages;
         this.detectList = detectList;
         this.config = config;
@@ -159,7 +159,7 @@ public class DetectBookSource implements Runnable {
                     JSONObject jsonObject = (JSONObject) it.next();
                     createCataTree(jsonObject, chapterNum);
                 }
-                return chapterNameCode;
+                return chapterName;
             } else {
                 //获取非层次目录
                 List<String> cataRows = Arrays.asList(cataLog.split("},"));
@@ -183,14 +183,14 @@ public class DetectBookSource implements Runnable {
             List<JSONObject> childE = jsonObject.getJSONArray("children");
             if (childE != null && childE.size() > 0) {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
+                    chapterName = jsonObject.getString("chapterName");
                 }
                 for (JSONObject child : childE) {
                     createCataTree(child, chapterNum);
                 }
             } else {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
+                    chapterName = jsonObject.getString("chapterName");
                 }
             }
         }

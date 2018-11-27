@@ -3,8 +3,6 @@ package com.apabi.flow.book.task;
 import com.apabi.flow.book.dao.BookChapterDao;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.*;
-import com.apabi.flow.book.service.impl.BookChapterServiceImpl;
-import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.config.ApplicationConfig;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -13,11 +11,9 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
 
 /**
  * @author guanpp
@@ -34,7 +30,7 @@ public class DetectBookCode implements Runnable {
 
     private BookMetaDao bookMetaDao;
 
-    private String chapterNameCode;
+    private String chapterName;
 
     private int pages;
 
@@ -53,7 +49,7 @@ public class DetectBookCode implements Runnable {
     public DetectBookCode(LinkedBlockingQueue<Integer> pageNumqQueue,
                           BookChapterDao bookChapterDao,
                           BookMetaDao bookMetaDao,
-                          String chapterNameCode,
+                          String chapterName,
                           int pages,
                           List<BookChapterDetect> detectList,
                           ApplicationConfig config,
@@ -64,7 +60,7 @@ public class DetectBookCode implements Runnable {
         this.pageNumqQueue = pageNumqQueue;
         this.bookChapterDao = bookChapterDao;
         this.bookMetaDao = bookMetaDao;
-        this.chapterNameCode = chapterNameCode;
+        this.chapterName = chapterName;
         this.pages = pages;
         this.detectList = detectList;
         this.config = config;
@@ -175,7 +171,7 @@ public class DetectBookCode implements Runnable {
                     JSONObject jsonObject = (JSONObject) it.next();
                     createCataTree(jsonObject, chapterNum);
                 }
-                return chapterNameCode;
+                return chapterName;
             } else {
                 //获取非层次目录
                 List<String> cataRows = Arrays.asList(cataLog.split("},"));
@@ -199,14 +195,14 @@ public class DetectBookCode implements Runnable {
             List<JSONObject> childE = jsonObject.getJSONArray("children");
             if (childE != null && childE.size() > 0) {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
+                    chapterName = jsonObject.getString("chapterName");
                 }
                 for (JSONObject child : childE) {
                     createCataTree(child, chapterNum);
                 }
             } else {
                 if (jsonObject.getInt("chapterNum") == chapterNum) {
-                    chapterNameCode = jsonObject.getString("chapterName");
+                    chapterName = jsonObject.getString("chapterName");
                 }
             }
         }
