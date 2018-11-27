@@ -138,8 +138,8 @@ public class BookController {
                 try {
                     List<BookBatchRes> bookBatchResList = new ArrayList<>();
                     if (fileType.equals("epub")) {
-                        //bookBatchResList = readBook.batchChapterEpub(fileInfo, filePath);
-                        bookBatchResList = readBook.batchEpub(fileInfo, filePath);
+                        bookBatchResList = readBook.batchChapterEpub(fileInfo, filePath);
+                        //bookBatchResList = readBook.batchEpub(fileInfo, filePath);
                     } else if (fileType.equals("cebx")) {
                         bookBatchResList = readBook.batchChapterCebx(fileInfo, filePath);
                     }
@@ -593,7 +593,7 @@ public class BookController {
         return "success";
     }
 
-    //批量删除图书内容
+    //批量获取图书内容
     @RequestMapping(value = "/bookMetaBatch", method = RequestMethod.POST)
     @ResponseBody
     public String bookMetaBatch(@RequestParam("metaIds") String metaIds) {

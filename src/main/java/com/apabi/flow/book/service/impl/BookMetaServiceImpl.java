@@ -91,6 +91,10 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     private static final String CODE_VALUE = "UTF-8";
 
+    private final static String getCataLog = "http://flow.apabi.com/flow/book/getFoamatCatalogByMetaId?metaid=";
+
+    private final static String getCebxPage= "http://flow.apabi.com/flow/book/getCebxPageByMetaId?metaid=";
+
     private final String EXCEL_XLS = "xls";
     private final String EXCEL_XLSX = "xlsx";
 
@@ -1254,9 +1258,18 @@ public class BookMetaServiceImpl implements BookMetaService {
                         if (bookMeta == null) {
                             SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
                             bookMeta = BookUtil.createBookMeta(sCmfMeta);
+                            //从接口获取目录和页码
+                            String cata = getCebxData(getCataLog);
+                            String cebxPage = getCebxData(getCebxPage);
+                            bookMeta.setStreamCatalog(cata);
+                            bookMeta.setFoamatCatalog(cata);
+                            bookMeta.setCebxPage(cebxPage);
                             //新增到磐石数据库
                             bookMetaDao.insertBookMeta(bookMeta);
                             ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                            bookMetaDataTemp.setStreamCatalog(cata);
+                            bookMetaDataTemp.setFoamatCatalog(cata);
+                            bookMetaDataTemp.setCebxPage(cebxPage);
                             bookMetaDataTempDao.insert(bookMetaDataTemp);
                             //获取书苑数据，更新到流式图书
                             boolean ress = insertShuyuanData(sCmfMeta);
@@ -1278,6 +1291,21 @@ public class BookMetaServiceImpl implements BookMetaService {
             }
         }
         return 0;
+    }
+
+    //调用接口获取数据
+    private String getCebxData(String url) {
+        if (!StringUtils.isEmpty(url)) {
+            try {
+                HttpEntity httpEntity = HttpUtils.doGetEntity(url);
+                String body = EntityUtils.toString(httpEntity);
+                JSONObject jsonObject = JSONObject.fromObject(body);
+                return jsonObject.get("body").toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     //获取书苑数据cmf_meta、cmf_digitobject、cmf_digitresfile_site，更新到流式图书
