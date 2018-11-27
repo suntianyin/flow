@@ -86,6 +86,7 @@ public class EpubookMeta {
 
     /*@Column(name = "FILENAME")
     private String fileName;*/
+    private String tmp;
 
     public String getMetaid() {
         return metaid;
@@ -253,5 +254,13 @@ public class EpubookMeta {
 
     public void setFlowSource(String flowSource) {
         this.flowSource = flowSource;
+    }
+
+    public String getTmp() {
+        return tmp;
+    }
+
+    public void setTmp(String tmp) {
+        this.tmp = tmp;
     }
 }
