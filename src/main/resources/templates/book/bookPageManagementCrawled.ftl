@@ -28,7 +28,7 @@
                 //xhr.send(formFile);
 
                 //第二种 ajax 提交
-
+                tipDialog("请耐心等待提示，勿再操作", 10, 1);
                 var data = formFile;
                 $.ajax({
                     url: "${ctx}/book/batch/import",

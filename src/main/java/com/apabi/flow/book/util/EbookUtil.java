@@ -78,7 +78,7 @@ public class EbookUtil {
         String userName = shuyuanOrgId;
         String rightKey = PropertiesUtil.get("iyzhiKey");
         Map<String, Object> signMap = SySignUtils.ebookSign(shuyuanOrgId, userName, metaid, rights, rightKey);
-        url = "http://cebxol.apabi.com/api/getservice?orgid=jigou&ObjId=" + objId + "&UserName=" + URLEncoder.encode(userName, "UTF-8") + "&MetaId=" + metaid + "&cult=CN&dbsource=dlib&Time=" + signMap.get("time") + "&Sign=" + signMap.get("sign") + "&Rights=1-0_00&ServiceType=getcontent&ParentIndex=0";
+        url = "http://cebxol.apabi.com/api/getservice?orgid=jigou&ObjId=" + objId + "&UserName=" + URLEncoder.encode(userName, "UTF-8") + "&MetaId=" + metaid + "&cult=CN&dbsource=dlib&Time=" + signMap.get("time") + "&Sign=" + signMap.get("sign") + "&Rights=1-0_00&ServiceType=getcontent&ParentIndex=0&CatalogDep=10";
         return url;
     }
 

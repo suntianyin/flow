@@ -12,7 +12,6 @@ import com.apabi.flow.book.util.ReadBook;
 import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
-import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.processing.constant.BizException;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
@@ -28,7 +27,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-/*import org.springframework.data.domain.Page;*/
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,10 +43,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+/*import org.springframework.data.domain.Page;*/
 
 /**
  * @author guanpp
@@ -832,55 +831,62 @@ public class BookController {
     public int processBookFromPage2Chapter(@RequestParam("metaid") String metaid) throws Exception {
         return bookPageService.processBookFromPage2Chapter(metaid);
     }
+
     //跳转首页cebx流式内容管理
     @RequestMapping("/bookPageManagement")
     public String bookPageManagement() {
         return "book/bookPageManagement";
     }
-//跳转抓取页
+
+    //跳转抓取页
     @RequestMapping("/pageCrawled")
-    public String pageCrawled(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
+    public String pageCrawled(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum, Model model) {
         PageHelper.startPage(pageNum, 10);
         Page<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.pageAll();
         List<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.findAll();
-        model.addAttribute("num",pageCrawledTemps.size());
-        model.addAttribute("pageCrawledQueues",pageCrawledQueues);
+        model.addAttribute("num", pageCrawledTemps.size());
+        model.addAttribute("pageCrawledQueues", pageCrawledQueues);
         model.addAttribute("pages", pageCrawledQueues.getPages());
         model.addAttribute("pageNum", pageCrawledQueues.getPageNum());
         model.addAttribute("pageSize", 10);
         model.addAttribute("total", pageCrawledQueues.getTotal());
         return "book/bookPageManagementCrawled";
     }
+
     //跳转拼装页
     @RequestMapping("/pageAssembly")
-    public String pageAssembly(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,Model model) {
+    public String pageAssembly(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum, Model model) {
         PageHelper.startPage(pageNum, 10);
         Page<PageAssemblyQueue> pageAssemblyQueues = pageAssemblyQueueMapper.pageAll();
         model.addAttribute("pages", pageAssemblyQueues.getPages());
         model.addAttribute("pageNum", pageAssemblyQueues.getPageNum());
         model.addAttribute("pageSize", 10);
         model.addAttribute("total", pageAssemblyQueues.getTotal());
-        model.addAttribute("pageAssemblyQueues",pageAssemblyQueues);
+        model.addAttribute("pageAssemblyQueues", pageAssemblyQueues);
         return "book/bookPageManagementAssemBly";
     }
+
     //单个删除
     @RequestMapping("/pageCrawledQueuesDelete")
-    public String pageCrawledQueuesDelete(@RequestParam("id")String id) {
+    public String pageCrawledQueuesDelete(@RequestParam("id") String id) {
         pageCrawledQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/pageCrawled";
     }
+
     //全部删除
     @RequestMapping("/pageCrawledQueuesDeleteAll")
     public String pageCrawledQueuesDeleteAll() {
         pageCrawledQueueMapper.deleteAll();
         return "redirect:/book/pageCrawled";
     }
+
     //单个删除
     @RequestMapping("/pageAssemblyQueuesDelete")
-    public String pageAssemblyQueuesDelete(@RequestParam("id")String id) {
+    public String pageAssemblyQueuesDelete(@RequestParam("id") String id) {
         pageAssemblyQueueMapper.deleteByPrimaryKey(id);
         return "redirect:/book/pageAssembly";
     }
+
     //全部删除
     @RequestMapping("/pageAssemblyDeleteAll")
     public String pageAssemblyDeleteAll() {
@@ -902,15 +908,15 @@ public class BookController {
         if (systemConf2 == null) {
             log.error("获取系统参数信息出错，无法查询线程池开关");
         }
-        int i=0;
+        int i = 0;
         int swith = Integer.parseInt(systemConf2.getConfValue());
-        if(swith==0){
-            i=1;
+        if (swith == 0) {
+            i = 1;
             systemConf2.setConfValue("1");
             systemConfMapper.updateByPrimaryKey(systemConf2);
             i = bookPageService.autoFetchPageData();
-        }else if(swith==1){
-            i=-1;
+        } else if (swith == 1) {
+            i = -1;
         }
         if (i == 1) {
             resultEntity.setMsg("采集加密流式内容已开始，请勿再次操作，耐心等待");
@@ -918,7 +924,7 @@ public class BookController {
         } else if (i == -1) {
             resultEntity.setMsg("采集加密流式内容正在进行请勿再次操作");
             resultEntity.setStatus(1);
-        }else if (i == 2) {
+        } else if (i == 2) {
             resultEntity.setMsg("采集加密流式内容队列没有内容");
             resultEntity.setStatus(1);
         } else {
@@ -943,15 +949,15 @@ public class BookController {
         if (systemConf2 == null) {
             log.error("获取系统参数信息出错，无法查询线程池开关");
         }
-        int i=0;
+        int i = 0;
         int swith = Integer.parseInt(systemConf2.getConfValue());
-        if(swith==0){
-            i=1;
+        if (swith == 0) {
+            i = 1;
             systemConf2.setConfValue("1");
             systemConfMapper.updateByPrimaryKey(systemConf2);
             i = bookPageService.autoFetchPageDataAgain();
-        }else if(swith==1){
-            i=-1;
+        } else if (swith == 1) {
+            i = -1;
         }
         if (i == 1) {
             resultEntity.setMsg("重新采集加密流式内容已开始，请勿再次操作，耐心等待");
@@ -959,10 +965,10 @@ public class BookController {
         } else if (i == -1) {
             resultEntity.setMsg("重新采集加密流式内容正在进行请勿再次操作");
             resultEntity.setStatus(1);
-        }else if (i == 2) {
+        } else if (i == 2) {
             resultEntity.setMsg("重新采集加密流式队列没有内容");
             resultEntity.setStatus(1);
-        }  else {
+        } else {
             resultEntity.setMsg("重新抽取失败内容失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
@@ -1004,10 +1010,7 @@ public class BookController {
             if (metaIds != null && metaIds != "") {
                 ResultEntity resultEntity = new ResultEntity();
                 String[] split = metaIds.split(",");
-                HashSet<String> hashSet = new HashSet();
-                for (String a : split) {
-                    hashSet.add(a);
-                }
+                Set<String> hashSet = Arrays.stream(split).collect(Collectors.toSet());
                 int num = 0;
                 for (String b : hashSet) {
                     PageCrawledQueue pageCrawledQueue = new PageCrawledQueue();
@@ -1024,6 +1027,7 @@ public class BookController {
         }
         return null;
     }
+
     /**
      * 批量导出metaid
      *
@@ -1031,21 +1035,21 @@ public class BookController {
      */
     @ResponseBody
     @RequestMapping("/exportData")
-    public Object exportData(@RequestParam("type") String type,HttpServletResponse response) {
+    public Object exportData(@RequestParam("type") String type, HttpServletResponse response) {
         try {
             // 设置响应头
             response.setContentType("application/binary;charset=UTF-8");
             response.setCharacterEncoding("utf-8");
             response.setContentType("multipart/form-data");
-            List list=null;
-            if("Crawled".equalsIgnoreCase(type)){
-                List<PageCrawledQueue>  list1 = pageCrawledQueueMapper.findAll();
-                list=list1.stream().map(id -> id.getId()).collect(Collectors.toList());
-            }else if("Assembly".equalsIgnoreCase(type)){
+            List list = null;
+            if ("Crawled".equalsIgnoreCase(type)) {
+                List<PageCrawledQueue> list1 = pageCrawledQueueMapper.findAll();
+                list = list1.stream().map(id -> id.getId()).collect(Collectors.toList());
+            } else if ("Assembly".equalsIgnoreCase(type)) {
                 List<PageAssemblyQueue> list1 = pageAssemblyQueueMapper.findAll();
-                list=list1.stream().map(id -> id.getId()).collect(Collectors.toList());
+                list = list1.stream().map(id -> id.getId()).collect(Collectors.toList());
             }
-            if (list == null || list.isEmpty()){
+            if (list == null || list.isEmpty()) {
                 return "<script type='text/javascript'>alert('当前列表为空！');history.back();</script>";
             }
             // 设置文件名
@@ -1068,7 +1072,6 @@ public class BookController {
             }
 
             ServletOutputStream out = null;
-
             //create sheet
             Sheet sheet = workbook.createSheet("sheet1");
             //遍历数据集，将其写入excel中
@@ -1078,7 +1081,6 @@ public class BookController {
                 for (int i = 0; i < excelTitle.length; i++) {
                     //创建表头单元格,填值
                     titleRow.createCell(i).setCellValue(excelTitle[i]);
-
                 }
                 //自动添加 excel 行数据
                 for (int i = 0; i < list.size(); i++) {
@@ -1114,6 +1116,7 @@ public class BookController {
             return "<script type='text/javascript'>alert('" + e.getMessage() + "');history.back();</script>";
         }
     }
+
     /**
      * 批量上传metaid
      *
@@ -1126,13 +1129,10 @@ public class BookController {
             if (metaIds != null && metaIds != "") {
                 ResultEntity resultEntity = new ResultEntity();
                 String[] split = metaIds.split(",");
-                HashSet<String> hashSet = new HashSet();
-                for (String a : split) {
-                    hashSet.add(a);
-                }
+                Set<String> hashSet = Arrays.stream(split).collect(Collectors.toSet());
                 int num = 0;
                 for (String b : hashSet) {
-                    PageAssemblyQueue pageAssemblyQueue= new PageAssemblyQueue();
+                    PageAssemblyQueue pageAssemblyQueue = new PageAssemblyQueue();
                     pageAssemblyQueue.setId(b);
                     int i = pageAssemblyQueueMapper.insert(pageAssemblyQueue);
                     num += i;
@@ -1149,66 +1149,68 @@ public class BookController {
 
     @PostMapping("/batch/import")
     @ResponseBody
-    public String batchImportCraw(@RequestParam("file")MultipartFile file){
+    public String batchImportCraw(@RequestParam("file") MultipartFile file) {
 
-        if (!file.getOriginalFilename().endsWith(".xlsx")){
+        if (!file.getOriginalFilename().endsWith(".xlsx")) {
             return "文件格式不正确，仅支持 .xlsx 格式的文件";
         }
         // 读取Excel工具类
         Map<Integer, Map<Object, Object>> data = null;
-        try(InputStream inputStream = file.getInputStream()){
+        try (InputStream inputStream = file.getInputStream()) {
             String fileName = file.getOriginalFilename();
             ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
             // 读取Excel中的内容
             data = readExcelTextUtils.getDataByInputStream();
-            if (data == null || data.isEmpty()){
+            if (data == null || data.isEmpty()) {
                 throw new Exception();
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return "文件读取出错，请重新尝试或联系管理员！";
-        }catch (Exception e){
+        } catch (Exception e) {
             return "文件出错，请检查文件格式是否正确或内容是否完整！";
         }
         Integer addedNum = 0;
         try {
             addedNum = bookPageService.batchAddCrawFromFile(data);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("异常信息： {}", e);
         }
-        return addedNum > 0 ? "成功":"失败";
+        return addedNum > 0 ? "成功" : "失败";
     }
+
     @PostMapping("/batch/import2")
     @ResponseBody
-    public String batchImportChapter(@RequestParam("file")MultipartFile file){
+    public String batchImportChapter(@RequestParam("file") MultipartFile file) {
 
-        if (!file.getOriginalFilename().endsWith(".xlsx")){
+        if (!file.getOriginalFilename().endsWith(".xlsx")) {
             return "文件格式不正确，仅支持 .xlsx 格式的文件";
         }
         // 读取Excel工具类
         Map<Integer, Map<Object, Object>> data = null;
-        try(InputStream inputStream = file.getInputStream()){
+        try (InputStream inputStream = file.getInputStream()) {
             String fileName = file.getOriginalFilename();
             ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
             // 读取Excel中的内容
             data = readExcelTextUtils.getDataByInputStream();
-            if (data == null || data.isEmpty()){
+            if (data == null || data.isEmpty()) {
                 throw new Exception();
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return "文件读取出错，请重新尝试或联系管理员！";
-        }catch (Exception e){
+        } catch (Exception e) {
             return "文件出错，请检查文件格式是否正确或内容是否完整！";
         }
         Integer addedNum = 0;
         try {
             addedNum = bookPageService.batchAddAssemblyFromFile(data);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("异常信息： {}", e);
         }
-        return addedNum > 0 ? "成功":"失败";
+        return addedNum > 0 ? "成功" : "失败";
     }
+
     @ResponseBody
     @RequestMapping("/shutdownNow")
     public Object shutdownNow() {
@@ -1219,11 +1221,11 @@ public class BookController {
         if (systemConf2 == null) {
             log.error("获取系统参数信息出错，无法查询线程池开关");
         }
-        int i=0;
+        int i = 0;
         int swith = Integer.parseInt(systemConf2.getConfValue());
-        if(swith==0){
-            i=-1;
-        }else if(swith==1){
+        if (swith == 0) {
+            i = -1;
+        } else if (swith == 1) {
             i = bookPageService.shutdownNow();
             systemConf2.setConfValue("0");
             systemConfMapper.updateByPrimaryKey(systemConf2);
@@ -1240,7 +1242,6 @@ public class BookController {
         }
         return resultEntity;
     }
-
 
 
     @GetMapping("/test")

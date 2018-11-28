@@ -10,6 +10,7 @@ import org.dom4j.io.SAXReader;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author: sunty
@@ -27,9 +28,9 @@ public class CebxUtils {
             if (StringUtils.isNotBlank(tmp)) {
                 SAXReader saxReader = new SAXReader();
                 org.dom4j.Document doc = saxReader.read(new ByteArrayInputStream(tmp.getBytes("UTF-8")));
-                List<Element> list = doc.selectNodes("/Return/Result/Content");
+                List<Element> list = doc.selectNodes("/Return/Result/PageInfo");
                 //清空目录章节对应map
-                String totalNum = list.get(0).attributeValue("TotalNum");
+                String totalNum = list.get(0).attributeValue("TotalCount");
                 page = Integer.parseInt(totalNum);
                 return page;
             }
@@ -42,15 +43,16 @@ public class CebxUtils {
 
     private static int chapterNum = 0;
 
-    public static String getStreamCatalog(String metaId) {
+    public static String getStreamCatalog(String metaId,String shuyuanOrgId) {
         try {
-            String url = "http://www.apabi.com/apadlibrary/iyzhi/ServiceEntry/Mobile.aspx?api=bookdetail&metaid=" + metaId + "&type=1&multiplePart=0&orgcode=iyzhi";
+            String url = EbookUtil.getCebxPage(metaId, shuyuanOrgId);
             HttpEntity httpEntity = HttpUtils.doGetEntity(url);
             String tmp = EntityUtils.toString(httpEntity);
+            tmp=new String(tmp.getBytes("ISO-8859-1"),"utf-8");
             if (StringUtils.isNotBlank(tmp)) {
                 SAXReader saxReader = new SAXReader();
                 org.dom4j.Document doc = saxReader.read(new ByteArrayInputStream(tmp.getBytes("UTF-8")));
-                List<Element> list = doc.selectNodes("/Return/Record/catalogRow");
+                List<Element> list = doc.selectNodes("/Return/Result/Content/item");
                 BookCataRows root = new BookCataRows();
                 //清空目录章节对应map
                 for (Element element : list) {
@@ -75,8 +77,8 @@ public class CebxUtils {
             if (childE != null && childE.size() > 0) {
                 BookCataRows cataRows = new BookCataRows();
                 cataRows.setChapterNum(chapterNum++);
-                cataRows.setChapterName(element.attributeValue("chapterName"));
-                cataRows.setEbookPageNum(Integer.parseInt(element.attributeValue("ebookPageNum")));
+                cataRows.setChapterName(element.elementText("item"));
+                cataRows.setEbookPageNum(Integer.parseInt(element.attributeValue("Page")));
                 String url = element.attributeValue("src");
                 cataRows.setUrl(url);
                 for (Element child : childE) {
@@ -86,12 +88,21 @@ public class CebxUtils {
             } else {
                 BookCataRows bookCataRows = new BookCataRows();
                 bookCataRows.setChapterNum(chapterNum++);
-                bookCataRows.setChapterName(element.attributeValue("chapterName"));
-                bookCataRows.setEbookPageNum(Integer.parseInt(element.attributeValue("ebookPageNum")));
+                bookCataRows.setChapterName(element.getText());
+                bookCataRows.setEbookPageNum(Integer.parseInt(element.attributeValue("Page")));
                 String url = element.attributeValue("src");
                 bookCataRows.setUrl(url);
                 parentCata.getChildren().add(bookCataRows);
             }
         }
+    }
+
+    public static void main(String[] args) {
+//        int cebxPage = CebxUtils.getCebxPage("m.20180627-RXJC-XNSF-0035", "iyzhi");
+//        System.out.println(cebxPage);
+//        String iyzhi = CebxUtils.getStreamCatalog("m.20180627-RXJC-XNSF-0035", "iyzhi");
+//        System.out.println(iyzhi);
+        int count = Stream.of(1,2,3).reduce(0,(aaa, a) -> aaa + a);
+        System.out.println(count);
     }
 }

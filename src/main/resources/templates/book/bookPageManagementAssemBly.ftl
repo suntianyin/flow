@@ -30,6 +30,7 @@
                 //第二种 ajax 提交
 
                 var data = formFile;
+                tipDialog("请耐心等待提示，勿再操作", 10, 1);
                 $.ajax({
                     url: "${ctx}/book/batch/import2",
                     data: data,
