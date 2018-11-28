@@ -195,10 +195,11 @@
 <div class="cover">
     <div id="page-wrapper" style="top:3%;">
         <div class="panel panel-default">
-            <div class="panel-heading" style="text-align: center; font-size: 18px;height: 35px;">
+            <div class="panel-heading" style="text-align: center; font-size: 18px;height: 40px;">
                 <span style="font-size: larger">${bookMetaVo.title!''}</span>
                 <#if bookChapter??>
                 <#else >
+                    </br>
                     <span style="color:red">${bookChapter!"该书流式内容存在问题，请联系管理员"}</span>
                 </#if>
             </div>
