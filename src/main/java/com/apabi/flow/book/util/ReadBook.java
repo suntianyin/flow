@@ -4,6 +4,7 @@ import com.apabi.flow.book.model.BookBatchRes;
 import com.apabi.flow.book.model.BookChapterDetect;
 import com.apabi.flow.book.model.EpubookMeta;
 import com.apabi.flow.book.service.BookMetaService;
+import com.apabi.flow.book.task.ReadCebxBook;
 import com.apabi.flow.book.task.ReadEpubook;
 import com.apabi.flow.config.ApplicationConfig;
 import org.slf4j.Logger;
@@ -103,45 +104,50 @@ public class ReadBook {
     }
 
     //多线程上传epub
-    public List<BookBatchRes> batchEpub(String fileInfo, String filePath) throws Exception {
+    public List<BookBatchRes> batchEpub(String fileInfo, String filePath) {
         if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
-            String[] fileInfos = fileInfo.split(";");
-            if (fileInfos != null && fileInfos.length > 0) {
-                List<BookBatchRes> bookBatchResList = new ArrayList<>();
-                LinkedBlockingQueue<String> filePathQueue = new LinkedBlockingQueue<>();
-                Map<String, String> fileInfoMap = new Hashtable<>();
-                //将文件信息存入队列
-                for (String file : fileInfos) {
-                    String[] fileId = file.split(",");
-                    if (fileId != null && fileId.length == 2) {
-                        filePathQueue.put(filePath + File.separator + fileId[1]);
-                        fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+            try {
+
+                String[] fileInfos = fileInfo.split(";");
+                if (fileInfos != null && fileInfos.length > 0) {
+                    List<BookBatchRes> bookBatchResList = new ArrayList<>();
+                    LinkedBlockingQueue<String> filePathQueue = new LinkedBlockingQueue<>();
+                    Map<String, String> fileInfoMap = new Hashtable<>();
+                    //将文件信息存入队列
+                    for (String file : fileInfos) {
+                        String[] fileId = file.split(",");
+                        if (fileId != null && fileId.length == 2) {
+                            filePathQueue.put(filePath + File.separator + fileId[1]);
+                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                        }
+                    }
+                    //创建上传epub任务
+                    ReadEpubook readEpubook = new ReadEpubook(filePathQueue,
+                            fileInfoMap,
+                            bookBatchResList,
+                            bookMetaService,
+                            getEpubookChapter);
+                    //获取cpu的核数
+                    int cpuSum = Runtime.getRuntime().availableProcessors();
+                    ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
+                            3 * cpuSum,
+                            60,
+                            TimeUnit.SECONDS,
+                            new LinkedBlockingDeque<>());
+                    //创建线程任务
+                    int threadSum = filePathQueue.size();
+                    for (int i = 0; i < threadSum; i++) {
+                        executor.execute(readEpubook);
+                    }
+                    executor.shutdown();
+                    while (true) {
+                        if (executor.isTerminated()) {
+                            return bookBatchResList;
+                        }
                     }
                 }
-                //创建上传epub任务
-                ReadEpubook readEpubook = new ReadEpubook(filePathQueue,
-                        fileInfoMap,
-                        bookBatchResList,
-                        bookMetaService,
-                        getEpubookChapter);
-                //获取cpu的核数
-                int cpuSum = Runtime.getRuntime().availableProcessors();
-                ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
-                        3 * cpuSum,
-                        60,
-                        TimeUnit.SECONDS,
-                        new LinkedBlockingDeque<>());
-                //创建线程任务
-                int threadSum = filePathQueue.size();
-                for (int i = 0; i < threadSum; i++) {
-                    executor.execute(readEpubook);
-                }
-                executor.shutdown();
-                while (true) {
-                    if (executor.isTerminated()) {
-                        return bookBatchResList;
-                    }
-                }
+            } catch (Exception e) {
+                log.warn("批量上传目录{}，时出现异常{}", filePath, e.getMessage());
             }
         }
         return null;
@@ -167,6 +173,7 @@ public class ReadBook {
                     }
                 } catch (Exception e) {
                     log.warn("解析图书失败：" + file + "时{}" + e);
+                    e.printStackTrace();
                 } finally {
                     File dir = new File(config.getTargetCebxDir());
                     File[] fileList = dir.listFiles();
@@ -180,35 +187,6 @@ public class ReadBook {
             }
         }
         return 0;
-    }
-
-    //删除文件
-    private void deleteFiles(File[] files) {
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                File[] children = file.listFiles();
-                if (children != null && children.length > 0) {
-                    deleteFiles(children);
-                } else {
-                    if (file.exists()) {
-                        file.delete();
-                    }
-                }
-            }
-        }
-    }
-
-    //删除文件
-    private void deleteFiles(String[] filePaths) {
-        if (filePaths != null && filePaths.length > 0) {
-            for (String filePath : filePaths) {
-                File file = new File(config.getTargetCebxDir() + File.separator + filePath);
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-            log.info("cebx的html文件删除成功");
-        }
     }
 
     //批量发布Cebx
@@ -239,4 +217,86 @@ public class ReadBook {
         return null;
     }
 
+    //多线程上传cebx
+    public List<BookBatchRes> batchCebx(String fileInfo, String filePath) {
+        if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
+            try {
+                String[] fileInfos = fileInfo.split(";");
+                if (fileInfos != null && fileInfos.length > 0) {
+                    List<BookBatchRes> bookBatchResList = new ArrayList<>();
+                    LinkedBlockingQueue<String> filePathQueue = new LinkedBlockingQueue<>();
+                    Map<String, String> fileInfoMap = new Hashtable<>();
+                    for (String file : fileInfos) {
+                        String[] fileId = file.split(",");
+                        if (fileId != null && fileId.length == 2) {
+                            filePathQueue.put(filePath + File.separator + fileId[1]);
+                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                        }
+                    }
+                    //创建上传epub任务
+                    ReadCebxBook readCebxBook = new ReadCebxBook(filePathQueue,
+                            fileInfoMap,
+                            bookBatchResList,
+                            bookMetaService,
+                            getCebxChapter,
+                            config);
+                    //获取cpu的核数
+                    int cpuSum = Runtime.getRuntime().availableProcessors();
+                    ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
+                            3 * cpuSum,
+                            60,
+                            TimeUnit.SECONDS,
+                            new LinkedBlockingDeque<>());
+                    //创建线程任务
+                    int threadSum = filePathQueue.size();
+                    for (int i = 0; i < threadSum; i++) {
+                        executor.execute(readCebxBook);
+                    }
+                    executor.shutdown();
+                    while (true) {
+                        if (executor.isTerminated()) {
+                            return bookBatchResList;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("批量上传目录{}，时出现异常{}", filePath, e.getMessage());
+            } finally {
+                File dir = new File(config.getTargetCebxDir());
+                File[] fileList = dir.listFiles();
+                deleteFiles(fileList);
+                log.info("cebx的html文件删除成功");
+            }
+        }
+        return null;
+    }
+
+    //删除文件
+    private void deleteFiles(File[] files) {
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                File[] children = file.listFiles();
+                if (children != null && children.length > 0) {
+                    deleteFiles(children);
+                } else {
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
+        }
+    }
+
+    //删除文件
+    private void deleteFiles(String[] filePaths) {
+        if (filePaths != null && filePaths.length > 0) {
+            for (String filePath : filePaths) {
+                File file = new File(config.getTargetCebxDir() + File.separator + filePath);
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            log.info("cebx的html文件删除成功");
+        }
+    }
 }

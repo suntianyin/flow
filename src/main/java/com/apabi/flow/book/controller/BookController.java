@@ -151,7 +151,8 @@ public class BookController {
                         //bookBatchResList = readBook.batchChapterEpub(fileInfo, filePath);
                         bookBatchResList = readBook.batchEpub(fileInfo, filePath);
                     } else if (fileType.equals("cebx")) {
-                        bookBatchResList = readBook.batchChapterCebx(fileInfo, filePath);
+                        //bookBatchResList = readBook.batchChapterCebx(fileInfo, filePath);
+                        bookBatchResList = readBook.batchCebx(fileInfo, filePath);
                     }
                     if (bookBatchResList.size() > 0) {
                         RES_LIST = "";

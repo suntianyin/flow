@@ -35,11 +35,17 @@ public class GetCebxChapter {
 
     private static final Logger log = LoggerFactory.getLogger(GetCebxChapter.class);
 
-    //样式和图片文件的加载路径
-    private String cssUrl;
+  /*  //样式和图片文件的加载路径
+    private static final String CSSURL = "cssUrl";
 
     //样式和图片文件的路径
-    private String cssPath;
+    private static final String CSSPATH = "cssPath";
+
+    //目录和章节的对应关系
+    private static Map<String, Integer> cataChapter = new Hashtable<>();*/
+
+    //章节编号
+    private static Integer chapterNum = 0;
 
     //命令返回结果
     private static final String RES_SUCCESS = "success";
@@ -50,12 +56,6 @@ public class GetCebxChapter {
 
     //目录文件名
     private static final String CATA_XML = "cata.xml";
-
-    //章节编号
-    private static int chapterNum = 0;
-
-    //目录和章节的对应关系
-    private static Map<String, Integer> cataChapter = new HashMap<>();
 
     @Autowired
     ApplicationConfig config;
@@ -75,6 +75,29 @@ public class GetCebxChapter {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    //目录存放
+    class CataLog {
+        private String cataLog;
+
+        private Map<String, Integer> cataChapter;
+
+        public String getCataLog() {
+            return cataLog;
+        }
+
+        public void setCataLog(String cataLog) {
+            this.cataLog = cataLog;
+        }
+
+        public Map<String, Integer> getCataChapter() {
+            return cataChapter;
+        }
+
+        public void setCataChapter(Map<String, Integer> cataChapter) {
+            this.cataChapter = cataChapter;
+        }
+    }
+
     //获取章节内容
     public EpubookMeta insertCebx(String path, EpubookMeta epubookMeta, String fileName) throws Exception {
         if (StringUtils.isNotBlank(path)) {
@@ -83,10 +106,16 @@ public class GetCebxChapter {
             if (target != null) {
                 //获取层次目录
                 String xmlPath = target + File.separator + CATA_XML;
-                String cataLog = getCatalog(xmlPath);
-                if (StringUtils.isBlank(cataLog)) {
+                //章节目录对应关系
+                Map<String, Integer> cataChapter;
+                String cataLog;
+                CataLog cataLogModel = getCatalog(xmlPath);
+                if (cataLogModel == null) {
                     log.warn("检查文件" + xmlPath + "是否存在问题！");
                     return null;
+                } else {
+                    cataLog = cataLogModel.getCataLog();
+                    cataChapter = cataLogModel.getCataChapter();
                 }
                 //解析html文件
                 File dir = new File(target);
@@ -160,11 +189,11 @@ public class GetCebxChapter {
                     long end = System.currentTimeMillis();
                     log.info("图书章节及分组拆分耗时：" + (end - start) + "毫秒");
                     //获取样式文件
-                    boolean res1 = saveCss(epubookMeta, target);
-                    if (res1) {
+                    String res1 = saveCss(epubookMeta, target);
+                    if (StringUtils.isNotBlank(res1)) {
                         //样式连接
                         String styleUrl = "<link href=\"" +
-                                "" + BookConstant.BASE_URL + "/" + cssUrl + "\"" +
+                                "" + BookConstant.BASE_URL + "/" + res1 + "\"" +
                                 " rel=\"stylesheet\" type=\"text/css\">";
                         epubookMeta.setStyleUrl(styleUrl);
                         //总字数
@@ -193,23 +222,28 @@ public class GetCebxChapter {
     }
 
     //获取层次目录
-    private String getCatalog(String xmlPath) throws Exception {
+    private CataLog getCatalog(String xmlPath) throws Exception {
         if (org.apache.commons.lang3.StringUtils.isNotBlank(xmlPath)) {
             String cataLog = readToString(xmlPath);
             if (StringUtils.isNotBlank(cataLog)) {
+                CataLog cataLogModel = new CataLog();
                 SAXReader saxReader = new SAXReader();
                 org.dom4j.Document doc = saxReader.read(new ByteArrayInputStream(cataLog.getBytes("UTF-8")));
                 List<Element> list = doc.getRootElement().elements("catalogRow");
                 BookCataRows root = new BookCataRows();
-                //清空目录章节对应map
-                cataChapter.clear();
-                for (Element element : list) {
-                    createCataTree(element, root);
+                //存储目录章节信息
+                Map<String, Integer> cataChapter = new HashMap<>();
+                synchronized (chapterNum) {
+                    chapterNum = 0;
+                    for (Element element : list) {
+                        createCataTree(element, root, cataChapter);
+                    }
                 }
-                chapterNum = 0;
                 //目录结构树
                 JSONArray json = JSONArray.fromObject(root.getChildren());
-                return json.toString();
+                cataLogModel.setCataChapter(cataChapter);
+                cataLogModel.setCataLog(json.toString());
+                return cataLogModel;
             } else {
                 log.warn("检查文件" + xmlPath + "是否存在问题！");
             }
@@ -218,7 +252,7 @@ public class GetCebxChapter {
     }
 
     //构建目录树
-    private void createCataTree(Element element, BookCataRows parentCata) {
+    private void createCataTree(Element element, BookCataRows parentCata, Map<String, Integer> cataChapter) {
         if (element != null) {
             List<Element> childE = element.elements();
             if (childE != null && childE.size() > 0) {
@@ -230,7 +264,7 @@ public class GetCebxChapter {
                 cataRows.setUrl(url);
                 cataChapter.put(url, cataRows.getChapterNum());
                 for (Element child : childE) {
-                    createCataTree(child, cataRows);
+                    createCataTree(child, cataRows, cataChapter);
                 }
                 parentCata.getChildren().add(cataRows);
             } else {
@@ -260,14 +294,14 @@ public class GetCebxChapter {
     }
 
     //获取样式文件
-    private boolean saveCss(EpubookMeta epubookMeta, String targetPath) throws IOException {
+    private String saveCss(EpubookMeta epubookMeta, String targetPath) throws IOException {
         if (epubookMeta != null) {
             long start = System.currentTimeMillis();
             String issuedDate = epubookMeta.getIssueddate().replace("-", "");
             String metaId = epubookMeta.getMetaid();
             String sp = File.separator;
-            cssPath = issuedDate + sp + metaId + sp + BookConstant.CEBX_STYLE_DIR + sp + BookConstant.CEBX_STYLE_NAME;
-            cssUrl = issuedDate + "/" + metaId + "/" + BookConstant.CEBX_STYLE_DIR + "/" + BookConstant.CEBX_STYLE_NAME;
+            String cssPath = issuedDate + sp + metaId + sp + BookConstant.CEBX_STYLE_DIR + sp + BookConstant.CEBX_STYLE_NAME;
+            String cssUrl = issuedDate + "/" + metaId + "/" + BookConstant.CEBX_STYLE_DIR + "/" + BookConstant.CEBX_STYLE_NAME;
             File target = new File(config.getStyleUrl() + sp + cssPath);
             File fileParent = target.getParentFile();
             if (!fileParent.exists()) {
@@ -280,9 +314,9 @@ public class GetCebxChapter {
             Files.copy(source.toPath(), target.toPath());
             long end = System.currentTimeMillis();
             log.info("样式文件已提取到" + target.getPath() + "耗时：" + (end - start) + "毫秒");
-            return true;
+            return cssUrl;
         }
-        return false;
+        return null;
     }
 
     //读取文件内容
@@ -319,7 +353,7 @@ public class GetCebxChapter {
             //获取文件名
             File file = new File(path);
             String fileName = file.getName();
-            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+            //fileName = fileName.substring(0, fileName.lastIndexOf("."));
             String target = config.getTargetCebxDir() + File.separator + fileName;
             //调用命令
             String cmd = config.getCebxHtmlExe() +
@@ -341,6 +375,8 @@ public class GetCebxChapter {
                 if (res.toLowerCase().contains(RES_SUCCESS)) {
                     long end = System.currentTimeMillis();
                     log.info("生成html文件到" + target + "耗时：" + (end - start) + "毫秒");
+                    //去掉后缀
+                    target = target.substring(0, target.lastIndexOf("."));
                     return target;
                 } else {
                     log.warn(res);
