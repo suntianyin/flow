@@ -1,5 +1,5 @@
 ctx: http://localhost:8084/flowadmin
-cebxHtmlExe: E:\cebxTool\Cebx2Html.exe
+cebxHtmlExe: E:\cebxTool\cebx2Html\Cebx2Html.exe
 targetCebxDir: F:\cebxHtml
 styleUrl: F:\style
 uploadXml: F:\upload\flow\xml
