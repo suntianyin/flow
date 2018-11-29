@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 
 /**
@@ -35,7 +36,6 @@ public class UploadFileController {
         return "systemConf/uploadInfo";
     }
 
-    //
     //解析xml文件
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody

@@ -366,7 +366,7 @@ public class GetCebxChapter {
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(), BookConstant.CODE_UTF8));
             String line;
-            String res = null;
+            String res = "";
             while ((line = bufferedReader.readLine()) != null) {
                 res += line;
             }
@@ -379,7 +379,7 @@ public class GetCebxChapter {
                     target = target.substring(0, target.lastIndexOf("."));
                     return target;
                 } else {
-                    log.warn(res);
+                    log.warn("执行cebx解析工具时出现异常{}", res);
                 }
             }
         }
