@@ -95,6 +95,7 @@
                         <th>METAID：</th>
                         <td>
                             <textarea id="metaId" name="metaId" rows="10" cols="50"></textarea>
+                            （METAID之间以回车键换行分隔，不要有空行）
                         </td>
                     </tr>
                 </table>
