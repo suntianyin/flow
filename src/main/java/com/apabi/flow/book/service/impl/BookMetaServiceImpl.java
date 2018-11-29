@@ -93,7 +93,7 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     private final static String getCataLog = "http://flow.apabi.com/flow/book/getFoamatCatalogByMetaId?metaid=";
 
-    private final static String getCebxPage= "http://flow.apabi.com/flow/book/getCebxPageByMetaId?metaid=";
+    private final static String getCebxPage = "http://flow.apabi.com/flow/book/getCebxPageByMetaId?metaid=";
 
     private final String EXCEL_XLS = "xls";
     private final String EXCEL_XLSX = "xlsx";
@@ -1207,33 +1207,35 @@ public class BookMetaServiceImpl implements BookMetaService {
                 int sum = 0;
                 for (String metaId : metaIds) {
                     try {
-                        //删除章节内容
-                        bookChapterDao.deleteAllBookChapter(metaId);
-                        //删除分组内容
-                        bookShardDao.deleteAllBookShard(metaId);
-                        //更新图书元数据
-                        BookMeta bookMeta = new BookMeta();
-                        bookMeta.setMetaId(metaId);
-                        bookMeta.setChapterNum(0);
-                        bookMeta.setStyleUrl("");
-                        bookMeta.setContentNum(0);
-                        bookMeta.setStreamCatalog("");
-                        bookMeta.setHasFlow(0);
-                        bookMeta.setIsOptimize(0);
-                        bookMeta.setFlowSource("");
-                        bookMetaDao.updateBookMetaById(bookMeta);
-                        //更新图书元数据，temp表
-                        ApabiBookMetaDataTemp bookMetaDataTemp = new ApabiBookMetaDataTemp();
-                        bookMetaDataTemp.setMetaId(metaId);
-                        bookMetaDataTemp.setChapterNum(0);
-                        bookMetaDataTemp.setStyleUrl("");
-                        bookMetaDataTemp.setContentNum(0);
-                        bookMetaDataTemp.setStreamCatalog("");
-                        bookMetaDataTemp.setHasFlow(0);
-                        bookMetaDataTemp.setIsOptimize(0);
-                        bookMetaDataTemp.setFlowSource("");
-                        bookMetaDataTempDao.update(bookMetaDataTemp);
-                        sum++;
+                        if (!StringUtils.isEmpty(metaId)) {
+                            //删除章节内容
+                            bookChapterDao.deleteAllBookChapter(metaId);
+                            //删除分组内容
+                            bookShardDao.deleteAllBookShard(metaId);
+                            //更新图书元数据
+                            BookMeta bookMeta = new BookMeta();
+                            bookMeta.setMetaId(metaId);
+                            bookMeta.setChapterNum(0);
+                            bookMeta.setStyleUrl("");
+                            bookMeta.setContentNum(0);
+                            bookMeta.setStreamCatalog("");
+                            bookMeta.setHasFlow(0);
+                            bookMeta.setIsOptimize(0);
+                            bookMeta.setFlowSource("");
+                            bookMetaDao.updateBookMetaById(bookMeta);
+                            //更新图书元数据，temp表
+                            ApabiBookMetaDataTemp bookMetaDataTemp = new ApabiBookMetaDataTemp();
+                            bookMetaDataTemp.setMetaId(metaId);
+                            bookMetaDataTemp.setChapterNum(0);
+                            bookMetaDataTemp.setStyleUrl("");
+                            bookMetaDataTemp.setContentNum(0);
+                            bookMetaDataTemp.setStreamCatalog("");
+                            bookMetaDataTemp.setHasFlow(0);
+                            bookMetaDataTemp.setIsOptimize(0);
+                            bookMetaDataTemp.setFlowSource("");
+                            bookMetaDataTempDao.update(bookMetaDataTemp);
+                            sum++;
+                        }
                     } catch (Exception e) {
                         log.warn("图书：" + metaId + "内容删除异常{}", e.getMessage());
                     }
@@ -1253,34 +1255,36 @@ public class BookMetaServiceImpl implements BookMetaService {
                 int sum = 0;
                 for (String metaId : metaIds) {
                     try {
-                        BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
-                        //如果磐石没有，则从书苑获取
-                        if (bookMeta == null) {
-                            SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
-                            bookMeta = BookUtil.createBookMeta(sCmfMeta);
-                            //从接口获取目录和页码
-                            String cata = getCebxData(getCataLog);
-                            String cebxPage = getCebxData(getCebxPage);
-                            bookMeta.setStreamCatalog(cata);
-                            bookMeta.setFoamatCatalog(cata);
-                            bookMeta.setCebxPage(cebxPage);
-                            //新增到磐石数据库
-                            bookMetaDao.insertBookMeta(bookMeta);
-                            ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
-                            bookMetaDataTemp.setStreamCatalog(cata);
-                            bookMetaDataTemp.setFoamatCatalog(cata);
-                            bookMetaDataTemp.setCebxPage(cebxPage);
-                            bookMetaDataTempDao.insert(bookMetaDataTemp);
-                            //获取书苑数据，更新到流式图书
-                            boolean ress = insertShuyuanData(sCmfMeta);
-                            if (ress) {
-                                log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
-                                        0, metaId, "success", new Date());
-                            } else {
-                                log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
-                                        -2, metaId, "新增书苑数据异常", new Date());
+                        if (!StringUtils.isEmpty(metaId)) {
+                            BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
+                            //如果磐石没有，则从书苑获取
+                            if (bookMeta == null) {
+                                SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
+                                bookMeta = BookUtil.createBookMeta(sCmfMeta);
+                                //从接口获取目录和页码
+                                String cata = getCebxData(getCataLog);
+                                String cebxPage = getCebxData(getCebxPage);
+                                bookMeta.setStreamCatalog(cata);
+                                bookMeta.setFoamatCatalog(cata);
+                                bookMeta.setCebxPage(cebxPage);
+                                //新增到磐石数据库
+                                bookMetaDao.insertBookMeta(bookMeta);
+                                ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                                bookMetaDataTemp.setStreamCatalog(cata);
+                                bookMetaDataTemp.setFoamatCatalog(cata);
+                                bookMetaDataTemp.setCebxPage(cebxPage);
+                                bookMetaDataTempDao.insert(bookMetaDataTemp);
+                                //获取书苑数据，更新到流式图书
+                                boolean ress = insertShuyuanData(sCmfMeta);
+                                if (ress) {
+                                    log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            0, metaId, "success", new Date());
+                                } else {
+                                    log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            -2, metaId, "新增书苑数据异常", new Date());
+                                }
+                                sum++;
                             }
-                            sum++;
                         }
                     } catch (Exception e) {
                         log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
