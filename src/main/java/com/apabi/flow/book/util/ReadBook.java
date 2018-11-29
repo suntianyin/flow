@@ -129,8 +129,8 @@ public class ReadBook {
                             getEpubookChapter);
                     //获取cpu的核数
                     int cpuSum = Runtime.getRuntime().availableProcessors();
-                    ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
-                            3 * cpuSum,
+                    ThreadPoolExecutor executor = new ThreadPoolExecutor(config.getThreadTime() * cpuSum,
+                            config.getThreadTime() * cpuSum,
                             60,
                             TimeUnit.SECONDS,
                             new LinkedBlockingDeque<>());
@@ -242,8 +242,8 @@ public class ReadBook {
                             config);
                     //获取cpu的核数
                     int cpuSum = Runtime.getRuntime().availableProcessors();
-                    ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
-                            3 * cpuSum,
+                    ThreadPoolExecutor executor = new ThreadPoolExecutor(config.getThreadTime() * cpuSum,
+                            config.getThreadTime() * cpuSum,
                             60,
                             TimeUnit.SECONDS,
                             new LinkedBlockingDeque<>());

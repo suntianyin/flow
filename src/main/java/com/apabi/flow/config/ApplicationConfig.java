@@ -39,6 +39,10 @@ public class ApplicationConfig {
     @Value("${batchSize}")
     private Integer batchSize;
 
+    //线程倍数
+    @Value("${threadTime}")
+    private Integer threadTime;
+
     public String getCebxHtmlExe() {
         return cebxHtmlExe;
     }
@@ -101,5 +105,13 @@ public class ApplicationConfig {
 
     public void setBatchSize(Integer batchSize) {
         this.batchSize = batchSize;
+    }
+
+    public Integer getThreadTime() {
+        return threadTime;
+    }
+
+    public void setThreadTime(Integer threadTime) {
+        this.threadTime = threadTime;
     }
 }

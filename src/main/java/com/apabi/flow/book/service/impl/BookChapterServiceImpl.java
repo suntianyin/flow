@@ -238,8 +238,8 @@ public class BookChapterServiceImpl implements BookChapterService {
                         pageSize);
                 //获取cpu的核数
                 int cpuSum = Runtime.getRuntime().availableProcessors();
-                ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
-                        3 * cpuSum,
+                ThreadPoolExecutor executor = new ThreadPoolExecutor(config.getThreadTime() * cpuSum,
+                        config.getThreadTime() * cpuSum,
                         60,
                         TimeUnit.SECONDS,
                         new LinkedBlockingDeque<Runnable>());
@@ -264,7 +264,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();
-                        eMailUtil.sendAttachmentsMail(results,"检查乱码结果");
+                        eMailUtil.sendAttachmentsMail(results, "检查乱码结果");
                         log.info("检查乱码结果已发送邮件");
                         break;
                     }
@@ -338,8 +338,8 @@ public class BookChapterServiceImpl implements BookChapterService {
                         df);
                 //获取cpu的核数
                 int cpuSum = Runtime.getRuntime().availableProcessors();
-                ThreadPoolExecutor executor = new ThreadPoolExecutor(3 * cpuSum,
-                        3 * cpuSum,
+                ThreadPoolExecutor executor = new ThreadPoolExecutor(config.getThreadTime() * cpuSum,
+                        config.getThreadTime() * cpuSum,
                         60,
                         TimeUnit.SECONDS,
                         new LinkedBlockingDeque<Runnable>());
@@ -364,7 +364,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();
-                        eMailUtil.sendAttachmentsMail(results,"检查公众号和QQ结果");
+                        eMailUtil.sendAttachmentsMail(results, "检查公众号和QQ结果");
                         log.info("检查公众号和QQ结果已发送邮件");
                         break;
                     }

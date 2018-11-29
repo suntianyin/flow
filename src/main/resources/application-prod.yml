@@ -7,6 +7,7 @@ uploadEpub: D:\upload\flow\epub
 uploadCebx: D:\upload\flow\cebx
 bookDetect: D:\bookDetect
 batchSize: 1000
+threadTime: 1
 spring:
   data:
       mongodb:

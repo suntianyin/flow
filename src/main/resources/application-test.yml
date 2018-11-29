@@ -7,3 +7,4 @@ uploadEpub: /upload/flow/epub
 uploadCebx: /upload/flow/cebx
 bookDetect: /apabi/flow/file/bookDetect
 batchSize: 1000
+threadTime: 1
