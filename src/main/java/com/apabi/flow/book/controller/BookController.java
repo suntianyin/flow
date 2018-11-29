@@ -595,7 +595,7 @@ public class BookController {
         return "success";
     }
 
-    //公众号和QQ检测
+    //关键词检测
     @RequestMapping(value = "/sourceDetect")
     @ResponseBody
     public String sourceDetect() {

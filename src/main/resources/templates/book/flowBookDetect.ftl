@@ -27,7 +27,7 @@
             });
         }
 
-        //公众号和QQ检查
+        //关键词检查
         function sourceDetect() {
             //window.location.href = "sourceDetect";
             var url = RootPath() + "/book/sourceDetect";
@@ -35,15 +35,15 @@
                 url: url,
                 success: function (data) {
                     if (data == "success") {
-                        tipDialog("公众号和QQ检查已开始，请注意查看邮件！", 3, 1);
+                        tipDialog("关键词检查已开始，请注意查看邮件！", 3, 1);
                         $('#sourceDetect').attr("disabled", true);
                     } else {
-                        tipDialog("公众号和QQ检查失败，联系管理员！", 3, -1);
+                        tipDialog("关键词检查失败，联系管理员！", 3, -1);
                     }
                 },
                 error: function () {
                     Loading(false);
-                    alertDialog("公众号和QQ检查失败，联系管理员！", -1);
+                    alertDialog("关键词检查失败，联系管理员！", -1);
                 }
             });
         }
@@ -64,7 +64,7 @@
                                    onclick="codeDetect()"/>
                         </td>
                         <td>
-                            <input id="sourceDetect" type="button" class="btnSearch" value="公众号和QQ检查"
+                            <input id="sourceDetect" type="button" class="btnSearch" value="关键词检查"
                                    onclick="sourceDetect()"/>
                         </td>
                     </tr>
