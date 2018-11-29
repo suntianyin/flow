@@ -295,7 +295,7 @@ public class BookChapterServiceImpl implements BookChapterService {
         return null;
     }
 
-    //检查图书中的公众号和qq号
+    //检查图书中的关键词
     @Override
     @Async
     public void detectBookSource() {
@@ -351,7 +351,7 @@ public class BookChapterServiceImpl implements BookChapterService {
                     if (executor.isTerminated()) {
                         log.info("所有线程结束");
                         long end = System.currentTimeMillis();
-                        log.info("检测图书章节公众号和QQ总耗时：{}", (end - start));
+                        log.info("检测图书章节关键词总耗时：{}", (end - start));
                         //生成检测结果
                         List<BookChapterDetect> bookChapterDetects = detectList.stream()
                                 .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
@@ -360,18 +360,18 @@ public class BookChapterServiceImpl implements BookChapterService {
                         BookUtil.exportExcel(bookChapterDetects, resultPath);
                         //保存表格路径到总表
                         results.add(resultPath);
-                        log.info("检查公众号和QQ结果已生成到{}", config.getBookDetect());
+                        log.info("检查关键词结果已生成到{}", config.getBookDetect());
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();
-                        eMailUtil.sendAttachmentsMail(results, "检查公众号和QQ结果");
-                        log.info("检查公众号和QQ结果已发送邮件");
+                        eMailUtil.sendAttachmentsMail(results, "检查关键词结果");
+                        log.info("检查关键词结果已发送邮件");
                         break;
                     }
                 }
             }
         } catch (Exception e) {
-            log.warn("公众号和QQ检查时出现异常{}", e.getMessage());
+            log.warn("关键词检查时出现异常{}", e.getMessage());
         }
     }
 

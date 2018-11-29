@@ -102,7 +102,7 @@ public class DetectBookSource implements Runnable {
                         }
                     }
                 } catch (Exception e) {
-                    log.warn("检测章节{}公众号和QQ异常：{}", chapter.getComId(), e.getMessage());
+                    log.warn("检测章节{}关键词异常：{}", chapter.getComId(), e.getMessage());
                 }
             }
             List<BookChapterDetect> tmp = collectCodeInfo(codeMap);
@@ -110,13 +110,13 @@ public class DetectBookSource implements Runnable {
                 detectList.addAll(tmp);
             }
             long end = System.currentTimeMillis();
-            log.info("检查公众号和QQ总批次为：{}，已完成批次：{}，耗时：{}", pages, pageNum, (end - start));
+            log.info("检查关键词总批次为：{}，已完成批次：{}，耗时：{}", pages, pageNum, (end - start));
         } catch (Exception e) {
-            log.warn("检查公众号和QQ第{}批次，出现异常{}", pageNum, e.getMessage());
+            log.warn("检查关键词第{}批次，出现异常{}", pageNum, e.getMessage());
         }
     }
 
-    //公众号和QQ检查结果信息整合
+    //关键词检查结果信息整合
     private List collectCodeInfo(Map<String, String> codeMap) {
         if (codeMap != null) {
             //存储结果整合信息
@@ -139,7 +139,7 @@ public class DetectBookSource implements Runnable {
                     bookChapterDetect.setMessage(codeMap.get(comId));
                     detectList.add(bookChapterDetect);
                 } catch (Exception e) {
-                    log.warn("整合章节{}公众号和QQ检查结果信息异常：{}", comId, e.getMessage());
+                    log.warn("整合章节{}关键词检查结果信息异常：{}", comId, e.getMessage());
                 }
             }
             return detectList;

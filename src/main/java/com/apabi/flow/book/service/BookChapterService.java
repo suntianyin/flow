@@ -30,7 +30,7 @@ public interface BookChapterService {
     //流式图书内容乱码检测
     void detectBookCode();
 
-    //流式图书公众号和QQ检测
+    //流式图书关键词检测
     void detectBookSource();
 
 }
