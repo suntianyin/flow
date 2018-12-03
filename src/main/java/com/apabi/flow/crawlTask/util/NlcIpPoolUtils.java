@@ -29,6 +29,7 @@ public class NlcIpPoolUtils {
     private static final String API_URL = "http://svip.kdlapi.com/api/getproxy/?orderid=993991357970626&num=900&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=1&method=1&an_an=1&an_ha=1&sp1=1&sp2=1&sort=2&sep=1";
 
     public NlcIpPoolUtils() {
+        ipPool = new ArrayList<>();
         logger.info("获取kuaidaili的ip列表开始...");
         CloseableHttpClient client = HttpClients.createDefault();
         for (int i = 0; i < PROXY_VISIT_COUNT; i++) {
@@ -38,7 +39,7 @@ public class NlcIpPoolUtils {
                 String ipsContent = EntityUtils.toString(response.getEntity());
                 String[] ips = ipsContent.split("\r\n");
                 for (String ip : ips) {
-                    boolean add = ipSet.add(ip);
+                    ipSet.add(ip);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

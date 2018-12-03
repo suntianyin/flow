@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.nlcmarc_category.dao.NlcBookMarcCategoryDao">
+
+    <resultMap id="BaseResultMap" type="com.apabi.flow.nlcmarc_category.model.NlcBookMarcCategory">
+        <id column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="NAME" jdbcType="VARCHAR" property="name"/>
+        <result column="PAGE" jdbcType="INTEGER" property="page"/>
+        <result column="STATUS" jdbcType="VARCHAR" property="status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      ID, NAME, PAGE, STATUS
+    </sql>
+
+    <!-- 根据主键查询 -->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from NLC_BOOK_MARC_CATEGORY
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 查询所有pageNum为0的id-->
+    <select id="findAllIdListByPageNum" resultType="java.lang.String">
+        select ID
+        from NLC_BOOK_MARC_CATEGORY
+        where PAGE = 0
+    </select>
+
+    <!-- 查询所有页数大于2的分类 -->
+    <select id="findCategoryMoreThan2PagesAndNotCrawled" resultMap="BaseResultMap">
+        select *
+        from NLC_BOOK_MARC_CATEGORY
+        where PAGE > 2 and (STATUS is null or STATUS = '' or STATUS = '0')
+    </select>
+
+    <!-- 根据主键删除 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from NLC_BOOK_MARC_CATEGORY
+        where ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="com.apabi.flow.nlcmarc_category.model.NlcBookMarcCategory">
+        insert into NLC_BOOK_MARC_CATEGORY
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="page != null">
+                PAGE,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="page != null">
+                #{page,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.nlcmarc_category.model.NlcBookMarcCategory">
+        update NLC_BOOK_MARC_CATEGORY
+        <set>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="page != null">
+                PAGE = #{page,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

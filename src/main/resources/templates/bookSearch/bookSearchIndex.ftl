@@ -66,19 +66,28 @@
             window.location.href = "detail?" + "metaId=" + metaId;
         }
 
+        var index1 = 220;
+
         //流式预览
-        function btn_flow(metaId) {
+        function btn_flow(metaId, hasFlow) {
             loading();
-            window.location.href = "#";
+            if (hasFlow == null || hasFlow == 0) {
+                $(".load-circle").hide();
+                tipDialog("图书章节内容不存在！", 3, -1);
+                return;
+            }
+            AddTabMenu2('R' + index1, "${ctx}/book/bookChapterEdit?metaid=" + metaId, metaId, "", 'true', 'true');
+            $(".load-circle").hide();
+            index1++;
         }
 
         //cebx预览
         // 标记tag标签的id，保证不同tag的id不一样
-        var index = 200;
+        var index2 = 200;
 
         function btn_cebx(metaId) {
-            AddTabMenu2('R' + index, "http://www.apabi.com/jigou/?pid=book.detail&metaid=" + metaId + "&cult=CN", metaId, "", 'true', 'true');
-            index++;
+            AddTabMenu2('R' + index2, "http://www.apabi.com/jigou/?pid=book.detail&metaid=" + metaId + "&cult=CN", metaId, "", 'true', 'true');
+            index2++;
         }
     </script>
 </head>
@@ -293,7 +302,7 @@
                                     <td align="center">
                                         <a style="cursor:pointer;" onclick="btn_detail('${list.metaId! "" }');">元数据查看&nbsp;</a>
                                         <a style="cursor:pointer;"
-                                           onclick="btn_flow('${list.metaId! "" }');">流式预览&nbsp;</a>
+                                           onclick="btn_flow('${list.metaId! "" }','${list.hasFlow! "" }');">流式预览&nbsp;</a>
                                         <a style="cursor:pointer;" onclick="btn_cebx('${list.metaId! "" }');">cebx预览&nbsp;</a>
                                     </td>
                                 </tr>

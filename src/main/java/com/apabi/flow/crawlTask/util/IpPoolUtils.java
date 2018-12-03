@@ -23,7 +23,7 @@ public class IpPoolUtils {
     private static final int PROXY_VISIT_COUNT = 3;
     // 提取数量：200
     // 高匿，快速，稳定，加密
-    private static final String API_URL = "https://svip.kdlapi.com/api/getproxy/?orderid=993991357970626&num=200&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=1&method=1&an_ha=1&sp1=1&sp2=1&sp3=1&quality=1&sep=1";
+    private static final String API_URL = "http://svip.kdlapi.com/api/getproxy/?orderid=993991357970626&num=200&b_pcchrome=1&b_pcie=1&b_pcff=1&protocol=1&method=1&an_an=1&an_ha=1&sp1=1&sp2=1&quality=1&sep=1";
 
     public IpPoolUtils() {
         logger.info("获取kuaidaili的ip列表开始...");

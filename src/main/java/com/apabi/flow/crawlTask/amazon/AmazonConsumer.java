@@ -8,8 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -21,7 +19,7 @@ public class AmazonConsumer implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AmazonConsumer.class);
     private LinkedBlockingQueue<String> idQueue;
     private AmazonMetaDao amazonMetaDao;
-    private IpPoolUtils ipPoolUtils;
+    private volatile IpPoolUtils ipPoolUtils;
     private CountDownLatch countDownLatch;
 
     public AmazonConsumer(LinkedBlockingQueue<String> idQueue, AmazonMetaDao amazonMetaDao, IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
@@ -34,30 +32,21 @@ public class AmazonConsumer implements Runnable {
     @Override
     public void run() {
         String id = "";
-        String ip = "";
-        String port = "";
         AmazonMeta amazonMeta = null;
         try {
             id = idQueue.take();
-            String host = ipPoolUtils.getIp();
-            ip = host.split(":")[0];
-            port = host.split(":")[1];
-            amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
-            if (StringUtils.isNotEmpty(amazonMeta.getAmazonId())) {
+            amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ipPoolUtils, countDownLatch);
+            // 当每执行1500次，切换一次ip池
+            if (countDownLatch.getCount() % 1500 == 0) {
+                ipPoolUtils = new IpPoolUtils();
+            }
+            if (amazonMeta != null && StringUtils.isNotEmpty(amazonMeta.getAmazonId())) {
                 amazonMetaDao.addAmazonMeta(amazonMeta);
-                // 记录插入时间
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-                String time = simpleDateFormat.format(date);
-                logger.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (InterruptedException e) {
             //e.printStackTrace();
         } finally {
             countDownLatch.countDown();
         }
-        /*catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 }

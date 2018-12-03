@@ -76,7 +76,17 @@ public class CrawlNlcMarcUtil {
         return client;
     }
 
-    // 从国图根据isbn或者isbn13获取marc数据内容
+    /**
+     * 从国图根据isbn或者isbn13获取marc数据内容
+     *
+     * @param ISBN 需要抓取的ISBN
+     * @param ip   代理ip
+     * @param port 代理ip的端口号
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws NoSuchIsbnException
+     */
     public static String crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException, NoSuchIsbnException {
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
@@ -128,10 +138,11 @@ public class CrawlNlcMarcUtil {
         Document document = Jsoup.parse(html);
         String string = document.select("form[name='form1']").attr("action");
         String first = "http://opac.nlc.cn/F/";
-        String second = string.substring(string.lastIndexOf("/") + 1, string.length());
+        // 从页面中解析出标识码
+        String tokenCode = string.substring(string.lastIndexOf("/") + 1, string.length());
         String third = "?func=find-b&find_code=ISB&request=" + ISBN + "&local_base=NLC01&filter_code_1=WLN&filter_request_1=&filter_code_2=WYR&filter_request_2=&filter_code_3=WYR&filter_request_3=&filter_code_4=WFM&filter_request_4=&filter_code_5=WSL&filter_request_5=";
         // 通过ISBN查询
-        String firstURL = first + second + third;
+        String firstURL = first + tokenCode + third;
         httpGet1.releaseConnection();
         HttpGet httpGet2 = new HttpGet(firstURL);
         httpGet2.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
@@ -185,7 +196,7 @@ public class CrawlNlcMarcUtil {
             throw new NoSuchIsbnException("国图数据库中没有该ISBN:" + ISBN);
         }
         String first1 = first;
-        String second1 = second;
+        String second1 = tokenCode;
         String third1 = "?func=full-mail&doc_library=NLC01&doc_number=" + doc_number + "&option_type=&format=997&encoding=NONE&SUBJECT=&NAME=&EMAIL=&text=&x=90&y=9";
         String finalURL2 = first1 + second1 + third1;
         httpGet2.releaseConnection();

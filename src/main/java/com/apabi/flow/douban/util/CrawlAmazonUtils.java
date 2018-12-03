@@ -1,8 +1,10 @@
 package com.apabi.flow.douban.util;
 
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.model.AmazonMeta;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @Author pipi
@@ -28,7 +31,15 @@ import java.util.List;
  **/
 public class CrawlAmazonUtils {
     private static Logger logger = LoggerFactory.getLogger(CrawlAmazonUtils.class);
+    private static final int RETRY_COUNT = 4;
 
+    /**
+     * 创建HttpClient对象
+     *
+     * @param ip   代理ip
+     * @param port 代理ip的端口号
+     * @return HttpClient对象
+     */
     private static CloseableHttpClient getCloseableHttpClient(String ip, String port) {
         // 设置代理IP、端口、协议
         HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
@@ -42,55 +53,82 @@ public class CrawlAmazonUtils {
         return client;
     }
 
-    // 从douban根据抓取列表获取该页面中的douban数据
-    public static List<String> crawlAmazonIdList(String url, String ip, String port) {
+    /**
+     * 从amazon根据抓取列表获取该页面中的amazon数据，如果抓取不到，则切换ip重试，重试次数为3.
+     *
+     * @param url            专题分页url
+     * @param ipPoolUtils    获取ip和port的工具类
+     * @param countDownLatch 线程安全计数器
+     * @return 抓取回来的id列表
+     */
+    public static List<String> crawlAmazonIdList(String url, IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
+        long startTime = System.currentTimeMillis();
+        int retryCount = 0;
         List<String> idList = new ArrayList<>();
-        // 实例化CloseableHttpClient对象
-        CloseableHttpClient client = getCloseableHttpClient(ip, port);
-        // 设置代理ip
-        HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
-        // 访问豆瓣主题首页
+        String ip = "";
+        String port = "";
+        // 访问amazon主题首页
         HttpGet httpGet = new HttpGet(url);
-        // 请求配置
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
-        httpGet.setConfig(config);
+        // 实例化CloseableHttpClient对象
+        CloseableHttpClient client = null;
         // 访问amazon分类首页
-        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
-        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-        httpGet.setHeader("Cache-Control", "max-age=0");
-        httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Cookie", "x-wl-uid=1qZrbvFORWrlBt7g3av6suH/mZemuPPt6VL/xnnn+i+Xcz1vZMfd4hpI1A3wzCLNV38U1B2V3lzk=; p2ePopoverID_461-8070897-5914413=1; csm-hit=tb:s-GAFPTTH7STCZ6DNW6GBR|1539745906148&adb:adblk_no; session-id=461-8070897-5914413; session-id-time=2082787201l; ubid-acbcn=462-3409704-4738518; session-token=\"xkIYwJerzkW+z7FWSnKti1TKVPIu3x254h9qeyS7Z1yw5Q8pN6Ed+8wWESh5XpkWSGeWDbdSmi20DMGam5JyuJCqaZ1vzvGFlBYEEcwKESPywSK8xnP/PoDO4lUqRtr84AzqE+Qu8UgP/tfVhqfkAi7b0wro5l5a3osrxeeKnVXXiC4toTUyEawpNozRH7sofCt6mm1VcK5pSufHDTxP7SB2ANtgalZWFHpF73sz4ydAmYISe84IKw==\"");
-        httpGet.setHeader("Host", "www.amazon.cn");
-        httpGet.setHeader("Upgrade-Insecure-Request", "1");
-        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
         CloseableHttpResponse response = null;
         try {
-            response = client.execute(httpGet);
-            String html = EntityUtils.toString(response.getEntity());
-            Document document = Jsoup.parse(html);
-            Elements elements = document.select("li[class='s-result-item celwidget  ']");
-            for (Element element : elements) {
-                String id = element.attr("data-asin");
-                idList.add(id);
+            int statusCode = HttpStatus.SC_NOT_FOUND;
+            // 如果失败了，则切换ip重试
+            while (statusCode != HttpStatus.SC_OK) {
+
+                if (retryCount == RETRY_COUNT) {
+                    break;
+                }
+                // 切换ip计数
+                String host = ipPoolUtils.getIp();
+                ip = host.split(":")[0];
+                port = host.split(":")[1];
+                // 设置代理ip
+                HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
+                // 请求配置
+                RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
+                httpGet.setConfig(config);
+                httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
+                httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+                httpGet.setHeader("Cache-Control", "max-age=0");
+                httpGet.setHeader("Connection", "keep-alive");
+                httpGet.setHeader("Cookie", "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932; csm-hit=tb:XPFXH94D44VDXC8TG5T4+s-XPFXH94D44VDXC8TG5T4|1542683794538&adb:adblk_no");
+                httpGet.setHeader("Host", "www.amazon.cn");
+                httpGet.setHeader("Upgrade-Insecure-Request", "1");
+                httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+                httpGet.setConfig(config);
+                client = getCloseableHttpClient(ip, port);
+                try {
+                    response = client.execute(httpGet);
+                    if (response != null) {
+                        statusCode = response.getStatusLine().getStatusCode();
+                        if (statusCode == HttpStatus.SC_OK) {
+                            String html = EntityUtils.toString(response.getEntity());
+                            Document document = Jsoup.parse(html);
+                            Elements elements = document.select("li[class='s-result-item celwidget  ']");
+                            for (Element element : elements) {
+                                String id = element.attr("data-asin");
+                                idList.add(id);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                }
+                retryCount++;
             }
-        } catch (IOException e) {
-            //logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon主页");
-            //e.printStackTrace();
-//            httpGet.releaseConnection();
-//            httpGet.abort();
-//            try {
-//                client.close();
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-            //throw new IOException();
+            long endTime = System.currentTimeMillis();
+            logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取url列表：" + url + "；列表大小为：" + idList.size() + "；剩余列表数：" + countDownLatch.getCount() + "；耗时为：" + (endTime - startTime) / 1000 + "秒");
+        } catch (Exception e) {
         } finally {
             httpGet.releaseConnection();
             httpGet.abort();
             if (response != null) {
                 try {
-                    EntityUtils.consume(response.getEntity()); //会自动释放连接
+                    //会自动释放连接
+                    EntityUtils.consume(response.getEntity());
                     response.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -107,32 +145,120 @@ public class CrawlAmazonUtils {
         return idList;
     }
 
-    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) {
+    /**
+     * 根据amazonId抓取amazon数据，如果失败，则切换ip重试，重试次数为3.
+     *
+     * @param id amazonId
+     * @return 抓取返回的amazon数据
+     */
+    public static AmazonMeta crawlAmazonMetaById(String id, IpPoolUtils ipPoolUtils, CountDownLatch countDownLatch) {
+        long startTime = System.currentTimeMillis();
         AmazonMeta amazonMeta = new AmazonMeta();
-        // 实例化CloseableHttpClient对象
-        CloseableHttpClient client = getCloseableHttpClient(ip, port);
-        String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_9?s=books&ie=UTF8&qid=1539756341&sr=1-9";
-        // 设置代理ip
-        HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
+        String ip = "";
+        String port = "";
+        String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_9?s=books&ie=UTF8&qid=1542259479&sr=1-9";
+        // 访问amazonId的详情页
         HttpGet httpGet = new HttpGet(url);
-        // 请求配置
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
-        httpGet.setConfig(config);
-        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
-        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-        httpGet.setHeader("Cache-Control", "max-age=0");
-        httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Cookie", "x-wl-uid=1qZrbvFORWrlBt7g3av6suH/mZemuPPt6VL/xnnn+i+Xcz1vZMfd4hpI1A3wzCLNV38U1B2V3lzk=; p2ePopoverID_461-8070897-5914413=1; csm-hit=tb:s-GAFPTTH7STCZ6DNW6GBR|1539745906148&adb:adblk_no; session-id=461-8070897-5914413; session-id-time=2082787201l; ubid-acbcn=462-3409704-4738518; session-token=\"xkIYwJerzkW+z7FWSnKti1TKVPIu3x254h9qeyS7Z1yw5Q8pN6Ed+8wWESh5XpkWSGeWDbdSmi20DMGam5JyuJCqaZ1vzvGFlBYEEcwKESPywSK8xnP/PoDO4lUqRtr84AzqE+Qu8UgP/tfVhqfkAi7b0wro5l5a3osrxeeKnVXXiC4toTUyEawpNozRH7sofCt6mm1VcK5pSufHDTxP7SB2ANtgalZWFHpF73sz4ydAmYISe84IKw==\"");
-        httpGet.setHeader("Host", "www.amazon.cn");
-        httpGet.setHeader("Upgrade-Insecure-Request", "1");
-        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36");
+        int statusCode = HttpStatus.SC_NOT_FOUND;
+        int retryCount = 0;
+        CloseableHttpClient client = null;
         CloseableHttpResponse response = null;
         try {
-            response = client.execute(httpGet);
-            String html = EntityUtils.toString(response.getEntity());
+            while (statusCode != HttpStatus.SC_OK) {
+                if (retryCount == RETRY_COUNT) {
+                    break;
+                }
+                String host = ipPoolUtils.getIp();
+                ip = host.split(":")[0];
+                port = host.split(":")[1];
+                // 实例化CloseableHttpClient对象
+                client = getCloseableHttpClient(ip, port);
+                HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
+                // 请求配置
+                RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
+                httpGet.setConfig(config);
+                httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
+                httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+                httpGet.setHeader("Cache-Control", "max-age=0");
+                httpGet.setHeader("Connection", "keep-alive");
+                httpGet.setHeader("Cookie", "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932; csm-hit=tb:XPFXH94D44VDXC8TG5T4+s-XPFXH94D44VDXC8TG5T4|1542683794538&adb:adblk_no");
+                httpGet.setHeader("Host", "www.amazon.cn");
+                httpGet.setHeader("Upgrade-Insecure-Request", "1");
+                httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+                try {
+                    response = client.execute(httpGet);
+                    if (response != null) {
+                        statusCode = response.getStatusLine().getStatusCode();
+                        if (statusCode == HttpStatus.SC_OK) {
+                            String html = EntityUtils.toString(response.getEntity());
+                            amazonMeta = parseAmazonByHtml(html);
+                        }
+                    }
+                } catch (IOException e) {
+                }
+                retryCount++;
+            }
+            long endTime = System.currentTimeMillis();
+            if (StringUtils.isNotEmpty(amazonMeta.getAmazonId())) {
+                logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取：" + id + "成功；列表中剩余：" + countDownLatch.getCount() + "个数据...；耗时为：" + (endTime - startTime) / 1000 + "秒");
+
+            } else {
+                logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取：" + id + "失败；列表中剩余：" + countDownLatch.getCount() + "个数据...；耗时为：" + (endTime - startTime) / 1000 + "秒");
+            }
+        } catch (Exception e) {
+        } finally {
+            httpGet.releaseConnection();
+            httpGet.abort();
+            if (response != null) {
+                try {
+                    //会自动释放连接
+                    EntityUtils.consume(response.getEntity());
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (client != null) {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (amazonMeta != null) {
+            // 设置出版日期
+            String issuedDate = amazonMeta.getIssuedDate();
+            if (StringUtils.isNotEmpty(issuedDate)) {
+                issuedDate = StringToolUtil.issuedDateFormat(issuedDate);
+                if (issuedDate.contains(" 00:00:00")) {
+                    issuedDate = issuedDate.replaceAll(" 00:00:00", "");
+                }
+            }
+            amazonMeta.setIssuedDate(issuedDate);
+            // 设置创建时间和更新时间
+            amazonMeta.setCreateTime(new Date());
+            amazonMeta.setUpdateTime(new Date());
+            // 设置已经抓取
+            amazonMeta.setHasCrawled(1);
+        }
+        return amazonMeta;
+    }
+
+
+    /**
+     * 根据抓取的html内容解析生成amazon数据
+     *
+     * @param html html内容
+     * @return amazon数据
+     */
+    private static AmazonMeta parseAmazonByHtml(String html) {
+        AmazonMeta amazonMeta = null;
+        if (html != null && html.contains("ISBN")) {
             Document document = Jsoup.parse(html);
             if (document != null) {
+                amazonMeta = new AmazonMeta();
                 Elements basicInformation = document.select("#detail_bullets_id").select("ul").select("li");
                 for (Element BasicInformation : basicInformation) {
                     if (BasicInformation.select("b").text().equals("出版社:") && BasicInformation.text().contains(";")) {
@@ -290,50 +416,12 @@ public class CrawlAmazonUtils {
                     }
                 }
             }
-        } catch (IOException e) {
-            //logger.error("线程" + Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上amazon详情页");
-            //e.printStackTrace();
-//            httpGet.releaseConnection();
-//            httpGet.abort();
-//            try {
-//                client.close();
-//            } catch (IOException e1) {
-//                //e1.printStackTrace();
-//            }
-            //throw new IOException();
-        } finally {
-            httpGet.releaseConnection();
-            httpGet.abort();
-            if (response != null) {
-                try {
-                    EntityUtils.consume(response.getEntity()); //会自动释放连接
-                    response.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (client != null) {
-                try {
-                    client.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
-        // 设置出版日期
-        String issuedDate = amazonMeta.getIssuedDate();
-        if (StringUtils.isNotEmpty(issuedDate)) {
-            issuedDate = StringToolUtil.issuedDateFormat(issuedDate);
-            if (issuedDate.contains(" 00:00:00")) {
-                issuedDate = issuedDate.replaceAll(" 00:00:00", "");
-            }
-        }
-        amazonMeta.setIssuedDate(issuedDate);
-        // 设置创建时间和更新时间
-        amazonMeta.setCreateTime(new Date());
-        amazonMeta.setUpdateTime(new Date());
-        // 设置已经抓取
-        amazonMeta.setHasCrawled(1);
         return amazonMeta;
+    }
+
+    public static void main(String[] args) {
+//        AmazonMeta amazonMeta = crawlAmazonMetaById("B074BNFY1H", "119.82.253.182", "47364");
+//        System.out.println(amazonMeta);
     }
 }

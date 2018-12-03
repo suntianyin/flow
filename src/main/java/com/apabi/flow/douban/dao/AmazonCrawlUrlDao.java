@@ -14,5 +14,6 @@ import java.util.List;
 @Mapper
 public interface AmazonCrawlUrlDao {
     List<String> findAllUrl();
+    List<String> findAllUrlWithPage();
     void insert(AmazonCrawlUrl amazonCrawlUrl);
 }

@@ -273,7 +273,7 @@ public class ChinaDailyCrawlUtils {
     public static void crawlHtmlContentByUrl(String url, CnrIpPoolUtils cnrIpPoolUtils, NewspaperDao newspaperDao) {
         String originalUrl = url;
         if (!url.startsWith("http")) {
-            url = "https://ent.chinadaily.com.cn/" + url;
+            url = "https://fashion.chinadaily.com.cn/" + url;
         }
         CloseableHttpResponse response = null;
         try {

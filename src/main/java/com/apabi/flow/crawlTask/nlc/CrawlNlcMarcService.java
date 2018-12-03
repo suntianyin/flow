@@ -42,7 +42,8 @@ public class CrawlNlcMarcService implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // isbn总数
-        int totalCount = nlcCrawlIsbnDao.count();
+        // int totalCount = nlcCrawlIsbnDao.count();
+        int totalCount = nlcCrawlIsbnDao.countSuspect();
         int pageSize = 5000;
         int pageNum = (totalCount / pageSize) + 1;
         // 开始执行任务的时间
@@ -64,7 +65,8 @@ public class CrawlNlcMarcService implements ApplicationRunner {
             // 当每抓取pageSize条数据，则请求kuaidaili的API，生成最新的ip列表
             NlcIpPoolUtils ipPoolUtils = new NlcIpPoolUtils();
             PageHelper.startPage(i, pageSize);
-            Page<String> isbnList = nlcCrawlIsbnDao.getIsbnList();
+            // Page<String> isbnList = nlcCrawlIsbnDao.getIsbnList();
+            Page<String> isbnList = nlcCrawlIsbnDao.getSuspectIsbnList();
             // 将isbn添加到队列中
             LinkedBlockingQueue<String> isbnQueue = new LinkedBlockingQueue<>(queueSize);
             // 创建生产者对象

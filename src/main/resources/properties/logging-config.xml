@@ -162,6 +162,23 @@
         </encoder>
     </appender>
 
+    <!-- nlc分类爬虫任务执行时间日志配置 -->
+    <appender name="NLC_CATEGORY_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/nlc-category.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- douban定时爬虫任务执行时间日志配置 -->
     <appender name="DOUBAN_CRAWL_STATUS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -212,6 +229,7 @@
             <pattern>%msg%n</pattern>
         </encoder>
     </appender>
+
     <!-- 针对FetchPageAgainConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageAgainConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageAgainConsumer的STDOUT的日志配置 -->
@@ -256,7 +274,7 @@
     <logger name="com.apabi.flow.crawlTask.douban.DoubanConsumer" level="INFO" additivity="false">
         <!-- 对于douban定时爬虫任务的STDOUT的日志配置 -->
         <appender-ref ref="STDOUT"/>
-        <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
+        <!-- 对于DoubanConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="DOUBAN_CRAWL"/>
     </logger>
 
@@ -264,16 +282,24 @@
     <logger name="com.apabi.flow.crawlTask.amazon.AmazonConsumer" level="INFO" additivity="false">
         <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
         <appender-ref ref="STDOUT"/>
-        <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
+        <!-- 对于AmazonConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="AMAZON_CRAWL"/>
     </logger>
 
     <!-- 针对nlc定时爬虫任务配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.nlc.NlcMarcConsumer" level="INFO" additivity="false">
-        <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
+        <!-- 对于nlc定时爬虫任务的STDOUT的日志配置 -->
         <appender-ref ref="STDOUT"/>
-        <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
+        <!-- 对于NlcMarcConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="NLC_CRAWL"/>
+    </logger>
+
+    <!-- 针对nlc分类爬虫任务配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.nlc_category.category.NlcBookMarcCategoryConsumer" level="INFO" additivity="false">
+        <!-- 对于nlc分类爬虫任务的STDOUT的日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于NlcBookMarcCategoryConsumer的输出至日志文件的日志配置 -->
+        <appender-ref ref="NLC_CATEGORY_CRAWL"/>
     </logger>
 
     <!-- 针对douban定时爬虫任务执行时间配置的日志 -->
@@ -299,6 +325,8 @@
         <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
         <appender-ref ref="NLC_CRAWL_STATUS"/>
     </logger>
+
+
 
     <!--从书苑获取图书数据，新增到流式图书库中-->
     <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">

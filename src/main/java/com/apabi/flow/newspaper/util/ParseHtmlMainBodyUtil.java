@@ -30,6 +30,16 @@ public class ParseHtmlMainBodyUtil {
             if (StringUtils.isEmpty(text)) {
                 text = document.select("strong").text();
             }
+        }else {
+            // 对中国日报解析
+            Document document = Jsoup.parse(htmlContent);
+            text = document.select("div[class='article']").text();
+            if (StringUtils.isEmpty(text)) {
+                text = document.select("div[class='arcBox']").text();
+            }
+            if (StringUtils.isEmpty(text)) {
+                text = document.select("div[class='datu-a']").text();
+            }
         }
         if (text != null) {
             text = text.trim();

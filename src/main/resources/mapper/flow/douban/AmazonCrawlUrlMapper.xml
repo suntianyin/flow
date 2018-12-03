@@ -12,10 +12,18 @@
     ID, URL, DESCRIPTION, CREATETIME
   </sql>
 
-  <!-- 查询所有url -->
+  <!-- 查询所有分类首页的url -->
   <select id="findAllUrl" resultType="java.lang.String">
     select url
     from AMAZON_CRAWL_URL
+    where url not like '%page%'
+  </select>
+
+  <!-- 分页查询所有url -->
+  <select id="findAllUrlWithPage" resultType="java.lang.String">
+    select url
+    from AMAZON_CRAWL_URL
+    where url like '%page%'
   </select>
 
   <!-- 插入数据 -->
