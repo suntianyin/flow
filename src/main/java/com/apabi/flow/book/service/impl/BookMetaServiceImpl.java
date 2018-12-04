@@ -1263,8 +1263,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
                                 bookMeta = BookUtil.createBookMeta(sCmfMeta);
                                 //从接口获取目录和页码
-                                String cata = getCebxData(getCataLog);
-                                String cebxPage = getCebxData(getCebxPage);
+                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
+                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
                                 bookMeta.setStreamCatalog(cata);
                                 bookMeta.setFoamatCatalog(cata);
                                 bookMeta.setCebxPage(cebxPage);
