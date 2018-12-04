@@ -2,9 +2,14 @@ package com.apabi.flow.config;
 
 import com.apabi.flow.common.YmlPropertyLoaderFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author guanpp
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Component;
  * @description
  */
 @Component
+@ConfigurationProperties
 @PropertySource(value = "classpath:/properties/dic-word-data.yml", factory = YmlPropertyLoaderFactory.class)
 public class DicWordData {
 
@@ -19,11 +25,22 @@ public class DicWordData {
     @Value("${words}")
     private String words;
 
+    //字典数组
+    private Map<String, String> dicUnicode;
+
     public String getWords() {
         return words;
     }
 
     public void setWords(String words) {
         this.words = words;
+    }
+
+    public Map<String, String> getDicUnicode() {
+        return dicUnicode;
+    }
+
+    public void setDicUnicode(Map<String, String> dicUnicode) {
+        this.dicUnicode = dicUnicode;
     }
 }

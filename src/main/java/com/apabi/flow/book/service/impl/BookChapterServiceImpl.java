@@ -202,8 +202,12 @@ public class BookChapterServiceImpl implements BookChapterService {
             long start = System.currentTimeMillis();
             int total = bookChapterDao.getTotal();
             if (total > 0) {
-                //获取字典
+                /*获取字典*/
+                //特殊符号
                 String words = dicWordData.getWords();
+                //unicode转字符
+                Map<String, String> dicUnicode = dicWordData.getDicUnicode();
+                words += unicode2Str(dicUnicode);
                 byte[] dicArray = createDic(words);
                 //存放乱码
                 //List<BookChapterDetect> detectList = new ArrayList<>();
@@ -293,6 +297,22 @@ public class BookChapterServiceImpl implements BookChapterService {
             return dicArray;
         }
         return null;
+    }
+
+    //unicode转字符
+    private static String unicode2Str(Map<String, String> unicode) {
+        if (unicode != null && unicode.size() > 0) {
+            String str = "";
+            for (Map.Entry<String, String> entry : unicode.entrySet()) {
+                int s = Integer.parseInt(entry.getKey(), 16);
+                int e = Integer.parseInt(entry.getValue(), 16);
+                for (int i = s; i <= e; i++) {
+                    str += (char) i + "";
+                }
+            }
+            return str;
+        }
+        return "";
     }
 
     //检查图书中的关键词
