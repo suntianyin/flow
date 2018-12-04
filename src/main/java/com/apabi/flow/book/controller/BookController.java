@@ -8,17 +8,22 @@ import com.apabi.flow.book.entity.BookMetaMap;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.*;
 import com.apabi.flow.book.util.BookUtil;
+import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.book.util.ReadBook;
 import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.processing.constant.BizException;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import com.apabi.flow.systemconf.model.SystemConf;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -105,6 +110,8 @@ public class BookController {
     ApplicationConfig config;
     @Autowired
     SystemConfMapper systemConfMapper;
+    @Autowired
+    ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     @RequestMapping(value = "/index")
     public String index() {
@@ -253,6 +260,13 @@ public class BookController {
                     queryMap.put("hasFlow", hasFlow);
                 }
             }
+            Integer drid = null;
+            if (!StringUtils.isEmpty(params.get("drid"))) {
+                if (!StringUtils.isEmpty(params.get("drid")[0])) {
+                    drid = Integer.valueOf(params.get("drid")[0]);
+                    queryMap.put("drid", drid);
+                }
+            }
             PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
             Page<BookMetaVo> page = null;
             if (params.size() > 0) {
@@ -273,6 +287,7 @@ public class BookController {
             model.addAttribute("isbn", isbn);
             model.addAttribute("isbnVal", isbnVal);
             model.addAttribute("hasFlow", hasFlow);
+            model.addAttribute("drid", drid);
             long end = System.currentTimeMillis();
             log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");
             return "book/bookMeta";
@@ -894,6 +909,13 @@ public class BookController {
         return "redirect:/book/pageAssembly";
     }
 
+    @ResponseBody
+    @RequestMapping("/autoFetchPageData2")
+    public Object autoFetchPageData2() {
+        String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageData");
+        return cebxData;
+    }
+
     /**
      * 采集加密流式内容
      *
@@ -932,6 +954,13 @@ public class BookController {
             resultEntity.setStatus(-1);
         }
         return resultEntity;
+    }
+
+    @ResponseBody
+    @RequestMapping("/autoFetchPageDataAgain2")
+    public Object autoFetchPageDataAgain2() {
+        String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
+        return cebxData;
     }
 
     /**
@@ -1212,6 +1241,13 @@ public class BookController {
     }
 
     @ResponseBody
+    @RequestMapping("/shutdownNow2")
+    public Object shutdownNow2() {
+        String cebxData = getCebxData("http://flow.apabi.com/flow/book/shutdownNow");
+        return cebxData;
+    }
+
+    @ResponseBody
     @RequestMapping("/shutdownNow")
     public Object shutdownNow() {
         ResultEntity resultEntity = new ResultEntity();
@@ -1243,6 +1279,125 @@ public class BookController {
         return resultEntity;
     }
 
+    private static List<BookMetaFromExcel> FILES = null;
+
+    //模板数据导入
+    @RequestMapping(value = "/bookExcelAdd")
+    public String bookExcelAdd(@RequestParam(required = false) String data, Model model) {
+//        if (org.apache.commons.lang3.StringUtils.isNotBlank(data)) {
+//            JSONArray objects = com.alibaba.fastjson.JSONObject.parseArray(data);
+//            model.addAttribute("bookMetaFromExcels", objects);
+//        }
+        return "book/bookExcelAdd";
+    }
+
+    @PostMapping("/bookExcelAdd/import")
+    public Object batchImportBookMeta(@RequestParam("file") MultipartFile file, Model model) {
+
+        if (!file.getOriginalFilename().endsWith(".xlsx")) {
+            return "文件格式不正确，仅支持 .xlsx 格式的文件";
+        }
+        // 读取Excel工具类
+        Map<Integer, Map<Object, Object>> data = null;
+        try (InputStream inputStream = file.getInputStream()) {
+            String fileName = file.getOriginalFilename();
+            ReadExcelTextUtils readExcelTextUtils = new ReadExcelTextUtils(inputStream, fileName);
+            // 读取Excel中的内容
+            data = readExcelTextUtils.getDataByInputStream();
+            if (data == null || data.isEmpty()) {
+                throw new Exception();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "文件读取出错，请重新尝试或联系管理员！";
+        } catch (Exception e) {
+            return "文件出错，请检查文件格式是否正确或内容是否完整！";
+        }
+        List<BookMetaFromExcel> bookMetaFromExcels = null;
+        try {
+            bookMetaFromExcels = bookMetaService.importBookMetaFromExcel(data);
+            BookController.bookMetaFromExcels = bookMetaFromExcels;
+        } catch (Exception e) {
+            log.error("异常信息： {}", e);
+        }
+        model.addAttribute("bookMetaFromExcels", bookMetaFromExcels);
+        return "book/bookExcelAdd";
+    }
+
+    private static List<BookMetaFromExcel> bookMetaFromExcels = null;
+
+    @PostMapping("/excelImportMeta")
+    @ResponseBody
+    public Object excelImportMeta(@RequestParam String fileInfo) {
+        ResultEntity resultEntity = null;
+        try {
+            Set<BookMeta> set=new HashSet<>();
+            List<BookMetaFromExcel> bookMetaFromExcels = BookController.bookMetaFromExcels;
+            if (bookMetaFromExcels != null) {
+                String[] split = fileInfo.split(";");
+                for (String s : split) {
+                    String[] split1 = s.split(",");//bookMetaFromExcel->bookMetaService.saveBookMeta(bookMetaFromExcel.getBookMetaTemp())
+//                    bookMetaFromExcels.stream().filter(bm -> bm.getBookMetaTemp().getMetaId().equalsIgnoreCase(split1[0])).forEach(bookMetaFromExcel -> bookMetaService.saveBookMeta(bookMetaFromExcel.getBookMetaTemp()));
+                    Iterator<BookMetaFromExcel> bookMetaFromExcel = bookMetaFromExcels.iterator();
+                    while(bookMetaFromExcel.hasNext()){
+                        BookMetaFromExcel bookMetaFromExcel1 = bookMetaFromExcel.next();
+                        if(bookMetaFromExcel1.getBookMetaTemp().getMetaId().equalsIgnoreCase(split1[0])){
+                            set.add(bookMetaFromExcel1.getBookMetaTemp());
+                            bookMetaFromExcel.remove();
+                        }
+                    }
+                }
+                for (BookMeta bookMeta:set) {
+                    //默认值
+                    bookMeta.setHasCebx(0);
+                    bookMeta.setIsReadEpub(0);
+                    bookMeta.setIsReadCebxFlow(0);
+                    bookMeta.setCreateTime(new Date());
+                    bookMetaService.saveBookMeta(bookMeta);
+                    ApabiBookMetaDataTemp apabiBookMetaDataTemp = transformApabiBookMeta(bookMeta);
+                    apabiBookMetaDataTempDao.insert(apabiBookMetaDataTemp);
+                }
+            }
+            resultEntity = new ResultEntity();
+            resultEntity.setStatus(200);
+            resultEntity.setMsg("上传成功");
+        } catch (Exception e) {
+            resultEntity.setStatus(500);
+            resultEntity.setMsg("上传失败！请联系管理员");
+            e.printStackTrace();
+        }
+        return resultEntity;
+    }
+    public ApabiBookMetaDataTemp transformApabiBookMeta(BookMeta bookMeta){
+        ApabiBookMetaDataTemp apabiBookMetaDataTemp=new ApabiBookMetaDataTemp();
+        apabiBookMetaDataTemp.setHasCebx(0);
+        apabiBookMetaDataTemp.setIsReadEpub(0);
+        apabiBookMetaDataTemp.setIsReadCebxFlow(0);
+        apabiBookMetaDataTemp.setCreateTime(new Date());
+
+        apabiBookMetaDataTemp.setMetaId(bookMeta.getMetaId());
+        apabiBookMetaDataTemp.setIsbn(bookMeta.getIsbn());
+        apabiBookMetaDataTemp.setTitle(bookMeta.getTitle());
+        apabiBookMetaDataTemp.setSubTitle(bookMeta.getSubTitle());
+        apabiBookMetaDataTemp.setCreator(bookMeta.getCreator());
+        apabiBookMetaDataTemp.setCreatorWord(bookMeta.getCreatorWord());
+        apabiBookMetaDataTemp.setIsbn10(bookMeta.getIsbn10());
+        apabiBookMetaDataTemp.setIsbn13(bookMeta.getIsbn13());
+        apabiBookMetaDataTemp.setPublisher(bookMeta.getPublisher());
+        apabiBookMetaDataTemp.setIssuedDate(bookMeta.getIssuedDate());
+        apabiBookMetaDataTemp.setRelation(bookMeta.getRelation());
+        apabiBookMetaDataTemp.setEditionOrder(bookMeta.getEditionOrder());
+        apabiBookMetaDataTemp.setClassCode(bookMeta.getClassCode());
+        apabiBookMetaDataTemp.setPlace(bookMeta.getPlace());
+        apabiBookMetaDataTemp.setTranslator(bookMeta.getTranslator());
+        apabiBookMetaDataTemp.setOriginTitle(bookMeta.getOriginTitle());
+        apabiBookMetaDataTemp.setCreatorId(bookMeta.getCreatorId());
+        apabiBookMetaDataTemp.setLanguage(bookMeta.getLanguage());
+        apabiBookMetaDataTemp.setPreface(bookMeta.getPreface());
+        apabiBookMetaDataTemp.setPaperPrice(bookMeta.getPaperPrice());
+        apabiBookMetaDataTemp.setEbookPrice(bookMeta.getEbookPrice());
+        return apabiBookMetaDataTemp;
+    }
 
     @GetMapping("/test")
     @ResponseBody
@@ -1257,4 +1412,19 @@ public class BookController {
         //bookMetaService.exportMongo2Orlc();
         return "success";
     }
+
+    //调用接口获取数据
+    private String getCebxData(String url) {
+        if (!StringUtils.isEmpty(url)) {
+            try {
+                HttpEntity httpEntity = HttpUtils.doGetEntity(url);
+                String body = EntityUtils.toString(httpEntity);
+                return body;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 }

@@ -680,11 +680,12 @@
         <result column="STYLECLASS" property="styleClass" jdbcType="VARCHAR"/>
         <result column="HASFLOW" property="hasflow" jdbcType="INTEGER"/>
         <result column="HASCEBX" property="hascebx" jdbcType="INTEGER"/>
+        <result column="DRID" property="drid" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List2">
         METAID,CREATETIME,UPDATETIME,ISSUEDDATE,TITLE,CREATOR,ABSTRACT,
         PUBLISHER,ISBN,ISBN10,ISBN13,CONTENTNUM,ISOPTIMIZE,LANGUAGE,
-        COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,HASCEBX
+        COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,HASCEBX,DRID
     </sql>
     <sql id="Base_Value_List2">
         <if test="metaId != null">
@@ -750,6 +751,9 @@
         <if test="hascebx != null">
             HASCEBX = #{hascebx},
         </if>
+        <if test="drid != null">
+            DRID = #{drid},
+        </if>
     </sql>
     <select id="findBookMetaVoById" resultMap="BaseResultMap2" parameterType="java.lang.String">
         select
@@ -796,6 +800,9 @@
         </if>
         <if test="hasFlow != null">
             AND HASFLOW = #{hasFlow,jdbcType=INTEGER}
+        </if>
+        <if test="drid != null">
+            AND DRID = #{drid,jdbcType=INTEGER}
         </if>
     </select>
     <update id="updateBookMetaVo" parameterType="com.apabi.flow.book.model.BookMetaVo">

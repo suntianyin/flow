@@ -58,6 +58,8 @@ public class BookMetaVo {
 
     private Integer hascebx;
 
+    private Integer drid;
+
     public String getMetaId() {
         return metaId;
     }
@@ -225,5 +227,13 @@ public class BookMetaVo {
 
     public void setHascebx(Integer hascebx) {
         this.hascebx = hascebx;
+    }
+
+    public Integer getDrid() {
+        return drid;
+    }
+
+    public void setDrid(Integer drid) {
+        this.drid = drid;
     }
 }

@@ -79,6 +79,6 @@ public class BookConstant {
     public static final Pattern REG_ISBN8 = Pattern.compile("([0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9x])");
     //public static Pattern REG_ISBN4 = Pattern.compile("(97[89][-\\s]?[0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9])|([0-9][-\\s]?[0-9]{5}[-\\s]?[0-9]{3}[-\\s]?[0-9x])");
 
-    //公众号和qq正则
-    public static final Pattern DETECT_SOURCE = Pattern.compile("([\\s\\S]{0,10}(公众号|微博|博客|网盘)[\\s\\S]{0,10})|([\\s\\S]{0,10}(?i:qq)((:|：| )?)[\\d]{5,11}[\\s\\S]{5,11})");
+    //公众号和qq正则（cebx的图片编码含有‘qq’字样）
+    public static final Pattern DETECT_SOURCE = Pattern.compile("([\\s\\S]{0,10}(公众号|微信|微博|博客|网盘)[\\s\\S]{0,10})|([\\s\\S]{0,10}(?i:qq)((:|：| )?)[\\d]{5,11}[\\s\\S]{5,11})");
 }

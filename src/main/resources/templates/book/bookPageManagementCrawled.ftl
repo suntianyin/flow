@@ -107,10 +107,10 @@
         }
 
         function btn_Crawled() {
-            var url = "/book/autoFetchPageData";
+            var url = "/book/autoFetchPageData2";
             loading();
             $.ajax({
-                url: RootPath() + url,
+                url:RootPath() +url,
                 type: "get",
                 dataType: "json",
                 cache: false,
@@ -128,7 +128,7 @@
         }
 
         function btn_Again() {
-            var url = "/book/autoFetchPageDataAgain";
+            var url = "/book/autoFetchPageDataAgain2";
             loading();
             $.ajax({
                 url: RootPath() + url,
@@ -149,10 +149,10 @@
         }
 
         function btn_ShutdownNow() {
-            var url = "/book/shutdownNow";
+            var url = "/book/shutdownNow2";
             loading();
             $.ajax({
-                url: RootPath() + url,
+                url: RootPath() +url,
                 type: "get",
                 dataType: "json",
                 cache: false,

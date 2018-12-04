@@ -394,7 +394,7 @@
                     </td>
                 </tr>
             </table>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <label>${total!0}</label> 条书目信息
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <label>${total!0}</label> 条书目信息,已分拣<label>${num1!0}</label>条,重复<label>${num2!0}</label>条,制作成功<label>${num3!0}</label>条,制作失败<label>${num4!0}</label>条。
         </div>
         <div class="panel-body">
             <div class="row">

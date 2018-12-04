@@ -46,7 +46,7 @@ public class GetBook4ShuyuanTask {
 
     private final String getCataLog = "http://flow.apabi.com/flow/book/getFoamatCatalogByMetaId?metaid=";
 
-    private final String getCebxPage= "http://flow.apabi.com/flow/book/getCebxPageByMetaId?metaid=";
+    private final String getCebxPage = "http://flow.apabi.com/flow/book/getCebxPageByMetaId?metaid=";
 
     @Autowired
     private BookMetaDao bookMetaDao;
@@ -92,8 +92,8 @@ public class GetBook4ShuyuanTask {
                             BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                             if (bookMeta != null) {
                                 //从接口获取目录和页码
-                                String cata = getCebxData(getCataLog);
-                                String cebxPage = getCebxData(getCebxPage);
+                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
+                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
                                 bookMeta.setStreamCatalog(cata);
                                 bookMeta.setFoamatCatalog(cata);
                                 bookMeta.setCebxPage(cebxPage);
@@ -202,6 +202,13 @@ public class GetBook4ShuyuanTask {
             }
         }
         return null;
+    }
+
+    //@Scheduled(cron = "*/5 * * * * ?")
+    private void test() {
+        String cata = getCebxData(getCataLog + "m.20180703-XRT-JSDX-0023");
+        String page = getCebxData(getCebxPage + "m.20180703-XRT-JSDX-0023");
+        logger.info(page + "," + cata);
     }
 
     //写文件

@@ -98,8 +98,8 @@ public class CebxUtils {
     }
 
     public static void main(String[] args) {
-//        int cebxPage = CebxUtils.getCebxPage("m.20180627-RXJC-XNSF-0035", "iyzhi");
-//        System.out.println(cebxPage);
+        int cebxPage = CebxUtils.getCebxPage("m.20180627-RXJC-XNSF-0035", "iyzhi");
+        System.out.println(cebxPage);
 //        String iyzhi = CebxUtils.getStreamCatalog("m.20180627-RXJC-XNSF-0035", "iyzhi");
 //        System.out.println(iyzhi);
         int count = Stream.of(1,2,3).reduce(0,(aaa, a) -> aaa + a);

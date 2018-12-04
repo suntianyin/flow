@@ -310,7 +310,12 @@
                                 <#--<a href="javascript:void(0);" ">删除</a>-->
                                 <a href="javascript:void(0);" onclick="checkBibliotheca('${(list.batchId)!''}')">查看书单</a>
                                 <#--<a href="javascript:void(0);" onclick="auditBatch('${(list.id)!''}')">书单审核</a>-->
+                            <#--<#if (list.batchState.getCode())<4 >-->
                                 <a href="javascript:void(0);" onclick="checkDuplication('${(list.id)!''}','${(list.batchId)!''}')">查重</a>
+                            <#--<#else>-->
+                                <#--<span style="color: #7c7c7c;">查重</span>-->
+                            <#--</#if>-->
+
                                 <a href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}','${(list.batchId)!''}')">排产</a>
                             </td>
                         </tr>

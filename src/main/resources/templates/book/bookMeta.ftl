@@ -29,10 +29,12 @@
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
             var hasFlow = $("#hasFlow").val();
+            var drid = $("#drid").val();
             var pathUrl = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
                     + "&publisher=" + publisher + "&isbn=" + isbn
-                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow;
+                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow
+                    + "&drid=" + drid;
             var totalPages = 1;
             var currentPages = 1;
             <#if page??>
@@ -51,11 +53,13 @@
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
             var hasFlow = $("#hasFlow").val();
+            var drid = $("#drid").val();
             loading()
             window.location.href = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
                     + "&publisher=" + publisher + "&isbn=" + isbn
-                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow;
+                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow
+                    + "&drid=" + drid;
 
         }
 
@@ -82,6 +86,10 @@
             openDialog(url, "bookXmlAdd", "解析xml文件", 500, 200, function (iframe) {
                 top.frames[iframe].AcceptClick()
             });
+        }
+        //模板数据导入
+        function bookExcelAdd() {
+            window.location.href = "${ctx}/book/bookExcelAdd";
         }
 
         //解析epub文件
@@ -217,6 +225,11 @@
                 <a id="lr-xmlAdd" href="javascript:;" title="解析xml文件" onclick="bookXmlAdd()"
                    class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;解析xml文件</span></a>
             </div>
+            <div class="tools_separator"></div>
+            <div class="PartialButton">
+                <a id="lr-xmlAdd" href="javascript:;" title="解析xml文件" onclick="bookExcelAdd()"
+                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;模板数据导入</span></a>
+            </div>
         </div>
         <!--列表-->
         <div id="grid_List">
@@ -288,12 +301,19 @@
                                 </#if>
                             </select>
                         </td>
+                    </tr>
+                    <tr>
+                        <th>DRID：</th>
+                        <td>
+                            <#if drid??>
+                                <input id="drid" type="text" value="${drid?c }" class="txt" style="width: 200px"/>
+                            <#else >
+                                <input id="drid" type="text" value="" class="txt" style="width: 200px"/>
+                            </#if>
+                        </td>
                         <td>
                             <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
                         </td>
-                    </tr>
-                    <tr>
-                        <th></th>
                         <td>
                             <input id="batch" type="button" class="btnSearch" value="批量发布到爱读爱看数据库"
                                    onclick="batchPub()"/>

@@ -9,6 +9,7 @@ import com.apabi.flow.processing.dao.OutUnitMapper;
 import com.apabi.flow.processing.model.*;
 import com.apabi.flow.processing.service.BatchService;
 import com.apabi.flow.processing.service.BibliothecaService;
+import com.apabi.flow.processing.util.IsbnCheck;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
@@ -108,6 +109,14 @@ public class BibliothecaController {
             model.addAttribute("bibliothecaList", list);
             if (list != null){
                 model.addAttribute("total", list.size());
+                long count1 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==3).count();
+                model.addAttribute("num1", count1);//已分拣
+                long count2 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==1).count();
+                model.addAttribute("num2", count2);//重复
+                long count3 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==6).count();
+                model.addAttribute("num3", count3);//制作成功
+                long count4 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==7).count();
+                model.addAttribute("num4", count4);//制作失败
             }
 
             model.addAttribute("batchId", batchId);
@@ -157,6 +166,14 @@ public class BibliothecaController {
             model.addAttribute("bibliothecaList", list);
             if (list != null){
                 model.addAttribute("total", list.size());
+                long count1 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==3).count();
+                model.addAttribute("num1", count1);//已分拣
+                long count2 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==1).count();
+                model.addAttribute("num2", count2);//重复
+                long count3 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==6).count();
+                model.addAttribute("num3", count3);//制作成功
+                long count4 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode()==7).count();
+                model.addAttribute("num4", count4);//制作失败
             }
             model.addAttribute("title", title);
             model.addAttribute("batchId", batchId);
@@ -174,7 +191,7 @@ public class BibliothecaController {
     }
 
     /**
-     * 管理员 `1 页面
+     * 管理员 查重 页面
      * @param id
      * @param model
      * @return
@@ -236,7 +253,7 @@ public class BibliothecaController {
 
 //            model.addAttribute("gtRateCheckFlagYesList",gtRateCheckFlagYesList);
 //            model.addAttribute("gtRateCheckFlagNoList",gtRateCheckFlagNoList);
-            model.addAttribute("ltRateCheckFlagYesList",ltRateCheckFlagYesList);
+            model.addAttribute("ltRateCheckFlagYesList",ltRateCheckFlagYesList.stream().sorted((dc1,dc2)->dc1.getRateFlag().compareTo(dc2.getRateFlag())).collect(Collectors.toList()));
             model.addAttribute("ltRateCheckFlagNoList",ltRateCheckFlagNoList);
             model.addAttribute("noMetaDataList",noMetaDataList);
 
@@ -666,5 +683,17 @@ public class BibliothecaController {
             return "<script type='text/javascript'>alert('" + e.getMessage() + "');history.back();</script>";
         }
     }
+    @RequestMapping({"/checkIsbn"})
+    @ResponseBody
+    public Object exportData(@RequestParam(value = "isbn", required = true)String isbn){
+        boolean b = IsbnCheck.CheckISBN(isbn);
+        if(b){
+            return  new ResultEntity(200,"isbn校验正确");
+        }else{
+            return new ResultEntity(400,"isbn校验错误！请输入正确的isbn");
+        }
+    }
+
+
 
 }
