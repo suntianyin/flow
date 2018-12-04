@@ -87,6 +87,10 @@
                 top.frames[iframe].AcceptClick()
             });
         }
+        //模板数据导入
+        function bookExcelAdd() {
+            window.location.href = "${ctx}/book/bookExcelAdd";
+        }
 
         //解析epub文件
         function epubookAdd() {
@@ -220,6 +224,11 @@
             <div class="PartialButton">
                 <a id="lr-xmlAdd" href="javascript:;" title="解析xml文件" onclick="bookXmlAdd()"
                    class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;解析xml文件</span></a>
+            </div>
+            <div class="tools_separator"></div>
+            <div class="PartialButton">
+                <a id="lr-xmlAdd" href="javascript:;" title="解析xml文件" onclick="bookExcelAdd()"
+                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;模板数据导入</span></a>
             </div>
         </div>
         <!--列表-->

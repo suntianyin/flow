@@ -22,6 +22,7 @@
             $.each(books, function () {
                 fileInfo += $(this).val() + ";";
             });
+
             if (fileInfo == "" || fileInfo == "on,") {
                 tipDialog("请选择数据", 3, -2);
                 return;

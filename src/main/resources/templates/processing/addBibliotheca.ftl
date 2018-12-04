@@ -23,6 +23,30 @@
             return false;
         }
 
+        function Check(){
+            var  isbn= document.getElementById("isbn").value;
+            // alert(isbn);
+            $.ajax({
+                url: "${ctx}/processing/bibliotheca/checkIsbn?isbn="+isbn,
+                type: "GET",
+                contentType: false,
+                async: false,
+                success: function (data) {
+                    if (data.status == 200) {
+                        tipDialog(data.msg, 3, 1);
+                        // top.frames[tabiframeId()].location.reload();
+                        // closeDialog();
+                    } else {
+                        tipDialog(data.msg, 3, -1);
+                    }
+
+                },
+                error: function (data) {
+                    Loading(false);
+                    alertDialog(data.responseText, -1);
+                }
+            });
+        }
         //保存事件
         function AcceptClick() {
             $("#loading").show();
@@ -138,7 +162,7 @@
                 <tr>
                     <td>ISBN:</td>
                     <td>
-                        <input id="isbn" name="isbn" type="text" class="txt" style="width: 300px"/>
+                        <input id="isbn" name="isbn" type="text" class="txt" style="width: 300px" onblur="Check()"/>
                     </td>
                 </tr>
                 <tr>

@@ -16,6 +16,7 @@ import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
+import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
 import com.apabi.shuyuan.book.dao.SCmfDigitObjectDao;
@@ -1296,6 +1297,80 @@ public class BookMetaServiceImpl implements BookMetaService {
         }
         return 0;
     }
+
+    @Override
+    public List<BookMetaFromExcel> importBookMetaFromExcel(Map<Integer, Map<Object, Object>> data) {
+        List<BookMetaFromExcel> list=new ArrayList<>();
+        for (Map.Entry<Integer, Map<Object, Object>> entry : data.entrySet()) {
+            BookMeta bookMetaTemp = getBookMetaFromDate(entry);
+            //根据isbn
+            List<BookMeta> bookMetas = bookMetaDao.listBookMetaByIsbn(bookMetaTemp.getIsbn());
+            if (bookMetas == null || bookMetas.isEmpty()) {
+                //根据isbn13
+                bookMetas = bookMetaDao.listBookMetaByIsbn13(bookMetaTemp.getIsbn13());
+                if (bookMetas == null || bookMetas.isEmpty()) {
+                   list.add(new BookMetaFromExcel(null,bookMetaTemp,0));
+                }else {
+                    bookMetas.forEach(bm->list.add(new BookMetaFromExcel(bm,bookMetaTemp,1)));
+                }
+            }else {
+                bookMetas.forEach(bm->list.add(new BookMetaFromExcel(bm,bookMetaTemp,1)));
+
+            }
+        }
+        return list;
+    }
+    private BookMeta getBookMetaFromDate(Map.Entry<Integer, Map<Object, Object>> entry){
+        String isbn = (String) entry.getValue().get("ISBN");
+        String title = (String) entry.getValue().get("书名");
+        String subTitle = (String) entry.getValue().get("副标题");
+        String creator = (String) entry.getValue().get("作者");
+        String creatorWord = (String) entry.getValue().get("creatorWord");
+        String isbn10 = (String) entry.getValue().get("ISBN10");
+        String isbn13 = (String) entry.getValue().get("ISBN13");
+        String publisher = (String) entry.getValue().get("出版社");
+        String issuedDate = (String) entry.getValue().get("出版日期");
+        String relation = (String) entry.getValue().get("丛书relation");
+        String editionOrder = (String) entry.getValue().get("版次");
+        String classCode = (String) entry.getValue().get("中图法分类");
+        String place = (String) entry.getValue().get("出版地");
+        String translator = (String) entry.getValue().get("翻译");
+        String originTitle = (String) entry.getValue().get("原书名originTitle");
+        String creatorid = (String) entry.getValue().get("阿帕比作者id");
+        String language = (String) entry.getValue().get("语种");
+        String preface = (String) entry.getValue().get("序言");
+        String paperPrice = (String) entry.getValue().get("纸书价格");
+        String ebookPrice = (String) entry.getValue().get("电子书价格");
+        String metaId="";
+        if(issuedDate!=null){
+            metaId=StringToolUtil.metaidFormat(issuedDate);
+        }
+        BookMeta bookMeta=new BookMeta();
+        bookMeta.setMetaId(metaId);
+        bookMeta.setIsbn(isbn);
+        bookMeta.setTitle(title);
+        bookMeta.setSubTitle(subTitle);
+        bookMeta.setCreator(creator);
+        bookMeta.setCreatorWord(creatorWord);
+        bookMeta.setIsbn10(isbn10);
+        bookMeta.setIsbn13(isbn13);
+        bookMeta.setPublisher(publisher);
+        bookMeta.setIssuedDate(issuedDate);
+        bookMeta.setRelation(relation);
+        bookMeta.setEditionOrder(editionOrder);
+        bookMeta.setClassCode(classCode);
+        bookMeta.setPlace(place);
+        bookMeta.setTranslator(translator);
+        bookMeta.setOriginTitle(originTitle);
+        bookMeta.setCreatorId(creatorid);
+        bookMeta.setLanguage(language);
+        bookMeta.setPreface(preface);
+        bookMeta.setPaperPrice(paperPrice);
+        bookMeta.setEbookPrice(ebookPrice);
+        return bookMeta;
+    }
+
+
 
     //调用接口获取数据
     private String getCebxData(String url) {

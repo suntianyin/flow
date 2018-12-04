@@ -73,4 +73,7 @@ public interface BookMetaService {
 
     //批量获取图书元数据
     int bookMetaBatch(String metaIds);
+
+    //Excel批量导入图书元数据
+    List<BookMetaFromExcel> importBookMetaFromExcel(Map<Integer, Map<Object, Object>> data);
 }
