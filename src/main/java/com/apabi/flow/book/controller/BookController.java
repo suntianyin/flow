@@ -253,6 +253,13 @@ public class BookController {
                     queryMap.put("hasFlow", hasFlow);
                 }
             }
+            Integer drid = null;
+            if (!StringUtils.isEmpty(params.get("drid"))) {
+                if (!StringUtils.isEmpty(params.get("drid")[0])) {
+                    drid = Integer.valueOf(params.get("drid")[0]);
+                    queryMap.put("drid", drid);
+                }
+            }
             PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
             Page<BookMetaVo> page = null;
             if (params.size() > 0) {
@@ -273,6 +280,7 @@ public class BookController {
             model.addAttribute("isbn", isbn);
             model.addAttribute("isbnVal", isbnVal);
             model.addAttribute("hasFlow", hasFlow);
+            model.addAttribute("drid", drid);
             long end = System.currentTimeMillis();
             log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");
             return "book/bookMeta";
