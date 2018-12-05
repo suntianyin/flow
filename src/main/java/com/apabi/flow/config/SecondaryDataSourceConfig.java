@@ -24,9 +24,6 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = "com.apabi.shuyuan.*.dao", sqlSessionTemplateRef = "secondarySqlSessionTemplate")
 public class SecondaryDataSourceConfig {
 
-    @Value("${spring.datasource.secondary.type}")
-    private String type;
-
     @Value("${spring.datasource.secondary.url}")
     private String url;
 
@@ -47,7 +44,6 @@ public class SecondaryDataSourceConfig {
         dataSource.setUrl(url);
         dataSource.setUsername(user);
         dataSource.setPassword(password);
-        dataSource.setDbType(type);
         return dataSource;
     }
 

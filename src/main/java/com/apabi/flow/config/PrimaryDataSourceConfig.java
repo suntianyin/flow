@@ -26,9 +26,6 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = "com.apabi.flow.*.dao", sqlSessionTemplateRef = "primarySqlSessionTemplate")
 public class PrimaryDataSourceConfig {
 
-    @Value("${spring.datasource.primary.type}")
-    private String type;
-
     @Value("${spring.datasource.primary.url}")
     private String url;
 
@@ -50,7 +47,6 @@ public class PrimaryDataSourceConfig {
         dataSource.setUrl(url);
         dataSource.setUsername(user);
         dataSource.setPassword(password);
-        dataSource.setDbType(type);
         return dataSource;
     }
 
