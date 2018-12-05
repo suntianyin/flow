@@ -13,41 +13,63 @@ spring:
       mongodb:
         uri: mongodb://192.168.12.21:27017/books
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
     primary:
+      type: com.alibaba.druid.pool.DruidDataSource
       driver-class-name: oracle.jdbc.OracleDriver
       url: jdbc:oracle:thin:@192.168.0.124:1521/orclpdb
       username: book
       password: book037268
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initialSize: 5
+      minIdle: 0
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 25200000
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开removeAbandoned功能
+      removeAbandoned: true
+      removeAbandonedTimeout: 1800
+      #关闭abanded连接时输出错误日志
+      logAbandoned: true
+      filters: mergeStat
     secondary:
+      type: com.alibaba.druid.pool.DruidDataSource
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
       url: jdbc:sqlserver://10.10.11.58:1433;DatabaseName=ApaDlibrary102
       username: panshi
       password: K!AM1%m#GZYCkbtq
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initialSize: 5
+      minIdle: 0
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 25200000
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开removeAbandoned功能
+      removeAbandoned: true
+      removeAbandonedTimeout: 1800
+      #关闭abanded连接时输出错误日志
+      logAbandoned: true
+      filters: mergeStat
 #    driver-class-name: oracle.jdbc.OracleDriver
 #    url: jdbc:oracle:thin:@192.168.0.181:1521/ops2db
 #    username: book
 #    password: book037268
-    # 下面为连接池的补充设置，应用到上面所有数据源中
-    # 初始化大小，最小，最大
-    initialSize: 5
-    minIdle: 0
-    maxActive: 20
-    # 配置获取连接等待超时的时间
-    maxWait: 60000
-    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-    timeBetweenEvictionRunsMillis: 60000
-    # 配置一个连接在池中最小生存的时间，单位是毫秒
-    minEvictableIdleTimeMillis: 25200000
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    # 打开removeAbandoned功能
-    removeAbandoned: true
-    removeAbandonedTimeout: 1800
-    #关闭abanded连接时输出错误日志
-    logAbandoned: true
-    filters: mergeStat
+
 
 
 
