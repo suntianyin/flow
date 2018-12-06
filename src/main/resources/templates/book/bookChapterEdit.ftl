@@ -9,6 +9,7 @@
     <script charset="utf-8" src="${ctx}/js/zTree3/js/jquery.ztree.all.js"></script>
     <link rel="stylesheet" href="${ctx}/js/zTree3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <script>
+        var htmlEditor;
         KindEditor.plugin('save', function (K) {
             var editor = this, name = 'save';
             // 点击图标时执行
@@ -45,12 +46,13 @@
         <#if bookMetaVo.cssUrl??>
             cssUrl = '${bookMetaVo.cssUrl?replace('\n','')}'.substring(12);
         </#if>
+
         KindEditor.ready(function (K) {
             /*window.editor = K.create('#htmlEditor');*/
             htmlEditor = K.create('#htmlEditor', {
                 cssPath: cssUrl,
                 cssData: 'body {font-size:16px;}',
-                items: ["save", "source"]
+                items: ['save', 'source', 'fontsize', 'selectall']
             });
         });
 
@@ -178,9 +180,10 @@
 
         .ke-icon-save {
             background-image: url("${ctx}/editor/themes/default/save.png") !important;
-            background-size: 30px 30px;
+            background-size: 31px 31px;
             width: 30px;
             height: 30px;
+            text-align: center;
         }
 
         .ke-icon-source {
@@ -189,6 +192,23 @@
             width: 30px !important;
             height: 30px !important;
         }
+
+        .ke-icon-fontsize {
+            background-position: 0px, 0px !important;
+            background-image: url("${ctx}/editor/themes/default/font.png") !important;
+            background-size: 23px 23px;
+            width: 30px !important;
+            height: 30px !important;
+        }
+
+        .ke-icon-selectall {
+            background-position: 0px, 0px !important;
+            background-image: url("${ctx}/editor/themes/default/all.png") !important;
+            background-size: 21px 21px;
+            width: 30px !important;
+            height: 30px !important;
+        }
+
     </style>
 </head>
 <body>
