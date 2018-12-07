@@ -67,6 +67,9 @@ public interface BookMetaDao {
     //获取总条数
     int getTotal();
 
+    //根据drid获取批量数据
+    List<String> findMetaIdByDrid(Integer drid);
+
     //分页查询
     Page<BookMetaVo> findBookMetaVoByPage(Map<String, Object> queryMap);
 

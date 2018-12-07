@@ -134,11 +134,13 @@ public class DetectBookCode implements Runnable {
             //存储乱码整合信息
             List<BookChapterDetect> detectList = new ArrayList<>();
             for (String comId : codeMap.keySet()) {
+                BookChapterSum bookChapterSum = new BookChapterSum();
+                String metaId = null;
                 try {
-                    BookChapterSum bookChapterSum = bookChapterDao.findChapterByComId(comId);
+                    bookChapterSum = bookChapterDao.findChapterByComId(comId);
                     //获取图书id
                     int chapterNum = bookChapterSum.getChapterNum();
-                    String metaId = comId.substring(0, comId.lastIndexOf(String.valueOf(chapterNum)));
+                    metaId = comId.substring(0, comId.lastIndexOf(String.valueOf(chapterNum)));
                     //获取章节标题
                     EpubookMeta epubookMeta = bookMetaDao.findEpubookMetaById(metaId);
                     String chapterName = getChapterName(epubookMeta.getStreamCatalog(), chapterNum);
@@ -151,6 +153,15 @@ public class DetectBookCode implements Runnable {
                     bookChapterDetect.setMessage(codeMap.get(comId));
                     detectList.add(bookChapterDetect);
                 } catch (Exception e) {
+                    try {
+                        BookChapterDetect bookChapterDetect = new BookChapterDetect();
+                        bookChapterDetect.setMetaId(metaId);
+                        bookChapterDetect.setChapterNum(bookChapterSum.getChapterNum());
+                        bookChapterDetect.setMessage(codeMap.get(comId));
+                        detectList.add(bookChapterDetect);
+                    } catch (Exception e1) {
+                        log.warn("整合问题图书{}乱码信息异常：{}", comId, e1.getMessage());
+                    }
                     log.warn("整合章节{}乱码信息异常：{}", comId, e.getMessage());
                 }
             }
