@@ -1263,18 +1263,9 @@ public class BookMetaServiceImpl implements BookMetaService {
                             if (bookMeta == null) {
                                 SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
                                 bookMeta = BookUtil.createBookMeta(sCmfMeta);
-                                //从接口获取目录和页码
-                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
-                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
-                                bookMeta.setStreamCatalog(cata);
-                                bookMeta.setFoamatCatalog(cata);
-                                bookMeta.setCebxPage(cebxPage);
                                 //新增到磐石数据库
                                 bookMetaDao.insertBookMeta(bookMeta);
                                 ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
-                                bookMetaDataTemp.setStreamCatalog(cata);
-                                bookMetaDataTemp.setFoamatCatalog(cata);
-                                bookMetaDataTemp.setCebxPage(cebxPage);
                                 bookMetaDataTempDao.insert(bookMetaDataTemp);
                                 //获取书苑数据，更新到流式图书
                                 boolean ress = insertShuyuanData(sCmfMeta);
@@ -1306,9 +1297,11 @@ public class BookMetaServiceImpl implements BookMetaService {
         if (drid > 0) {
             List<String> metaIdList = bookMetaDao.findMetaIdByDrid(drid);
             if (metaIdList != null && metaIdList.size() > 0) {
+                int cnt = 0;
                 for (String metaId : metaIdList) {
                     try {
                         long start = System.currentTimeMillis();
+                        cnt++;
                         BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
                         //补充页码和目录
                         if (bookMeta != null) {
@@ -1336,7 +1329,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 temp.setStreamCatalog(bookMeta.getStreamCatalog());
                                 bookMetaDataTempDao.update(temp);
                                 long end = System.currentTimeMillis();
-                                log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
+                                log.info("总共{}，已完成{}，获取图书{}的页码和目录，耗时{}毫秒", metaIdList.size(), cnt, metaId, (end - start));
                             }
                         }
                     } catch (Exception e) {

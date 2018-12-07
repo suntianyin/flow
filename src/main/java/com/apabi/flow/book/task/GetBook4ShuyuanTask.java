@@ -91,19 +91,10 @@ public class GetBook4ShuyuanTask {
                         if (sCmfMeta != null) {
                             BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                             if (bookMeta != null) {
-                                //从接口获取目录和页码
-                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
-                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
-                                bookMeta.setStreamCatalog(cata);
-                                bookMeta.setFoamatCatalog(cata);
-                                bookMeta.setCebxPage(cebxPage);
                                 int res = bookMetaDao.insertBookMeta(bookMeta);
                                 if (res > 0) {
                                     ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                     //新增到图书元数据temp表
-                                    metaDataTemp.setStreamCatalog(cata);
-                                    metaDataTemp.setFoamatCatalog(cata);
-                                    metaDataTemp.setCebxPage(cebxPage);
                                     apabiBookMetaDataTempDao.insert(metaDataTemp);
                                     //获取书苑数据，更新到流式图书
                                     boolean ress = insertShuyuanData(sCmfMeta);
