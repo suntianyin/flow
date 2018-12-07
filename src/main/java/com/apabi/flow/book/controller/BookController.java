@@ -618,6 +618,17 @@ public class BookController {
         return "success";
     }
 
+    //批量获取页码和目录
+    @RequestMapping(value = "/getPageAndCata")
+    @ResponseBody
+    public String getPageAndCata(@RequestParam("drid") Integer drid) {
+        if (drid != null && drid > 0) {
+            bookMetaService.getPageAndCata(drid);
+            return "success";
+        }
+        return "error";
+    }
+
     //批量获取图书内容
     @RequestMapping(value = "/bookMetaBatch", method = RequestMethod.POST)
     @ResponseBody
@@ -1331,7 +1342,7 @@ public class BookController {
     public Object excelImportMeta(@RequestParam String fileInfo) {
         ResultEntity resultEntity = null;
         try {
-            Set<BookMeta> set=new HashSet<>();
+            Set<BookMeta> set = new HashSet<>();
             List<BookMetaFromExcel> bookMetaFromExcels = BookController.bookMetaFromExcels;
             if (bookMetaFromExcels != null) {
                 String[] split = fileInfo.split(";");
@@ -1339,15 +1350,15 @@ public class BookController {
                     String[] split1 = s.split(",");//bookMetaFromExcel->bookMetaService.saveBookMeta(bookMetaFromExcel.getBookMetaTemp())
 //                    bookMetaFromExcels.stream().filter(bm -> bm.getBookMetaTemp().getMetaId().equalsIgnoreCase(split1[0])).forEach(bookMetaFromExcel -> bookMetaService.saveBookMeta(bookMetaFromExcel.getBookMetaTemp()));
                     Iterator<BookMetaFromExcel> bookMetaFromExcel = bookMetaFromExcels.iterator();
-                    while(bookMetaFromExcel.hasNext()){
+                    while (bookMetaFromExcel.hasNext()) {
                         BookMetaFromExcel bookMetaFromExcel1 = bookMetaFromExcel.next();
-                        if(bookMetaFromExcel1.getBookMetaTemp().getMetaId().equalsIgnoreCase(split1[0])){
+                        if (bookMetaFromExcel1.getBookMetaTemp().getMetaId().equalsIgnoreCase(split1[0])) {
                             set.add(bookMetaFromExcel1.getBookMetaTemp());
                             bookMetaFromExcel.remove();
                         }
                     }
                 }
-                for (BookMeta bookMeta:set) {
+                for (BookMeta bookMeta : set) {
                     //默认值
                     bookMeta.setHasCebx(0);
                     bookMeta.setIsReadEpub(0);
@@ -1368,8 +1379,9 @@ public class BookController {
         }
         return resultEntity;
     }
-    public ApabiBookMetaDataTemp transformApabiBookMeta(BookMeta bookMeta){
-        ApabiBookMetaDataTemp apabiBookMetaDataTemp=new ApabiBookMetaDataTemp();
+
+    public ApabiBookMetaDataTemp transformApabiBookMeta(BookMeta bookMeta) {
+        ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();
         apabiBookMetaDataTemp.setHasCebx(0);
         apabiBookMetaDataTemp.setIsReadEpub(0);
         apabiBookMetaDataTemp.setIsReadCebxFlow(0);

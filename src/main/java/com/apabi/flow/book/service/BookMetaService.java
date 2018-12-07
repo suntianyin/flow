@@ -74,6 +74,9 @@ public interface BookMetaService {
     //批量获取图书元数据
     int bookMetaBatch(String metaIds);
 
+    //根据drid，从书苑获取页码和目录
+    void getPageAndCata(Integer drid);
+
     //Excel批量导入图书元数据
     List<BookMetaFromExcel> importBookMetaFromExcel(Map<Integer, Map<Object, Object>> data);
 }

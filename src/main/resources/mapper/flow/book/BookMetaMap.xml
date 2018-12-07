@@ -548,6 +548,9 @@
             METAID = #{metaId}
         </where>
     </update>
+    <select id="findMetaIdByDrid" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT METAID FROM APABI_BOOK_METADATA WHERE DRID > #{drid}
+    </select>
 
     <resultMap id="BaseResultMap1" type="com.apabi.flow.book.model.EpubookMeta">
         <id column="METAID" property="metaid" jdbcType="VARCHAR"/>

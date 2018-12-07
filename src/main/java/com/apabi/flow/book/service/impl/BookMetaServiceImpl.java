@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -1298,9 +1299,57 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
+    //根据drid，从书苑获取页码和目录
+    @Override
+    @Async
+    public void getPageAndCata(Integer drid) {
+        if (drid > 0) {
+            List<String> metaIdList = bookMetaDao.findMetaIdByDrid(drid);
+            if (metaIdList != null && metaIdList.size() > 0) {
+                for (String metaId : metaIdList) {
+                    try {
+                        long start = System.currentTimeMillis();
+                        BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
+                        //补充页码和目录
+                        if (bookMeta != null) {
+                            boolean flag = false;
+                            if (StringUtils.isEmpty(bookMeta.getCebxPage())) {
+                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
+                                bookMeta.setCebxPage(cebxPage);
+                                flag = true;
+                            }
+                            if (StringUtils.isEmpty(bookMeta.getFoamatCatalog())) {
+                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
+                                bookMeta.setFoamatCatalog(cata);
+                                flag = true;
+                                if (StringUtils.isEmpty(bookMeta.getStreamCatalog())) {
+                                    bookMeta.setStreamCatalog(cata);
+                                }
+                            }
+                            if (flag) {
+                                bookMetaDao.updateBookMetaById(bookMeta);
+                                //temp表补充页码和目录
+                                ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
+                                temp.setMetaId(bookMeta.getMetaId());
+                                temp.setCebxPage(bookMeta.getCebxPage());
+                                temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
+                                temp.setStreamCatalog(bookMeta.getStreamCatalog());
+                                bookMetaDataTempDao.update(temp);
+                                long end = System.currentTimeMillis();
+                                log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.warn("获取图书{}的页码和目录时，出现异常{}", metaId, e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public List<BookMetaFromExcel> importBookMetaFromExcel(Map<Integer, Map<Object, Object>> data) {
-        List<BookMetaFromExcel> list=new ArrayList<>();
+        List<BookMetaFromExcel> list = new ArrayList<>();
         for (Map.Entry<Integer, Map<Object, Object>> entry : data.entrySet()) {
             BookMeta bookMetaTemp = getBookMetaFromDate(entry);
             //根据isbn
@@ -1309,18 +1358,19 @@ public class BookMetaServiceImpl implements BookMetaService {
                 //根据isbn13
                 bookMetas = bookMetaDao.listBookMetaByIsbn13(bookMetaTemp.getIsbn13());
                 if (bookMetas == null || bookMetas.isEmpty()) {
-                   list.add(new BookMetaFromExcel(null,bookMetaTemp,0));
-                }else {
-                    bookMetas.forEach(bm->list.add(new BookMetaFromExcel(bm,bookMetaTemp,1)));
+                    list.add(new BookMetaFromExcel(null, bookMetaTemp, 0));
+                } else {
+                    bookMetas.forEach(bm -> list.add(new BookMetaFromExcel(bm, bookMetaTemp, 1)));
                 }
-            }else {
-                bookMetas.forEach(bm->list.add(new BookMetaFromExcel(bm,bookMetaTemp,1)));
+            } else {
+                bookMetas.forEach(bm -> list.add(new BookMetaFromExcel(bm, bookMetaTemp, 1)));
 
             }
         }
         return list;
     }
-    private BookMeta getBookMetaFromDate(Map.Entry<Integer, Map<Object, Object>> entry){
+
+    private BookMeta getBookMetaFromDate(Map.Entry<Integer, Map<Object, Object>> entry) {
         String isbn = (String) entry.getValue().get("ISBN");
         String title = (String) entry.getValue().get("书名");
         String subTitle = (String) entry.getValue().get("副标题");
@@ -1341,11 +1391,11 @@ public class BookMetaServiceImpl implements BookMetaService {
         String preface = (String) entry.getValue().get("序言");
         String paperPrice = (String) entry.getValue().get("纸书价格");
         String ebookPrice = (String) entry.getValue().get("电子书价格");
-        String metaId="";
-        if(issuedDate!=null){
-            metaId=StringToolUtil.metaidFormat(issuedDate);
+        String metaId = "";
+        if (issuedDate != null) {
+            metaId = StringToolUtil.metaidFormat(issuedDate);
         }
-        BookMeta bookMeta=new BookMeta();
+        BookMeta bookMeta = new BookMeta();
         bookMeta.setMetaId(metaId);
         bookMeta.setIsbn(isbn);
         bookMeta.setTitle(title);
@@ -1369,7 +1419,6 @@ public class BookMetaServiceImpl implements BookMetaService {
         bookMeta.setEbookPrice(ebookPrice);
         return bookMeta;
     }
-
 
 
     //调用接口获取数据

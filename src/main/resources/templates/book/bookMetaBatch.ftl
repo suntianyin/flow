@@ -71,6 +71,31 @@
             });
         }
 
+        //从接口获取页码和目录
+        function getPageAndCata() {
+            var drid = $("#drid").val();
+            if (drid == "") {
+                tipDialog("DRID为空", 3, -1);
+                return;
+            }
+            var url = RootPath() + "/book/getPageAndCata?drid=" + drid;
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    if (data == "success") {
+                        tipDialog("已开始获取页码和目录！", 3, 1);
+                        $('#pageAndCata').attr("disabled", true);
+                    } else {
+                        tipDialog("页码和目录获取失败，联系管理员！", 3, -1);
+                    }
+                },
+                error: function () {
+                    Loading(false);
+                    alertDialog("页码和目录获取失败，联系管理员！", -1);
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -96,6 +121,14 @@
                         <td>
                             <textarea id="metaId" name="metaId" rows="10" cols="50"></textarea>
                             （METAID之间以回车键换行分隔，不要有空行）
+                        </td>
+                        <th>DRID：</th>
+                        <td>
+                            <input id="drid" type="text" class="txt" style="width: 200px"/>
+                        <td>
+                            <input id="pageAndCata" type="button" class="btnSearch" value="获取目录和页码"
+                                   onclick="getPageAndCata()"/>
+                        </td>
                         </td>
                     </tr>
                 </table>
