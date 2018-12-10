@@ -94,6 +94,12 @@
         <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
         <result column="ISREADCEBXFLOW" jdbcType="DECIMAL" property="isReadCebxFlow"/>
         <result column="ISREADEPUB" jdbcType="DECIMAL" property="isReadEpub"/>
+        <result column="AUTHORINTRO" jdbcType="CLOB" property="authorIntro" />
+        <result column="ABSTRACT" jdbcType="CLOB" property="abstract_" />
+        <result column="PREFACE" jdbcType="CLOB" property="preface" />
+        <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog" />
+        <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog" />
+        <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript" />
     </resultMap>
     <sql id="Base_Column_List">
         METAID,IDTYPE,SALESTATUS,LANGUAGE,TITLE,SUBTITLE,
@@ -113,7 +119,7 @@
         THUMIMGURL,THUMIMGSIZE,MEDIUMCOVER,HASFLOW,ISOPTIMIZE,
         DONOR,LIBRARYID,BOOKID,STYLECLASS,STYLEURL,CHAPTERNUM,
         BOOKPAGES,TAGS,CREATETIME,UPDATETIME,CONTENTNUM,FOAMATCATALOG,
-        STREAMCATALOG,HASPUBLISH,ISPUBLICCOPYRIGHT,FLOWSOURCE,ISREADCEBXFLOW,
+        STREAMCATALOG,POSTSCRIPT,HASPUBLISH,ISPUBLICCOPYRIGHT,FLOWSOURCE,ISREADCEBXFLOW,
         ISREADEPUB
     </sql>
     <sql id="Base_Value_List">
@@ -209,6 +215,7 @@
         #{contentNum,jdbcType=DECIMAL},
         #{foamatCatalog,jdbcType=VARCHAR},
         #{streamCatalog,jdbcType=VARCHAR},
+        #{postScript,jdbcType=VARCHAR},
         #{hasPublish,jdbcType=DECIMAL},
         #{isPublicCopyRight,jdbcType=DECIMAL},
         #{flowSource,jdbcType=VARCHAR},
@@ -507,12 +514,26 @@
         <if test="isReadEpub != null">
             ISREADEPUB = #{isReadEpub},
         </if>
+        <if test="postScript != null">
+            POSTSCRIPT = #{postScript},
+        </if>
     </sql>
     <select id="findBookMetaById" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA
         where METAID = #{metaId}
+    </select>
+    <select id="findBookMetaByIsbnAndOther" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA
+        where ISBN = #{isbn} and HASFLOW=0
+        and HASCEBX=0 and DOUBANID is null  and AMAZONID is null
+        and NLIBRARYID is null
+    </select>
+    <select id="groupByIsbnAndCount1" resultType="java.lang.String" >
+        SELECT t.ISBN FROM BOOK.APABI_BOOK_METADATA t  group by t.ISBN having count(t.ISBN)>1
     </select>
     <insert id="insertBookMeta" parameterType="com.apabi.flow.book.model.BookMeta">
         insert into APABI_BOOK_METADATA (<include refid="Base_Column_List"/>)

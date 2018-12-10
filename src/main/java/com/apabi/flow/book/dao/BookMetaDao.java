@@ -89,4 +89,9 @@ public interface BookMetaDao {
      */
     List<BookMeta> listBookMetaByIsbn13(String isbn13);
 
+    //获取图书isbn
+    List<String> groupByIsbnAndCount1();
+    //获取图书根据isbn和其他条件
+    List<BookMeta> findBookMetaByIsbnAndOther(String isbn);
+
 }
