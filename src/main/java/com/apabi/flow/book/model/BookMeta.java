@@ -308,13 +308,7 @@ public class BookMeta implements Serializable{
     @Column(name = "POSTSCRIPT")
     private String postScript;
 
-    public String getPostScript() {
-        return postScript;
-    }
-
-    public void setPostScript(String postScript) {
-        this.postScript = postScript;
-    }
+    private String hasProcessingFile;
 
     @Column(name = "ISREADCEBXFLOW")
     private Integer isReadCebxFlow;
@@ -1096,5 +1090,21 @@ public class BookMeta implements Serializable{
 
     public void setIsReadEpub(Integer isReadEpub) {
         this.isReadEpub = isReadEpub;
+    }
+
+    public String getHasProcessingFile() {
+        return hasProcessingFile;
+    }
+
+    public void setHasProcessingFile(String hasProcessingFile) {
+        this.hasProcessingFile = hasProcessingFile;
+    }
+
+    public String getPostScript() {
+        return postScript;
+    }
+
+    public void setPostScript(String postScript) {
+        this.postScript = postScript;
     }
 }

@@ -100,6 +100,7 @@
         <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog" />
         <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog" />
         <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript" />
+        <result column="HASPROCESSINGFILE" jdbcType="DECIMAL" property="hasProcessingFile" />
     </resultMap>
     <sql id="Base_Column_List">
         METAID,IDTYPE,SALESTATUS,LANGUAGE,TITLE,SUBTITLE,
@@ -120,7 +121,7 @@
         DONOR,LIBRARYID,BOOKID,STYLECLASS,STYLEURL,CHAPTERNUM,
         BOOKPAGES,TAGS,CREATETIME,UPDATETIME,CONTENTNUM,FOAMATCATALOG,
         STREAMCATALOG,POSTSCRIPT,HASPUBLISH,ISPUBLICCOPYRIGHT,FLOWSOURCE,ISREADCEBXFLOW,
-        ISREADEPUB
+        ISREADEPUB,HASPROCESSINGFILE
     </sql>
     <sql id="Base_Value_List">
         #{metaId,jdbcType=VARCHAR},
@@ -220,7 +221,8 @@
         #{isPublicCopyRight,jdbcType=DECIMAL},
         #{flowSource,jdbcType=VARCHAR},
         #{isReadCebxFlow,jdbcType=DECIMAL},
-        #{isReadEpub,jdbcType=DECIMAL}
+        #{isReadEpub,jdbcType=DECIMAL},
+        #{hasProcessingFile,jdbcType=DECIMAL}
     </sql>
     <sql id="Base_Set_List">
         <if test="metaId != null">
@@ -516,6 +518,9 @@
         </if>
         <if test="postScript != null">
             POSTSCRIPT = #{postScript},
+        </if>
+        <if test="hasProcessingFile != null">
+            HASPROCESSINGFILE = #{hasProcessingFile},
         </if>
     </sql>
     <select id="findBookMetaById" resultMap="BaseResultMap" parameterType="java.lang.String">
