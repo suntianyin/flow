@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.book.dao.BookTaskMapper">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.BookTask">
+        <id column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="STATUS" jdbcType="DECIMAL" property="status"/>
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="TASK_PATH" jdbcType="VARCHAR" property="taskPath"/>
+        <result column="FILE_TYPE" jdbcType="VARCHAR" property="fileType"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    ID, STATUS, CREATE_TIME,UPDATE_TIME, TASK_PATH,FILE_TYPE
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_TASK
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_TASK
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.apabi.flow.book.model.BookTask">
+    insert into APABI_BOOK_TASK (ID, STATUS, CREATE_TIME, UPDATE_TIME,
+      TASK_PATH,FILE_TYPE)
+    values (#{id,jdbcType=VARCHAR}, #{status,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{taskPath,jdbcType=VARCHAR}, #{fileType,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.apabi.flow.book.model.BookTask">
+        insert into APABI_BOOK_TASK
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="taskPath != null">
+                TASK_PATH,
+            </if>
+            <if test="fileType != null">
+                FILE_TYPE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="taskPath != null">
+                #{taskPath,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                #{fileType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.book.model.BookTask">
+        update APABI_BOOK_TASK
+        <set>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="taskPath != null">
+                TASK_PATH = #{taskPath,jdbcType=VARCHAR},
+            </if>
+            <if test="fileType != null">
+                FILE_TYPE = #{fileType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.apabi.flow.book.model.BookTask">
+    update APABI_BOOK_TASK
+    set STATUS = #{status,jdbcType=DECIMAL},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      TASK_PATH = #{taskPath,jdbcType=VARCHAR},
+      FILE_TYPE = #{fileType,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+    <select id="showTaskList" parameterType="Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM APABI_BOOK_TASK
+        WHERE 1=1
+    </select>
+</mapper>
