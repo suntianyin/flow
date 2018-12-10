@@ -253,12 +253,38 @@ public class BookController {
                 queryMap.put("isbn10", isbnVal);
                 queryMap.put("isbn13", isbnVal);
             }
+            Integer hasCebx = null;
+            if (!StringUtils.isEmpty(params.get("hasCebx"))) {
+                if (!StringUtils.isEmpty(params.get("hasCebx")[0])) {
+                    hasCebx = Integer.valueOf(params.get("hasCebx")[0]);
+                    queryMap.put("hasCebx", hasCebx);
+                }
+            }
             Integer hasFlow = null;
             if (!StringUtils.isEmpty(params.get("hasFlow"))) {
                 if (!StringUtils.isEmpty(params.get("hasFlow")[0])) {
                     hasFlow = Integer.valueOf(params.get("hasFlow")[0]);
                     queryMap.put("hasFlow", hasFlow);
                 }
+            }
+            Integer isPublicCopyRight = null;
+            if (!StringUtils.isEmpty(params.get("isPublicCopyRight"))) {
+                if (!StringUtils.isEmpty(params.get("isPublicCopyRight")[0])) {
+                    isPublicCopyRight = Integer.valueOf(params.get("isPublicCopyRight")[0]);
+                    queryMap.put("isPublicCopyRight", isPublicCopyRight);
+                }
+            }
+            Integer saleStatus = null;
+            if (!StringUtils.isEmpty(params.get("saleStatus"))) {
+                if (!StringUtils.isEmpty(params.get("saleStatus")[0])) {
+                    saleStatus = Integer.valueOf(params.get("saleStatus")[0]);
+                    queryMap.put("saleStatus", saleStatus);
+                }
+            }
+            String flowSource = "";
+            if (!StringUtils.isEmpty(params.get("flowSource"))) {
+                flowSource = params.get("flowSource")[0].trim();
+                queryMap.put("flowSource", flowSource);
             }
             Integer drid = null;
             if (!StringUtils.isEmpty(params.get("drid"))) {
@@ -286,7 +312,11 @@ public class BookController {
             model.addAttribute("publisher", publisher);
             model.addAttribute("isbn", isbn);
             model.addAttribute("isbnVal", isbnVal);
+            model.addAttribute("hasCebx", hasCebx);
             model.addAttribute("hasFlow", hasFlow);
+            model.addAttribute("isPublicCopyRight", isPublicCopyRight);
+            model.addAttribute("saleStatus", saleStatus);
+            model.addAttribute("flowSource", flowSource);
             model.addAttribute("drid", drid);
             long end = System.currentTimeMillis();
             log.info("图书元数据列表查询耗时：" + (end - start) + "毫秒");

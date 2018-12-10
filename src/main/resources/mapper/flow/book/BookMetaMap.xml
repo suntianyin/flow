@@ -702,14 +702,18 @@
         <result column="STYLEURL" property="cssUrl" jdbcType="VARCHAR"/>
         <result column="THUMIMGURL" property="coverMiniUrl" jdbcType="VARCHAR"/>
         <result column="STYLECLASS" property="styleClass" jdbcType="VARCHAR"/>
-        <result column="HASFLOW" property="hasflow" jdbcType="INTEGER"/>
         <result column="HASCEBX" property="hascebx" jdbcType="INTEGER"/>
+        <result column="HASFLOW" property="hasflow" jdbcType="INTEGER"/>
+        <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
+        <result column="SALESTATUS" jdbcType="DECIMAL" property="saleStatus"/>
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
         <result column="DRID" property="drid" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List2">
         METAID,CREATETIME,UPDATETIME,ISSUEDDATE,TITLE,CREATOR,ABSTRACT,
         PUBLISHER,ISBN,ISBN10,ISBN13,CONTENTNUM,ISOPTIMIZE,LANGUAGE,
-        COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,HASCEBX,DRID
+        COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,
+        HASCEBX,ISPUBLICCOPYRIGHT,SALESTATUS,FLOWSOURCE,DRID
     </sql>
     <sql id="Base_Value_List2">
         <if test="metaId != null">
@@ -775,6 +779,15 @@
         <if test="hascebx != null">
             HASCEBX = #{hascebx},
         </if>
+        <if test="isPublicCopyRight != null">
+            ISPUBLICCOPYRIGHT = #{isPublicCopyRight},
+        </if>
+        <if test="saleStatus != null">
+            SALESTATUS = #{saleStatus},
+        </if>
+        <if test="flowSource != null">
+            flowSource = #{flowSource},
+        </if>
         <if test="drid != null">
             DRID = #{drid},
         </if>
@@ -822,8 +835,20 @@
         <if test="isbn13 != null and isbn13 != ''">
             AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
         </if>
+        <if test="hasCebx != null">
+            AND HASCEBX = #{hasCebx,jdbcType=INTEGER}
+        </if>
         <if test="hasFlow != null">
             AND HASFLOW = #{hasFlow,jdbcType=INTEGER}
+        </if>
+        <if test="isPublicCopyRight != null">
+            AND ISPUBLICCOPYRIGHT = #{isPublicCopyRight,jdbcType=INTEGER}
+        </if>
+        <if test="saleStatus != null">
+            AND SALESTATUS = #{saleStatus,jdbcType=INTEGER}
+        </if>
+        <if test="flowSource != null and flowSource != ''">
+            AND FLOWSOURCE = #{flowSource,jdbcType=INTEGER}
         </if>
         <if test="drid != null">
             AND DRID = #{drid,jdbcType=INTEGER}

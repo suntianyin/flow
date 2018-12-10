@@ -58,6 +58,12 @@ public class BookMetaVo {
 
     private Integer hascebx;
 
+    private Integer isPublicCopyRight;
+
+    private Integer saleStatus;
+
+    private String flowSource;
+
     private Integer drid;
 
     public String getMetaId() {
@@ -227,6 +233,30 @@ public class BookMetaVo {
 
     public void setHascebx(Integer hascebx) {
         this.hascebx = hascebx;
+    }
+
+    public Integer getIsPublicCopyRight() {
+        return isPublicCopyRight;
+    }
+
+    public void setIsPublicCopyRight(Integer isPublicCopyRight) {
+        this.isPublicCopyRight = isPublicCopyRight;
+    }
+
+    public Integer getSaleStatus() {
+        return saleStatus;
+    }
+
+    public void setSaleStatus(Integer saleStatus) {
+        this.saleStatus = saleStatus;
+    }
+
+    public String getFlowSource() {
+        return flowSource;
+    }
+
+    public void setFlowSource(String flowSource) {
+        this.flowSource = flowSource;
     }
 
     public Integer getDrid() {
