@@ -27,13 +27,12 @@
                 tipDialog("请填写文件路径", 3, -2);
                 return;
             }
-
             var fileType = $("#fileType").val();
-
             var formData = new FormData();
             formData.append('fileInfo', fileInfo);
             formData.append("filePath", filePath);
             formData.append("fileType", fileType);
+            $("input[type='checkbox']").prop("disabled", true);
             $.ajax({
                 url: RootPath() + "/bookTask/batchChapter",
                 type: "POST",

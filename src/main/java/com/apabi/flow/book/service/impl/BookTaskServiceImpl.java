@@ -76,6 +76,7 @@ public class BookTaskServiceImpl implements BookTaskService {
             bookTask.setId(UUIDCreater.nextId());
             bookTask.setTaskPath(dirPath);
             bookTask.setStatus(1);
+            bookTask.setFileType(fileType);
             bookTask.setCreateTime(new Date());
             bookTaskMapper.insert(bookTask);
             if (fileType.toLowerCase().equals(EPUB_SUFFIX)) {
@@ -85,8 +86,10 @@ public class BookTaskServiceImpl implements BookTaskService {
             }
             //扫描结果入库
             List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
-            for (BookTaskResult result : taskResultList) {
-                bookTaskResultMapper.insert(result);
+            if (taskResultList != null && taskResultList.size() > 0) {
+                for (BookTaskResult result : taskResultList) {
+                    bookTaskResultMapper.insert(result);
+                }
             }
             //更改任务列表状态
             bookTask.setStatus(2);
