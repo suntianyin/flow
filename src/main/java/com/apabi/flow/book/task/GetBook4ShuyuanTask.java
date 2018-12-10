@@ -91,10 +91,12 @@ public class GetBook4ShuyuanTask {
                         if (sCmfMeta != null) {
                             BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                             if (bookMeta != null) {
+                                bookMeta.setHasCebx(1);
                                 int res = bookMetaDao.insertBookMeta(bookMeta);
                                 if (res > 0) {
                                     ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                     //新增到图书元数据temp表
+                                    metaDataTemp.setHasCebx(1);
                                     apabiBookMetaDataTempDao.insert(metaDataTemp);
                                     //获取书苑数据，更新到流式图书
                                     boolean ress = insertShuyuanData(sCmfMeta);
