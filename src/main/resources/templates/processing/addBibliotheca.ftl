@@ -34,12 +34,9 @@
                 success: function (data) {
                     if (data.status == 200) {
                         tipDialog(data.msg, 3, 1);
-                        // top.frames[tabiframeId()].location.reload();
-                        // closeDialog();
                     } else {
                         tipDialog(data.msg, 3, -1);
                     }
-
                 },
                 error: function (data) {
                     Loading(false);

@@ -97,6 +97,9 @@
         <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog" />
         <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog" />
         <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript" />
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
+        <result column="ISREADCEBXFLOW" jdbcType="DECIMAL" property="isReadCebxFlow"/>
+        <result column="ISREADEPUB" jdbcType="DECIMAL" property="isReadEpub"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -112,7 +115,7 @@
         IMGWIDTH, COVOBJID, THUMIMGURL, THUMIMGSIZE, MEDIUMCOVER, HASFLOW, ISOPTIMIZE, DONOR,
         LIBRARYID, BOOKID, STYLECLASS, STYLEURL, CHAPTERNUM, BOOKPAGES, TAGS, CREATETIME,
         UPDATETIME, CONTENTNUM, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,AUTHORINTRO,
-        ABSTRACT, PREFACE, FOAMATCATALOG, STREAMCATALOG, POSTSCRIPT
+        ABSTRACT, PREFACE, FOAMATCATALOG, STREAMCATALOG, POSTSCRIPT,FLOWSOURCE,ISREADCEBXFLOW,ISREADEPUB
     </sql>
 
     <!-- 根据metaId查询数据 -->
@@ -434,6 +437,15 @@
             <if test="postScript != null">
                 POSTSCRIPT,
             </if>
+            <if test="flowSource != null">
+                FLOWSOURCE ,
+            </if>
+            <if test="isReadCebxFlow != null">
+                ISREADCEBXFLOW ,
+            </if>
+            <if test="isReadEpub != null">
+                ISREADEPUB ,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="metaId != null">
@@ -720,6 +732,15 @@
             </if>
             <if test="postScript != null">
                 #{postScript,jdbcType=CLOB},
+            </if>
+            <if test="flowSource != null">
+                 #{flowSource,jdbcType=VARCHAR},
+            </if>
+            <if test="isReadCebxFlow != null">
+                #{isReadCebxFlow,jdbcType=INTEGER},
+            </if>
+            <if test="isReadEpub != null">
+                #{isReadEpub,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -1009,6 +1030,15 @@
             </if>
             <if test="postScript != null">
                 POSTSCRIPT = #{postScript,jdbcType=CLOB},
+            </if>;
+            <if test="flowSource != null">
+                FLOWSOURCE = #{flowSource,jdbcType=VARCHAR},
+            </if>
+            <if test="isReadCebxFlow != null">
+                ISREADCEBXFLOW = #{isReadCebxFlow,jdbcType=INTEGER},
+            </if>
+            <if test="isReadEpub != null">
+                ISREADEPUB = #{isReadEpub,jdbcType=INTEGER},
             </if>
         </set>
         where METAID = #{metaId,jdbcType=VARCHAR}

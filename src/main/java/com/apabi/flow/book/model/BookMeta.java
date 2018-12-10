@@ -305,6 +305,17 @@ public class BookMeta implements Serializable{
     @Column(name = "FLOWSOURCE")
     private String flowSource;
 
+    @Column(name = "POSTSCRIPT")
+    private String postScript;
+
+    public String getPostScript() {
+        return postScript;
+    }
+
+    public void setPostScript(String postScript) {
+        this.postScript = postScript;
+    }
+
     @Column(name = "ISREADCEBXFLOW")
     private Integer isReadCebxFlow;
 
