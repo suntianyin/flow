@@ -9,13 +9,6 @@
     <title></title>
     <script type="text/javascript">
 
-        //扫描文件
-        function bnt_search() {
-            loading();
-            $("#form1").submit();
-        }
-
-
         //批量发布
         function batchChapter() {
             var books = $('input:checkbox:checked');
@@ -34,37 +27,28 @@
                 tipDialog("请填写文件路径", 3, -2);
                 return;
             }
-
             var fileType = $("#fileType").val();
-
             var formData = new FormData();
             formData.append('fileInfo', fileInfo);
             formData.append("filePath", filePath);
             formData.append("fileType", fileType);
-            loading();
+            $("input[type='checkbox']").prop("disabled", true);
             $.ajax({
-                url: RootPath() + "/book/batchChapter",
+                url: RootPath() + "/bookTask/batchChapter",
                 type: "POST",
                 data: formData,
                 cache: false,
                 processData: false,
                 contentType: false,
                 success: function (data) {
-                    $('.load-circle').hide();
                     if (data == "id_null") {
                         tipDialog("请勾选数据！", 3, -2);
                     } else if (data == "path_null") {
                         tipDialog("请填写文件路径！", 3, -2);
                     } else if (data == "error") {
                         tipDialog("请联系管理员！", 3, -1);
-                    } else if (data == "exist") {
-                        tipDialog("请检查路径是否正确或已填写过！", 3, -1);
                     } else {
-                        $("input[type='checkbox']").prop("disabled", true);
-                        var url = "/book/batchChapterShow";
-                        FullopenDialog(url, "batchChapterShow", "批量上传结果", function (iframe) {
-                            top.frames[iframe].AcceptClick()
-                        });
+                        tipDialog("上传已开始，请稍后查看！", 3, 1);
                     }
                 },
                 error: function (data) {
@@ -104,24 +88,22 @@
     </script>
 </head>
 <body>
-<div class='load-circle' style="display: none;"></div>
 <div id="layout" class="layout">
     <!--中间-->
     <div class="layoutPanel layout-center">
         <!--列表-->
         <div id="grid_List">
             <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
-                <form id="form1" action="${ctx}/book/flowBookBatch" method="get">
-                    <table border="0" class="form-find" style="height: 45px;">
-                        <tr>
-                            <th>文件路径：</th>
-                            <td>
-                                <input id="filePath" name="filePath" type="text" value="${filePath!'' }" class="txt"
-                                       style="width: 200px"/>
-                            </td>
-                            <th>文件类型：</th>
-                            <td>
-                                <select id="fileType" name="fileType" class="txtselect">
+                <table border="0" class="form-find" style="height: 45px;">
+                    <tr>
+                        <th>文件路径：</th>
+                        <td>
+                            <input id="filePath" name="filePath" type="text" value="${filePath!'' }" class="txt"
+                                   readonly style="width: 200px"/>
+                        </td>
+                        <th>文件类型：</th>
+                        <td>
+                            <select id="fileType" name="fileType" disabled="disabled" class="txtselect">
                                 <#if fileType??>
                                     <#if fileType =="epub" || fileType =="">
                                         <option value="epub" selected="selected">epub</option>
@@ -135,42 +117,29 @@
                                     <option value="epub" selected="selected">epub</option>
                                     <option value="cebx">cebx</option>
                                 </#if>
-                                </select>
-                            </td>
-                            <td>
-                                <input id="bnt_search" type="submit" class="btnSearch" value="扫描文件"
-                                       onclick="bnt_search()"/>
-                            </td>
-                            <td>
-                                <input id="batch" type="button" class="btnSearch" value="批量发布"
-                                       onclick="batchChapter()"/>
-                            </td>
-                            <td>
-                                <input id="taskFileScan" type="button" class="btnSearch" value="创建扫描任务"
-                                       onclick="taskFileScanClick()"/>
-                            </td>
-                            <td>
-                                <input id="listShow" type="button" class="btnSearch" value="查看扫描任务列表"
-                                       onclick="onSeeTaskListClick()"/>
-                            </td>
-                            <td>
-                                <a id="export" class="btnSearch" onclick="exportResult(this)" download="download.csv"
-                                href="#">导出结果</a>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+                            </select>
+                        </td>
+                        <td>
+                            <input id="batch" type="button" class="btnSearch" value="批量发布"
+                                   onclick="batchChapter()"/>
+                        </td>
+                        <td>
+                            <a id="export" class="btnSearch" onclick="exportResult(this)" download="download.csv"
+                               href="#">导出结果</a>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <div class="panel-body">
                 <div class="row">
                     <table id="table-list"
                            class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                         <thead>
-                        <#if bookMetaList?? >
-                            <#if bookMetaList?size==0>
+                        <#if taskResultList?? >
+                            <#if taskResultList?size==0>
                                 获取图书元数据0条，请检查目录是否正确
                             <#else >
-                                获取图书元数据${bookMetaList?size }条
+                                获取图书元数据${taskResultList?size }条
                             </#if>
                         </#if>
                         <tr role="row">
@@ -184,11 +153,12 @@
                             <th>作者</th>
                             <th>出版单位</th>
                             <th>是否流式</th>
+                            <th>状态</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <#if bookMetaList?? >
-                            <#list bookMetaList as list>
+                        <#if taskResultList?? >
+                            <#list taskResultList as list>
                                 <tr class="gradeA odd" role="row">
                                     <td>
                                         <#if list.hasFlow??>
@@ -230,6 +200,19 @@
                                             否
                                         </#if>
                                     </td>
+                                    <td>
+                                        <#if list.status??>
+                                            <#if list.status == 0>
+                                                失败
+                                            <#elseif list.status == 1>
+                                                成功
+                                            <#else >
+                                                未上传
+                                            </#if>
+                                        <#else>
+                                            未上传
+                                        </#if>
+                                    </td>
                                 </tr>
                             </#list>
                         </#if>
@@ -241,49 +224,4 @@
     </div>
 </div>
 </body>
-<script type="text/javascript">
-
-    //查看任务列表
-    function onSeeTaskListClick() {
-        AddTabMenu('showTaskList', "/bookTask/showTaskList", '扫描任务列表', null, 'true', 'true');
-    }
-
-    //创建扫描任务
-    function taskFileScanClick() {
-        var filePath = $('#filePath').val();
-        if (filePath == "") {
-            tipDialog("请输入路径！", 3, -1);
-            return;
-        }
-        var fileType = $('#fileType').val();
-        confirmDialog("温馨提示", "请确认信息！<br/>文件路径：" + filePath + "<br/>文件类型：" + fileType, function (res) {
-            if (res) {
-                var url = RootPath() + "/bookTask/taskFileScan";
-                var formData = new FormData();
-                formData.append('filePath', filePath);
-                formData.append('fileType', fileType);
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        if (data == "success") {
-                            tipDialog("扫描任务已创建！", 3, 1);
-                            $('#scanFileTask').attr("disabled", true);
-                        } else {
-                            tipDialog("扫描任务创建失败，联系管理员！", 3, -1);
-                        }
-                    },
-                    error: function () {
-                        Loading(false);
-                        alertDialog("扫描任务创建失败，联系管理员！", -1);
-                    }
-                });
-            }
-        });
-    }
-</script>
 </html>
