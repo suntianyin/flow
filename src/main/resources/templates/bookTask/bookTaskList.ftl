@@ -19,10 +19,10 @@
                 }
             });
             //排序
-            var sortColumns = "";
+            var sortColumns = "createTime";
             window.simpleTable = new SimpleTable('form-list', '1', '10', sortColumns);
             //分页
-            var pathUrl = "showTaskList";
+            var pathUrl = "${ctx}/bookTask/showTaskList?1=1";
             var totalPages = 1;
             var currentPages = 1;
             <#if page??>

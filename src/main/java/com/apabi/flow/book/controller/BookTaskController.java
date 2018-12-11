@@ -70,7 +70,7 @@ public class BookTaskController {
             long start = System.currentTimeMillis();
             Map<String, String[]> params = request.getParameterMap();
             Map<String, Object> queryMap = new HashMap<>();
-            PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
+            PageHelper.startPage(pageNum, DEFAULT_PAGESIZE,"CREATE_TIME DESC");
             Page<BookTask> page = bookTaskService.showTaskList(queryMap);
             if (page == null) {
                 model.addAttribute("bookTaskList", null);
