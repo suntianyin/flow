@@ -81,6 +81,7 @@
 
         //获取章节内容
         function getChapter(metaid, chapterNum) {
+            $('.load-circle').show();
             if (metaid != null && chapterNum != null) {
                 var url = RootPath() + "/book/getBookChapter?metaid=" + metaid + "&chapterNum=" + chapterNum;
                 $.ajax({
@@ -89,7 +90,7 @@
                     dataType: "text",
                     async: false,
                     success: function (data) {
-                        Loading(false);
+                        $('.load-circle').hide();
                         var obj = JSON.parse(data);
                         //htmlEditor.sync();
                         htmlEditor.html("");
@@ -212,6 +213,7 @@
     </style>
 </head>
 <body>
+<div class='load-circle' style="display: none;"></div>
 <div class="cover">
     <div id="page-wrapper" style="top:3%;">
         <div class="panel panel-default">
