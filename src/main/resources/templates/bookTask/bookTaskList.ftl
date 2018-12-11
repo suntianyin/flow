@@ -57,6 +57,40 @@
             AddTabMenu('showTaskInfo', url, '任务列表详情', null, 'true', 'true');
         }
 
+        //删除任务
+        function onDeleteTaskInfoClick(id) {
+            var url = "/bookTask/deleteBookTask?id=" + id;
+            confirmDialog("温馨提示", "注：您确定要删除该条记录？<br>" + id, function (r) {
+                if (r) {
+                    Loading(true, "正在删除数据...");
+                    window.setTimeout(function () {
+                        try {
+                            $.ajax({
+                                url: RootPath() + url,
+                                type: "get",
+                                dataType: "text",
+                                async: false,
+                                success: function (data) {
+                                    Loading(false);
+                                    if (data == "success") {
+                                        tipDialog("删除成功！", 3, 1);
+                                    } else {
+                                        tipDialog("删除失败！", 3, -1);
+                                    }
+                                    location.reload();
+                                },
+                                error: function (data) {
+                                    Loading(false);
+                                    alertDialog("删除失败！", -1);
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -125,6 +159,8 @@
                                     <td>
                                         <a style="cursor:pointer;"
                                            onclick="onShowTaskInfoClick('${list.id!'' }');">详情&nbsp;</a>
+                                        <a style="cursor:pointer;"
+                                           onclick="onDeleteTaskInfoClick('${list.id!'' }');">删除&nbsp;</a>
                                     </td>
                                 </tr>
                             </#list>

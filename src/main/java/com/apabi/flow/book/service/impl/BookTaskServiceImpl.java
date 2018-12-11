@@ -69,34 +69,41 @@ public class BookTaskServiceImpl implements BookTaskService {
     @Async
     public void createBookTask(String dirPath, String fileType) {
         if (!StringUtils.isEmpty(dirPath) && !StringUtils.isEmpty(fileType)) {
-            long start = System.currentTimeMillis();
-            List<BookMetaBatch> bookMetaList = new ArrayList<>();
-            //创建任务列表
             BookTask bookTask = new BookTask();
-            bookTask.setId(UUIDCreater.nextId());
-            bookTask.setTaskPath(dirPath);
-            bookTask.setStatus(1);
-            bookTask.setFileType(fileType);
-            bookTask.setCreateTime(new Date());
-            bookTaskMapper.insert(bookTask);
-            if (fileType.toLowerCase().equals(EPUB_SUFFIX)) {
-                bookMetaList = bookMetaService.getBookMetaEpubBatch(dirPath);
-            } else if (fileType.toLowerCase().equals(CEBX_SUFFIX)) {
-                bookMetaList = bookMetaService.getBookMetaCebxBatch(dirPath);
-            }
-            //扫描结果入库
-            List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
-            if (taskResultList != null && taskResultList.size() > 0) {
-                for (BookTaskResult result : taskResultList) {
-                    bookTaskResultMapper.insert(result);
+            try {
+                long start = System.currentTimeMillis();
+                List<BookMetaBatch> bookMetaList = new ArrayList<>();
+                //创建任务列表
+                bookTask.setId(UUIDCreater.nextId());
+                bookTask.setTaskPath(dirPath);
+                bookTask.setStatus(1);
+                bookTask.setFileType(fileType);
+                bookTask.setCreateTime(new Date());
+                bookTaskMapper.insert(bookTask);
+                if (fileType.toLowerCase().equals(EPUB_SUFFIX)) {
+                    bookMetaList = bookMetaService.getBookMetaEpubBatch(dirPath);
+                } else if (fileType.toLowerCase().equals(CEBX_SUFFIX)) {
+                    bookMetaList = bookMetaService.getBookMetaCebxBatch(dirPath);
                 }
+                //扫描结果入库
+                List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
+                if (taskResultList != null && taskResultList.size() > 0) {
+                    for (BookTaskResult result : taskResultList) {
+                        bookTaskResultMapper.insert(result);
+                    }
+                }
+                //更改任务列表状态
+                bookTask.setStatus(2);
+                bookTask.setUpdateTime(new Date());
+                bookTaskMapper.updateByPrimaryKeySelective(bookTask);
+                long end = System.currentTimeMillis();
+                log.info("扫描任务{}已完成，耗时：{}毫秒", dirPath, (end - start));
+            } catch (Exception e) {
+                //将任务列表置成失败
+                bookTask.setStatus(0);
+                bookTaskMapper.updateByPrimaryKeySelective(bookTask);
+                log.info("扫描任务{}时，出现异常{}", dirPath, e.getMessage());
             }
-            //更改任务列表状态
-            bookTask.setStatus(2);
-            bookTask.setUpdateTime(new Date());
-            bookTaskMapper.updateByPrimaryKeySelective(bookTask);
-            long end = System.currentTimeMillis();
-            log.info("扫描任务{}已完成，耗时：{}毫秒", dirPath, (end - start));
         }
     }
 
@@ -129,5 +136,17 @@ public class BookTaskServiceImpl implements BookTaskService {
     @Override
     public BookTask selectBookTask(String id) {
         return bookTaskMapper.selectByPrimaryKey(id);
+    }
+
+    //删除任务
+    @Override
+    public int deleteBookTask(String id) {
+        if (!StringUtils.isEmpty(id)) {
+            //删除任务扫描结果
+            bookTaskResultMapper.deleteByTaskId(id);
+            //删除任务
+            return bookTaskMapper.deleteByPrimaryKey(id);
+        }
+        return 0;
     }
 }

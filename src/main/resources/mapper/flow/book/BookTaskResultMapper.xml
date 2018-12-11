@@ -36,6 +36,10 @@
     delete from APABI_BOOK_TASK_RESULT
     where ID = #{id,jdbcType=VARCHAR}
   </delete>
+  <delete id="deleteByTaskId" parameterType="java.lang.String">
+    delete from APABI_BOOK_TASK_RESULT
+    where TASK_ID = #{taskId,jdbcType=VARCHAR}
+  </delete>
   <insert id="insert" parameterType="com.apabi.flow.book.model.BookTaskResult">
     insert into APABI_BOOK_TASK_RESULT (ID, TASK_ID, STATUS, 
       FILE_NAME, META_ID, TITLE, 

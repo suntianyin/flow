@@ -22,4 +22,7 @@ public interface BookTaskResultMapper {
 
     //根据metaId，更改上传结果状态
     void updateTaskByMetaId(BookTaskResult record);
+
+    //根据任务id，删除相关数据
+    int deleteByTaskId(String id);
 }
