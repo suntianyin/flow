@@ -94,6 +94,13 @@
         <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
         <result column="ISREADCEBXFLOW" jdbcType="DECIMAL" property="isReadCebxFlow"/>
         <result column="ISREADEPUB" jdbcType="DECIMAL" property="isReadEpub"/>
+        <result column="AUTHORINTRO" jdbcType="CLOB" property="authorIntro" />
+        <result column="ABSTRACT" jdbcType="CLOB" property="abstract_" />
+        <result column="PREFACE" jdbcType="CLOB" property="preface" />
+        <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog" />
+        <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog" />
+        <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript" />
+        <result column="HASPROCESSINGFILE" jdbcType="DECIMAL" property="hasProcessingFile" />
     </resultMap>
     <sql id="Base_Column_List">
         METAID,IDTYPE,SALESTATUS,LANGUAGE,TITLE,SUBTITLE,
@@ -113,8 +120,8 @@
         THUMIMGURL,THUMIMGSIZE,MEDIUMCOVER,HASFLOW,ISOPTIMIZE,
         DONOR,LIBRARYID,BOOKID,STYLECLASS,STYLEURL,CHAPTERNUM,
         BOOKPAGES,TAGS,CREATETIME,UPDATETIME,CONTENTNUM,FOAMATCATALOG,
-        STREAMCATALOG,HASPUBLISH,ISPUBLICCOPYRIGHT,FLOWSOURCE,ISREADCEBXFLOW,
-        ISREADEPUB
+        STREAMCATALOG,POSTSCRIPT,HASPUBLISH,ISPUBLICCOPYRIGHT,FLOWSOURCE,ISREADCEBXFLOW,
+        ISREADEPUB,HASPROCESSINGFILE
     </sql>
     <sql id="Base_Value_List">
         #{metaId,jdbcType=VARCHAR},
@@ -209,11 +216,13 @@
         #{contentNum,jdbcType=DECIMAL},
         #{foamatCatalog,jdbcType=VARCHAR},
         #{streamCatalog,jdbcType=VARCHAR},
+        #{postScript,jdbcType=VARCHAR},
         #{hasPublish,jdbcType=DECIMAL},
         #{isPublicCopyRight,jdbcType=DECIMAL},
         #{flowSource,jdbcType=VARCHAR},
         #{isReadCebxFlow,jdbcType=DECIMAL},
-        #{isReadEpub,jdbcType=DECIMAL}
+        #{isReadEpub,jdbcType=DECIMAL},
+        #{hasProcessingFile,jdbcType=DECIMAL}
     </sql>
     <sql id="Base_Set_List">
         <if test="metaId != null">
@@ -507,12 +516,29 @@
         <if test="isReadEpub != null">
             ISREADEPUB = #{isReadEpub},
         </if>
+        <if test="postScript != null">
+            POSTSCRIPT = #{postScript},
+        </if>
+        <if test="hasProcessingFile != null">
+            HASPROCESSINGFILE = #{hasProcessingFile},
+        </if>
     </sql>
     <select id="findBookMetaById" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA
         where METAID = #{metaId}
+    </select>
+    <select id="findBookMetaByIsbnAndOther" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA
+        where ISBN = #{isbn} and HASFLOW=0
+        and HASCEBX=0 and DOUBANID is null  and AMAZONID is null
+        and NLIBRARYID is null
+    </select>
+    <select id="groupByIsbnAndCount1" resultType="java.lang.String" >
+        SELECT t.ISBN FROM BOOK.APABI_BOOK_METADATA t  group by t.ISBN having count(t.ISBN)>1
     </select>
     <insert id="insertBookMeta" parameterType="com.apabi.flow.book.model.BookMeta">
         insert into APABI_BOOK_METADATA (<include refid="Base_Column_List"/>)
@@ -681,14 +707,18 @@
         <result column="STYLEURL" property="cssUrl" jdbcType="VARCHAR"/>
         <result column="THUMIMGURL" property="coverMiniUrl" jdbcType="VARCHAR"/>
         <result column="STYLECLASS" property="styleClass" jdbcType="VARCHAR"/>
-        <result column="HASFLOW" property="hasflow" jdbcType="INTEGER"/>
         <result column="HASCEBX" property="hascebx" jdbcType="INTEGER"/>
+        <result column="HASFLOW" property="hasflow" jdbcType="INTEGER"/>
+        <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
+        <result column="SALESTATUS" jdbcType="DECIMAL" property="saleStatus"/>
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
         <result column="DRID" property="drid" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List2">
         METAID,CREATETIME,UPDATETIME,ISSUEDDATE,TITLE,CREATOR,ABSTRACT,
         PUBLISHER,ISBN,ISBN10,ISBN13,CONTENTNUM,ISOPTIMIZE,LANGUAGE,
-        COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,HASCEBX,DRID
+        COVERURL,CHAPTERNUM,STYLEURL,THUMIMGURL,STYLECLASS,HASFLOW,
+        HASCEBX,ISPUBLICCOPYRIGHT,SALESTATUS,FLOWSOURCE,DRID
     </sql>
     <sql id="Base_Value_List2">
         <if test="metaId != null">
@@ -754,6 +784,15 @@
         <if test="hascebx != null">
             HASCEBX = #{hascebx},
         </if>
+        <if test="isPublicCopyRight != null">
+            ISPUBLICCOPYRIGHT = #{isPublicCopyRight},
+        </if>
+        <if test="saleStatus != null">
+            SALESTATUS = #{saleStatus},
+        </if>
+        <if test="flowSource != null">
+            flowSource = #{flowSource},
+        </if>
         <if test="drid != null">
             DRID = #{drid},
         </if>
@@ -801,8 +840,20 @@
         <if test="isbn13 != null and isbn13 != ''">
             AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
         </if>
+        <if test="hasCebx != null">
+            AND HASCEBX = #{hasCebx,jdbcType=INTEGER}
+        </if>
         <if test="hasFlow != null">
             AND HASFLOW = #{hasFlow,jdbcType=INTEGER}
+        </if>
+        <if test="isPublicCopyRight != null">
+            AND ISPUBLICCOPYRIGHT = #{isPublicCopyRight,jdbcType=INTEGER}
+        </if>
+        <if test="saleStatus != null">
+            AND SALESTATUS = #{saleStatus,jdbcType=INTEGER}
+        </if>
+        <if test="flowSource != null and flowSource != ''">
+            AND FLOWSOURCE = #{flowSource,jdbcType=INTEGER}
         </if>
         <if test="drid != null">
             AND DRID = #{drid,jdbcType=INTEGER}

@@ -9,12 +9,6 @@
     <title></title>
     <script type="text/javascript">
 
-        //扫描文件
-        function bnt_search() {
-            loading();
-            $("#form1").submit();
-        }
-
 
         //批量发布
         function batchChapter() {
@@ -138,8 +132,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input id="bnt_search" type="submit" class="btnSearch" value="扫描文件"
-                                       onclick="bnt_search()"/>
+                                <input id="onScanFileClick" type="submit" class="btnSearch" value="扫描文件" />
                             </td>
                             <td>
                                 <input id="batch" type="button" class="btnSearch" value="批量发布"
@@ -155,7 +148,7 @@
                             </td>
                             <td>
                                 <a id="export" class="btnSearch" onclick="exportResult(this)" download="download.csv"
-                                href="#">导出结果</a>
+                                   href="#">导出结果</a>
                             </td>
                         </tr>
                     </table>
@@ -242,6 +235,12 @@
 </div>
 </body>
 <script type="text/javascript">
+
+    //扫描文件
+    $("#onScanFileClick").click(function () {
+        loading();
+        $("#form1").submit();
+    })
 
     //查看任务列表
     function onSeeTaskListClick() {

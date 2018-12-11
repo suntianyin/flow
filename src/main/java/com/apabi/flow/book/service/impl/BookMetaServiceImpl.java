@@ -1264,8 +1264,10 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
                                 bookMeta = BookUtil.createBookMeta(sCmfMeta);
                                 //新增到磐石数据库
+                                bookMeta.setHasCebx(1);
                                 bookMetaDao.insertBookMeta(bookMeta);
                                 ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                                bookMetaDataTemp.setHasCebx(1);
                                 bookMetaDataTempDao.insert(bookMetaDataTemp);
                                 //获取书苑数据，更新到流式图书
                                 boolean ress = insertShuyuanData(sCmfMeta);

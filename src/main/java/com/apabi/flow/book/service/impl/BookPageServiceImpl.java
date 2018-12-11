@@ -678,6 +678,7 @@ public class BookPageServiceImpl implements BookPageService {
                     meta.setFoamatCatalog(foamatCatalog);
                     meta.setBookPages(Integer.toString(cebxPage));
                     meta.setCebxPage(Integer.toString(cebxPage));
+                    meta.setFlowSource("cebx");
 
                     metaDataTemp.setHasFlow(1);
                     metaDataTemp.setContentNum(wordSum);
@@ -687,6 +688,7 @@ public class BookPageServiceImpl implements BookPageService {
                     metaDataTemp.setBookPages(Integer.toString(cebxPage));
                     metaDataTemp.setUpdateTime(new Date());
                     metaDataTemp.setCebxPage(Integer.toString(cebxPage));
+                    metaDataTemp.setFlowSource("cebx");
                     //修改metaData和metaDataTemp的状态值
                     int i1 = bookMetaDao.updateBookMetaById(meta);
                     apabiBookMetaDataTempDao.update(metaDataTemp);

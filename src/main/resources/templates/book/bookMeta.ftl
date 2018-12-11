@@ -28,12 +28,18 @@
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
+            var hasCebx = $("#hasCebx").val();
             var hasFlow = $("#hasFlow").val();
+            var isPublicCopyRight = $("#isPublicCopyRight").val();
+            var saleStatus = $("#saleStatus").val();
+            var flowSource = $("#flowSource").val();
             var drid = $("#drid").val();
             var pathUrl = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
                     + "&publisher=" + publisher + "&isbn=" + isbn
-                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow
+                    + "&isbnVal=" + isbnVal  + "&hasCebx=" + hasCebx
+                    + "&hasFlow=" + hasFlow + "&isPublicCopyRight=" + isPublicCopyRight
+                    + "&saleStatus=" + saleStatus + "&flowSource=" + flowSource
                     + "&drid=" + drid;
             var totalPages = 1;
             var currentPages = 1;
@@ -52,13 +58,19 @@
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
+            var hasCebx = $("#hasCebx").val();
             var hasFlow = $("#hasFlow").val();
+            var isPublicCopyRight = $("#isPublicCopyRight").val();
+            var saleStatus = $("#saleStatus").val();
+            var flowSource = $("#flowSource").val();
             var drid = $("#drid").val();
             loading()
             window.location.href = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
                     + "&publisher=" + publisher + "&isbn=" + isbn
-                    + "&isbnVal=" + isbnVal + "&hasFlow=" + hasFlow
+                    + "&isbnVal=" + isbnVal + "&hasCebx=" + hasCebx
+                    + "&hasFlow=" + hasFlow + "&isPublicCopyRight=" + isPublicCopyRight
+                    + "&saleStatus=" + saleStatus + "&flowSource=" + flowSource
                     + "&drid=" + drid;
 
         }
@@ -280,7 +292,31 @@
                             </select>
                             <input id="isbnVal" type="text" value="${isbnVal!''}" class="txt" style="width: 200px"/>
                         </td>
-                        <th>是否流式：</th>
+                    </tr>
+                    <tr>
+
+                        <th>是否有cebx：</th>
+                        <td>
+                            <select id="hasCebx" name="hasCebx" class="txtselect">
+                                <#if hasCebx??>
+                                    <#if hasCebx ==0>
+                                        <option value="0" selected="selected">否</option>
+                                        <option value="1">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                    <#if hasCebx ==1>
+                                        <option value="0">否</option>
+                                        <option value="1" selected="selected">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                <#else>
+                                    <option value="0">否</option>
+                                    <option value="1">是</option>
+                                    <option value="" selected="selected">全部</option>
+                                </#if>
+                            </select>
+                        </td>
+                        <th>是否有流式：</th>
                         <td>
                             <select id="hasFlow" name="hasFlow" class="txtselect">
                                 <#if hasFlow??>
@@ -297,6 +333,74 @@
                                 <#else>
                                     <option value="0">否</option>
                                     <option value="1">是</option>
+                                    <option value="" selected="selected">全部</option>
+                                </#if>
+                            </select>
+                        </td>
+                        <th>是否公版书：</th>
+                        <td>
+                            <select id="isPublicCopyRight" name="isPublicCopyRight" class="txtselect">
+                                <#if isPublicCopyRight??>
+                                    <#if isPublicCopyRight ==0>
+                                        <option value="0" selected="selected">否</option>
+                                        <option value="1">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                    <#if isPublicCopyRight ==1>
+                                        <option value="0">否</option>
+                                        <option value="1" selected="selected">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                <#else>
+                                    <option value="0">否</option>
+                                    <option value="1">是</option>
+                                    <option value="" selected="selected">全部</option>
+                                </#if>
+                            </select>
+                        </td>
+                        <th>是否上架：</th>
+                        <td>
+                            <select id="saleStatus" name="saleStatus" class="txtselect">
+                                <#if saleStatus??>
+                                    <#if saleStatus ==0>
+                                        <option value="0" selected="selected">否</option>
+                                        <option value="1">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                    <#if saleStatus ==1>
+                                        <option value="0">否</option>
+                                        <option value="1" selected="selected">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                <#else>
+                                    <option value="0">否</option>
+                                    <option value="1">是</option>
+                                    <option value="" selected="selected">全部</option>
+                                </#if>
+                            </select>
+                        </td>
+                        <th>流式来源：</th>
+                        <td>
+                            <select id="flowSource" name="flowSource" class="txtselect">
+                                <#if flowSource??>
+                                    <#if flowSource =="cebx">
+                                        <option value="cebx" selected="selected">cebx</option>
+                                        <option value="1">是</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                    <#if flowSource =="epub">
+                                        <option value="cebx">cebx</option>
+                                        <option value="epub" selected="selected">epub</option>
+                                        <option value="">全部</option>
+                                    </#if>
+                                    <#if flowSource =="">
+                                        <option value="cebx">cebx</option>
+                                        <option value="epub">epub</option>
+                                        <option value="" selected="selected">全部</option>
+                                    </#if>
+                                <#else>
+                                    <option value="cebx">cebx</option>
+                                    <option value="epub">epub</option>
                                     <option value="" selected="selected">全部</option>
                                 </#if>
                             </select>
@@ -336,9 +440,11 @@
                             <th>ISBN</th>
                             <th>ISBN10</th>
                             <th>ISBN13</th>
-                            <th>是否流式</th>
                             <th>是否cebx</th>
-                            <th>语言</th>
+                            <th>是否流式</th>
+                            <th>是否公版书</th>
+                            <th>是否上架</th>
+                            <th>流式来源</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -358,6 +464,17 @@
                                     <td>${list.isbn10! '' }</td>
                                     <td>${list.isbn13! '' }</td>
                                     <td>
+                                        <#if list.hascebx ??>
+                                            <#if list.hascebx == 0>
+                                                否
+                                            <#else>
+                                                是
+                                            </#if>
+                                        <#else>
+                                            否
+                                        </#if>
+                                    </td>
+                                    <td>
                                         <#if list.hasflow ??>
                                             <#if list.hasflow == 0>
                                                 否
@@ -369,8 +486,8 @@
                                         </#if>
                                     </td>
                                     <td>
-                                        <#if list.hascebx ??>
-                                            <#if list.hascebx == 0>
+                                        <#if list.isPublicCopyRight ??>
+                                            <#if list.isPublicCopyRight == 0>
                                                 否
                                             <#else>
                                                 是
@@ -379,7 +496,28 @@
                                             否
                                         </#if>
                                     </td>
-                                    <td>${list.language !''}</td>
+                                    <td>
+                                        <#if list.saleStatus ??>
+                                            <#if list.saleStatus == 0>
+                                                否
+                                            <#else>
+                                                是
+                                            </#if>
+                                        <#else>
+                                            否
+                                        </#if>
+                                    </td>
+                                    <td>
+                                        <#if list.flowSource ??>
+                                            <#if list.flowSource == "cebx">
+                                                cebx
+                                            <#else>
+                                                epub
+                                            </#if>
+                                        <#else>
+                                            null
+                                        </#if>
+                                    </td>
                                     <td>
                                         <a style="cursor:pointer;"
                                            onclick="bookMetaShow('${list.metaId!'' }');">详情&nbsp;</a>

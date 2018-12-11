@@ -108,5 +108,7 @@ public class BookMetaMap {
         put("isReadEpub", "是否epub阅读");
         put("isReadCebxFlow", "是否cebx流式阅读");
         put("flowSource", "流式内容来源");
+        put("postScript", "后记");
+        put("hasProcessingFile", "是否有原始加工文件");
     }};
 }

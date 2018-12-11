@@ -133,4 +133,24 @@ public class BookTaskController {
         }
         return "error";
     }
+
+    //删除任务
+    @RequestMapping(value = "/deleteBookTask", method = RequestMethod.GET)
+    @ResponseBody
+    public String deleteBookTask(@RequestParam("id") String id) {
+        if (!StringUtils.isEmpty(id)) {
+            long start = System.currentTimeMillis();
+            try {
+                int res = bookTaskService.deleteBookTask(id);
+                if (res > 0) {
+                    long end = System.currentTimeMillis();
+                    log.info("删除任务{}，耗时：{}", id, (end - start));
+                    return "success";
+                }
+            } catch (Exception e) {
+                log.info("删除任务{}，时出现异常{}", id, e.getMessage());
+            }
+        }
+        return "error";
+    }
 }

@@ -21,4 +21,7 @@ public interface BookTaskService {
 
     //获取任务
     BookTask selectBookTask(String id);
+
+    //删除任务
+    int deleteBookTask(String id);
 }
