@@ -18,6 +18,8 @@
         <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="PERIOD" jdbcType="VARCHAR" property="period"/>
+        <result column="TRANAME" jdbcType="VARCHAR" property="traname"/>
+        <result column="TRAAUTHORTYPE" jdbcType="VARCHAR" property="traAuthorType"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -36,7 +38,9 @@
         OPERATOR,
         CREATETIME,
         UPDATETIME,
-        PERIOD
+        PERIOD,
+        TRANAME,
+        TRAAUTHORTYPE
     </sql>
 
     <!-- 根据id查询数据 -->
@@ -105,6 +109,12 @@
             <if test="period != null">
                 PERIOD,
             </if>
+            <if test="traname != null">
+                TRANAME,
+            </if>
+            <if test="traAuthorType != null">
+                TRAAUTHORTYPE,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -154,6 +164,12 @@
             </if>
             <if test="period != null">
                 #{period,jdbcType=VARCHAR},
+            </if>
+            <if test="traname != null">
+                #{TRANAME,jdbcType=VARCHAR},
+            </if>
+            <if test="traAuthorType != null">
+                #{TRAAUTHORTYPE,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -206,6 +222,12 @@
             </if>
             <if test="period != null">
                 PERIOD = #{period,jdbcType=TIMESTAMP},
+            </if>
+            <if test="traname != null">
+                TRANAME = #{traname,jdbcType=VARCHAR},
+            </if>
+            <if test="traAuthorType != null">
+                TRAAUTHORTYPE = #{traAuthorType,jdbcType=VARCHAR},
             </if>
         </set>
         where ID = #{id,jdbcType=VARCHAR}

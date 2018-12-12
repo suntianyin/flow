@@ -212,4 +212,6 @@ public class ApabiBookMetaDataTemp {
     private String flowSource;
 
     private Integer isReadCebxFlow;
+
+    private Integer hasProcessingFile;
 }

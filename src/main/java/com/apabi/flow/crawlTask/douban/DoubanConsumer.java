@@ -18,7 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Date 2018/10/16 16:19
  **/
 public class DoubanConsumer implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(DoubanConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoubanConsumer.class);
     private LinkedBlockingQueue<String> idQueue;
     private DoubanMetaDao doubanMetaDao;
     private IpPoolUtils ipPoolUtils;
@@ -46,11 +46,10 @@ public class DoubanConsumer implements Runnable {
             if (StringUtils.isNotEmpty(doubanMeta.getDoubanId())) {
                 doubanMetaDao.insert(doubanMeta);
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-                String time = simpleDateFormat.format(date);
-                logger.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                String time = simpleDateFormat.format(new Date());
+                LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             //e.printStackTrace();
         } finally {
             countDownLatch.countDown();

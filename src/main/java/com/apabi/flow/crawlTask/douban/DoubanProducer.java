@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Date 2018/10/16 16:14
  **/
 public class DoubanProducer implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(DoubanProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoubanProducer.class);
     private LinkedBlockingQueue idQueue;
     private String threadName;
     private List<String> idList;
@@ -24,7 +24,7 @@ public class DoubanProducer implements Runnable {
 
     @Override
     public void run() {
-        logger.info(threadName + "正在添加doubanId到生产者队列....");
+        LOGGER.info(threadName + "正在添加doubanId到生产者队列....");
         Thread.currentThread().setName(threadName);
         for (String id : idList) {
             try {

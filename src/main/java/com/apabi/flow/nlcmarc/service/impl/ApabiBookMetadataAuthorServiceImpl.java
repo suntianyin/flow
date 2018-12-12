@@ -24,11 +24,11 @@ import java.util.List;
 public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuthorService {
     private Logger log = LoggerFactory.getLogger(ApabiBookMetadataAuthorServiceImpl.class);
     // 表示分隔含义的字符数组
-    private static final char[] noUse = {0x1E, 0x1D, 0x0D, 0x0A};
+    private static final char[] NO_USE = {0x1E, 0x1D, 0x0D, 0x0A};
     // 记录分隔符
-    private static final char recordSeparator = 0x1E;
+    private static final char RECORD_SEPARATOR = 0x1E;
     // 单元分隔符
-    private static final char unitSeparator = 0x1F;
+    private static final char UNIT_SEPARATOR = 0x1F;
 
     @Autowired
     private ApabiBookMetadataAuthorDao apabiBookMetadataAuthorDao;
@@ -55,7 +55,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
         List<String> filedContentList = new ArrayList<>();
         try {
             // 将读取的字符串以记录分隔符拆分
-            String[] fieldList = nlcBookContent.split(String.valueOf(recordSeparator));
+            String[] fieldList = nlcBookContent.split(String.valueOf(RECORD_SEPARATOR));
             // 头部信息和偏移量
             String header = fieldList[0];
             // Marc数据中前24位为头部信息，24位到末尾为字段编号+每个字段的偏移量
@@ -88,6 +88,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     String[] split = fieldContent.split("\\$\\$");
                     nlcMarcIdentifier = split[1];
                 }
+
                 /*// 解析ISBN，并获取metaId
                 if (fieldContent.startsWith("010$$")) {
                     isbn = parseFieldContent(fieldContent, "a").replaceAll("-", "");
@@ -100,6 +101,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                         metaId = apabiBookMeta.getMetaId();
                     }
                 }*/
+
                 // 当以701开头时，解析作者信息
                 if (fieldContent.startsWith("701$$")) {
                     ApabiBookMetadataAuthor apabiBookMetadataAuthor = new ApabiBookMetadataAuthor();
@@ -117,7 +119,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthor.setAuthorType(authorType);
                     // 解析责任者名称
                     String name = parseFieldContent(fieldContent, "a");
-                    name = name.replaceAll(",","").replaceAll("，","");
+                    name = name.replaceAll(",", "").replaceAll("，", "");
                     apabiBookMetadataAuthor.setName(name);
                     // 解析责任者名称拼音
                     String pinyin = parseFieldContent(fieldContent, "9");
@@ -151,6 +153,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthor.setCreateTime(new Date());
                     apabiBookMetadataAuthorList.add(apabiBookMetadataAuthor);
                 }
+
                 // 当以702开头时，解析作者信息
                 if (fieldContent.startsWith("702$$")) {
                     ApabiBookMetadataAuthor apabiBookMetadataAuthor = new ApabiBookMetadataAuthor();
@@ -168,7 +171,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthor.setAuthorType(authorType);
                     // 解析责任者名称
                     String name = parseFieldContent(fieldContent, "a");
-                    name = name.replaceAll(",","").replaceAll("，","");
+                    name = name.replaceAll(",", "").replaceAll("，", "");
                     apabiBookMetadataAuthor.setName(name);
                     // 解析责任者名称拼音
                     String pinyin = parseFieldContent(fieldContent, "9");
@@ -219,7 +222,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthor.setAuthorType(authorType);
                     // 解析责任者名称
                     String name = parseFieldContent(fieldContent, "a");
-                    name = name.replaceAll(",","").replaceAll("，","");
+                    name = name.replaceAll(",", "").replaceAll("，", "");
                     apabiBookMetadataAuthor.setName(name);
                     // 解析责任者名称拼音
                     String pinyin = parseFieldContent(fieldContent, "9");
@@ -262,14 +265,20 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
         return apabiBookMetadataAuthorList;
     }
 
-    // 根据$a $b .... 解析子字段中的内容
+    /**
+     * 根据$a $b .... 解析子字段中的内容
+     *
+     * @param fieldContent
+     * @param childInfo
+     * @return
+     */
     private String parseFieldContent(String fieldContent, String childInfo) {
         String fieldValue = "";
-        if (fieldContent.contains(unitSeparator + childInfo)) {
-            String[] split = fieldContent.split(String.valueOf(unitSeparator + childInfo));
+        if (fieldContent.contains(UNIT_SEPARATOR + childInfo)) {
+            String[] split = fieldContent.split(String.valueOf(UNIT_SEPARATOR + childInfo));
             if (split.length > 1) {
-                if (split[1].contains(String.valueOf(unitSeparator))) {
-                    int index = split[1].indexOf(String.valueOf(unitSeparator));
+                if (split[1].contains(String.valueOf(UNIT_SEPARATOR))) {
+                    int index = split[1].indexOf(String.valueOf(UNIT_SEPARATOR));
                     fieldValue = split[1].substring(0, index);
                     return fieldValue;
                 } else {
@@ -281,14 +290,19 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
         return fieldValue;
     }
 
-    // 701 $c字段特殊处理
+    /**
+     * 701 $c字段特殊处理
+     *
+     * @param fieldContent
+     * @return
+     */
     private String parseFieldContent_701c(String fieldContent) {
         String fieldValue = "";
-        String[] cFieldContentList = fieldContent.split(String.valueOf(unitSeparator));
+        String[] cFieldContentList = fieldContent.split(String.valueOf(UNIT_SEPARATOR));
         for (String cFieldContent : cFieldContentList) {
             if (cFieldContent.startsWith("c")) {
                 cFieldContent = cFieldContent.substring(1, cFieldContent.length());
-                fieldValue += (unitSeparator + "c" + cFieldContent);
+                fieldValue += (UNIT_SEPARATOR + "c" + cFieldContent);
             }
         }
         return fieldValue;

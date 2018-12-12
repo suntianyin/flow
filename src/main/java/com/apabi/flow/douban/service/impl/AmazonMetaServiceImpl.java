@@ -98,14 +98,18 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
         return null;
     }
 
-    // 根据amazonId更新数据
+    /**
+     * 根据amazonId更新数据
+     *
+     * @param amazonMeta
+     */
     @Override
     public void updateAmazon(AmazonMeta amazonMeta) {
         amazonMetaDao.updateAmazonMeta(amazonMeta);
     }
 
     @Override
-    public Page<AmazonMeta> findAmazonMetaByPage(Map<String,String> params) {
+    public Page<AmazonMeta> findAmazonMetaByPage(Map<String, String> params) {
         return amazonMetaDao.findAmazonMetaByPage(params);
     }
 
@@ -114,7 +118,13 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
         return amazonMetaDao.getAmazonMetaByAmazonId(amazonId);
     }
 
-    // 根据isbn在amazon网站爬取数据
+    /**
+     * 根据isbn在amazon网站爬取数据
+     *
+     * @param isbn
+     * @return
+     * @throws Exception
+     */
     private AmazonMeta crawl(String isbn) throws Exception {
         try {
             AmazonMeta bean = new AmazonMeta();
@@ -197,9 +207,6 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                         }
                     }
                 }
-//            if(BasicInformation.select("b").text().equals("条形码:")){
-//                System.out.println(BasicInformation.text().replace("条形码:",""));
-//            }
                 if (BasicInformation.select("b").text().equals("商品尺寸:")) {
                     bean.setProductSize(BasicInformation.text().replace("商品尺寸:", ""));
                 }
@@ -217,10 +224,6 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                     bean.setClassification(BasicInformation.select("b").select("a").text());
                 }
             }
-//            if(doc.select("div[class=a-box rbbSection]").select("span[class=a-list-item]").select("span[class=a-color-secondary]").get(0).text().equals("定价:")){
-//                String price = doc.select("div[class=a-box rbbSection]").select("span[class=a-list-item]").select("span[class=a-color-secondary]").get(1).text();
-//                bean.setPaperPrice(price);
-//            }
             if (!doc.select("div[id=rightCol]").text().contains("电子书定价:") || !doc.select("div[id=rightCol]").text().contains("Kindle电子书价格:")) {
                 if (doc.select("div[class=a-box rbbSection]").select("span[class=a-list-item]").select("span[class=a-color-secondary]").size() > 1) {
                     String price = doc.select("div[class=a-box rbbSection]").select("span[class=a-list-item]").select("span[class=a-color-secondary]").get(1).text();
@@ -301,7 +304,12 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
         }
     }
 
-    // 解析页面获取图书id
+    /**
+     * 解析页面获取图书id
+     *
+     * @param document
+     * @return
+     */
     private String getAmazonIdInPage(Document document) {
         if (document != null) {
             String val = "";

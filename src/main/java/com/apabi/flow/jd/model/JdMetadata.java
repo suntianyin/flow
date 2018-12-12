@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * @Author pipi
- * @Date 2018-11-30 17:34
+ * @Date 2018-12-04 10:56
  **/
 @Data
 @NoArgsConstructor
@@ -30,7 +30,7 @@ public class JdMetadata {
 
     private String binding;
 
-    private Short pages;
+    private Integer pages;
 
     private String language;
 

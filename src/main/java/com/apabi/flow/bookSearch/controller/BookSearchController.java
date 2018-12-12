@@ -100,6 +100,12 @@ public class BookSearchController {
         }
         params.put("saleStatus", saleStatus);
 
+        String flowSource = "";
+        if (parameterMap.get("flowSource") != null) {
+            flowSource = parameterMap.get("flowSource")[0].trim();
+        }
+        params.put("flowSource", flowSource);
+
         if (isbnVal == null || "".equalsIgnoreCase(isbnVal)) {
             params.put("isbn", "");
             params.put("isbn10", "");
@@ -126,6 +132,7 @@ public class BookSearchController {
         model.addAttribute("metaId", metaId);
         model.addAttribute("title", title);
         model.addAttribute("creator", creator);
+        model.addAttribute("flowSource", flowSource);
         model.addAttribute("publisher", publisher);
         model.addAttribute("isbnVal", isbnVal);
         model.addAttribute("isbn", isbn);
@@ -153,7 +160,15 @@ public class BookSearchController {
         return "bookSearch/bookSearchDetail";
     }
 
-    // 根据字段名获取字段值
+    /**
+     * 根据字段名获取字段值
+     *
+     * @param key
+     * @param obj
+     * @return
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
     private String getFieldValueByFieldName(String key, Object obj) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = obj.getClass();
         Field field = clazz.getDeclaredField(key);

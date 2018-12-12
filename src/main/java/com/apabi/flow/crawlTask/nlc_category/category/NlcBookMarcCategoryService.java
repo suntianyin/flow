@@ -25,12 +25,17 @@ public class NlcBookMarcCategoryService {
     @Autowired
     private NlcBookMarcDao nlcBookMarcDao;
 
+    /**
+     * 手动访问该链接，执行国图分类抓取
+     *
+     * @return
+     */
     @RequestMapping("/crawl")
     @ResponseBody
     public String categoryParse() {
         List<NlcBookMarcCategory> categoryList = nlcBookMarcCategoryDao.findCategoryMoreThan2PagesAndNotCrawled();
         for (int i = 0; i < categoryList.size(); i++) {
-            NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
+            final NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
             try {
                 CrawlNlcMarcCategoryUtil.crawlNlcBookMarcByCategoryCode(categoryList.get(i).getId(), categoryList.get(i).getPage(), nlcIpPoolUtils, nlcBookMarcDao);
                 nlcBookMarcCategoryDao.update(categoryList.get(i).setStatus("1"));

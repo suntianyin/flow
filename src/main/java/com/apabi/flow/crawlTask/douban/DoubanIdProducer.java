@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
  * @Date 2018/10/22 14:52
  **/
 public class DoubanIdProducer implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(DoubanIdProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoubanIdProducer.class);
     private String url;
     private List<String> idList;
     private CountDownLatch countDownLatch;
@@ -39,7 +39,7 @@ public class DoubanIdProducer implements Runnable {
         List<String> doubanIdList = new ArrayList<>();
         doubanIdList = CrawlDoubanUtil.crawlDoubanIdList(url, ip, port);
         long endTime = System.currentTimeMillis();
-        logger.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取url列表：" + url + "；列表大小为：" + doubanIdList.size() + "；剩余列表数：" + countDownLatch.getCount() + "；已经抓取的id数量：" + idList.size() + "；耗时为：" + (endTime - startTime) / 1000 + "秒");
+        LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "提取url列表：" + url + "；列表大小为：" + doubanIdList.size() + "；剩余列表数：" + countDownLatch.getCount() + "；已经抓取的id数量：" + idList.size() + "；耗时为：" + (endTime - startTime) / 1000 + "秒");
         for (String id : doubanIdList) {
             idList.add(id);
         }

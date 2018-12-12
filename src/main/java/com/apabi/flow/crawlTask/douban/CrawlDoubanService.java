@@ -22,10 +22,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-//@Order(2)
+//@Order(5)
 //@Component
 public class CrawlDoubanService implements ApplicationRunner {
-    private static Logger logger = LoggerFactory.getLogger(CrawlDoubanService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlDoubanService.class);
     @Autowired
     private DoubanCrawlUrlDao doubanCrawlUrlDao;
     @Autowired
@@ -41,7 +41,7 @@ public class CrawlDoubanService implements ApplicationRunner {
         long startTime = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startDateTime = simpleDateFormat.format(startTime);
-        logger.info(startDateTime + " spring boot初始化完毕，开始执行douban爬虫....");
+        LOGGER.info(startDateTime + " spring boot初始化完毕，开始执行douban爬虫....");
         // 定义队列大小
         int queueSize = 100;
         // 获取cpu的核数
@@ -96,6 +96,6 @@ public class CrawlDoubanService implements ApplicationRunner {
 
         long endTime = System.currentTimeMillis();
         String endDateTime = simpleDateFormat.format(endTime);
-        logger.info(endDateTime + " douban爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
+        LOGGER.info(endDateTime + " douban爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
     }
 }

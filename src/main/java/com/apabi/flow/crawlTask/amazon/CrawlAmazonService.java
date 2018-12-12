@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,21 +22,21 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2018/10/15 15:01
  **/
-//@Order(3)
+//@Order(4)
 //@Component
 public class CrawlAmazonService implements ApplicationRunner {
-    private Logger logger = LoggerFactory.getLogger(CrawlAmazonService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlAmazonService.class);
     @Autowired
     private AmazonCrawlUrlDao amazonCrawlUrlDao;
     @Autowired
     private AmazonMetaDao amazonMetaDao;
 
-    @Override
+    /*@Override
     public void run(ApplicationArguments args) {
         long startTime = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startDateTime = simpleDateFormat.format(startTime);
-        logger.info(startDateTime + " spring boot初始化完毕，开始执行amazon爬虫....");
+        LOGGER.info(startDateTime + " spring boot初始化完毕，开始执行amazon爬虫....");
         // 获取cpu的核数
         int cpuProcessorAmount = Runtime.getRuntime().availableProcessors();
         int queueSize = 100;
@@ -97,21 +98,24 @@ public class CrawlAmazonService implements ApplicationRunner {
 
         long endTime = System.currentTimeMillis();
         String endDateTime = simpleDateFormat.format(endTime);
-        logger.info(endDateTime + " amazon爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
-    }
+        LOGGER.info(endDateTime + " amazon爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
+    }*/
 
-    /*
-    // 定时任务爬虫，务必不可删除
+    /**
+     * 定时任务爬虫，务必不可删除
+     */
     @Scheduled(cron = "0 0 0/2 * * ? ")
     public void runTask() {
         run(null);
     }
+
     @Override
     public void run(ApplicationArguments args) {
-        long startTime = System.currentTimeMillis();
+
+         long startTime = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startDateTime = simpleDateFormat.format(startTime);
-        logger.info(startDateTime + " spring boot初始化完毕，开始执行amazon爬虫....");
+        LOGGER.info(startDateTime + " spring boot初始化完毕，开始执行amazon爬虫....");
         // 获取cpu的核数
         int cpuProcessorAmount = Runtime.getRuntime().availableProcessors();
         int queueSize = 100;
@@ -123,7 +127,7 @@ public class CrawlAmazonService implements ApplicationRunner {
 
         // ******************多线程抓取idList开始******************
         CountDownLatch idListCountDownLatch = new CountDownLatch(urlList.size());
-        int producerThreadAmount = cpuProcessorAmount * 2;
+        int producerThreadAmount = cpuProcessorAmount * 3;
         ExecutorService idExecutorService = Executors.newFixedThreadPool(producerThreadAmount);
         for (int i = 0; i < urlList.size(); i++) {
             AmazonIdProducer producer = new AmazonIdProducer(urlList.get(i), idList, idListCountDownLatch, ipPoolUtils);
@@ -165,7 +169,6 @@ public class CrawlAmazonService implements ApplicationRunner {
 
         long endTime = System.currentTimeMillis();
         String endDateTime = simpleDateFormat.format(endTime);
-        logger.info(endDateTime + " amazon爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
+        LOGGER.info(endDateTime + " amazon爬虫执行完毕，共耗时：" + (endTime - startTime) / 1000 + "秒....");
     }
-    */
 }

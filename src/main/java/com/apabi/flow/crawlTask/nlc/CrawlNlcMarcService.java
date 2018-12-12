@@ -1,7 +1,6 @@
 package com.apabi.flow.crawlTask.nlc;
 
 import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
-import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
 import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
 import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
 import com.github.pagehelper.Page;
@@ -34,8 +33,6 @@ public class CrawlNlcMarcService implements ApplicationRunner {
     private NlcBookMarcDao nlcBookMarcDao;
     @Autowired
     private NlcCrawlIsbnDao nlcCrawlIsbnDao;
-    @Autowired
-    private ApabiBookMetaDataDao apabiBookMetadataDao;
 
     @Async
     @Override
@@ -78,7 +75,7 @@ public class CrawlNlcMarcService implements ApplicationRunner {
             // ******************多线程抓取iso开始******************
             CountDownLatch idCountDownLatch = new CountDownLatch(isbnList.size());
             // 创建消费者对象
-            NlcMarcConsumer nlcMarcConsumer = new NlcMarcConsumer(isbnQueue, nlcBookMarcDao, nlcCrawlIsbnDao, apabiBookMetadataDao, ipPoolUtils, idCountDownLatch);
+            NlcMarcConsumer nlcMarcConsumer = new NlcMarcConsumer(isbnQueue, nlcBookMarcDao, nlcCrawlIsbnDao, ipPoolUtils, idCountDownLatch);
             for (int j = 0; j < isbnList.size(); j++) {
                 // 执行线程中的任务
                 executorService.execute(nlcMarcConsumer);

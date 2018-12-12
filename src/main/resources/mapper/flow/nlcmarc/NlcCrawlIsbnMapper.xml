@@ -23,6 +23,11 @@
         select count(*) from NLC_CRAWL_ISBN where HASCRAWLED = '0'
     </select>
 
+    <!-- 统计表中没有抓取数据的个数 -->
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(*) from NLC_CRAWL_ISBN
+    </select>
+
     <!-- 统计表中可疑数据的个数 -->
     <select id="countSuspect" resultType="java.lang.Integer">
         select count(*) from NLC_CRAWL_ISBN where HASCRAWLED = '2'
@@ -36,6 +41,11 @@
     <!-- 获取所有的可疑的isbn -->
     <select id="getSuspectIsbnList" resultType="java.lang.String">
         select isbn from NLC_CRAWL_ISBN where 1=1 and hasCrawled = '2'
+    </select>
+
+    <!-- 分页获取所有的isbn -->
+    <select id="getIsbnListByPage" resultType="java.lang.String">
+        select isbn from NLC_CRAWL_ISBN where 1 = 1
     </select>
 
     <!-- 将已经抓取到的数据更新hasCrawled字段 -->

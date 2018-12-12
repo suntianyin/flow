@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface NlcCrawlIsbnDao {
+    Page<String> getIsbnListByPage();
     Page<String> getIsbnList();
     Page<String> getSuspectIsbnList();
     void delete(String isbn);
     void insert(String isbn);
+    int countAll();
     int count();
     int countSuspect();
     void updateHasCrawled(String isbn);

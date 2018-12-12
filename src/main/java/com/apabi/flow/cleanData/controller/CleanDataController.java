@@ -8,6 +8,8 @@ import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.Isbn13ToIsbnUtil;
 import com.apabi.flow.douban.util.StringToolUtil;
+import com.apabi.flow.isbn_douban_amazon.dao.IsbnDoubanAmazonDao;
+import com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon;
 import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -43,11 +45,37 @@ public class CleanDataController {
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
     @Autowired
     private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
+    @Autowired
+    private IsbnDoubanAmazonDao isbnDoubanAmazonDao;
     private static final int PAGE_SIZE = 10000;
+
+    @RequestMapping("/insertIsbnDoubanAmazon")
+    public void insertIsbnDoubanAmazon() {
+        int index = 0;
+        int count = nlcCrawlIsbnDao.countAll();
+        int pageSize = 10000;
+        int pageNum = (count / pageSize) + 1;
+        for (int i = 1; i <= pageNum; i++) {
+            PageHelper.startPage(i, pageSize);
+            Page<String> isbnListByPage = nlcCrawlIsbnDao.getIsbnListByPage();
+            for (String isbn : isbnListByPage) {
+                IsbnDoubanAmazon isbnDoubanAmazon = new IsbnDoubanAmazon();
+                isbnDoubanAmazon.setIsbn(isbn);
+                isbnDoubanAmazon.setAmazonStatus("0");
+                isbnDoubanAmazon.setDoubanStatus("0");
+                try {
+                    index++;
+                    System.out.println("正在插入" + isbn + "，执行第" + index + "次");
+                    isbnDoubanAmazonDao.insert(isbnDoubanAmazon);
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
 
     @RequestMapping("/checkIsbn")
     public void checkIsbn() {
-// 获取数据总数
+        // 获取数据总数
         Integer totalCount = cleanDataDao.getTotalCount();
         // 计算分页处理页数
         Integer pageNumber = (totalCount / PAGE_SIZE) + 1;
@@ -244,7 +272,11 @@ public class CleanDataController {
     }
 
 
-    // 将meta表中的isbn导入到一个中间表
+    /**
+     * 将meta表中的isbn导入到一个中间表
+     *
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/isbn")
     public String insertIsbn() {
@@ -264,7 +296,10 @@ public class CleanDataController {
         return "success";
     }
 
-    // 测试apabi_book_metadata_temp的update方法
+
+    /**
+     * 测试apabi_book_metadata_temp的update方法
+     */
     @RequestMapping("/apabiTemp")
     public void testApabiBookTempDao() {
         ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();

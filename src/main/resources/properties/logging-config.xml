@@ -26,6 +26,7 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
     <!-- 流式分页接口输出到独立文件的配置 -->
     <appender name="PAGE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -213,6 +214,23 @@
         </encoder>
     </appender>
 
+    <!-- amazon定时爬虫任务执行时间日志配置 -->
+    <appender name="DANGDANG_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/dangdang.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- nlc定时爬虫任务执行时间日志配置 -->
     <appender name="NLC_CRAWL_STATUS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -223,6 +241,40 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/crawlTask/nlc-status.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 京东定时抓取爬虫任务日志配置 -->
+    <appender name="JD_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/jd.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 京东全局抓取爬虫任务日志配置 -->
+    <appender name="JD_CRAWL_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/jd-all.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -311,21 +363,44 @@
     </logger>
 
     <!-- 针对amazon定时爬虫任务执行时间配置的日志 -->
-    <logger name="com.apabi.flow.crawlTask.amazon.CrawlAmazonService" level="INFO" additivity="false">
+    <logger name="com.apabi.flow.crawlTask.amazon.AmazonIdProducer" level="INFO" additivity="false">
         <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
         <appender-ref ref="STDOUT"/>
         <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
         <appender-ref ref="AMAZON_CRAWL_STATUS"/>
     </logger>
 
-    <!-- 针对nlc定时爬虫任务执行时间配置的日志 -->
+    <!-- 针对nlc爬虫任务执行时间配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.nlc.CrawlNlcMarcService" level="INFO" additivity="false">
-        <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
+        <!-- 对于nlc定时爬虫任务的STDOUT的日志配置 -->
         <appender-ref ref="STDOUT"/>
-        <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
+        <!-- 对于nlc的输出至日志文件的日志配置 -->
         <appender-ref ref="NLC_CRAWL_STATUS"/>
     </logger>
 
+    <!-- 针对jd定时抓取配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.jd.JdConsumer" level="INFO" additivity="false">
+        <!-- 打印至控制台 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于Jd定时任务输出至日志文件的日志配置 -->
+        <appender-ref ref="JD_CRAWL"/>
+    </logger>
+
+    <!-- 针对jd全局抓取配置的日志 -->
+    <logger name="com.apabi.flow.jd.service.JdMetadataConsumer" level="INFO" additivity="false">
+        <!-- 打印至控制台 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于Jd全局抓取输出至日志文件的日志配置 -->
+        <appender-ref ref="JD_CRAWL_ALL"/>
+    </logger>
+
+    <!-- 针对dangdang定时任务抓取配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="INFO" additivity="false">
+        <!-- 对于JD全局抓取日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
+        <appender-ref ref="DANGDANG_CRAWL"/>
+    </logger>
 
 
     <!--从书苑获取图书数据，新增到流式图书库中-->

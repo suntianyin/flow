@@ -56,7 +56,7 @@ public class NlcBookMarcCategoryConsumer implements Runnable {
                 nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
                 Date date = new Date();
                 String time = TIME_FORMAT.format(date);
-                LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc分类抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功...");
+                LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc分类抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功，还剩余" + countDownLatch.getCount() + "项...");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,7 +91,7 @@ public class NlcBookMarcCategoryConsumer implements Runnable {
             Thread.sleep(300 + random.nextInt(300));
             saveResponse = client.execute(saveHttpGet);
         } catch (IOException e) {
-            throw new IOException();
+            throw new IOException(e);
         } catch (InterruptedException e) {
         }
         String saveHtml = EntityUtils.toString(saveResponse.getEntity(), "UTF-8");
@@ -119,7 +119,6 @@ public class NlcBookMarcCategoryConsumer implements Runnable {
         String downloadHref = document.select("p[class='text3']").get(0).child(0).attr("href");
         HttpGet marcHttpGet = generateHttpGet(downloadHref);
         marcHttpGet.setConfig(requestConfig);
-
         CloseableHttpResponse marcResponse = null;
         try {
             Thread.sleep(300 + random.nextInt(300));

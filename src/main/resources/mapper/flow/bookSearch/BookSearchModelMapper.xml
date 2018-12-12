@@ -96,6 +96,7 @@
         <result column="HASPUBLISH" jdbcType="INTEGER" property="hasPublish"/>
         <result column="ISPUBLICCOPYRIGHT" jdbcType="INTEGER" property="isPublicCopyRight"/>
         <result column="POSTSCRIPT" jdbcType="VARCHAR" property="postScript"/>
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -192,7 +193,8 @@
         STREAMCATALOG,
         HASPUBLISH,
         ISPUBLICCOPYRIGHT,
-        POSTSCRIPT
+        POSTSCRIPT,
+        FLOWSOURCE
     </sql>
 
     <!-- 根据metaId查询图书数据 -->
@@ -241,6 +243,9 @@
         </if>
         <if test="saleStatus != null and saleStatus != ''">
             AND saleStatus = #{saleStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="flowSource != null and flowSource != ''">
+            AND flowSource = #{flowSource,jdbcType=VARCHAR}
         </if>
     </select>
 

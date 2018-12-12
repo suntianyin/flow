@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Date 2018/10/17 15:03
  **/
 public class AmazonProducer implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(AmazonProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProducer.class);
     private List<String> idList;
     private LinkedBlockingQueue<String> arrayBlockingQueue;
     private String threadName;
@@ -24,7 +24,7 @@ public class AmazonProducer implements Runnable {
 
     @Override
     public void run() {
-        logger.info(threadName + "正在添加amazonId到生产者队列....");
+        LOGGER.info(threadName + "正在添加amazonId到生产者队列....");
         Thread.currentThread().setName(threadName);
         for(String id:idList){
             try {

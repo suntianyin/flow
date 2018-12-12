@@ -100,6 +100,7 @@
         <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
         <result column="ISREADCEBXFLOW" jdbcType="DECIMAL" property="isReadCebxFlow"/>
         <result column="ISREADEPUB" jdbcType="DECIMAL" property="isReadEpub"/>
+        <result column="HASPROCESSINGFILE" jdbcType="INTEGER" property="hasProcessingFile"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -115,7 +116,8 @@
         IMGWIDTH, COVOBJID, THUMIMGURL, THUMIMGSIZE, MEDIUMCOVER, HASFLOW, ISOPTIMIZE, DONOR,
         LIBRARYID, BOOKID, STYLECLASS, STYLEURL, CHAPTERNUM, BOOKPAGES, TAGS, CREATETIME,
         UPDATETIME, CONTENTNUM, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,AUTHORINTRO,
-        ABSTRACT, PREFACE, FOAMATCATALOG, STREAMCATALOG, POSTSCRIPT,FLOWSOURCE,ISREADCEBXFLOW,ISREADEPUB
+        ABSTRACT, PREFACE, FOAMATCATALOG, STREAMCATALOG, POSTSCRIPT,FLOWSOURCE,ISREADCEBXFLOW,
+        ISREADEPUB,HASPROCESSINGFILE
     </sql>
 
     <!-- 根据metaId查询数据 -->
@@ -446,6 +448,9 @@
             <if test="isReadEpub != null">
                 ISREADEPUB ,
             </if>
+            <if test="hasProcessingFile != null">
+                HASPROCESSINGFILE ,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="metaId != null">
@@ -742,6 +747,9 @@
             <if test="isReadEpub != null">
                 #{isReadEpub,jdbcType=INTEGER},
             </if>
+            <if test="hasProcessingFile != null">
+                #{hasProcessingFile,jdbcType=INTEGER},
+            </if>
         </trim>
     </insert>
 
@@ -1030,7 +1038,7 @@
             </if>
             <if test="postScript != null">
                 POSTSCRIPT = #{postScript,jdbcType=CLOB},
-            </if>;
+            </if>
             <if test="flowSource != null">
                 FLOWSOURCE = #{flowSource,jdbcType=VARCHAR},
             </if>
@@ -1040,8 +1048,10 @@
             <if test="isReadEpub != null">
                 ISREADEPUB = #{isReadEpub,jdbcType=INTEGER},
             </if>
+            <if test="hasProcessingFile != null">
+                HASPROCESSINGFILE = #{hasProcessingFile,jdbcType=INTEGER},
+            </if>
         </set>
         where METAID = #{metaId,jdbcType=VARCHAR}
     </update>
-
 </mapper>

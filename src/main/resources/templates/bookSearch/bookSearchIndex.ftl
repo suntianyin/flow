@@ -22,11 +22,13 @@
             var isbnVal = $("#isbnVal").val();
             var hasCebx = $("#hasCebx").val();
             var hasFlow = $("#hasFlow").val();
+            var flowSource = $("#flowSource").val();
             var isPublicCopyRight = $("#isPublicCopyRight").val();
             var saleStatus = $("#saleStatus").val();
 
             var pathurl = "index?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
+                    + "&flowSource=" + flowSource
                     + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal
                     + "&hasCebx=" + hasCebx + "&hasFlow=" + hasFlow + "&isPublicCopyRight=" + isPublicCopyRight
                     + "&saleStatus=" + saleStatus;
@@ -49,11 +51,13 @@
             var isbnVal = $("#isbnVal").val();
             var hasCebx = $("#hasCebx").val();
             var hasFlow = $("#hasFlow").val();
+            var flowSource = $("#flowSource").val();
             var isPublicCopyRight = $("#isPublicCopyRight").val();
             var saleStatus = $("#saleStatus").val();
             loading();
             window.location.href = "index?pageNumber=1&metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
+                    + "&flowSource=" + flowSource
                     + "&publisher=" + publisher + "&isbn=" + isbn
                     + "&isbnVal=" + isbnVal + "&hasCebx=" + hasCebx
                     + "&hasFlow=" + hasFlow + "&isPublicCopyRight=" + isPublicCopyRight
@@ -240,6 +244,30 @@
                             </select>
                         </td>
 
+                        <th>流式内容来源：</th>
+                        <td>
+                            <input type="hidden" value="${flowSource! ''}">
+                            <select id="flowSource" name="flowSource" class="txtselect">
+                                <#if flowSource =="">
+                                    <option value="epub">epub</option>
+                                    <option value="cebx">cebx</option>
+                                    <option value="" selected="selected">全部</option>
+                                </#if>
+                                <#if flowSource =="cebx">
+                                    <option value="epub">epub</option>
+                                    <option value="cebx" selected="selected">cebx</option>
+                                    <option value="">全部</option>
+                                </#if>
+                                <#if flowSource =="epub">
+                                    <option value="epub" selected="selected">epub</option>
+                                    <option value="cebx">cebx</option>
+                                    <option value="">全部</option>
+                                </#if>
+                            </select>
+                        </td>
+
+
+
                         <td>
                             <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
                         </td>
@@ -255,7 +283,8 @@
                             <th>图书ID</th>
                             <th>书名</th>
                             <th>作者</th>
-                            <th>出版单位</th>
+                            <th>出版社</th>
+                            <th>流式内容来源</th>
                             <th>出版日期</th>
                             <th>ISBN</th>
                             <th>ISBN10</th>
@@ -274,6 +303,7 @@
                                     <td align="center">${list.title! '' }</td>
                                     <td align="center">${list.creator! '' }</td>
                                     <td align="center">${list.publisher! '' }</td>
+                                    <td align="center">${list.flowSource! '' }</td>
                                     <td align="center">${list.issuedDate! '' }</td>
                                     <td align="center">${list.isbn! '' }</td>
                                     <td align="center">${list.isbn10! '' }</td>

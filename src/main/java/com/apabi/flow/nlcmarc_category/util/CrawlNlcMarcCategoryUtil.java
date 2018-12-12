@@ -26,10 +26,11 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
@@ -212,7 +213,7 @@ public class CrawlNlcMarcCategoryUtil {
         String ip = host.split(":")[0];
         String port = host.split(":")[1];
         // 实例化CloseableHttpClient对象
-        CloseableHttpClient client = getCloseableHttpClient(ip, port);
+        final CloseableHttpClient client = getCloseableHttpClient(ip, port);
         // 访问国图首页
         HttpGet indexHttpGet = generateHttpGet("http://opac.nlc.cn/F/");
         // 访问国图首页，获取token；当该ip无法访问国图首页时，切换其他ip访问国图首页
@@ -296,15 +297,14 @@ public class CrawlNlcMarcCategoryUtil {
                 } catch (Exception e) {
                     LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上分类码为" + categoryCode + "的首页...");
                 }
-
                 ExecutorService executorService = Executors.newFixedThreadPool(4 * CPU_COUNT);
                 if (pageNum >= AVAILABLE_PAGE_NUM) {
                     pageNum = AVAILABLE_PAGE_NUM - 1;
                 }
-
-                // 分页连接队列
-                LinkedBlockingQueue<String> pageUrlQueue = new LinkedBlockingQueue<>(pageNum);
-                List<String> marcHrefList = new ArrayList<>();
+                // 分页链接队列
+                LinkedBlockingQueue<String> pageUrlQueue = new LinkedBlockingQueue<>();
+                // marc数据链接队列
+                LinkedBlockingQueue<String> marcHrefQueue = new LinkedBlockingQueue<>();
                 for (int i = 1; i <= pageNum; i++) {
                     // 翻页URL
                     String var3 = codeHomePageUrl.split("find-b")[0];
@@ -317,10 +317,12 @@ public class CrawlNlcMarcCategoryUtil {
                         e.printStackTrace();
                     }
                 }
-                CountDownLatch pageUrlCountDownLatch = new CountDownLatch(pageUrlQueue.size());
+                // 标记队列大小
+                int pageUrlQueueSize = pageUrlQueue.size();
+                CountDownLatch pageUrlCountDownLatch = new CountDownLatch(pageUrlQueueSize);
                 ExecutorService pageUrlExecutorService = Executors.newFixedThreadPool(4 * CPU_COUNT);
-                for (int i = 0; i < pageUrlQueue.size(); i++) {
-                    NlcBookMarcCategoryPageUrlConsumer consumer = new NlcBookMarcCategoryPageUrlConsumer(pageUrlQueue, marcHrefList, categoryCode, nlcIpPoolUtils, pageUrlCountDownLatch, client);
+                NlcBookMarcCategoryPageUrlConsumer consumer = new NlcBookMarcCategoryPageUrlConsumer(pageUrlQueue, client, marcHrefQueue, nlcIpPoolUtils, pageUrlCountDownLatch);
+                for (int i = 0; i < pageUrlQueueSize; i++) {
                     pageUrlExecutorService.execute(consumer);
                 }
                 try {
@@ -329,9 +331,8 @@ public class CrawlNlcMarcCategoryUtil {
                     e.printStackTrace();
                 }
                 pageUrlExecutorService.shutdown();
-
-                CountDownLatch marcHrefCountDownLatch = new CountDownLatch(marcHrefList.size());
-                for (String marcHref : marcHrefList) {
+                CountDownLatch marcHrefCountDownLatch = new CountDownLatch(marcHrefQueue.size());
+                for (String marcHref : marcHrefQueue) {
                     NlcBookMarcCategoryConsumer categoryConsumer = new NlcBookMarcCategoryConsumer(marcHref, nlcIpPoolUtils, marcHrefCountDownLatch, client, nlcBookMarcDao);
                     executorService.execute(categoryConsumer);
                 }
@@ -340,96 +341,6 @@ public class CrawlNlcMarcCategoryUtil {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-
-                // =========================方案2=========================
-            /*for (int i = 1; i < pageNum; i++) {
-                // 翻页URL
-                String var3 = codeHomePageUrl.split("find-b")[0];
-                String var4 = "short-jump&jump=" + i + "1";
-                // 每页的url
-                String pageUrl = var3 + var4;
-                HttpGet pageHttpGet = generateHttpGet(pageUrl);
-                // 每执行一次切换一次ip
-                pageHttpGet = switchIp(pageHttpGet, nlcIpPoolUtils, ip, port);
-                CloseableHttpResponse pageResponse = null;
-                try {
-                    // 防封ip
-                    Thread.sleep(random.nextInt(300) + 200);
-                    pageResponse = client.execute(pageHttpGet);
-                } catch (Exception e) {
-                    LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上分类码为" + categoryCode + "，第" + i + "页内容...");
-                }
-                String pageHtml = null;
-                if (pageResponse != null) {
-                    try {
-                        pageHtml = EntityUtils.toString(pageResponse.getEntity(), "UTF-8");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    if (StringUtils.isNotEmpty(pageHtml)) {
-                        Document pageDocument = Jsoup.parse(pageHtml);
-                        // 解析页面中的marc数据链接
-                        Elements marcElements = pageDocument.select("div[class='itemtitle']");
-                        LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "获取分类码为" + categoryCode + "，第" + i + "页内容，其中有" + marcElements.size() + "条数据...");
-                        for (Element marcElement : marcElements) {
-                            String marcHref = marcElement.child(0).attr("href");
-                            marcHref = marcHref.replace("format=999", "format=001");
-                            marcHrefList.add(marcHref);
-                        }
-                    }
-                }
-            }*/
-
-
-                // =========================方案1=========================
-            /*for (int i = 1; i < pageNum; i++) {
-                // 翻页URL
-                String var3 = codeHomePageUrl.split("find-b")[0];
-                String var4 = "short-jump&jump=" + i + "1";
-                // 每页的url
-                String pageUrl = var3 + var4;
-                HttpGet pageHttpGet = generateHttpGet(pageUrl);
-                CloseableHttpResponse pageResponse = null;
-                try {
-                    // 防封ip
-                    Thread.sleep(random.nextInt(300) + 200);
-                    pageResponse = client.execute(pageHttpGet);
-                } catch (Exception e) {
-                    LOGGER.info(Thread.currentThread().getName() + "使用" + ip + ":" + port + "连接不上分类码为" + categoryCode + "，第" + i + "页内容...");
-                }
-                String pageHtml = null;
-                try {
-                    pageHtml = EntityUtils.toString(pageResponse.getEntity(), "UTF-8");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (StringUtils.isNotEmpty(pageHtml)) {
-                    Document pageDocument = Jsoup.parse(pageHtml);
-                    // 解析页面中的marc数据链接
-                    Elements marcElements = pageDocument.select("div[class='itemtitle']");
-                    CountDownLatch countDownLatch = new CountDownLatch(marcElements.size());
-                    LinkedBlockingQueue<String> marcHrefQueue = new LinkedBlockingQueue<>(20);
-                    for (Element marcElement : marcElements) {
-                        String marcHref = marcElement.child(0).attr("href");
-                        marcHref = marcHref.replace("format=999", "format=001");
-                        try {
-                            marcHrefQueue.put(marcHref);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    for (String marcHref : marcHrefQueue) {
-                        NlcBookMarcCategoryConsumer categoryConsumer = new NlcBookMarcCategoryConsumer(marcHref, nlcIpPoolUtils, countDownLatch, client, nlcBookMarcDao);
-                        executorService.execute(categoryConsumer);
-                    }
-                    try {
-                        countDownLatch.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }*/
                 executorService.shutdown();
             }
         }
@@ -472,6 +383,33 @@ public class CrawlNlcMarcCategoryUtil {
         RequestConfig requestConfig = RequestConfig.custom().setProxy(httpHost).build();
         httpGet.setConfig(requestConfig);
         return httpGet;
+    }
+
+
+    /**
+     * 根据pageUrl抓取页面中的html
+     *
+     * @param pageUrl
+     * @param nlcIpPoolUtils
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static String crawlHtmlPageByPageUrl(CloseableHttpClient client, String pageUrl, NlcIpPoolUtils nlcIpPoolUtils) throws InterruptedException, IOException {
+        String host = nlcIpPoolUtils.getIp();
+        String ip = host.split(":")[0];
+        String port = host.split(":")[1];
+        Random random = new Random();
+        HttpGet pageHttpGet = CrawlNlcMarcCategoryUtil.generateHttpGet(pageUrl);
+        // 每执行一次切换一次ip
+        pageHttpGet = CrawlNlcMarcCategoryUtil.switchIp(pageHttpGet, nlcIpPoolUtils, ip, port);
+        // 防封ip
+        Thread.sleep(random.nextInt(300) + 200);
+        client = CrawlNlcMarcCategoryUtil.getCloseableHttpClient(ip, port);
+        //pageResponse = this.client.execute(pageHttpGet);
+        HttpResponse pageResponse = client.execute(pageHttpGet);
+        String pageHtml = EntityUtils.toString(pageResponse.getEntity(), "UTF-8");
+        return pageHtml;
     }
 
     public static void main(String[] args) {
