@@ -242,7 +242,11 @@
                                 <input id="chapterComid" value="${bookChapter.comId}" type="hidden"/>
                                 <input id="chapterNum" value="${bookChapter.chapterNum}" type="hidden"/>
                                 <input id="wordSum" value="${bookChapter.wordSum}" type="hidden"/>
-                                ${bookChapter.content}
+                                <#if bookChapter.content ??>
+                                    ${bookChapter.content}
+                                <#elseif bookChapter.content == "">
+                                    暂无
+                                </#if>
                             </#if>
                     </textarea>
                 </div>

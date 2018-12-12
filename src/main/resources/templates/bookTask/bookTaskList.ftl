@@ -51,6 +51,8 @@
 
         }
 
+
+
         //显示详情
         function onShowTaskInfoClick(taskId) {
             var url = "/bookTask/showTaskInfo?taskId=" + taskId;
@@ -110,10 +112,10 @@
                             <#else >
                                 <input id="drid" type="text" value="" class="txt" style="width: 200px"/>
                             </#if>
-                        </td>
-                        <td>
-                            <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
                         </td>-->
+                        <td>
+                            <input id="refreshClick" type="button" class="btnSearch" value="刷新"/>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -159,8 +161,12 @@
                                     <td>
                                         <a style="cursor:pointer;"
                                            onclick="onShowTaskInfoClick('${list.id!'' }');">详情&nbsp;</a>
-                                        <a style="cursor:pointer;"
-                                           onclick="onDeleteTaskInfoClick('${list.id!'' }');">删除&nbsp;</a>
+                                        <#if list.status??>
+                                            <#if list.status==0>
+                                            <a style="cursor:pointer;"
+                                               onclick="onDeleteTaskInfoClick('${list.id!'' }');">删除&nbsp;</a>
+                                            </#if>
+                                        </#if>
                                     </td>
                                 </tr>
                             </#list>
@@ -174,4 +180,11 @@
     </div>
 </div>
 </body>
+<script type="text/javascript">
+    //刷新
+    $("#refreshClick").click(function () {
+        location.reload();
+        return false;
+    })
+</script>
 </html>

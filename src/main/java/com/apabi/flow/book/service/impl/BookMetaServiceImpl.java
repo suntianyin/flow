@@ -1297,6 +1297,7 @@ public class BookMetaServiceImpl implements BookMetaService {
     @Async
     public void getPageAndCata(Integer drid) {
         if (drid > 0) {
+            drid--;
             List<String> metaIdList = bookMetaDao.findMetaIdByDrid(drid);
             if (metaIdList != null && metaIdList.size() > 0) {
                 int cnt = 0;
