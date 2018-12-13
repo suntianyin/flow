@@ -301,7 +301,7 @@
             ISSUEDDATEDESC = #{issuedDateDesc},
         </if>
         <if test="abstract_ != null">
-            ABSTRACT_ = #{abstract_},
+            ABSTRACT = #{abstract_},
         </if>
         <if test="subject != null">
             SUBJECT = #{subject},

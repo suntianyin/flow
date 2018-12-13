@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.auth.dao.BookListMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.auth.model.BookList">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="AGREEMENT_NUM" jdbcType="VARCHAR" property="agreementNum" />
+    <result column="BOOK_LIST_NUM" jdbcType="VARCHAR" property="bookListNum" />
+    <result column="BATCH_NUM" jdbcType="VARCHAR" property="batchNum" />
+    <result column="RES_TYPE" jdbcType="VARCHAR" property="resType" />
+    <result column="COPYRIGHT_OWNER" jdbcType="VARCHAR" property="copyrightOwner" />
+    <result column="COPYRIGHT_OWNER_ID" jdbcType="VARCHAR" property="copyrightOwnerId" />
+    <result column="ABOUT_NUM" jdbcType="DECIMAL" property="aboutNum" />
+    <result column="VALID_MAKE_NUM" jdbcType="DECIMAL" property="validMakeNum" />
+    <result column="APPLY_NUM" jdbcType="DECIMAL" property="applyNum" />
+    <result column="AUTHORIZE_NUM" jdbcType="DECIMAL" property="authorizeNum" />
+    <result column="AUTHEND_DATE" jdbcType="TIMESTAMP" property="authEndDate" />
+    <result column="SUBMIT_DATE" jdbcType="TIMESTAMP" property="submitDate" />
+    <result column="OBTAIN_DATE" jdbcType="TIMESTAMP" property="obtainDate" />
+    <result column="FILE_NAME" jdbcType="VARCHAR" property="fileName" />
+    <result column="FILE_PATH" jdbcType="VARCHAR" property="filePath" />
+    <result column="COOPERTOR" jdbcType="VARCHAR" property="coopertor" />
+    <result column="OPERTOR" jdbcType="VARCHAR" property="opertor" />
+    <result column="OPERTE_DATE" jdbcType="TIMESTAMP" property="operteDate" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ISCLOUD_COMBINATION" jdbcType="VARCHAR" property="iscloudCombination" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, AGREEMENT_NUM, BOOK_LIST_NUM, BATCH_NUM, RES_TYPE, COPYRIGHT_OWNER,COPYRIGHT_OWNER_ID, ABOUT_NUM,
+    VALID_MAKE_NUM, APPLY_NUM, AUTHORIZE_NUM, AUTHEND_DATE, SUBMIT_DATE, OBTAIN_DATE, 
+    FILE_NAME, FILE_PATH, COOPERTOR, OPERTOR, OPERTE_DATE, REMARK, ISCLOUD_COMBINATION
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_AUTH_BOOKLIST
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_AUTH_BOOKLIST
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.auth.model.BookList">
+    insert into APABI_AUTH_BOOKLIST (ID, AGREEMENT_NUM, BOOK_LIST_NUM, 
+      BATCH_NUM, RES_TYPE, COPYRIGHT_OWNER,COPYRIGHT_OWNER_ID,
+      ABOUT_NUM, VALID_MAKE_NUM, APPLY_NUM, 
+      AUTHORIZE_NUM, AUTHEND_DATE, SUBMIT_DATE, 
+      OBTAIN_DATE, FILE_NAME, FILE_PATH, 
+      COOPERTOR, OPERTOR, OPERTE_DATE, 
+      REMARK, ISCLOUD_COMBINATION)
+    values (#{id,jdbcType=VARCHAR}, #{agreementNum,jdbcType=VARCHAR}, #{bookListNum,jdbcType=VARCHAR}, 
+      #{batchNum,jdbcType=VARCHAR}, #{resType,jdbcType=VARCHAR}, #{copyrightOwner,jdbcType=VARCHAR},#{copyrightOwnerId,jdbcType=VARCHAR},
+      #{aboutNum,jdbcType=DECIMAL}, #{validMakeNum,jdbcType=DECIMAL}, #{applyNum,jdbcType=DECIMAL}, 
+      #{authorizeNum,jdbcType=DECIMAL}, #{authEndDate,jdbcType=TIMESTAMP}, #{submitDate,jdbcType=TIMESTAMP},
+      #{obtainDate,jdbcType=TIMESTAMP}, #{fileName,jdbcType=VARCHAR}, #{filePath,jdbcType=VARCHAR}, 
+      #{coopertor,jdbcType=VARCHAR}, #{opertor,jdbcType=VARCHAR}, #{operteDate,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{iscloudCombination,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.auth.model.BookList">
+    insert into APABI_AUTH_BOOKLIST
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="agreementNum != null">
+        AGREEMENT_NUM,
+      </if>
+      <if test="bookListNum != null">
+        BOOK_LIST_NUM,
+      </if>
+      <if test="batchNum != null">
+        BATCH_NUM,
+      </if>
+      <if test="resType != null">
+        RES_TYPE,
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER,
+      </if>
+      <if test="copyrightOwnerId != null">
+        COPYRIGHT_OWNER_ID,
+      </if>
+      <if test="aboutNum != null">
+        ABOUT_NUM,
+      </if>
+      <if test="validMakeNum != null">
+        VALID_MAKE_NUM,
+      </if>
+      <if test="applyNum != null">
+        APPLY_NUM,
+      </if>
+      <if test="authorizeNum != null">
+        AUTHORIZE_NUM,
+      </if>
+      <if test="authEndDate != null">
+        AUTHEND_DATE,
+      </if>
+      <if test="submitDate != null">
+        SUBMIT_DATE,
+      </if>
+      <if test="obtainDate != null">
+        OBTAIN_DATE,
+      </if>
+      <if test="fileName != null">
+        FILE_NAME,
+      </if>
+      <if test="filePath != null">
+        FILE_PATH,
+      </if>
+      <if test="coopertor != null">
+        COOPERTOR,
+      </if>
+      <if test="opertor != null">
+        OPERTOR,
+      </if>
+      <if test="operteDate != null">
+        OPERTE_DATE,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="iscloudCombination != null">
+        ISCLOUD_COMBINATION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementNum != null">
+        #{agreementNum,jdbcType=VARCHAR},
+      </if>
+      <if test="bookListNum != null">
+        #{bookListNum,jdbcType=VARCHAR},
+      </if>
+      <if test="batchNum != null">
+        #{batchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="resType != null">
+        #{resType,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwner != null">
+        #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwnerId != null">
+        #{copyrightOwnerId,jdbcType=VARCHAR},
+      </if>
+      <if test="aboutNum != null">
+        #{aboutNum,jdbcType=DECIMAL},
+      </if>
+      <if test="validMakeNum != null">
+        #{validMakeNum,jdbcType=DECIMAL},
+      </if>
+      <if test="applyNum != null">
+        #{applyNum,jdbcType=DECIMAL},
+      </if>
+      <if test="authorizeNum != null">
+        #{authorizeNum,jdbcType=DECIMAL},
+      </if>
+      <if test="authEndDate != null">
+        #{authEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitDate != null">
+        #{submitDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="obtainDate != null">
+        #{obtainDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="coopertor != null">
+        #{coopertor,jdbcType=VARCHAR},
+      </if>
+      <if test="opertor != null">
+        #{opertor,jdbcType=VARCHAR},
+      </if>
+      <if test="operteDate != null">
+        #{operteDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="iscloudCombination != null">
+        #{iscloudCombination,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.auth.model.BookList">
+    update APABI_AUTH_BOOKLIST
+    <set>
+      <if test="agreementNum != null">
+        AGREEMENT_NUM = #{agreementNum,jdbcType=VARCHAR},
+      </if>
+      <if test="bookListNum != null">
+        BOOK_LIST_NUM = #{bookListNum,jdbcType=VARCHAR},
+      </if>
+      <if test="batchNum != null">
+        BATCH_NUM = #{batchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="resType != null">
+        RES_TYPE = #{resType,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwnerId != null">
+        COPYRIGHT_OWNER_ID = #{copyrightOwnerId,jdbcType=VARCHAR},
+      </if>
+      <if test="aboutNum != null">
+        ABOUT_NUM = #{aboutNum,jdbcType=DECIMAL},
+      </if>
+      <if test="validMakeNum != null">
+        VALID_MAKE_NUM = #{validMakeNum,jdbcType=DECIMAL},
+      </if>
+      <if test="applyNum != null">
+        APPLY_NUM = #{applyNum,jdbcType=DECIMAL},
+      </if>
+      <if test="authorizeNum != null">
+        AUTHORIZE_NUM = #{authorizeNum,jdbcType=DECIMAL},
+      </if>
+      <if test="authEndDate != null">
+        AUTHEND_DATE = #{authEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="submitDate != null">
+        SUBMIT_DATE = #{submitDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="obtainDate != null">
+        OBTAIN_DATE = #{obtainDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fileName != null">
+        FILE_NAME = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        FILE_PATH = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="coopertor != null">
+        COOPERTOR = #{coopertor,jdbcType=VARCHAR},
+      </if>
+      <if test="opertor != null">
+        OPERTOR = #{opertor,jdbcType=VARCHAR},
+      </if>
+      <if test="operteDate != null">
+        OPERTE_DATE = #{operteDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="iscloudCombination != null">
+        ISCLOUD_COMBINATION = #{iscloudCombination,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.auth.model.BookList">
+    update APABI_AUTH_BOOKLIST
+    set AGREEMENT_NUM = #{agreementNum,jdbcType=VARCHAR},
+      BOOK_LIST_NUM = #{bookListNum,jdbcType=VARCHAR},
+      BATCH_NUM = #{batchNum,jdbcType=VARCHAR},
+      RES_TYPE = #{resType,jdbcType=VARCHAR},
+      COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      COPYRIGHT_OWNER_ID = #{copyrightOwnerId,jdbcType=VARCHAR},
+      ABOUT_NUM = #{aboutNum,jdbcType=DECIMAL},
+      VALID_MAKE_NUM = #{validMakeNum,jdbcType=DECIMAL},
+      APPLY_NUM = #{applyNum,jdbcType=DECIMAL},
+      AUTHORIZE_NUM = #{authorizeNum,jdbcType=DECIMAL},
+      AUTHEND_DATE = #{authEndDate,jdbcType=TIMESTAMP},
+      SUBMIT_DATE = #{submitDate,jdbcType=TIMESTAMP},
+      OBTAIN_DATE = #{obtainDate,jdbcType=TIMESTAMP},
+      FILE_NAME = #{fileName,jdbcType=VARCHAR},
+      FILE_PATH = #{filePath,jdbcType=VARCHAR},
+      COOPERTOR = #{coopertor,jdbcType=VARCHAR},
+      OPERTOR = #{opertor,jdbcType=VARCHAR},
+      OPERTE_DATE = #{operteDate,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      ISCLOUD_COMBINATION = #{iscloudCombination,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="listBookList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_AUTH_BOOKLIST pb
+    WHERE 1=1
+    <if test="copyrightOwnerId != null and copyrightOwnerId != ''">
+      AND pb.COPYRIGHT_OWNER_ID <![CDATA[=]]> #{copyrightOwnerId}
+    </if>
+    <if test="bookListNum != null and bookListNum != ''or bookListNum == '0'.toString() " >
+      AND pb.BOOK_LIST_NUM = #{bookListNum}
+    </if>
+    <if test="authorizeNum != null and authorizeNum != ''or authorizeNum == '0'.toString() " >
+      AND pb.AUTHORIZE_NUM = #{authorizeNum}
+    </if>
+    <if test="coopertor != null and coopertor != ''">
+      AND pb.COOPERTOR LIKE CONCAT(CONCAT('%',#{coopertor,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="authEndDate != null">
+      AND pb.AUTHEND_DATE <![CDATA[>=]]> #{authEndDate}
+    </if>
+    <if test="authEndDate1 != null">
+      AND pb.AUTHEND_DATE <![CDATA[<]]> #{authEndDate1}
+    </if>
+    <if test="submitDate != null">
+      AND pb.SUBMIT_DATE <![CDATA[>=]]> #{submitDate}
+    </if>
+    <if test="submitDate1 != null">
+      AND pb.SUBMIT_DATE <![CDATA[<]]> #{submitDate1}
+    </if>
+  </select>
+  <update id="updateFileNameAndFilePathById" >
+    update APABI_AUTH_BOOKLIST
+    <set>
+      <if test="fileName != null">
+        FILE_NAME = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        FILE_PATH = #{filePath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
