@@ -106,10 +106,10 @@
         <!--工具栏-->
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
-                <a id="lr-xmlAdd" href="javascript:;" title="批量删除" onclick="batchDelete()"
-                   class="tools_btn"><span><i class="fa fa-minus"></i>&nbsp;批量删除</span></a>
-                <a id="lr-xmlAdd" href="javascript:;" title="批量获取" onclick="batchAdd()"
-                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;批量获取</span></a>
+                <a id="lr-xmlAdd" href="javascript:;" title="批量删除流式内容" onclick="batchDelete()"
+                   class="tools_btn"><span><i class="fa fa-minus"></i>&nbsp;批量删除流式内容</span></a>
+                <a id="lr-xmlAdd" href="javascript:;" title="批量获取书苑元数据" onclick="batchAdd()"
+                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;批量获取书苑元数据</span></a>
             </div>
         </div>
         <!--列表-->

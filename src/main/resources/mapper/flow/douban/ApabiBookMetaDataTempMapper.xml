@@ -1030,7 +1030,7 @@
             </if>
             <if test="postScript != null">
                 POSTSCRIPT = #{postScript,jdbcType=CLOB},
-            </if>;
+            </if>
             <if test="flowSource != null">
                 FLOWSOURCE = #{flowSource,jdbcType=VARCHAR},
             </if>
