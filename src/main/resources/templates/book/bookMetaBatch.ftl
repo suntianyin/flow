@@ -128,6 +128,7 @@
                         <td>
                             <input id="pageAndCata" type="button" class="btnSearch" value="获取目录和页码"
                                    onclick="getPageAndCata()"/>
+                            （将获取大于等于该drid的数据的目录和页码）
                         </td>
                         </td>
                     </tr>
