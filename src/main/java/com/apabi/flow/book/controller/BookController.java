@@ -620,6 +620,18 @@ public class BookController {
         return "error";
     }
 
+    //批量删除图书内容
+    @RequestMapping(value = "/bookChapterDeleteEmail", method = RequestMethod.POST)
+    @ResponseBody
+    public String bookChapterDeleteEmail(@RequestParam("metaIds") String metaIds,
+                                         @RequestParam("toEmail") String toEmail) {
+        if (!StringUtils.isEmpty(metaIds) && !StringUtils.isEmpty(toEmail)) {
+            bookMetaService.deleteBookChapterEmail(metaIds, toEmail);
+            return "success";
+        }
+        return "error";
+    }
+
     //跳转到批量操作图书
     @RequestMapping(value = "/bookMetaBatch")
     public String bookMetaBatch() {
@@ -651,9 +663,10 @@ public class BookController {
     //批量获取页码和目录
     @RequestMapping(value = "/getPageAndCata")
     @ResponseBody
-    public String getPageAndCata(@RequestParam("drid") Integer drid) {
-        if (drid != null && drid > 0) {
-            bookMetaService.getPageAndCata(drid);
+    public String getPageAndCata(@RequestParam("drid") Integer drid,
+                                 @RequestParam("toEmail") String toEmail) {
+        if ((drid > 0) && (!StringUtils.isEmpty(toEmail))) {
+            bookMetaService.getPageAndCata(drid, toEmail);
             return "success";
         }
         return "error";
@@ -669,6 +682,18 @@ public class BookController {
             long end = System.currentTimeMillis();
             log.info("从书苑获取{}本图书元数据，耗时{}毫秒", res, (end - start));
             return String.valueOf(res);
+        }
+        return "error";
+    }
+
+    //批量获取图书内容
+    @RequestMapping(value = "/bookMetaBatchEmail", method = RequestMethod.POST)
+    @ResponseBody
+    public String bookMetaBatchEmail(@RequestParam("metaIds") String metaIds,
+                                     @RequestParam("toEmail") String toEmail) {
+        if (!StringUtils.isEmpty(metaIds) && !StringUtils.isEmpty(toEmail)) {
+            bookMetaService.bookMetaBatchEmail(metaIds, toEmail);
+            return "success";
         }
         return "error";
     }

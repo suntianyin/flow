@@ -35,9 +35,9 @@ public class ApplicationConfig {
     @Value("${uploadCebx}")
     private String uploadCebx;
 
-    //流式内容检查结果存放路径
-    @Value("${bookDetect}")
-    private String bookDetect;
+    //存放待发送的邮件
+    @Value("${email}")
+    private String email;
 
     //获取流式内容获取批次
     @Value("${batchSize}")
@@ -95,12 +95,12 @@ public class ApplicationConfig {
         this.uploadCebx = uploadCebx;
     }
 
-    public String getBookDetect() {
-        return bookDetect;
+    public String getEmail() {
+        return email;
     }
 
-    public void setBookDetect(String bookDetect) {
-        this.bookDetect = bookDetect;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Integer getBatchSize() {

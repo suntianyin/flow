@@ -19,6 +19,7 @@ import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
+import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import com.apabi.shuyuan.book.dao.SCmfDigitObjectDao;
 import com.apabi.shuyuan.book.dao.SCmfDigitResfileSiteDao;
 import com.apabi.shuyuan.book.dao.SCmfMetaDao;
@@ -49,6 +50,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.net.SocketTimeoutException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -153,6 +155,9 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     @Autowired
     private CmfDigitResfileSiteDao cmfDigitResfileSiteDao;
+
+    @Autowired
+    SystemConfMapper systemConfMapper;
 
     //根据图书metaid，获取图书元数据
     @Override
@@ -1248,6 +1253,76 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
+    //批量删除图书章节内容
+    @Override
+    @Async
+    public void deleteBookChapterEmail(String conMetaId, String toEmail) {
+        if (!StringUtils.isEmpty(conMetaId)) {
+            String[] metaIds = conMetaId.split("\r\n");
+            if (metaIds != null && metaIds.length > 0) {
+                List<EmailResult> emailResults = new ArrayList<>();
+                //获取日期格式转换
+                ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+                DateFormat df = threadLocal.get();
+                if (df == null) {
+                    df = new SimpleDateFormat("yyyyMMddHHmmss");
+                    threadLocal.set(df);
+                }
+                for (String metaId : metaIds) {
+                    EmailResult emailResult = new EmailResult();
+                    emailResult.setId(metaId);
+                    try {
+                        if (!StringUtils.isEmpty(metaId)) {
+                            //删除章节内容
+                            bookChapterDao.deleteAllBookChapter(metaId);
+                            //删除分组内容
+                            bookShardDao.deleteAllBookShard(metaId);
+                            //更新图书元数据
+                            BookMeta bookMeta = new BookMeta();
+                            bookMeta.setMetaId(metaId);
+                            bookMeta.setChapterNum(0);
+                            bookMeta.setStyleUrl("");
+                            bookMeta.setContentNum(0);
+                            bookMeta.setStreamCatalog("");
+                            bookMeta.setHasFlow(0);
+                            bookMeta.setIsOptimize(0);
+                            bookMeta.setFlowSource("");
+                            bookMetaDao.updateBookMetaById(bookMeta);
+                            //更新图书元数据，temp表
+                            ApabiBookMetaDataTemp bookMetaDataTemp = new ApabiBookMetaDataTemp();
+                            bookMetaDataTemp.setMetaId(metaId);
+                            bookMetaDataTemp.setChapterNum(0);
+                            bookMetaDataTemp.setStyleUrl("");
+                            bookMetaDataTemp.setContentNum(0);
+                            bookMetaDataTemp.setStreamCatalog("");
+                            bookMetaDataTemp.setHasFlow(0);
+                            bookMetaDataTemp.setIsOptimize(0);
+                            bookMetaDataTemp.setFlowSource("");
+                            bookMetaDataTempDao.update(bookMetaDataTemp);
+                            emailResult.setMessage("成功");
+                        }
+                    } catch (Exception e) {
+                        emailResult.setMessage("失败");
+                        log.warn("图书：" + metaId + "内容删除异常{}", e.getMessage());
+                    }
+                    emailResults.add(emailResult);
+                }
+                //生成检查结果
+                String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "deleteChapter.xlsx";
+                BookUtil.exportExcelEmail(emailResults, resultPath);
+                log.info("批量删除流式内容结果已生成到{}", config.getEmail());
+                //表格路径
+                List<String> results = new ArrayList<>();
+                results.add(resultPath);
+                //将发送结果发送邮件
+                EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+                eMailUtil.createSender();
+                eMailUtil.sendAttachmentsMail(results, "批量删除流式内容结果", toEmail);
+                log.info("批量删除流式内容结果已发送邮件");
+            }
+        }
+    }
+
     //批量获取图书元数据
     @Override
     public int bookMetaBatch(String conMetaId) {
@@ -1292,8 +1367,77 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
-    //根据drid，从书苑获取页码和目录
+    //批量获取图书元数据
     @Override
+    @Async
+    public void bookMetaBatchEmail(String conMetaId, String toEmail) {
+        if (!StringUtils.isEmpty(conMetaId)) {
+            String[] metaIds = conMetaId.split("\r\n");
+            if (metaIds != null && metaIds.length > 0) {
+                List<EmailResult> emailResults = new ArrayList<>();
+                //获取日期格式转换
+                ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+                DateFormat df = threadLocal.get();
+                if (df == null) {
+                    df = new SimpleDateFormat("yyyyMMddHHmmss");
+                    threadLocal.set(df);
+                }
+                for (String metaId : metaIds) {
+                    EmailResult emailResult = new EmailResult();
+                    emailResult.setId(metaId);
+                    try {
+                        if (!StringUtils.isEmpty(metaId)) {
+                            BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
+                            //如果磐石没有，则从书苑获取
+                            if (bookMeta == null) {
+                                SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaById(metaId);
+                                bookMeta = BookUtil.createBookMeta(sCmfMeta);
+                                //新增到磐石数据库
+                                bookMeta.setHasCebx(1);
+                                bookMetaDao.insertBookMeta(bookMeta);
+                                ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                                bookMetaDataTemp.setHasCebx(1);
+                                bookMetaDataTempDao.insert(bookMetaDataTemp);
+                                //获取书苑数据，更新到流式图书
+                                boolean ress = insertShuyuanData(sCmfMeta);
+                                if (ress) {
+                                    emailResult.setMessage("成功");
+                                    log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            0, metaId, "success", new Date());
+                                } else {
+                                    emailResult.setMessage("失败");
+                                    log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            -2, metaId, "新增书苑数据异常", new Date());
+                                }
+                            } else {
+                                emailResult.setMessage("磐石已存在");
+                            }
+                        }
+                    } catch (Exception e) {
+                        emailResult.setMessage("失败");
+                        log.warn("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                -1, metaId, e.getMessage(), new Date());
+                    }
+                    emailResults.add(emailResult);
+                }
+                //生成检查结果
+                String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "getShuyuan.xlsx";
+                BookUtil.exportExcelEmail(emailResults, resultPath);
+                log.info("获取书苑数据结果已生成到{}", config.getEmail());
+                //表格路径
+                List<String> results = new ArrayList<>();
+                results.add(resultPath);
+                //将发送结果发送邮件
+                EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+                eMailUtil.createSender();
+                eMailUtil.sendAttachmentsMail(results, "获取书苑数据结果", toEmail);
+                log.info("获取书苑数据结果已发送邮件");
+            }
+        }
+    }
+
+    //根据drid，从书苑获取页码和目录
+    /*@Override
     @Async
     public void getPageAndCata(Integer drid) {
         if (drid > 0) {
@@ -1340,6 +1484,83 @@ public class BookMetaServiceImpl implements BookMetaService {
                     }
                 }
             }
+        }
+    }*/
+
+    //根据drid，从书苑获取页码和目录
+    @Override
+    @Async
+    public void getPageAndCata(Integer drid, String toEmail) {
+        if (drid > 0 && !StringUtils.isEmpty(toEmail)) {
+            int maxDrid = bookMetaDao.getMaxDrid();
+            List<EmailResult> emailResults = new ArrayList<>();
+            //获取日期格式转换
+            ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+            DateFormat df = threadLocal.get();
+            if (df == null) {
+                df = new SimpleDateFormat("yyyyMMddHHmmss");
+                threadLocal.set(df);
+            }
+            while (drid < maxDrid + 1) {
+                EmailResult emailResult = new EmailResult();
+                emailResult.setId(String.valueOf(drid));
+                try {
+                    List<String> metaIds = bookMetaDao.findMetaIdByDrid(drid);
+                    if (metaIds != null && metaIds.size() > 0) {
+                        for (String metaId : metaIds) {
+                            long start = System.currentTimeMillis();
+                            BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
+                            //补充页码和目录
+                            if (bookMeta != null) {
+                                boolean flag = false;
+                                if (StringUtils.isEmpty(bookMeta.getCebxPage())) {
+                                    String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
+                                    bookMeta.setCebxPage(cebxPage);
+                                    flag = true;
+                                }
+                                if (StringUtils.isEmpty(bookMeta.getStreamCatalog())) {
+                                    String cata = getCebxData(getCataLog + bookMeta.getMetaId());
+                                    bookMeta.setStreamCatalog(cata);
+                                    flag = true;
+                                }
+                                if (flag) {
+                                    bookMetaDao.updateBookMetaById(bookMeta);
+                                    //temp表补充页码和目录
+                                    ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
+                                    temp.setMetaId(bookMeta.getMetaId());
+                                    temp.setCebxPage(bookMeta.getCebxPage());
+                                    temp.setStreamCatalog(bookMeta.getStreamCatalog());
+                                    bookMetaDataTempDao.update(temp);
+                                    emailResult.setMessage("成功");
+                                    long end = System.currentTimeMillis();
+                                    log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
+                                }else {
+                                    emailResult.setMessage("目录和页码已存在");
+                                }
+                            }
+                        }
+                    }else {
+                        emailResult.setMessage("数据库中不存在");
+                    }
+                } catch (Exception e) {
+                    emailResult.setMessage("失败");
+                    log.warn("获取图书{}的页码和目录时，出现异常{}", drid, e.getMessage());
+                }
+                drid++;
+                emailResults.add(emailResult);
+            }
+            //生成检查结果
+            String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "pageAndCata.xlsx";
+            BookUtil.exportExcelEmail(emailResults, resultPath);
+            log.info("从书苑获取目录和页码已结束{}", config.getEmail());
+            //表格路径
+            List<String> results = new ArrayList<>();
+            results.add(resultPath);
+            //将发送结果发送邮件
+            EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+            eMailUtil.createSender();
+            eMailUtil.sendAttachmentsMail(results, "从书苑获取目录和页码已结束", toEmail);
+            log.info("从书苑获取目录和页码已结束");
         }
     }
 
