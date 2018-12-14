@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.auth.dao.CopyrightAgreementMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.auth.model.CopyrightAgreement">
+    <id column="CAID" jdbcType="VARCHAR" property="caid" />
+    <result column="AGREEMENT_NUM" jdbcType="VARCHAR" property="agreementNum" />
+    <result column="AGREEMENT_TITLE" jdbcType="VARCHAR" property="agreementTitle" />
+    <result column="COPYRIGHT_OWNER" jdbcType="VARCHAR" property="copyrightOwner" />
+    <result column="COPYRIGHT_OWNER_ID" jdbcType="VARCHAR" property="copyrightOwnerId" />
+    <result column="AGREEMENT_FILE_NAME" jdbcType="VARCHAR" property="agreementFileName" />
+    <result column="AGREEMENT_FILE_PATH" jdbcType="VARCHAR" property="agreementFilePath" />
+    <result column="START_DATE" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="END_DATE" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="AUTH_TYPE" jdbcType="DECIMAL" property="authType" typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.auth.constant.AuthTypeEnum" />
+    <result column="ASSIGN_PERCENT" jdbcType="DECIMAL" property="assignPercent" />
+    <result column="ASSIGN_RULE" jdbcType="DECIMAL" property="assignRule" />
+    <result column="ISINTERNET_COMMUNICATION" jdbcType="DECIMAL" property="isinternetCommunication" />
+    <result column="IS_COPY" jdbcType="DECIMAL" property="isCopy" />
+    <result column="IS_PUBLISHING" jdbcType="DECIMAL" property="isPublishing" />
+    <result column="IS_HIRE_RIGHT" jdbcType="DECIMAL" property="isHireRight" />
+    <result column="IS_EXHIBITION_RIGHT" jdbcType="DECIMAL" property="isExhibitionRight" />
+    <result column="IS_PERFORMANCE_RIGHT" jdbcType="DECIMAL" property="isPerformanceRight" />
+    <result column="IS_SCREENING_RIGHT" jdbcType="DECIMAL" property="isScreeningRight" />
+    <result column="IS_BROADCASTING_RIGHT" jdbcType="DECIMAL" property="isBroadcastingRight" />
+    <result column="IS_ADAPTATION_RIGHT" jdbcType="DECIMAL" property="isAdaptationRight" />
+    <result column="IS_TRANSLATION_RIGHT" jdbcType="DECIMAL" property="isTranslationRight" />
+    <result column="IS_EDIT_RIGHT" jdbcType="DECIMAL" property="isEditRight" />
+    <result column="IS_TRANSFE_RRIGHT" jdbcType="DECIMAL" property="isTransfeRright" />
+    <result column="IS_CONTENTWORK_RIGHT" jdbcType="DECIMAL" property="isContentworkRight" />
+    <result column="IS_OTHER_RIGHT" jdbcType="VARCHAR" property="isOtherRight" />
+    <result column="IS_AGENTMAINTAINLEGAL_RIGHT" jdbcType="DECIMAL" property="isAgentmaintainlegalRight" />
+    <result column="IS_ONLY_OWNER" jdbcType="DECIMAL" property="isOnlyOwner" />
+    <result column="IS_HAS_AUTHOR_RIGHT" jdbcType="DECIMAL" property="isHasAuthorRight" />
+    <result column="IS_AUTO_POSTPONE" jdbcType="DECIMAL" property="isAutoPostpone" />
+    <result column="YEAR_NUM" jdbcType="DECIMAL" property="yearNum" />
+    <result column="CONTENT_MANAGER_NAME" jdbcType="VARCHAR" property="contentManagerName" />
+    <result column="SIGN_DATE" jdbcType="TIMESTAMP" property="signDate" />
+    <result column="OBTAIN_DATE" jdbcType="TIMESTAMP" property="obtainDate" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+    <result column="OPERATEDATE" jdbcType="TIMESTAMP" property="operatedate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    CAID, AGREEMENT_NUM, AGREEMENT_TITLE, COPYRIGHT_OWNER,COPYRIGHT_OWNER_ID, AGREEMENT_FILE_NAME, AGREEMENT_FILE_PATH,
+    START_DATE, END_DATE, AUTH_TYPE, ASSIGN_PERCENT, ASSIGN_RULE, ISINTERNET_COMMUNICATION, 
+    IS_COPY, IS_PUBLISHING, IS_HIRE_RIGHT, IS_EXHIBITION_RIGHT, IS_PERFORMANCE_RIGHT, 
+    IS_SCREENING_RIGHT, IS_BROADCASTING_RIGHT, IS_ADAPTATION_RIGHT, IS_TRANSLATION_RIGHT, 
+    IS_EDIT_RIGHT, IS_TRANSFE_RRIGHT, IS_CONTENTWORK_RIGHT, IS_OTHER_RIGHT, IS_AGENTMAINTAINLEGAL_RIGHT, 
+    IS_ONLY_OWNER, IS_HAS_AUTHOR_RIGHT, IS_AUTO_POSTPONE, YEAR_NUM, CONTENT_MANAGER_NAME, 
+    SIGN_DATE, OBTAIN_DATE, STATUS, OPERATOR, OPERATEDATE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_COPYRIGHT_AGREEMENT
+    where CAID = #{caid,jdbcType=VARCHAR}
+  </select>
+  <select id="findAll"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_COPYRIGHT_AGREEMENT
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_COPYRIGHT_AGREEMENT
+    where CAID = #{caid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.auth.model.CopyrightAgreement">
+    insert into APABI_COPYRIGHT_AGREEMENT (CAID, AGREEMENT_NUM, AGREEMENT_TITLE, 
+      COPYRIGHT_OWNER,COPYRIGHT_OWNER_ID, AGREEMENT_FILE_NAME, AGREEMENT_FILE_PATH,
+      START_DATE, END_DATE, AUTH_TYPE, 
+      ASSIGN_PERCENT, ASSIGN_RULE, ISINTERNET_COMMUNICATION, 
+      IS_COPY, IS_PUBLISHING, IS_HIRE_RIGHT, 
+      IS_EXHIBITION_RIGHT, IS_PERFORMANCE_RIGHT, 
+      IS_SCREENING_RIGHT, IS_BROADCASTING_RIGHT, 
+      IS_ADAPTATION_RIGHT, IS_TRANSLATION_RIGHT, 
+      IS_EDIT_RIGHT, IS_TRANSFE_RRIGHT, IS_CONTENTWORK_RIGHT, 
+      IS_OTHER_RIGHT, IS_AGENTMAINTAINLEGAL_RIGHT, 
+      IS_ONLY_OWNER, IS_HAS_AUTHOR_RIGHT, IS_AUTO_POSTPONE, 
+      YEAR_NUM, CONTENT_MANAGER_NAME, SIGN_DATE, 
+      OBTAIN_DATE, STATUS, OPERATOR, 
+      OPERATEDATE)
+    values (#{caid,jdbcType=VARCHAR}, #{agreementNum,jdbcType=VARCHAR}, #{agreementTitle,jdbcType=VARCHAR},
+      #{copyrightOwner,jdbcType=VARCHAR}, #{copyrightOwnerId,jdbcType=VARCHAR}, #{agreementFileName,jdbcType=VARCHAR}, #{agreementFilePath,jdbcType=VARCHAR},
+      #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{authType.code,jdbcType=DECIMAL},
+      #{assignPercent,jdbcType=DECIMAL}, #{assignRule,jdbcType=DECIMAL}, #{isinternetCommunication,jdbcType=DECIMAL},
+      #{isCopy,jdbcType=DECIMAL}, #{isPublishing,jdbcType=DECIMAL}, #{isHireRight,jdbcType=DECIMAL}, 
+      #{isExhibitionRight,jdbcType=DECIMAL}, #{isPerformanceRight,jdbcType=DECIMAL}, 
+      #{isScreeningRight,jdbcType=DECIMAL}, #{isBroadcastingRight,jdbcType=DECIMAL}, 
+      #{isAdaptationRight,jdbcType=DECIMAL}, #{isTranslationRight,jdbcType=DECIMAL}, 
+      #{isEditRight,jdbcType=DECIMAL}, #{isTransfeRright,jdbcType=DECIMAL}, #{isContentworkRight,jdbcType=DECIMAL}, 
+      #{isOtherRight,jdbcType=VARCHAR}, #{isAgentmaintainlegalRight,jdbcType=DECIMAL},
+      #{isOnlyOwner,jdbcType=DECIMAL}, #{isHasAuthorRight,jdbcType=DECIMAL}, #{isAutoPostpone,jdbcType=DECIMAL}, 
+      #{yearNum,jdbcType=DECIMAL}, #{contentManagerName,jdbcType=VARCHAR}, #{signDate,jdbcType=TIMESTAMP}, 
+      #{obtainDate,jdbcType=TIMESTAMP}, #{status,jdbcType=DECIMAL}, #{operator,jdbcType=VARCHAR}, 
+      #{operatedate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.auth.model.CopyrightAgreement">
+    insert into APABI_COPYRIGHT_AGREEMENT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="caid != null">
+        CAID,
+      </if>
+      <if test="agreementNum != null">
+        AGREEMENT_NUM,
+      </if>
+      <if test="agreementTitle != null">
+        AGREEMENT_TITLE,
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER,
+      </if>
+      <if test="copyrightOwnerId != null">
+        COPYRIGHT_OWNER_ID,
+      </if>
+      <if test="agreementFileName != null">
+        AGREEMENT_FILE_NAME,
+      </if>
+      <if test="agreementFilePath != null">
+        AGREEMENT_FILE_PATH,
+      </if>
+      <if test="startDate != null">
+        START_DATE,
+      </if>
+      <if test="endDate != null">
+        END_DATE,
+      </if>
+      <if test="authType != null">
+        AUTH_TYPE,
+      </if>
+      <if test="assignPercent != null">
+        ASSIGN_PERCENT,
+      </if>
+      <if test="assignRule != null">
+        ASSIGN_RULE,
+      </if>
+      <if test="isinternetCommunication != null">
+        ISINTERNET_COMMUNICATION,
+      </if>
+      <if test="isCopy != null">
+        IS_COPY,
+      </if>
+      <if test="isPublishing != null">
+        IS_PUBLISHING,
+      </if>
+      <if test="isHireRight != null">
+        IS_HIRE_RIGHT,
+      </if>
+      <if test="isExhibitionRight != null">
+        IS_EXHIBITION_RIGHT,
+      </if>
+      <if test="isPerformanceRight != null">
+        IS_PERFORMANCE_RIGHT,
+      </if>
+      <if test="isScreeningRight != null">
+        IS_SCREENING_RIGHT,
+      </if>
+      <if test="isBroadcastingRight != null">
+        IS_BROADCASTING_RIGHT,
+      </if>
+      <if test="isAdaptationRight != null">
+        IS_ADAPTATION_RIGHT,
+      </if>
+      <if test="isTranslationRight != null">
+        IS_TRANSLATION_RIGHT,
+      </if>
+      <if test="isEditRight != null">
+        IS_EDIT_RIGHT,
+      </if>
+      <if test="isTransfeRright != null">
+        IS_TRANSFE_RRIGHT,
+      </if>
+      <if test="isContentworkRight != null">
+        IS_CONTENTWORK_RIGHT,
+      </if>
+      <if test="isOtherRight != null">
+        IS_OTHER_RIGHT,
+      </if>
+      <if test="isAgentmaintainlegalRight != null">
+        IS_AGENTMAINTAINLEGAL_RIGHT,
+      </if>
+      <if test="isOnlyOwner != null">
+        IS_ONLY_OWNER,
+      </if>
+      <if test="isHasAuthorRight != null">
+        IS_HAS_AUTHOR_RIGHT,
+      </if>
+      <if test="isAutoPostpone != null">
+        IS_AUTO_POSTPONE,
+      </if>
+      <if test="yearNum != null">
+        YEAR_NUM,
+      </if>
+      <if test="contentManagerName != null">
+        CONTENT_MANAGER_NAME,
+      </if>
+      <if test="signDate != null">
+        SIGN_DATE,
+      </if>
+      <if test="obtainDate != null">
+        OBTAIN_DATE,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="operator != null">
+        OPERATOR,
+      </if>
+      <if test="operatedate != null">
+        OPERATEDATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="caid != null">
+        #{caid,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementNum != null">
+        #{agreementNum,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementTitle != null">
+        #{agreementTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwner != null">
+        #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwnerId != null">
+        #{copyrightOwnerId,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementFileName != null">
+        #{agreementFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementFilePath != null">
+        #{agreementFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authType != null">
+        #{authType.code,jdbcType=DECIMAL},
+      </if>
+      <if test="assignPercent != null">
+        #{assignPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="assignRule != null">
+        #{assignRule,jdbcType=DECIMAL},
+      </if>
+      <if test="isinternetCommunication != null">
+        #{isinternetCommunication,jdbcType=DECIMAL},
+      </if>
+      <if test="isCopy != null">
+        #{isCopy,jdbcType=DECIMAL},
+      </if>
+      <if test="isPublishing != null">
+        #{isPublishing,jdbcType=DECIMAL},
+      </if>
+      <if test="isHireRight != null">
+        #{isHireRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isExhibitionRight != null">
+        #{isExhibitionRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isPerformanceRight != null">
+        #{isPerformanceRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isScreeningRight != null">
+        #{isScreeningRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isBroadcastingRight != null">
+        #{isBroadcastingRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isAdaptationRight != null">
+        #{isAdaptationRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isTranslationRight != null">
+        #{isTranslationRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isEditRight != null">
+        #{isEditRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isTransfeRright != null">
+        #{isTransfeRright,jdbcType=DECIMAL},
+      </if>
+      <if test="isContentworkRight != null">
+        #{isContentworkRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isOtherRight != null">
+        #{isOtherRight,jdbcType=VARCHAR},
+      </if>
+      <if test="isAgentmaintainlegalRight != null">
+        #{isAgentmaintainlegalRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isOnlyOwner != null">
+        #{isOnlyOwner,jdbcType=DECIMAL},
+      </if>
+      <if test="isHasAuthorRight != null">
+        #{isHasAuthorRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isAutoPostpone != null">
+        #{isAutoPostpone,jdbcType=DECIMAL},
+      </if>
+      <if test="yearNum != null">
+        #{yearNum,jdbcType=DECIMAL},
+      </if>
+      <if test="contentManagerName != null">
+        #{contentManagerName,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null">
+        #{signDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="obtainDate != null">
+        #{obtainDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatedate != null">
+        #{operatedate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.auth.model.CopyrightAgreement">
+    update APABI_COPYRIGHT_AGREEMENT
+    <set>
+      <if test="agreementNum != null">
+        AGREEMENT_NUM = #{agreementNum,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementTitle != null">
+        AGREEMENT_TITLE = #{agreementTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightOwnerId != null">
+        COPYRIGHT_OWNER_ID = #{copyrightOwnerId,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementFileName != null">
+        AGREEMENT_FILE_NAME = #{agreementFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementFilePath != null">
+        AGREEMENT_FILE_PATH = #{agreementFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="startDate != null">
+        START_DATE = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        END_DATE = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authType != null">
+        AUTH_TYPE = #{authType.code,jdbcType=DECIMAL},
+      </if>
+      <if test="assignPercent != null">
+        ASSIGN_PERCENT = #{assignPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="assignRule != null">
+        ASSIGN_RULE = #{assignRule,jdbcType=DECIMAL},
+      </if>
+      <if test="isinternetCommunication != null">
+        ISINTERNET_COMMUNICATION = #{isinternetCommunication,jdbcType=DECIMAL},
+      </if>
+      <if test="isCopy != null">
+        IS_COPY = #{isCopy,jdbcType=DECIMAL},
+      </if>
+      <if test="isPublishing != null">
+        IS_PUBLISHING = #{isPublishing,jdbcType=DECIMAL},
+      </if>
+      <if test="isHireRight != null">
+        IS_HIRE_RIGHT = #{isHireRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isExhibitionRight != null">
+        IS_EXHIBITION_RIGHT = #{isExhibitionRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isPerformanceRight != null">
+        IS_PERFORMANCE_RIGHT = #{isPerformanceRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isScreeningRight != null">
+        IS_SCREENING_RIGHT = #{isScreeningRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isBroadcastingRight != null">
+        IS_BROADCASTING_RIGHT = #{isBroadcastingRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isAdaptationRight != null">
+        IS_ADAPTATION_RIGHT = #{isAdaptationRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isTranslationRight != null">
+        IS_TRANSLATION_RIGHT = #{isTranslationRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isEditRight != null">
+        IS_EDIT_RIGHT = #{isEditRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isTransfeRright != null">
+        IS_TRANSFE_RRIGHT = #{isTransfeRright,jdbcType=DECIMAL},
+      </if>
+      <if test="isContentworkRight != null">
+        IS_CONTENTWORK_RIGHT = #{isContentworkRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isOtherRight != null">
+        IS_OTHER_RIGHT = #{isOtherRight,jdbcType=VARCHAR},
+      </if>
+      <if test="isAgentmaintainlegalRight != null">
+        IS_AGENTMAINTAINLEGAL_RIGHT = #{isAgentmaintainlegalRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isOnlyOwner != null">
+        IS_ONLY_OWNER = #{isOnlyOwner,jdbcType=DECIMAL},
+      </if>
+      <if test="isHasAuthorRight != null">
+        IS_HAS_AUTHOR_RIGHT = #{isHasAuthorRight,jdbcType=DECIMAL},
+      </if>
+      <if test="isAutoPostpone != null">
+        IS_AUTO_POSTPONE = #{isAutoPostpone,jdbcType=DECIMAL},
+      </if>
+      <if test="yearNum != null">
+        YEAR_NUM = #{yearNum,jdbcType=DECIMAL},
+      </if>
+      <if test="contentManagerName != null">
+        CONTENT_MANAGER_NAME = #{contentManagerName,jdbcType=VARCHAR},
+      </if>
+      <if test="signDate != null">
+        SIGN_DATE = #{signDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="obtainDate != null">
+        OBTAIN_DATE = #{obtainDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatedate != null">
+        OPERATEDATE = #{operatedate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where CAID = #{caid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateFileNameAndFilePathByCaid" >
+    update APABI_COPYRIGHT_AGREEMENT
+    <set>
+      <if test="agreementFileName != null">
+        AGREEMENT_FILE_NAME = #{agreementFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementFilePath != null">
+        AGREEMENT_FILE_PATH = #{agreementFilePath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CAID = #{caid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.auth.model.CopyrightAgreement">
+    update APABI_COPYRIGHT_AGREEMENT
+    set AGREEMENT_NUM = #{agreementNum,jdbcType=VARCHAR},
+      AGREEMENT_TITLE = #{agreementTitle,jdbcType=VARCHAR},
+      COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      COPYRIGHT_OWNER_ID= #{copyrightOwnerId,jdbcType=VARCHAR},
+      AGREEMENT_FILE_NAME = #{agreementFileName,jdbcType=VARCHAR},
+      AGREEMENT_FILE_PATH = #{agreementFilePath,jdbcType=VARCHAR},
+      START_DATE = #{startDate,jdbcType=TIMESTAMP},
+      END_DATE = #{endDate,jdbcType=TIMESTAMP},
+      AUTH_TYPE = #{authType.code,jdbcType=DECIMAL},
+      ASSIGN_PERCENT = #{assignPercent,jdbcType=DECIMAL},
+      ASSIGN_RULE = #{assignRule,jdbcType=DECIMAL},
+      ISINTERNET_COMMUNICATION = #{isinternetCommunication,jdbcType=DECIMAL},
+      IS_COPY = #{isCopy,jdbcType=DECIMAL},
+      IS_PUBLISHING = #{isPublishing,jdbcType=DECIMAL},
+      IS_HIRE_RIGHT = #{isHireRight,jdbcType=DECIMAL},
+      IS_EXHIBITION_RIGHT = #{isExhibitionRight,jdbcType=DECIMAL},
+      IS_PERFORMANCE_RIGHT = #{isPerformanceRight,jdbcType=DECIMAL},
+      IS_SCREENING_RIGHT = #{isScreeningRight,jdbcType=DECIMAL},
+      IS_BROADCASTING_RIGHT = #{isBroadcastingRight,jdbcType=DECIMAL},
+      IS_ADAPTATION_RIGHT = #{isAdaptationRight,jdbcType=DECIMAL},
+      IS_TRANSLATION_RIGHT = #{isTranslationRight,jdbcType=DECIMAL},
+      IS_EDIT_RIGHT = #{isEditRight,jdbcType=DECIMAL},
+      IS_TRANSFE_RRIGHT = #{isTransfeRright,jdbcType=DECIMAL},
+      IS_CONTENTWORK_RIGHT = #{isContentworkRight,jdbcType=DECIMAL},
+      IS_OTHER_RIGHT = #{isOtherRight,jdbcType=VARCHAR},
+      IS_AGENTMAINTAINLEGAL_RIGHT = #{isAgentmaintainlegalRight,jdbcType=DECIMAL},
+      IS_ONLY_OWNER = #{isOnlyOwner,jdbcType=DECIMAL},
+      IS_HAS_AUTHOR_RIGHT = #{isHasAuthorRight,jdbcType=DECIMAL},
+      IS_AUTO_POSTPONE = #{isAutoPostpone,jdbcType=DECIMAL},
+      YEAR_NUM = #{yearNum,jdbcType=DECIMAL},
+      CONTENT_MANAGER_NAME = #{contentManagerName,jdbcType=VARCHAR},
+      SIGN_DATE = #{signDate,jdbcType=TIMESTAMP},
+      OBTAIN_DATE = #{obtainDate,jdbcType=TIMESTAMP},
+      STATUS = #{status,jdbcType=DECIMAL},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      OPERATEDATE = #{operatedate,jdbcType=TIMESTAMP}
+    where CAID = #{caid,jdbcType=VARCHAR}
+  </update>
+  <select id="listCopyrightAgreement" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_COPYRIGHT_AGREEMENT pb
+    WHERE 1=1
+    <if test="copyrightOwnerId != null and copyrightOwnerId != ''">
+      AND pb.COPYRIGHT_OWNER_ID <![CDATA[=]]> #{copyrightOwnerId}
+    </if>
+    <if test="authType != null and authType != ''or authType == '0'.toString() " >
+      AND pb.AUTH_TYPE = #{authType}
+    </if>
+    <if test="contentManagerName != null and contentManagerName != ''">
+      AND pb.CONTENT_MANAGER_NAME LIKE CONCAT(CONCAT('%',#{contentManagerName,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="startDate != null">
+      AND pb.START_DATE <![CDATA[>=]]> #{startDate}
+    </if>
+    <if test="startDate1 != null">
+      AND pb.START_DATE <![CDATA[<]]> #{startDate1}
+    </if>
+    <if test="endDate != null">
+      AND pb.END_DATE <![CDATA[>=]]> #{endDate}
+    </if>
+    <if test="endDate1 != null">
+      AND pb.END_DATE <![CDATA[<]]> #{endDate1}
+    </if>
+  </select>
+</mapper>

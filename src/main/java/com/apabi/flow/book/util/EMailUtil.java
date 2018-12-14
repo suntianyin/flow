@@ -62,7 +62,6 @@ public class EMailUtil {
     //添加配置
     public void createSender() {
         try {
-
             sender = new JavaMailSenderImpl();
             sender.setHost(SERVER);
             sender.setPort(PORT);

@@ -23,6 +23,10 @@ public class ApplicationConfig {
     @Value("${uploadXml}")
     private String uploadXml;
 
+    //版权协议上传路径
+    @Value("${upAuthFile}")
+    private String upAuthFile;
+
     //epub文件存储路径
     @Value("${uploadEpub}")
     private String uploadEpub;
@@ -113,5 +117,13 @@ public class ApplicationConfig {
 
     public void setThreadTime(Integer threadTime) {
         this.threadTime = threadTime;
+    }
+
+    public String getUpAuthFile() {
+        return upAuthFile;
+    }
+
+    public void setUpAuthFile(String upAuthFile) {
+        this.upAuthFile = upAuthFile;
     }
 }

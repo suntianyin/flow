@@ -142,11 +142,12 @@
                                 获取图书元数据${taskResultList?size }条
                             </#if>
                         </#if>
+                        （是否流式为“是”，METAID不存在的选项不可勾选）
                         <tr role="row">
                             <th><input id="checkAll" type="checkbox" onclick="selectAll(this);"/></th>
                             <th>文件名</th>
                             <th>文件ISBN</th>
-                            <th>图书ID</th>
+                            <th>METAID</th>
                             <th>书名</th>
                             <th>ISBN</th>
                             <th>ISBN13</th>

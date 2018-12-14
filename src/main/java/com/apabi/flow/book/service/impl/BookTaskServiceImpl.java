@@ -13,10 +13,12 @@ import com.github.pagehelper.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -98,9 +100,10 @@ public class BookTaskServiceImpl implements BookTaskService {
                 bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                 long end = System.currentTimeMillis();
                 log.info("扫描任务{}已完成，耗时：{}毫秒", dirPath, (end - start));
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 //将任务列表置成失败
                 bookTask.setStatus(0);
+                bookTask.setUpdateTime(new Date());
                 bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                 log.info("扫描任务{}时，出现异常{}", dirPath, e.getMessage());
             }

@@ -115,7 +115,7 @@
                                     <option value="${(list.unitId)!''}">${(list.unitName)!''}</option>
                                 </#list>
                             </#if>
-                        <#--</select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>-->
+                        </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
                 </tr>
                 <tr>

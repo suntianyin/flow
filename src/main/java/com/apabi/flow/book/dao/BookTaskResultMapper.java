@@ -2,12 +2,13 @@ package com.apabi.flow.book.dao;
 
 import com.apabi.flow.book.model.BookTaskResult;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface BookTaskResultMapper {
     int deleteByPrimaryKey(String id);
 
-    int insert(BookTaskResult record);
+    int insert(BookTaskResult record) throws SQLException;
 
     int insertSelective(BookTaskResult record);
 
