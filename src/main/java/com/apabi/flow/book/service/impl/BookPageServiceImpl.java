@@ -675,8 +675,6 @@ public class BookPageServiceImpl implements BookPageService {
                     meta.setChapterNum(chapterNum);
                     meta.setStreamCatalog(foamatCatalog);
                     meta.setUpdateTime(new Date());
-                    meta.setFoamatCatalog(foamatCatalog);
-                    meta.setBookPages(Integer.toString(cebxPage));
                     meta.setCebxPage(Integer.toString(cebxPage));
                     meta.setFlowSource("cebx");
 
@@ -684,8 +682,6 @@ public class BookPageServiceImpl implements BookPageService {
                     metaDataTemp.setContentNum(wordSum);
                     metaDataTemp.setChapterNum(chapterNum);
                     metaDataTemp.setStreamCatalog(foamatCatalog);
-                    metaDataTemp.setFoamatCatalog(foamatCatalog);
-                    metaDataTemp.setBookPages(Integer.toString(cebxPage));
                     metaDataTemp.setUpdateTime(new Date());
                     metaDataTemp.setCebxPage(Integer.toString(cebxPage));
                     metaDataTemp.setFlowSource("cebx");
