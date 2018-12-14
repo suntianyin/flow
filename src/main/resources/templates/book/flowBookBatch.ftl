@@ -131,8 +131,26 @@
                                 </#if>
                                 </select>
                             </td>
+                            <th>是否覆盖流式内容：</th>
                             <td>
-                                <input id="onScanFileClick" type="submit" class="btnSearch" value="扫描文件" />
+                                <select id="isCover" name="isCover" class="txtselect">
+                                <#if isCover??>
+                                    <#if isCover ==0>
+                                        <option value="0" selected="selected">否</option>
+                                        <option value="1">是</option>
+                                    </#if>
+                                    <#if isCover ==1>
+                                        <option value="0">否</option>
+                                        <option value="1" selected="selected">是</option>
+                                    </#if>
+                                <#else>
+                                    <option value="0" selected="selected">否</option>
+                                    <option value="1">是</option>
+                                </#if>
+                                </select>
+                            </td>
+                            <td>
+                                <input id="onScanFileClick" type="submit" class="btnSearch" value="扫描文件"/>
                             </td>
                             <td>
                                 <input id="batch" type="button" class="btnSearch" value="批量发布"
@@ -256,34 +274,46 @@
             return;
         }
         var fileType = $('#fileType').val();
-        confirmDialog("温馨提示", "请确认信息！<br/>文件路径：" + filePath + "<br/>文件类型：" + fileType, function (res) {
-            if (res) {
-                var url = RootPath() + "/bookTask/taskFileScan";
-                var formData = new FormData();
-                formData.append('filePath', filePath);
-                formData.append('fileType', fileType);
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        if (data == "success") {
-                            tipDialog("扫描任务已创建！", 3, 1);
-                            $('#scanFileTask').attr("disabled", true);
-                        } else {
-                            tipDialog("扫描任务创建失败，联系管理员！", 3, -1);
-                        }
-                    },
-                    error: function () {
-                        Loading(false);
-                        alertDialog("扫描任务创建失败，联系管理员！", -1);
+        var isCover = $('#isCover').val();
+        var isCoverInfo;
+        if (isCover == 1) {
+            isCoverInfo = "是";
+        } else {
+            isCoverInfo = "否";
+        }
+        confirmDialog("温馨提示", "请确认信息！<br/>文件路径：" + filePath +
+                "<br/>文件类型：" + fileType +
+                "<br/>是否覆盖流式内容：" + isCoverInfo, function (res) {
+                    if (res) {
+                        var url = RootPath() + "/bookTask/taskFileScan";
+                        var formData = new FormData();
+                        formData.append('filePath', filePath);
+                        formData.append('fileType', fileType);
+                        formData.append('isCover', isCover);
+                        $.ajax({
+                            url: url,
+                            type: "POST",
+                            data: formData,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                if (data == "success") {
+                                    tipDialog("扫描任务已创建！", 3, 1);
+                                    $('#scanFileTask').attr("disabled", true);
+                                } else {
+                                    tipDialog("扫描任务创建失败，联系管理员！", 3, -1);
+                                }
+                            },
+                            error: function () {
+                                Loading(false);
+                                alertDialog("扫描任务创建失败，联系管理员！", -1);
+                            }
+                        });
                     }
-                });
-            }
-        });
+                }
+        )
+        ;
     }
 </script>
 </html>

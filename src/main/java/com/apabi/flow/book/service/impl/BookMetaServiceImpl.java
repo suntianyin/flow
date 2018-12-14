@@ -1229,6 +1229,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                             bookMeta.setHasFlow(0);
                             bookMeta.setIsOptimize(0);
                             bookMeta.setFlowSource("");
+                            bookMeta.setUpdateTime(new Date());
                             bookMetaDao.updateBookMetaById(bookMeta);
                             //更新图书元数据，temp表
                             ApabiBookMetaDataTemp bookMetaDataTemp = new ApabiBookMetaDataTemp();
@@ -1240,6 +1241,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                             bookMetaDataTemp.setHasFlow(0);
                             bookMetaDataTemp.setIsOptimize(0);
                             bookMetaDataTemp.setFlowSource("");
+                            bookMeta.setUpdateTime(new Date());
                             bookMetaDataTempDao.update(bookMetaDataTemp);
                             sum++;
                         }
@@ -1534,12 +1536,12 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     emailResult.setMessage("成功");
                                     long end = System.currentTimeMillis();
                                     log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
-                                }else {
+                                } else {
                                     emailResult.setMessage("目录和页码已存在");
                                 }
                             }
                         }
-                    }else {
+                    } else {
                         emailResult.setMessage("数据库中不存在");
                     }
                 } catch (Exception e) {
