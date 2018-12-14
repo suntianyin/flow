@@ -260,11 +260,11 @@ public class BookChapterServiceImpl implements BookChapterService {
                         List<BookChapterDetect> bookChapterDetects = detectList.stream()
                                 .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
                                 .collect(Collectors.toList());
-                        String resultPath = config.getBookDetect() + File.separator + df.format(new Date()) + "code.xlsx";
+                        String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "code.xlsx";
                         BookUtil.exportExcel(bookChapterDetects, resultPath);
                         //保存表格路径到总表
                         results.add(resultPath);
-                        log.info("检查乱码结果已生成到{}", config.getBookDetect());
+                        log.info("检查乱码结果已生成到{}", config.getEmail());
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();
@@ -376,11 +376,11 @@ public class BookChapterServiceImpl implements BookChapterService {
                         List<BookChapterDetect> bookChapterDetects = detectList.stream()
                                 .sorted(Comparator.comparing(BookChapterDetect::getMetaId))
                                 .collect(Collectors.toList());
-                        String resultPath = config.getBookDetect() + File.separator + df.format(new Date()) + "source.xlsx";
+                        String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "source.xlsx";
                         BookUtil.exportExcel(bookChapterDetects, resultPath);
                         //保存表格路径到总表
                         results.add(resultPath);
-                        log.info("检查关键词结果已生成到{}", config.getBookDetect());
+                        log.info("检查关键词结果已生成到{}", config.getEmail());
                         //发送邮件
                         EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                         eMailUtil.createSender();

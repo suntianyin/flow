@@ -103,4 +103,51 @@ public class EMailUtil {
         }
     }
 
+    //发送带附件的邮件
+    public void sendAttachmentsMail(List<String> attachs, String subject, String to) {
+        MimeMessage message;
+        try {
+            message = sender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(SENDER, "北京方正阿帕比技术有限公司");
+            if (StringUtils.isNotBlank(to)) {
+                helper.setTo(to.split(";"));
+            }
+            helper.setSubject(subject);
+            //附件加入邮件
+            Multipart multipart = new MimeMultipart();
+            if (attachs != null) {
+                for (String file : attachs) {
+                    BodyPart attachmentPart = new MimeBodyPart();
+                    DataSource source = new FileDataSource(file);
+                    attachmentPart.setDataHandler(new DataHandler(source));
+                    attachmentPart.setFileName(source.getName());
+                    multipart.addBodyPart(attachmentPart);
+                }
+            }
+            message.setContent(multipart);
+            message.saveChanges();
+            sender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //发送通知邮件
+    public void sendNoticeMail(String subject, String to) {
+        MimeMessage message;
+        try {
+            message = sender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(SENDER, "北京方正阿帕比技术有限公司");
+            if (StringUtils.isNotBlank(to)) {
+                helper.setTo(to.split(";"));
+            }
+            helper.setSubject(subject);
+            message.saveChanges();
+            sender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

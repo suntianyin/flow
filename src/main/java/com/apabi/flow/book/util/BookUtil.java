@@ -511,7 +511,7 @@ public class BookUtil {
         return null;
     }
 
-    //生成图书名和图书id的映射表
+    //生成内容检查结果
     public static void exportExcel(List<BookChapterDetect> chapterDetects, String excelPath) {
         FileOutputStream fos;
         try {
@@ -548,6 +548,31 @@ public class BookUtil {
         }
     }
 
+    //生成批量操作结果
+    public static void exportExcelEmail(List<EmailResult> emailResults, String excelPath) {
+        FileOutputStream fos;
+        try {
+            Workbook book = new SXSSFWorkbook();
+            Sheet sheet = book.createSheet("sheet1");
+            // 在对应的Excel中建立一个分表
+            for (int i = 0; i < emailResults.size(); i++) {
+                Row row = sheet.createRow(i);
+
+                // 在所在的行设置所在的单元格（相当于列，初始从0开始,对应的就是A列）
+                Cell cell = row.createCell(0);
+                Cell cell1 = row.createCell(1);
+
+                cell.setCellValue(emailResults.get(i).getId());
+                cell1.setCellValue(emailResults.get(i).getMessage());
+
+            }
+            fos = new FileOutputStream(excelPath);
+            book.write(fos);
+            fos.close();
+        } catch (Exception e) {
+            log.warn("批量操作结果生成异常{}", e.getMessage());
+        }
+    }
     /**
      * <p>Title: thumbnailImage</p>
      * <p>Description: 依据图片路径生成缩略图 </p>

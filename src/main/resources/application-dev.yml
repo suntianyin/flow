@@ -6,6 +6,6 @@ uploadXml: F:\upload\flow\xml
 uploadEpub: F:\upload\flow\epub
 uploadCebx: F:\upload\flow\cebx
 upAuthFile: F:\upload\flow\auth
-bookDetect: F:\bookDetect
+email: F:\email
 batchSize: 100
 threadTime: 3
