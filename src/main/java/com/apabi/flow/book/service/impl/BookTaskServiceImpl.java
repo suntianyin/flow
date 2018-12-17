@@ -113,6 +113,10 @@ public class BookTaskServiceImpl implements BookTaskService {
                     List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
                     if (taskResultList != null && taskResultList.size() > 0) {
                         for (BookTaskResult result : taskResultList) {
+                            //如果章节内容进行备份覆盖
+                            if (!StringUtils.isEmpty(isCover) && isCover == 1) {
+                                result.setHasFlow(0);
+                            }
                             bookTaskResultMapper.insert(result);
                         }
                     }
@@ -192,7 +196,17 @@ public class BookTaskServiceImpl implements BookTaskService {
                 if (bookChapterOlds.size() > 0) {
                     //新增到备份数据库
                     for (BookChapter bookChapter : bookChapterOlds) {
-                        bookChapterBakDao.insertBookChapter(bookChapter);
+                        BookChapterVo bookChapterBak = new BookChapterVo();
+                        bookChapterBak.setId(UUIDCreater.nextId());
+                        bookChapterBak.setComId(bookChapter.getComId());
+                        bookChapterBak.setWordSum(bookChapter.getWordSum());
+                        bookChapterBak.setShardSum(bookChapter.getShardSum());
+                        bookChapterBak.setContent(bookChapter.getContent());
+                        bookChapterBak.setChapterNum(bookChapter.getChapterNum());
+                        bookChapterBak.setBodyClass(bookChapter.getBodyClass());
+                        bookChapterBak.setCreateTime(new Date());
+                        bookChapterBak.setUpdateTime(new Date());
+                        bookChapterBakDao.insertBookChapterVo(bookChapterBak);
                     }
                     //删除原内容
                     bookChapterDao.deleteAllBookChapter(metaId);
