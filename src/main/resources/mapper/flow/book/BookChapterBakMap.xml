@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apabi.flow.book.dao.BookChapterBakDao">
-    <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.BookChapter">
-        <id column="COMID" property="comId" jdbcType="VARCHAR"/>
+    <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.BookChapterVo">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="COMID" property="comId" jdbcType="VARCHAR"/>
         <result column="CHAPTERNUM" property="chapterNum" jdbcType="INTEGER"/>
         <result column="SHARDSUM" property="shardSum" jdbcType="INTEGER"/>
         <result column="WORDSUM" property="wordSum" jdbcType="INTEGER"/>
@@ -12,9 +13,12 @@
         <result column="UPDATETIME" property="updateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        COMID, CHAPTERNUM, SHARDSUM, WORDSUM, BODYCLASS, CONTENT, CREATETIME, UPDATETIME
+       ID,  COMID, CHAPTERNUM, SHARDSUM, WORDSUM, BODYCLASS, CONTENT, CREATETIME, UPDATETIME
     </sql>
     <sql id="Base_Set_List">
+        <if test="id != null">
+            ID = #{id},
+        </if>
         <if test="comId != null">
             COMID = #{comId},
         </if>
@@ -40,44 +44,44 @@
             UPDATETIME = #{updateTime},
         </if>
     </sql>
-    <select id="findBookChapterByComId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="findBookChapterVoByComId" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_CHAPTER_BAK
         where COMID = #{comId}
     </select>
-    <select id="findAllBookChapter" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="findAllBookChapterVo" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_CHAPTER_BAK
         where COMID LIKE #{metaId}||'%'
     </select>
-    <insert id="insertBookChapter" parameterType="com.apabi.flow.book.model.BookChapter">
+    <insert id="insertBookChapterVo" parameterType="com.apabi.flow.book.model.BookChapterVo">
         insert into APABI_BOOK_CHAPTER_BAK (<include refid="Base_Column_List"/>)
         values
         (
-        #{comId}, #{chapterNum}, #{shardSum},
+        #{id}, #{comId}, #{chapterNum}, #{shardSum},
         #{wordSum}, #{bodyClass,jdbcType=VARCHAR}, #{content},
         #{createTime}, #{updateTime}
         )
     </insert>
-    <update id="updateBookChapter" parameterType="com.apabi.flow.book.model.BookChapter">
+    <update id="updateBookChapterVo" parameterType="com.apabi.flow.book.model.BookChapterVo">
         UPDATE APABI_BOOK_CHAPTER_BAK
         <trim prefix="SET" suffixOverrides=",">
             <include refid="Base_Set_List"/>
         </trim>
         <where>
-            COMID = #{comId}
+            ID = #{id}
         </where>
     </update>
-    <delete id="deleteAllBookChapter" parameterType="java.lang.String">
+    <delete id="deleteAllBookChapterVo" parameterType="java.lang.String">
         DELETE APABI_BOOK_CHAPTER_BAK
         WHERE COMID LIKE #{metaId}||'%'
     </delete>
     <select id="getTotal" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM APABI_BOOK_CHAPTER_BAK
     </select>
-    <select id="findBookChapterByPage" resultMap="BaseResultMap">
+    <select id="findBookChapterVoByPage" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM APABI_BOOK_CHAPTER_BAK
@@ -85,13 +89,14 @@
     </select>
 
     <resultMap id="BaseResultMapSum" type="com.apabi.flow.book.model.BookChapterSum">
-        <id column="COMID" property="comId" jdbcType="VARCHAR"/>
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="COMID" property="comId" jdbcType="VARCHAR"/>
         <result column="CHAPTERNUM" property="chapterNum" jdbcType="INTEGER"/>
         <result column="SHARDSUM" property="shardSum" jdbcType="INTEGER"/>
         <result column="WORDSUM" property="wordSum" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_Sum_List">
-        COMID, CHAPTERNUM, SHARDSUM, WORDSUM
+       ID, COMID, CHAPTERNUM, SHARDSUM, WORDSUM
     </sql>
     <select id="findAllBookChapterSum" resultMap="BaseResultMapSum" parameterType="java.lang.String">
         select
