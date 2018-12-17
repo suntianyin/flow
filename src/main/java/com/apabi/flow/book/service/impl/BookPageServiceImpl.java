@@ -57,6 +57,12 @@ public class BookPageServiceImpl implements BookPageService {
     private BookLogMapper bookLogMapper;
 
     @Autowired
+    private AssemblyResultMapper assemblyResultMapper;
+
+    @Autowired
+    private BookChapterBakDao bookChapterBakDao;
+
+    @Autowired
     private PageAssemblyQueueMapper pageAssemblyQueueMapper;
 
     @Autowired
@@ -333,7 +339,7 @@ public class BookPageServiceImpl implements BookPageService {
      * @return
      */
     @Override
-    public int autoProcessBookFromPage2Chapter() {
+    public int autoProcessBookFromPage2Chapter(int isCover) {
         List<String> idList = new ArrayList<>();
         List<PageAssemblyQueue> list1 = pageAssemblyQueueMapper.findAll();
         List<PageAssemblyQueue> list = list1.stream().filter(v -> {
@@ -352,7 +358,7 @@ public class BookPageServiceImpl implements BookPageService {
             for (PageAssemblyQueue pageAssemblyQueue : list) {
                 try {
                     long a = System.currentTimeMillis();
-                    totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId());
+                    totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId(),isCover);
                     long b = System.currentTimeMillis();
                     log.info("metaId：{},章节拼装一共耗时{}ms", pageAssemblyQueue.getId(), b - a);
                 } catch (Exception e) {
@@ -478,12 +484,11 @@ public class BookPageServiceImpl implements BookPageService {
      * 通过获取书苑xml 章节目录，将本地图书分页数据拼装成章节数据
      * 书苑按页流式内容封装成流式章节内容
      *
-     * @param metaId
+     * @param metaId isCover 0否 1是
      * @return
      * @throws Exception
      */
-    @Override
-    public int processBookFromPage2Chapter(String metaId) {
+    public int processBookFromPage2Chapter(String metaId,int isCover) {
         try {
             if (StringUtils.isNotBlank(metaId)) {
                 List<Integer> pageNums = new ArrayList<>();
@@ -623,6 +628,9 @@ public class BookPageServiceImpl implements BookPageService {
                     //添加章节信息
                     chapterList.add(chapter);
                 }
+                AssemblyResult assemblyResult1=new AssemblyResult();
+                assemblyResult1.setId(UUIDCreater.nextId());
+                assemblyResult1.setMetaid(metaId);
                 if (!chapterList.isEmpty()) {
                     SimpleDateFormat localSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     int num = 0;
@@ -636,11 +644,40 @@ public class BookPageServiceImpl implements BookPageService {
                             chapter.setCreateTime(localSdf.parse(localSdf.format(new Date())));
                             chapter.setUpdateTime(localSdf.parse(localSdf.format(new Date())));
                             bookChapterDao.insertBookChapter(chapter);
+                            assemblyResult1.setMessage("新增");
+                            assemblyResult1.setResult(1);
                             saveBookLog(metaId, DataType.CHAPTERINSERT, num, chapterList.size(), 1, chapterList.size() - 1);
                         } else {
-                            chapter.setUpdateTime(localSdf.parse(localSdf.format(new Date())));
-                            bookChapterDao.updateBookChapter(chapter);
-                            saveBookLog(metaId, DataType.CHAPTERUPDATE, num, chapterList.size(), 1, chapterList.size() - 1);
+                            //0否
+                            if(isCover==0){
+                                int i = pageAssemblyQueueMapper.deleteByPrimaryKey(metaId);
+                                AssemblyResult assemblyResult=new AssemblyResult();
+                                assemblyResult.setId(UUIDCreater.nextId());
+                                assemblyResult.setCreateTime(new Date());
+                                assemblyResult.setMetaid(metaId);
+                                assemblyResult.setResult(0);
+                                assemblyResult.setMessage("chapter表已经存在数据，未覆盖");
+                                assemblyResultMapper.insert(assemblyResult);
+                                log.info("metaid:{}的chapter表已经存在数据，未覆盖",metaId);
+                                return 0;
+                            }else if(isCover==1){
+                                BookChapterVo bookChapterVo = new BookChapterVo();
+                                bookChapterVo.setId(UUIDCreater.nextId());
+                                bookChapterVo.setBodyClass(chapter1.getBodyClass());
+                                bookChapterVo.setChapterNum(chapter1.getChapterNum());
+                                bookChapterVo.setComId(chapter1.getComId());
+                                bookChapterVo.setContent(chapter1.getContent());
+                                bookChapterVo.setCreateTime(chapter1.getCreateTime());
+                                bookChapterVo.setShardSum(chapter1.getShardSum());
+                                bookChapterVo.setUpdateTime(chapter1.getUpdateTime());
+                                bookChapterVo.setWordSum(chapter1.getWordSum());
+                                bookChapterBakDao.insertBookChapterVo(bookChapterVo);
+                                chapter.setUpdateTime(localSdf.parse(localSdf.format(new Date())));
+                                bookChapterDao.updateBookChapter(chapter);
+                                saveBookLog(metaId, DataType.CHAPTERUPDATE, num, chapterList.size(), 1, chapterList.size() - 1);
+                                assemblyResult1.setMessage("重复覆盖");
+                                assemblyResult1.setResult(1);
+                            }
                         }
                     }
                     if (chapterShardList != null && chapterShardList.size() > 0) {
@@ -692,6 +729,13 @@ public class BookPageServiceImpl implements BookPageService {
                         log.info("修改Bookmeta的id：{}成功", metaId);
                     } else {
                         log.info("修改Bookmeta的id：{}失败", metaId);
+                    }
+                    assemblyResult1.setCreateTime(new Date());
+                    int insert = assemblyResultMapper.insert(assemblyResult1);
+                    if (insert > 0) {
+                        log.info("记录assembly_result表的metaid：{}成功", metaId);
+                    } else {
+                        log.info("记录assembly_result表的metaid：{}失败", metaId);
                     }
                     return num;
                 }

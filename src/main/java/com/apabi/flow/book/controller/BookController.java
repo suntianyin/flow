@@ -900,18 +900,18 @@ public class BookController {
         return "book/bookPageContentDetail";
     }
 
-    /**
-     * 处理数据接口，将 图书从 页码信息 拼装成 章节信息
-     *
-     * @param metaid
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/processBookFromPage2Chapter")
-    @ResponseBody
-    public int processBookFromPage2Chapter(@RequestParam("metaid") String metaid) throws Exception {
-        return bookPageService.processBookFromPage2Chapter(metaid);
-    }
+//    /**
+//     * 处理数据接口，将 图书从 页码信息 拼装成 章节信息
+//     *
+//     * @param metaid
+//     * @return
+//     * @throws Exception
+//     */
+//    @RequestMapping("/processBookFromPage2Chapter")
+//    @ResponseBody
+//    public int processBookFromPage2Chapter(@RequestParam("metaid") String metaid) throws Exception {
+//        return bookPageService.processBookFromPage2Chapter(metaid);
+//    }
 
     //跳转首页cebx流式内容管理
     @RequestMapping("/bookPageManagement")
@@ -1077,9 +1077,9 @@ public class BookController {
      */
     @ResponseBody
     @RequestMapping("/autoProcessBookFromPage2Chapter")
-    public Object autoProcessBookFromPage2Chapter() {
+    public Object autoProcessBookFromPage2Chapter(@RequestParam("isCover") int isCover ,Model model ){
         ResultEntity resultEntity = new ResultEntity();
-        int i = bookPageService.autoProcessBookFromPage2Chapter();
+        int i = bookPageService.autoProcessBookFromPage2Chapter(isCover);
         if (i >= 1) {
             resultEntity.setMsg("流式内容拼装已开始，请勿再次操作，耐心等待");
             resultEntity.setStatus(i);
@@ -1090,6 +1090,8 @@ public class BookController {
             resultEntity.setMsg("流式内容拼装失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
+//        resultEntity.setBody()
+        model.addAttribute("isCover",isCover);
         return resultEntity;
     }
 

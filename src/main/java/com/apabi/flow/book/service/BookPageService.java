@@ -40,12 +40,12 @@ public interface BookPageService {
     BookPage getBookPageContentByMetaidAndPageid(String metaid, Integer pageid);
 
     /**
-     * 通过xml，获取书苑图书元数据
+     *
      * @param metaId
      * @return
      * @throws Exception
      */
-    int processBookFromPage2Chapter(String metaId) throws Exception;
+    int processBookFromPage2Chapter(String metaId,int isCover) throws Exception;
 
     /**
      * 根据配置文件自动拉取分页数据
@@ -56,10 +56,10 @@ public interface BookPageService {
     int autoFetchPageDataAgain();
 
     /**
-     * 根据配置文件自动组装章节数据数据
+     *
      * @return 返回本次拉取的总页数
      */
-    int autoProcessBookFromPage2Chapter();
+    int autoProcessBookFromPage2Chapter(int isCover);
 
 //    /**
 //     * 通过xml，获取书苑图书元数据
