@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <#include "../common/metabootstraps.ftl">
+    <script src="${ctx}/js/validator/validator.js"></script>
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
     <title>批量获取图书元数据</title>
@@ -82,6 +83,12 @@
             if (toEmail == "") {
                 tipDialog("收件人不能为空", 3, -1);
                 return;
+            }else {
+                var res = isEmail(toEmail);
+                if (res == false){
+                    tipDialog("请检查收件邮箱", 3, -1);
+                    return;
+                }
             }
             var url = RootPath() + "/book/getPageAndCata?drid=" + drid + "&toEmail=" + toEmail;
             $.ajax({
@@ -125,6 +132,7 @@
                         <th>收件人：</th>
                         <td>
                             <input id="toEmail" name="toEmail" type="text" class="txt" style="width: 200px"/>
+                            （仅可输入一个收件人）
                         </td>
                     </tr>
                     <tr align="center">
@@ -161,6 +169,12 @@
         if (toEmail == "") {
             tipDialog("收件人不能为空", 3, -1);
             return;
+        }else {
+            var res = isEmail(toEmail);
+            if (res == false){
+                tipDialog("请检查收件邮箱", 3, -1);
+                return;
+            }
         }
         confirmDialog("温馨提示", "请确认是否要删除这些图书的流式内容？", function (res) {
             if (res) {
@@ -201,6 +215,12 @@
         if (toEmail == "") {
             tipDialog("收件人不能为空", 3, -1);
             return;
+        }else {
+            var res = isEmail(toEmail);
+            if (res == false){
+                tipDialog("请检查收件邮箱", 3, -1);
+                return;
+            }
         }
         confirmDialog("温馨提示", "请确认是否要从书苑获取这些图书？", function (res) {
             if (res) {
