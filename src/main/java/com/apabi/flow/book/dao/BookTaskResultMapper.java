@@ -1,6 +1,9 @@
 package com.apabi.flow.book.dao;
 
 import com.apabi.flow.book.model.BookTaskResult;
+import oracle.jdbc.OracleDatabaseException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -8,7 +11,7 @@ import java.util.List;
 public interface BookTaskResultMapper {
     int deleteByPrimaryKey(String id);
 
-    int insert(BookTaskResult record) throws SQLException;
+    int insert(BookTaskResult record) throws DataAccessException;
 
     int insertSelective(BookTaskResult record);
 

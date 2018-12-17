@@ -8,9 +8,11 @@ import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.github.pagehelper.Page;
+import oracle.jdbc.OracleDatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -133,7 +135,7 @@ public class BookTaskServiceImpl implements BookTaskService {
                     bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                     log.info("扫描任务{}时，备份失败", dirPath);
                 }
-            } catch (SQLException e) {
+            } catch (DataAccessException e) {
                 //将任务列表置成失败
                 bookTask.setStatus(0);
                 bookTask.setUpdateTime(new Date());
