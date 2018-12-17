@@ -162,7 +162,7 @@
                                         <a style="cursor:pointer;"
                                            onclick="onShowTaskInfoClick('${list.id!'' }');">详情&nbsp;</a>
                                         <#if list.status??>
-                                            <#if list.status==0>
+                                            <#if list.status==0 ||list.status == 1 >
                                             <a style="cursor:pointer;"
                                                onclick="onDeleteTaskInfoClick('${list.id!'' }');">删除&nbsp;</a>
                                             </#if>

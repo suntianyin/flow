@@ -86,6 +86,7 @@ public class BookTaskServiceImpl implements BookTaskService {
             BookTask bookTask = new BookTask();
             try {
                 long start = System.currentTimeMillis();
+                log.info("扫描任务{}开始", dirPath);
                 List<BookMetaBatch> bookMetaList = new ArrayList<>();
                 //创建任务列表
                 bookTask.setId(UUIDCreater.nextId());
