@@ -5,6 +5,6 @@ styleUrl: /apabi/flow/file/book
 uploadXml: /upload/flow/xml
 uploadEpub: /upload/flow/epub
 uploadCebx: /upload/flow/cebx
-email: /apabi/flow/file/email
+bookDetect: /apabi/flow/file/email
 batchSize: 1000
 threadTime: 1
