@@ -1,5 +1,8 @@
 package com.apabi.flow.book.util;
 
+import com.apabi.flow.book.dao.BookChapterBakDao;
+import com.apabi.flow.book.dao.BookChapterDao;
+import com.apabi.flow.book.dao.BookShardDao;
 import com.apabi.flow.book.dao.BookTaskResultMapper;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookMetaService;
@@ -47,6 +50,15 @@ public class ReadBook {
 
     @Autowired
     BookTaskResultMapper bookTaskResultMapper;
+
+    @Autowired
+    BookChapterDao bookChapterDao;
+
+    @Autowired
+    BookShardDao bookShardDao;
+
+    @Autowired
+    BookChapterBakDao bookChapterBakDao;
 
     //读取源文件
     public int readEpubook(String filePath, String metId) throws Exception {
@@ -120,8 +132,10 @@ public class ReadBook {
                     for (String file : fileInfos) {
                         String[] fileId = file.split(",");
                         if (fileId != null && fileId.length == 2) {
-                            filePathQueue.put(filePath + File.separator + fileId[1]);
-                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                            /*filePathQueue.put(filePath + File.separator + fileId[1]);
+                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);*/
+                            filePathQueue.put(fileId[0]);
+                            fileInfoMap.put(fileId[0], filePath + File.separator + fileId[1]);
                         }
                     }
                     //创建上传epub任务
@@ -171,8 +185,8 @@ public class ReadBook {
                     for (String file : fileInfos) {
                         String[] fileId = file.split(",");
                         if (fileId != null && fileId.length == 2) {
-                            filePathQueue.put(filePath + File.separator + fileId[1]);
-                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                            filePathQueue.put(fileId[0]);
+                            fileInfoMap.put(fileId[0], filePath + File.separator + fileId[1]);
                         }
                     }
                     //创建上传epub任务
@@ -308,8 +322,8 @@ public class ReadBook {
                     for (String file : fileInfos) {
                         String[] fileId = file.split(",");
                         if (fileId != null && fileId.length == 2) {
-                            filePathQueue.put(filePath + File.separator + fileId[1]);
-                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                            filePathQueue.put(fileId[0]);
+                            fileInfoMap.put(fileId[0], filePath + File.separator + fileId[1]);
                         }
                     }
                     //创建上传epub任务
@@ -364,8 +378,8 @@ public class ReadBook {
                     for (String file : fileInfos) {
                         String[] fileId = file.split(",");
                         if (fileId != null && fileId.length == 2) {
-                            filePathQueue.put(filePath + File.separator + fileId[1]);
-                            fileInfoMap.put(filePath + File.separator + fileId[1], fileId[0]);
+                            filePathQueue.put(fileId[0]);
+                            fileInfoMap.put(fileId[0], filePath + File.separator + fileId[1]);
                         }
                     }
                     //创建上传epub任务
@@ -413,6 +427,30 @@ public class ReadBook {
         }
     }
 
+    //备份图书章节内容
+    private boolean bakBookChapter(List<String> metaIds) {
+        if (metaIds != null && metaIds.size() > 0) {
+            for (String metaId : metaIds) {
+                long start = System.currentTimeMillis();
+                //获取章节内容
+                List<BookChapter> bookChapterOlds = bookChapterDao.findAllBookChapter(metaId);
+                if (bookChapterOlds.size() > 0) {
+                    //新增到备份数据库
+                    for (BookChapter bookChapter : bookChapterOlds) {
+                        bookChapterBakDao.insertBookChapter(bookChapter);
+                    }
+                    //删除原内容
+                    bookChapterDao.deleteAllBookChapter(metaId);
+                    bookShardDao.deleteAllBookShard(metaId);
+                }
+                long end = System.currentTimeMillis();
+                log.info("图书{}章节内容备份成功，耗时{}", metaId, (end - start));
+            }
+            return true;
+        }
+        return false;
+    }
+
     //删除文件
     private void deleteFiles(File[] files) {
         if (files != null && files.length > 0) {
@@ -441,4 +479,5 @@ public class ReadBook {
             log.info("cebx的html文件删除成功");
         }
     }
+
 }

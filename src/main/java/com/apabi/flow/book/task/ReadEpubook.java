@@ -56,8 +56,10 @@ public class ReadEpubook implements Runnable {
         String metaId;
         BookBatchRes bookBatchRes = new BookBatchRes();
         try {
-            filePath = filePathQueue.take();
-            metaId = fileInfoMap.get(filePath);
+            /*filePath = filePathQueue.take();
+            metaId = fileInfoMap.get(filePath);*/
+            metaId = filePathQueue.take();
+            filePath = fileInfoMap.get(metaId);
             File file = new File(filePath);
             bookBatchRes.setFileName(file.getName());
             bookBatchRes.setMetaId(metaId);

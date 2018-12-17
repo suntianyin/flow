@@ -1,14 +1,12 @@
 package com.apabi.flow.book.service.impl;
 
-import com.apabi.flow.book.dao.BookMetaDao;
-import com.apabi.flow.book.dao.BookTaskMapper;
-import com.apabi.flow.book.dao.BookTaskResultMapper;
-import com.apabi.flow.book.model.BookMetaBatch;
-import com.apabi.flow.book.model.BookTask;
-import com.apabi.flow.book.model.BookTaskResult;
+import com.apabi.flow.book.dao.*;
+import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookMetaService;
 import com.apabi.flow.book.service.BookTaskService;
 import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.github.pagehelper.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +58,18 @@ public class BookTaskServiceImpl implements BookTaskService {
     @Autowired
     BookTaskResultMapper bookTaskResultMapper;
 
+    @Autowired
+    BookChapterDao bookChapterDao;
+
+    @Autowired
+    BookShardDao bookShardDao;
+
+    @Autowired
+    BookChapterBakDao bookChapterBakDao;
+
+    @Autowired
+    ApabiBookMetaDataTempDao bookMetaDataTempDao;
+
     //查看任务列表
     @Override
     public Page<BookTask> showTaskList(Map<String, Object> queryMap) {
@@ -69,7 +79,7 @@ public class BookTaskServiceImpl implements BookTaskService {
     //创建扫描文件任务
     @Override
     @Async
-    public void createBookTask(String dirPath, String fileType) {
+    public void createBookTask(String dirPath, String fileType, Integer isCover) {
         if (!StringUtils.isEmpty(dirPath) && !StringUtils.isEmpty(fileType)) {
             BookTask bookTask = new BookTask();
             try {
@@ -87,19 +97,38 @@ public class BookTaskServiceImpl implements BookTaskService {
                 } else if (fileType.toLowerCase().equals(CEBX_SUFFIX)) {
                     bookMetaList = bookMetaService.getBookMetaCebxBatch(dirPath);
                 }
-                //扫描结果入库
-                List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
-                if (taskResultList != null && taskResultList.size() > 0) {
-                    for (BookTaskResult result : taskResultList) {
-                        bookTaskResultMapper.insert(result);
+                boolean res = true;
+                if (!StringUtils.isEmpty(isCover) && isCover == 1) {
+                    //备份章节内容
+                    if (bookMetaList != null && bookMetaList.size() > 0) {
+                        List<String> metaIds = new ArrayList<>();
+                        for (BookMetaBatch bookMetaBatch : bookMetaList) {
+                            metaIds.add(bookMetaBatch.getMetaId());
+                        }
+                        res = bakBookChapter(metaIds);
                     }
                 }
-                //更改任务列表状态
-                bookTask.setStatus(2);
-                bookTask.setUpdateTime(new Date());
-                bookTaskMapper.updateByPrimaryKeySelective(bookTask);
-                long end = System.currentTimeMillis();
-                log.info("扫描任务{}已完成，耗时：{}毫秒", dirPath, (end - start));
+                if (res) {
+                    //扫描结果入库
+                    List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
+                    if (taskResultList != null && taskResultList.size() > 0) {
+                        for (BookTaskResult result : taskResultList) {
+                            bookTaskResultMapper.insert(result);
+                        }
+                    }
+                    //更改任务列表状态
+                    bookTask.setStatus(2);
+                    bookTask.setUpdateTime(new Date());
+                    bookTaskMapper.updateByPrimaryKeySelective(bookTask);
+                    long end = System.currentTimeMillis();
+                    log.info("扫描任务{}已完成，耗时：{}毫秒", dirPath, (end - start));
+                } else {
+                    //将任务列表置成失败
+                    bookTask.setStatus(0);
+                    bookTask.setUpdateTime(new Date());
+                    bookTaskMapper.updateByPrimaryKeySelective(bookTask);
+                    log.info("扫描任务{}时，备份失败", dirPath);
+                }
             } catch (SQLException e) {
                 //将任务列表置成失败
                 bookTask.setStatus(0);
@@ -151,5 +180,53 @@ public class BookTaskServiceImpl implements BookTaskService {
             return bookTaskMapper.deleteByPrimaryKey(id);
         }
         return 0;
+    }
+
+    //备份图书章节内容
+    private boolean bakBookChapter(List<String> metaIds) {
+        if (metaIds != null && metaIds.size() > 0) {
+            for (String metaId : metaIds) {
+                long start = System.currentTimeMillis();
+                //获取章节内容
+                List<BookChapter> bookChapterOlds = bookChapterDao.findAllBookChapter(metaId);
+                if (bookChapterOlds.size() > 0) {
+                    //新增到备份数据库
+                    for (BookChapter bookChapter : bookChapterOlds) {
+                        bookChapterBakDao.insertBookChapter(bookChapter);
+                    }
+                    //删除原内容
+                    bookChapterDao.deleteAllBookChapter(metaId);
+                    bookShardDao.deleteAllBookShard(metaId);
+                    //更新图书元数据
+                    BookMeta bookMeta = new BookMeta();
+                    bookMeta.setMetaId(metaId);
+                    bookMeta.setChapterNum(0);
+                    bookMeta.setStyleUrl("");
+                    bookMeta.setContentNum(0);
+                    bookMeta.setStreamCatalog("");
+                    bookMeta.setHasFlow(0);
+                    bookMeta.setIsOptimize(0);
+                    bookMeta.setFlowSource("");
+                    bookMeta.setUpdateTime(new Date());
+                    bookMetaDao.updateBookMetaById(bookMeta);
+                    //更新图书元数据，temp表
+                    ApabiBookMetaDataTemp bookMetaDataTemp = new ApabiBookMetaDataTemp();
+                    bookMetaDataTemp.setMetaId(metaId);
+                    bookMetaDataTemp.setChapterNum(0);
+                    bookMetaDataTemp.setStyleUrl("");
+                    bookMetaDataTemp.setContentNum(0);
+                    bookMetaDataTemp.setStreamCatalog("");
+                    bookMetaDataTemp.setHasFlow(0);
+                    bookMetaDataTemp.setIsOptimize(0);
+                    bookMetaDataTemp.setFlowSource("");
+                    bookMetaDataTemp.setUpdateTime(new Date());
+                    bookMetaDataTempDao.update(bookMetaDataTemp);
+                }
+                long end = System.currentTimeMillis();
+                log.info("图书{}章节内容备份成功，耗时{}", metaId, (end - start));
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 public interface BookTaskService {
 
     //创建扫描文件任务
-    void createBookTask(String dirPath, String fileType);
+    void createBookTask(String dirPath, String fileType, Integer isCover);
 
     //查看任务列表
     Page<BookTask> showTaskList(Map<String, Object> queryMap);

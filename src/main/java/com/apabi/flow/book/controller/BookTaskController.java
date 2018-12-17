@@ -54,9 +54,10 @@ public class BookTaskController {
     @RequestMapping(value = "/taskFileScan", method = RequestMethod.POST)
     @ResponseBody
     public String taskFileScan(@RequestParam("filePath") String filePath,
-                               @RequestParam("fileType") String fileType) {
+                               @RequestParam("fileType") String fileType,
+                               @RequestParam("isCover") Integer isCover) {
         if (!StringUtils.isEmpty(filePath) && !StringUtils.isEmpty(fileType)) {
-            bookTaskService.createBookTask(filePath, fileType);
+            bookTaskService.createBookTask(filePath, fileType, isCover);
             return "success";
         }
         return "error";
@@ -70,7 +71,7 @@ public class BookTaskController {
             long start = System.currentTimeMillis();
             Map<String, String[]> params = request.getParameterMap();
             Map<String, Object> queryMap = new HashMap<>();
-            PageHelper.startPage(pageNum, DEFAULT_PAGESIZE,"CREATE_TIME DESC");
+            PageHelper.startPage(pageNum, DEFAULT_PAGESIZE, "CREATE_TIME DESC");
             Page<BookTask> page = bookTaskService.showTaskList(queryMap);
             if (page == null) {
                 model.addAttribute("bookTaskList", null);

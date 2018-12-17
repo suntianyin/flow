@@ -42,7 +42,7 @@
             });
         }
 
-        //批量获取
+        //批量获取书苑元数据
         function batchAdd() {
             var ids = $("#metaId").val();
             var formData = new FormData();
@@ -75,10 +75,15 @@
         function getPageAndCata() {
             var drid = $("#drid").val();
             if (drid == "") {
-                tipDialog("DRID为空", 3, -1);
+                tipDialog("DRID不能为空", 3, -1);
                 return;
             }
-            var url = RootPath() + "/book/getPageAndCata?drid=" + drid;
+            var toEmail = $("#toEmail").val();
+            if (toEmail == "") {
+                tipDialog("收件人不能为空", 3, -1);
+                return;
+            }
+            var url = RootPath() + "/book/getPageAndCata?drid=" + drid + "&toEmail=" + toEmail;
             $.ajax({
                 url: url,
                 success: function (data) {
@@ -106,9 +111,9 @@
         <!--工具栏-->
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
-                <a id="lr-xmlAdd" href="javascript:;" title="批量删除流式内容" onclick="batchDelete()"
+                <a id="batchDelete" href="javascript:;" title="批量删除流式内容"
                    class="tools_btn"><span><i class="fa fa-minus"></i>&nbsp;批量删除流式内容</span></a>
-                <a id="lr-xmlAdd" href="javascript:;" title="批量获取书苑元数据" onclick="batchAdd()"
+                <a id="batchAdd" href="javascript:;" title="批量获取书苑元数据"
                    class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;批量获取书苑元数据</span></a>
             </div>
         </div>
@@ -116,6 +121,12 @@
         <div id="grid_List">
             <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
                 <table border="0" class="form-find" style="height: 45px;">
+                    <tr>
+                        <th>收件人：</th>
+                        <td>
+                            <input id="toEmail" name="toEmail" type="text" class="txt" style="width: 200px"/>
+                        </td>
+                    </tr>
                     <tr align="center">
                         <th>METAID：</th>
                         <td>
@@ -138,4 +149,85 @@
     </div>
 </div>
 </body>
+<script type="text/javascript">
+    //批量删除流式内容
+    $("#batchDelete").click(function () {
+        var ids = $("#metaId").val();
+        if (ids == "") {
+            tipDialog("METAID不能为空", 3, -1);
+            return;
+        }
+        var toEmail = $("#toEmail").val();
+        if (toEmail == "") {
+            tipDialog("收件人不能为空", 3, -1);
+            return;
+        }
+        confirmDialog("温馨提示", "请确认是否要删除这些图书的流式内容？", function (res) {
+            if (res) {
+                var formData = new FormData();
+                formData.append('metaIds', ids);
+                formData.append('toEmail', toEmail);
+                $.ajax({
+                    url: RootPath() + "/book/bookChapterDeleteEmail",
+                    type: "POST",
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data == "success") {
+                            tipDialog("正在操作，请注意查收邮件！", 3, 1);
+                        } else if (data == "error") {
+                            tipCss('批量操作', '失败，联系管理员！');
+                        }
+                    },
+                    error: function (data) {
+                        Loading(false);
+                        alertDialog(data.responseText, -1);
+                    }
+                });
+            }
+        });
+    });
+
+    //批量获取书苑元数据
+    $("#batchAdd").click(function () {
+        var ids = $("#metaId").val();
+        if (ids == "") {
+            tipDialog("METAID不能为空", 3, -1);
+            return;
+        }
+        var toEmail = $("#toEmail").val();
+        if (toEmail == "") {
+            tipDialog("收件人不能为空", 3, -1);
+            return;
+        }
+        confirmDialog("温馨提示", "请确认是否要从书苑获取这些图书？", function (res) {
+            if (res) {
+                var formData = new FormData();
+                formData.append('metaIds', ids);
+                formData.append('toEmail', toEmail);
+                $.ajax({
+                    url: RootPath() + "/book/bookMetaBatchEmail",
+                    type: "POST",
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data == "success") {
+                            tipDialog("正在操作，请注意查收邮件！", 3, 1);
+                        } else if (data == "error") {
+                            tipCss('批量操作', '失败，联系管理员！');
+                        }
+                    },
+                    error: function (data) {
+                        Loading(false);
+                        alertDialog(data.responseText, -1);
+                    }
+                });
+            }
+        });
+    });
+</script>
 </html>
