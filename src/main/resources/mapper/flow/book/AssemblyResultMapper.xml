@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.book.dao.AssemblyResultMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.AssemblyResult">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="METAID" jdbcType="VARCHAR" property="metaid" />
+    <result column="RESULT" jdbcType="DECIMAL" property="result" />
+    <result column="MESSAGE" jdbcType="VARCHAR" property="message" />
+    <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, METAID, RESULT, MESSAGE, CREATETIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PAGE_ASSEMBLYRESULT
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PAGE_ASSEMBLYRESULT
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.book.model.AssemblyResult">
+    insert into APABI_BOOK_PAGE_ASSEMBLYRESULT (ID, METAID, RESULT,
+      MESSAGE, CREATETIME)
+    values (#{id,jdbcType=VARCHAR}, #{metaid,jdbcType=VARCHAR}, #{result,jdbcType=DECIMAL}, 
+      #{message,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.book.model.AssemblyResult">
+    insert into APABI_BOOK_PAGE_ASSEMBLYRESULT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="metaid != null">
+        METAID,
+      </if>
+      <if test="result != null">
+        RESULT,
+      </if>
+      <if test="message != null">
+        MESSAGE,
+      </if>
+      <if test="createTime != null">
+        CREATETIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="metaid != null">
+        #{metaid,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=DECIMAL},
+      </if>
+      <if test="message != null">
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.book.model.AssemblyResult">
+    update APABI_BOOK_PAGE_ASSEMBLYRESULT
+    <set>
+      <if test="metaid != null">
+        METAID = #{metaid,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+        RESULT = #{result,jdbcType=DECIMAL},
+      </if>
+      <if test="message != null">
+        MESSAGE = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATETIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.book.model.AssemblyResult">
+    update APABI_BOOK_PAGE_ASSEMBLYRESULT
+    set METAID = #{metaid,jdbcType=VARCHAR},
+      RESULT = #{result,jdbcType=DECIMAL},
+      MESSAGE = #{message,jdbcType=VARCHAR},
+      CREATETIME = #{createTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

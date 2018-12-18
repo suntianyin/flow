@@ -8,9 +8,11 @@ import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.github.pagehelper.Page;
+import oracle.jdbc.OracleDatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -84,6 +86,7 @@ public class BookTaskServiceImpl implements BookTaskService {
             BookTask bookTask = new BookTask();
             try {
                 long start = System.currentTimeMillis();
+                log.info("扫描任务{}开始", dirPath);
                 List<BookMetaBatch> bookMetaList = new ArrayList<>();
                 //创建任务列表
                 bookTask.setId(UUIDCreater.nextId());
@@ -113,6 +116,10 @@ public class BookTaskServiceImpl implements BookTaskService {
                     List<BookTaskResult> taskResultList = createBookTask(bookMetaList, bookTask);
                     if (taskResultList != null && taskResultList.size() > 0) {
                         for (BookTaskResult result : taskResultList) {
+                            //如果章节内容进行备份覆盖
+                            if (!StringUtils.isEmpty(isCover) && isCover == 1) {
+                                result.setHasFlow(0);
+                            }
                             bookTaskResultMapper.insert(result);
                         }
                     }
@@ -129,7 +136,7 @@ public class BookTaskServiceImpl implements BookTaskService {
                     bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                     log.info("扫描任务{}时，备份失败", dirPath);
                 }
-            } catch (SQLException e) {
+            } catch (DataAccessException e) {
                 //将任务列表置成失败
                 bookTask.setStatus(0);
                 bookTask.setUpdateTime(new Date());
@@ -192,7 +199,17 @@ public class BookTaskServiceImpl implements BookTaskService {
                 if (bookChapterOlds.size() > 0) {
                     //新增到备份数据库
                     for (BookChapter bookChapter : bookChapterOlds) {
-                        bookChapterBakDao.insertBookChapter(bookChapter);
+                        BookChapterVo bookChapterBak = new BookChapterVo();
+                        bookChapterBak.setId(UUIDCreater.nextId());
+                        bookChapterBak.setComId(bookChapter.getComId());
+                        bookChapterBak.setWordSum(bookChapter.getWordSum());
+                        bookChapterBak.setShardSum(bookChapter.getShardSum());
+                        bookChapterBak.setContent(bookChapter.getContent());
+                        bookChapterBak.setChapterNum(bookChapter.getChapterNum());
+                        bookChapterBak.setBodyClass(bookChapter.getBodyClass());
+                        bookChapterBak.setCreateTime(new Date());
+                        bookChapterBak.setUpdateTime(new Date());
+                        bookChapterBakDao.insertBookChapterVo(bookChapterBak);
                     }
                     //删除原内容
                     bookChapterDao.deleteAllBookChapter(metaId);

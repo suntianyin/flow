@@ -73,6 +73,7 @@
             })
         })
         $(function () {
+            $("#isCover").val("${isCover!0 }");
             var pathurl = "pageAssembly?";
             var totalPages = ${pages?c};
             var currentPages = ${pageNum?c};
@@ -110,7 +111,8 @@
 
         function btn_Assembly() {
             // window.location.href = "autoProcessBookFromPage2Chapter";
-            var url = "/book/autoProcessBookFromPage2Chapter";
+            var isCover=document.getElementById("isCover").value;
+            var url = "/book/autoProcessBookFromPage2Chapter?isCover="+isCover;
             loading();
             $.ajax({
                 url: RootPath() + url,
@@ -121,7 +123,7 @@
                 async: false,
                 success: function (data) {
                     alertDialog(data.msg, data.status);
-                    window.location.href = "pageAssembly";
+                    // window.location.href = "pageAssembly";
                 },
                 error: function (data) {
                     alertDialog("章节拼装失败，请联系管理员", -1);
@@ -133,6 +135,7 @@
         function btn_flush() {
             window.location.href = "pageAssembly";
         }
+
         function isNull(str) {
             if (str == undefined || str == null || $.trim(str) == '') {
                 return true;
@@ -167,17 +170,17 @@
             </div>
             <div class="PartialButton">
                 <button id="batch-import2" title="批量导入" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp批量导入抓取队列</span></button>
+                                class="fa fa-plus"></i>&nbsp批量导入抓取队列</span></button>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
                 <button id="batch-export" title="批量导出" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp批量导出Excel</span></button>
+                                class="fa fa-plus"></i>&nbsp批量导出Excel</span></button>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
                 <button id="batch-delete" title="全部删除" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp全部删除</span></button>
+                                class="fa fa-plus"></i>&nbsp全部删除</span></button>
                 <div class="tools_separator"></div>
             </div>
         </div>
@@ -189,14 +192,22 @@
                         <textarea id="metaIds2" name="metaIds2" rows="10" cols="50"></textarea>
                     </td>
                     <td>
-                        <input id="btnSearch" type="button" class="btnSearch" value="上传至拼装队列" onclick="btn_uploadToChapter()"/>（METAID之间以回车键换行分隔）
+                        <input id="btnSearch" type="button" class="btnSearch" value="上传至拼装队列"
+                               onclick="btn_uploadToChapter()"/>（METAID之间以回车键换行分隔）
                     </td>
                 </tr>
             </table>
         </div>
         <input id="back" type="button" class="btnSearch" value="返回" onclick="window.history.back();"/>
         <input id="Crawled" type="button" class="btnSearch" value="刷新" onclick="btn_flush()"/>
-        <input id="Assembly" type="button" class="btnSearch" value="分页流式内容拼装" onclick="btn_Assembly()"/>
+        <th>是否覆盖流式内容：</th>
+        <td>
+            <select id="isCover" name="isCover" class="txtselect">
+                <option value="0" selected="selected">否</option>
+                <option value="1">是</option>
+            </select>
+            <input id="Assembly" type="button" class="btnSearch" value="分页流式内容拼装" onclick="btn_Assembly()"/>
+        </td>
         <div class="panel-body">
             <div class="row">
                 <table id="table-list"
@@ -208,13 +219,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <#list pageAssemblyQueues as list>
-                            <tr class="gradeA odd" role="row">
-                                <td align="center">${(list.id)!'' }</td>
-                                <td align="center"><input type="button" value="删除"
-                                                          onclick="pageAssemblyQueues('${list.id }')"/></td>
-                            </tr>
-                        </#list>
+                    <#list pageAssemblyQueues as list>
+                        <tr class="gradeA odd" role="row">
+                        <td align="center">${(list.id)!'' }</td>
+                        <td align="center"><input type="button" value="删除"
+                    onclick="pageAssemblyQueues('${list.id }')"/></td>
+                        </tr>
+                    </#list>
                     </tbody>
                 </table>
             </div>

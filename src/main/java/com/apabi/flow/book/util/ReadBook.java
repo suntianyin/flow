@@ -427,30 +427,6 @@ public class ReadBook {
         }
     }
 
-    //备份图书章节内容
-    private boolean bakBookChapter(List<String> metaIds) {
-        if (metaIds != null && metaIds.size() > 0) {
-            for (String metaId : metaIds) {
-                long start = System.currentTimeMillis();
-                //获取章节内容
-                List<BookChapter> bookChapterOlds = bookChapterDao.findAllBookChapter(metaId);
-                if (bookChapterOlds.size() > 0) {
-                    //新增到备份数据库
-                    for (BookChapter bookChapter : bookChapterOlds) {
-                        bookChapterBakDao.insertBookChapter(bookChapter);
-                    }
-                    //删除原内容
-                    bookChapterDao.deleteAllBookChapter(metaId);
-                    bookShardDao.deleteAllBookShard(metaId);
-                }
-                long end = System.currentTimeMillis();
-                log.info("图书{}章节内容备份成功，耗时{}", metaId, (end - start));
-            }
-            return true;
-        }
-        return false;
-    }
-
     //删除文件
     private void deleteFiles(File[] files) {
         if (files != null && files.length > 0) {

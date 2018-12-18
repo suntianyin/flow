@@ -1302,6 +1302,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                             bookMetaDataTemp.setFlowSource("");
                             bookMetaDataTempDao.update(bookMetaDataTemp);
                             emailResult.setMessage("成功");
+                            log.info("删除图书{}章节内容成功");
                         }
                     } catch (Exception e) {
                         emailResult.setMessage("失败");
