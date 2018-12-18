@@ -8,6 +8,7 @@ import com.apabi.flow.book.service.BookMetaService;
 import com.apabi.flow.book.service.BookTaskResultService;
 import com.apabi.flow.book.service.BookTaskService;
 import com.apabi.flow.book.service.impl.BookTaskServiceImpl;
+import com.apabi.flow.book.task.BookBatchTask;
 import com.apabi.flow.book.util.ReadBook;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
