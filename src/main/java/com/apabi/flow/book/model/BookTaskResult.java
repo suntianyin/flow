@@ -9,6 +9,8 @@ public class BookTaskResult {
 
     private Integer status;
 
+    private String fileIsbn;
+
     private String fileName;
 
     private String metaId;
@@ -51,6 +53,14 @@ public class BookTaskResult {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getFileIsbn() {
+        return fileIsbn;
+    }
+
+    public void setFileIsbn(String fileIsbn) {
+        this.fileIsbn = fileIsbn;
     }
 
     public String getFileName() {

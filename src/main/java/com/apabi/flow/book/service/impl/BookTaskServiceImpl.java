@@ -157,6 +157,7 @@ public class BookTaskServiceImpl implements BookTaskService {
                 taskResult.setTitle(bookMetaBatch.getTitle());
                 taskResult.setTaskId(bookTask.getId());
                 taskResult.setStatus(2);
+                taskResult.setFileIsbn(bookMetaBatch.getFileIsbn());
                 taskResult.setPublisher(bookMetaBatch.getPublisher());
                 taskResult.setMetaId(bookMetaBatch.getMetaId());
                 taskResult.setIsbn13(bookMetaBatch.getIsbn13());
