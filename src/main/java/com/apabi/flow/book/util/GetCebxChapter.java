@@ -102,6 +102,7 @@ public class GetCebxChapter {
     public EpubookMeta insertCebx(String path, EpubookMeta epubookMeta, String fileName) throws Exception {
         if (StringUtils.isNotBlank(path)) {
             //解析cebx文件
+            log.info("解析图书{}开始", path);
             String target = getHtmlCss(path);
             if (target != null) {
                 //获取层次目录
@@ -352,6 +353,10 @@ public class GetCebxChapter {
             long start = System.currentTimeMillis();
             //获取文件名
             File file = new File(path);
+            if (file != null && file.length() == 0) {
+                log.error("文件:{},无内容", path);
+                return null;
+            }
             String fileName = file.getName();
             //fileName = fileName.substring(0, fileName.lastIndexOf("."));
             String target = config.getTargetCebxDir() + File.separator + fileName;

@@ -85,6 +85,7 @@ public class GetEpubookChapter {
                 threadLocal.set(df);
             }
             if (epubookMeta != null && fileName != null && fileName.length() > 0) {
+                log.info("解析图书{}开始", path);
                 Book book = getEpubook(path);
                 if (book != null) {
                     //获取meta数据
