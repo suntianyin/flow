@@ -663,10 +663,11 @@ public class BookController {
     //批量获取页码和目录
     @RequestMapping(value = "/getPageAndCata")
     @ResponseBody
-    public String getPageAndCata(@RequestParam("drid") Integer drid,
+    public String getPageAndCata(@RequestParam("dridMin") Integer dridMin,
+                                 @RequestParam("dridMax") Integer dridMax,
                                  @RequestParam("toEmail") String toEmail) {
-        if ((drid > 0) && (!StringUtils.isEmpty(toEmail))) {
-            bookMetaService.getPageAndCata(drid, toEmail);
+        if ((dridMin > 0) && (!StringUtils.isEmpty(toEmail))) {
+            bookMetaService.getPageAndCata(dridMin, dridMax, toEmail);
             return "success";
         }
         return "error";
@@ -1077,7 +1078,7 @@ public class BookController {
      */
     @ResponseBody
     @RequestMapping("/autoProcessBookFromPage2Chapter")
-    public Object autoProcessBookFromPage2Chapter(@RequestParam("isCover") int isCover ,Model model ){
+    public Object autoProcessBookFromPage2Chapter(@RequestParam("isCover") int isCover, Model model) {
         ResultEntity resultEntity = new ResultEntity();
         int i = bookPageService.autoProcessBookFromPage2Chapter(isCover);
         if (i >= 1) {
@@ -1091,7 +1092,7 @@ public class BookController {
             resultEntity.setStatus(-1);
         }
 //        resultEntity.setBody()
-        model.addAttribute("isCover",isCover);
+        model.addAttribute("isCover", isCover);
         return resultEntity;
     }
 

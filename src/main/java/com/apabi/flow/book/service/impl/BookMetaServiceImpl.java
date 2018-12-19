@@ -1089,30 +1089,7 @@ public class BookMetaServiceImpl implements BookMetaService {
         return null;
     }
 
-    //递归获取文件路径
-    /*private static void func(File file) {
-        File[] fs = file.listFiles();
-        if (fs != null && fs.length > 0) {
-            for (File f : fs) {
-                //若是目录，则递归该目录下的文件
-                if (f.isDirectory()) {
-                    func(f);
-                }
-                //若是文件，则进行保存
-                if (f.isFile()) {
-                    String suffix = f.getName().substring(f.getName().lastIndexOf(".") + 1);
-                    if (suffix.toLowerCase().equals("xml")) {
-                        XML_FILES.add(f.getPath());
-                    } else if (suffix.toLowerCase().equals("cebx")) {
-                        CEBX_FILES.add(f.getPath());
-                    } else {
-                        FILES.add(f.getPath());
-                    }
-                }
-            }
-        }
-    }*/
-
+    //递归获取文件
     private static void func(File file, Map<String, List> fileMap) {
         File[] fs = file.listFiles();
         if (fs != null && fs.length > 0) {
@@ -1403,7 +1380,7 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
-    //批量获取图书元数据
+    //批量从书苑获取图书元数据
     @Override
     @Async
     public void bookMetaBatchEmail(String conMetaId, String toEmail) {
@@ -1440,6 +1417,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     emailResult.setMessage("成功");
                                     log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
                                             0, metaId, "success", new Date());
+                                    log.info("开始获取图书{}的目录和页码");
+                                    getPageAndCata(bookMeta.getMetaId());
                                 } else {
                                     emailResult.setMessage("失败");
                                     log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
@@ -1472,64 +1451,46 @@ public class BookMetaServiceImpl implements BookMetaService {
         }
     }
 
-    //根据drid，从书苑获取页码和目录
-    /*@Override
+    //异步获取书苑数据的页码和目录
     @Async
-    public void getPageAndCata(Integer drid) {
-        if (drid > 0) {
-            drid--;
-            List<String> metaIdList = bookMetaDao.findMetaIdByDrid(drid);
-            if (metaIdList != null && metaIdList.size() > 0) {
-                int cnt = 0;
-                for (String metaId : metaIdList) {
-                    try {
-                        long start = System.currentTimeMillis();
-                        cnt++;
-                        BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
-                        //补充页码和目录
-                        if (bookMeta != null) {
-                            boolean flag = false;
-                            if (StringUtils.isEmpty(bookMeta.getCebxPage())) {
-                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
-                                bookMeta.setCebxPage(cebxPage);
-                                flag = true;
-                            }
-                            if (StringUtils.isEmpty(bookMeta.getFoamatCatalog())) {
-                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
-                                bookMeta.setFoamatCatalog(cata);
-                                flag = true;
-                                if (StringUtils.isEmpty(bookMeta.getStreamCatalog())) {
-                                    bookMeta.setStreamCatalog(cata);
-                                }
-                            }
-                            if (flag) {
-                                bookMetaDao.updateBookMetaById(bookMeta);
-                                //temp表补充页码和目录
-                                ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
-                                temp.setMetaId(bookMeta.getMetaId());
-                                temp.setCebxPage(bookMeta.getCebxPage());
-                                temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
-                                temp.setStreamCatalog(bookMeta.getStreamCatalog());
-                                bookMetaDataTempDao.update(temp);
-                                long end = System.currentTimeMillis();
-                                log.info("总共{}，已完成{}，获取图书{}的页码和目录，耗时{}毫秒", metaIdList.size(), cnt, metaId, (end - start));
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.warn("获取图书{}的页码和目录时，出现异常{}", metaId, e.getMessage());
-                    }
-                }
+    public void getPageAndCata(String metaId) {
+        if (!StringUtils.isEmpty(metaId)) {
+            try {
+                BookMeta bookMeta = new BookMeta();
+                bookMeta.setMetaId(metaId);
+                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
+                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
+                bookMeta.setCebxPage(cebxPage);
+                bookMeta.setStreamCatalog(cata);
+                bookMetaDao.updateBookMetaById(bookMeta);
+                //更新到temp表
+                ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
+                temp.setMetaId(bookMeta.getMetaId());
+                temp.setCebxPage(bookMeta.getCebxPage());
+                temp.setStreamCatalog(bookMeta.getStreamCatalog());
+                bookMetaDataTempDao.update(temp);
+                log.info("获取图书{}页码和目录成功", metaId);
+            } catch (Exception e) {
+                log.info("获取图书{}页码和目录异常", metaId);
             }
         }
-    }*/
+    }
 
     //根据drid，从书苑获取页码和目录
     @Override
     @Async
-    public void getPageAndCata(Integer drid, String toEmail) {
-        if (drid > 0 && !StringUtils.isEmpty(toEmail)) {
-            int maxDrid = bookMetaDao.getMaxDrid();
-            List<EmailResult> emailResults = new ArrayList<>();
+    public void getPageAndCata(Integer dridMin, Integer dridMax, String toEmail) {
+        if (dridMin > 0 && !StringUtils.isEmpty(toEmail)) {
+            //如果没有输入最大值，则从数据库中获取
+            int maxDrid;
+            if (dridMax != null) {
+                maxDrid = dridMax;
+                if (dridMin > dridMax) {
+                    maxDrid = bookMetaDao.getMaxDrid();
+                }
+            } else {
+                maxDrid = bookMetaDao.getMaxDrid();
+            }
             //获取日期格式转换
             ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
             DateFormat df = threadLocal.get();
@@ -1537,11 +1498,13 @@ public class BookMetaServiceImpl implements BookMetaService {
                 df = new SimpleDateFormat("yyyyMMddHHmmss");
                 threadLocal.set(df);
             }
-            while (drid < maxDrid + 1) {
+            //用于邮件发送
+            List<EmailResult> emailResults = new ArrayList<>();
+            while (dridMin < maxDrid + 1) {
                 EmailResult emailResult = new EmailResult();
-                emailResult.setId(String.valueOf(drid));
+                emailResult.setId(String.valueOf(dridMin));
                 try {
-                    List<String> metaIds = bookMetaDao.findMetaIdByDrid(drid);
+                    List<String> metaIds = bookMetaDao.findMetaIdByDrid(dridMin);
                     if (metaIds != null && metaIds.size() > 0) {
                         for (String metaId : metaIds) {
                             long start = System.currentTimeMillis();
@@ -1580,9 +1543,9 @@ public class BookMetaServiceImpl implements BookMetaService {
                     }
                 } catch (Exception e) {
                     emailResult.setMessage("失败");
-                    log.warn("获取图书{}的页码和目录时，出现异常{}", drid, e.getMessage());
+                    log.warn("获取图书{}的页码和目录时，出现异常{}", dridMin, e.getMessage());
                 }
-                drid++;
+                dridMin++;
                 emailResults.add(emailResult);
             }
             //生成检查结果
@@ -1672,7 +1635,6 @@ public class BookMetaServiceImpl implements BookMetaService {
         bookMeta.setEbookPrice(ebookPrice);
         return bookMeta;
     }
-
 
     //调用接口获取数据
     private String getCebxData(String url) {

@@ -74,23 +74,24 @@
 
         //从接口获取页码和目录
         function getPageAndCata() {
-            var drid = $("#drid").val();
-            if (drid == "") {
+            var dridMin = $("#dridMin").val();
+            if (dridMin == "") {
                 tipDialog("DRID不能为空", 3, -1);
                 return;
             }
+            var dridMax = $("#dridMax").val();
             var toEmail = $("#toEmail").val();
             if (toEmail == "") {
                 tipDialog("收件人不能为空", 3, -1);
                 return;
-            }else {
+            } else {
                 var res = isEmail(toEmail);
-                if (res == false){
+                if (res == false) {
                     tipDialog("请检查收件邮箱", 3, -1);
                     return;
                 }
             }
-            var url = RootPath() + "/book/getPageAndCata?drid=" + drid + "&toEmail=" + toEmail;
+            var url = RootPath() + "/book/getPageAndCata?dridMin=" + dridMin + "&dridMax=" + dridMax + "&toEmail=" + toEmail;
             $.ajax({
                 url: url,
                 success: function (data) {
@@ -143,11 +144,12 @@
                         </td>
                         <th>DRID：</th>
                         <td>
-                            <input id="drid" type="text" class="txt" style="width: 200px"/>
+                            <input id="dridMin" type="text" class="txt" style="width: 100px"/>-
+                            <input id="dridMax" type="text" class="txt" style="width: 100px"/>
                         <td>
                             <input id="pageAndCata" type="button" class="btnSearch" value="获取目录和页码"
                                    onclick="getPageAndCata()"/>
-                            （将获取大于等于该drid的数据的目录和页码）
+                            （获取该范围的目录和页码，如果上限不输入，则取书苑最大值）
                         </td>
                         </td>
                     </tr>
@@ -169,9 +171,9 @@
         if (toEmail == "") {
             tipDialog("收件人不能为空", 3, -1);
             return;
-        }else {
+        } else {
             var res = isEmail(toEmail);
-            if (res == false){
+            if (res == false) {
                 tipDialog("请检查收件邮箱", 3, -1);
                 return;
             }
@@ -215,9 +217,9 @@
         if (toEmail == "") {
             tipDialog("收件人不能为空", 3, -1);
             return;
-        }else {
+        } else {
             var res = isEmail(toEmail);
-            if (res == false){
+            if (res == false) {
                 tipDialog("请检查收件邮箱", 3, -1);
                 return;
             }
