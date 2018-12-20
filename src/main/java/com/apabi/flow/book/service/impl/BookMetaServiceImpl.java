@@ -83,11 +83,17 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
 
-    private static List<String> FILES = new ArrayList<>();
+    /*private static List<String> FILES = new ArrayList<>();
 
     private static List<String> XML_FILES = new ArrayList<>();
 
-    private static List<String> CEBX_FILES = new ArrayList<>();
+    private static List<String> CEBX_FILES = new ArrayList<>();*/
+
+    private static final String FILE_KEY = "FILE_KEY";
+
+    private static final String XML_KEY = "XML_KEY";
+
+    private static final String CEBX_KEY = "CEBX_KEY";
 
     private static final String EPUB_SUFFIX = "epub";
 
@@ -798,86 +804,61 @@ public class BookMetaServiceImpl implements BookMetaService {
                 log.warn("目录" + dirPath + "不存在");
             } else {
                 //读取所有文件
-                //清空list
-                synchronized (XML_FILES) {
-                    XML_FILES.clear();
-                    CEBX_FILES.clear();
-                    FILES.clear();
-                    func(dir);
-                    if (FILES.size() > 0) {
-                        List<BookMetaBatch> bookMetaBatches = new ArrayList<>();
-                        for (String file : FILES) {
-                            File newFile = new File(file);
-                            List<BookMetaBatch> metaBatches = new ArrayList<>();
-                            try {
-                                Book book = getBook(file);
-                                if (book != null) {
-                                    String fileName;
-                                    String title;
-                                    String isbn = null;
-                                    String isbnMeta = null;
-                                    //获取文件名
-                                    fileName = newFile.getName();
-                                    if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
-                                        //如果文件名符合"m."规则，则从数据库中查询
-                                        if (fileName.length() > 1 && fileName.substring(0, 2).equals("m.")) {
-                                            String metaId = fileName.replace(".epub", "");
-                                            metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
-                                        } else {
-                                            //使用插件获取isbn
-                                            isbnMeta = getIsbn4Meta(book);
-                                            //获取文件中的isbn
-                                            isbn = getIsbn4Content(book);
-                                            //isbn = getIsbnForContent(book);
-                                            //使用文件中获取的isbn
-                                            if (!StringUtils.isEmpty(isbn)) {
-                                                metaBatches = bookMetaDao.findBookMetaBatchByIsbn(isbn);
-                                                //使用isbn13查找
-                                                if (metaBatches.size() == 0) {
-                                                    String isbn13 = isbn.replace("-", "");
-                                                    metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
-                                                }
-                                            } else if (!StringUtils.isEmpty(isbnMeta)) {
-                                                //如果文件中的isbn为空，则使用插件获取的isbn
-                                                metaBatches = bookMetaDao.findBookMetaBatchByIsbn(isbnMeta);
-                                                //使用isbn13查找
-                                                if (metaBatches.size() == 0) {
-                                                    String isbn13 = isbnMeta.replace("-", "");
-                                                    metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
-                                                }
+                List<String> FILES;
+                Map<String, List> fileMap = new HashMap<>();
+                fileMap.put(FILE_KEY, new ArrayList());
+                func(dir, fileMap);
+                //将文件分别存储
+                FILES = fileMap.get(FILE_KEY);
+                if (FILES.size() > 0) {
+                    List<BookMetaBatch> bookMetaBatches = new ArrayList<>();
+                    for (String file : FILES) {
+                        File newFile = new File(file);
+                        List<BookMetaBatch> metaBatches = new ArrayList<>();
+                        try {
+                            Book book = getBook(file);
+                            if (book != null) {
+                                String fileName;
+                                String title;
+                                String isbn = null;
+                                String isbnMeta = null;
+                                //获取文件名
+                                fileName = newFile.getName();
+                                if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
+                                    //如果文件名符合"m."规则，则从数据库中查询
+                                    if (fileName.length() > 1 && fileName.substring(0, 2).equals("m.")) {
+                                        String metaId = fileName.replace(".epub", "");
+                                        metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
+                                    } else {
+                                        //使用插件获取isbn
+                                        isbnMeta = getIsbn4Meta(book);
+                                        //获取文件中的isbn
+                                        isbn = getIsbn4Content(book);
+                                        //isbn = getIsbnForContent(book);
+                                        //使用文件中获取的isbn
+                                        if (!StringUtils.isEmpty(isbn)) {
+                                            metaBatches = bookMetaDao.findBookMetaBatchByIsbn(isbn);
+                                            //使用isbn13查找
+                                            if (metaBatches.size() == 0) {
+                                                String isbn13 = isbn.replace("-", "");
+                                                metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
+                                            }
+                                        } else if (!StringUtils.isEmpty(isbnMeta)) {
+                                            //如果文件中的isbn为空，则使用插件获取的isbn
+                                            metaBatches = bookMetaDao.findBookMetaBatchByIsbn(isbnMeta);
+                                            //使用isbn13查找
+                                            if (metaBatches.size() == 0) {
+                                                String isbn13 = isbnMeta.replace("-", "");
+                                                metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
                                             }
                                         }
                                     }
-                                    if (metaBatches.size() > 0) {
-                                        for (BookMetaBatch bookMetaBatch : metaBatches) {
-                                            //文件名
-                                            bookMetaBatch.setFileName(fileName);
-                                            //从文件中获取的isbn
-                                            if (StringUtils.isEmpty(isbn)) {
-                                                bookMetaBatch.setFileIsbn(isbnMeta);
-                                            } else {
-                                                bookMetaBatch.setFileIsbn(isbn);
-                                            }
-                                            //获取书名
-                                            title = book.getTitle();
-                                            if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
-                                                bookMetaBatch.setTitle(title);
-                                            }
-                                            bookMetaBatches.add(bookMetaBatch);
-                                        }
-                                    } else {
-                                        //数据库中不存在
-                                        BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                                }
+                                if (metaBatches.size() > 0) {
+                                    for (BookMetaBatch bookMetaBatch : metaBatches) {
                                         //文件名
                                         bookMetaBatch.setFileName(fileName);
-                                        //从文件中获取isbn
-                                        if (StringUtils.isEmpty(isbnMeta)) {
-                                            isbnMeta = getIsbn4Meta(book);
-                                        }
-                                        if (StringUtils.isEmpty(isbn)) {
-                                            isbn = getIsbn4Content(book);
-                                        }
-                                        //文件isbn
+                                        //从文件中获取的isbn
                                         if (StringUtils.isEmpty(isbn)) {
                                             bookMetaBatch.setFileIsbn(isbnMeta);
                                         } else {
@@ -891,21 +872,45 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         bookMetaBatches.add(bookMetaBatch);
                                     }
                                 } else {
+                                    //数据库中不存在
                                     BookMetaBatch bookMetaBatch = new BookMetaBatch();
                                     //文件名
-                                    bookMetaBatch.setFileName(newFile.getName());
+                                    bookMetaBatch.setFileName(fileName);
+                                    //从文件中获取isbn
+                                    if (StringUtils.isEmpty(isbnMeta)) {
+                                        isbnMeta = getIsbn4Meta(book);
+                                    }
+                                    if (StringUtils.isEmpty(isbn)) {
+                                        isbn = getIsbn4Content(book);
+                                    }
+                                    //文件isbn
+                                    if (StringUtils.isEmpty(isbn)) {
+                                        bookMetaBatch.setFileIsbn(isbnMeta);
+                                    } else {
+                                        bookMetaBatch.setFileIsbn(isbn);
+                                    }
+                                    //获取书名
+                                    title = book.getTitle();
+                                    if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
+                                        bookMetaBatch.setTitle(title);
+                                    }
                                     bookMetaBatches.add(bookMetaBatch);
                                 }
-                            } catch (Exception e) {
-                                log.warn(newFile.getName() + "," + e.getMessage());
+                            } else {
+                                BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                                //文件名
+                                bookMetaBatch.setFileName(newFile.getName());
+                                bookMetaBatches.add(bookMetaBatch);
                             }
+                        } catch (Exception e) {
+                            log.warn(newFile.getName() + "," + e.getMessage());
                         }
-                        long end = System.currentTimeMillis();
-                        log.info("获取epub文件的元数据，耗时：" + (end - start) + "毫秒");
-                        return bookMetaBatches;
-                    } else {
-                        log.warn("文件目录" + dirPath + "不存在文件");
                     }
+                    long end = System.currentTimeMillis();
+                    log.info("获取epub文件的元数据，耗时：" + (end - start) + "毫秒");
+                    return bookMetaBatches;
+                } else {
+                    log.warn("文件目录" + dirPath + "不存在文件");
                 }
             }
         }
@@ -921,81 +926,83 @@ public class BookMetaServiceImpl implements BookMetaService {
             if (!dir.exists()) {
                 log.warn("目录" + dirPath + "不存在");
             } else {
-                synchronized (XML_FILES) {
-                    //读取所有文件
-                    //清空list
-                    XML_FILES.clear();
-                    CEBX_FILES.clear();
-                    FILES.clear();
-                    func(dir);
-                    List<BookMetaBatch> bookMetaBatches = new ArrayList<>();
-                    List<BookMetaBatch> metaBatches = new ArrayList<>();
-                    if (XML_FILES != null && XML_FILES.size() > 0) {
-                        //扫描xml文件
-                        for (String path : XML_FILES) {
-                            File newFile = new File(path);
-                            try {
-                                String metaId = Xml2BookMeta.getMetaId4Xml(path);
-                                if (!StringUtils.isEmpty(metaId)) {
-                                    metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
-                                    if (metaBatches.size() == 0) {
-                                        BookMetaBatch bookMetaBatch = new BookMetaBatch();
-                                        bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
-                                        metaBatches.add(bookMetaBatch);
-                                    } else {
-                                        //用于排序
-                                        for (BookMetaBatch bookMetaBatch : metaBatches) {
-                                            bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
-                                        }
-                                    }
-                                    bookMetaBatches.addAll(metaBatches);
-                                } else {
-                                    BookMetaBatch bookMetaBatch = new BookMetaBatch();
-                                    bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
-                                    metaBatches.add(bookMetaBatch);
-                                    bookMetaBatches.add(bookMetaBatch);
-                                }
-                            } catch (Exception e) {
-                                log.warn("{\"status\":\"{}\",\"file\":\"{}\",\"message\":\"{}\"}", -1, newFile.getName(), e.getMessage());
-                            }
-                        }
-                    } else {
-                        //扫描cebx文件
-                        for (String cebxFile : CEBX_FILES) {
-                            File newFile = new File(cebxFile);
-                            String fileName = newFile.getName();
-                            String metaId;
-                            if (fileName.length() > 1 && fileName.substring(0, 2).equals("m.")) {
-                                //如果文件名符合"m."规则，则从数据库中查询
-                                metaId = fileName.replace(".cebx", "");
-                            } else {
-                                //扫描cebx文件，通过文件名从书苑获取metaId
-                                metaId = sCmfMetaDao.getMetaIdByFileName(fileName.replace("cebx", "ceb"));
-                            }
+                //读取所有文件
+                List<String> XML_FILES;
+                List<String> CEBX_FILES;
+                Map<String, List> fileMap = new HashMap<>();
+                fileMap.put(XML_KEY, new ArrayList());
+                fileMap.put(CEBX_KEY, new ArrayList());
+                func(dir, fileMap);
+                //将文件分别存储
+                XML_FILES = fileMap.get(XML_KEY);
+                CEBX_FILES = fileMap.get(CEBX_KEY);
+                List<BookMetaBatch> bookMetaBatches = new ArrayList<>();
+                List<BookMetaBatch> metaBatches = new ArrayList<>();
+                if (XML_FILES != null && XML_FILES.size() > 0) {
+                    //扫描xml文件
+                    for (String path : XML_FILES) {
+                        File newFile = new File(path);
+                        try {
+                            String metaId = Xml2BookMeta.getMetaId4Xml(path);
                             if (!StringUtils.isEmpty(metaId)) {
                                 metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
                                 if (metaBatches.size() == 0) {
                                     BookMetaBatch bookMetaBatch = new BookMetaBatch();
-                                    bookMetaBatch.setFileName(newFile.getName());
+                                    bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                     metaBatches.add(bookMetaBatch);
                                 } else {
                                     //用于排序
                                     for (BookMetaBatch bookMetaBatch : metaBatches) {
-                                        bookMetaBatch.setFileName(newFile.getName());
+                                        bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
                                     }
                                 }
                                 bookMetaBatches.addAll(metaBatches);
                             } else {
                                 BookMetaBatch bookMetaBatch = new BookMetaBatch();
-                                bookMetaBatch.setFileName(newFile.getName());
+                                bookMetaBatch.setFileName(newFile.getName().replace(".xml", ".cebx"));
+                                metaBatches.add(bookMetaBatch);
                                 bookMetaBatches.add(bookMetaBatch);
                             }
+                        } catch (Exception e) {
+                            log.warn("{\"status\":\"{}\",\"file\":\"{}\",\"message\":\"{}\"}", -1, newFile.getName(), e.getMessage());
                         }
                     }
-                    long end = System.currentTimeMillis();
-                    log.info("{\"status\":\"{}\",\"file\":\"{}\",\"useTime\":\"{}\"}", 0, dirPath, (end - start));
-                    return bookMetaBatches;
+                } else {
+                    //扫描cebx文件
+                    for (String cebxFile : CEBX_FILES) {
+                        File newFile = new File(cebxFile);
+                        String fileName = newFile.getName();
+                        String metaId;
+                        if (fileName.length() > 1 && fileName.substring(0, 2).equals("m.")) {
+                            //如果文件名符合"m."规则，则从数据库中查询
+                            metaId = fileName.replace(".cebx", "");
+                        } else {
+                            //扫描cebx文件，通过文件名从书苑获取metaId
+                            metaId = sCmfMetaDao.getMetaIdByFileName(fileName.replace("cebx", "ceb"));
+                        }
+                        if (!StringUtils.isEmpty(metaId)) {
+                            metaBatches = bookMetaDao.findBookMetaBatchById(metaId);
+                            if (metaBatches.size() == 0) {
+                                BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                                bookMetaBatch.setFileName(newFile.getName());
+                                metaBatches.add(bookMetaBatch);
+                            } else {
+                                //用于排序
+                                for (BookMetaBatch bookMetaBatch : metaBatches) {
+                                    bookMetaBatch.setFileName(newFile.getName());
+                                }
+                            }
+                            bookMetaBatches.addAll(metaBatches);
+                        } else {
+                            BookMetaBatch bookMetaBatch = new BookMetaBatch();
+                            bookMetaBatch.setFileName(newFile.getName());
+                            bookMetaBatches.add(bookMetaBatch);
+                        }
+                    }
                 }
+                long end = System.currentTimeMillis();
+                log.info("{\"status\":\"{}\",\"file\":\"{}\",\"useTime\":\"{}\"}", 0, dirPath, (end - start));
+                return bookMetaBatches;
             }
         }
         return null;
@@ -1082,24 +1089,24 @@ public class BookMetaServiceImpl implements BookMetaService {
         return null;
     }
 
-    //递归获取文件路径
-    private static void func(File file) {
+    //递归获取文件
+    private static void func(File file, Map<String, List> fileMap) {
         File[] fs = file.listFiles();
         if (fs != null && fs.length > 0) {
             for (File f : fs) {
                 //若是目录，则递归该目录下的文件
                 if (f.isDirectory()) {
-                    func(f);
+                    func(f, fileMap);
                 }
                 //若是文件，则进行保存
                 if (f.isFile()) {
                     String suffix = f.getName().substring(f.getName().lastIndexOf(".") + 1);
                     if (suffix.toLowerCase().equals("xml")) {
-                        XML_FILES.add(f.getPath());
+                        fileMap.get(XML_KEY).add(f.getPath());
                     } else if (suffix.toLowerCase().equals("cebx")) {
-                        CEBX_FILES.add(f.getPath());
+                        fileMap.get(CEBX_KEY).add(f.getPath());
                     } else {
-                        FILES.add(f.getPath());
+                        fileMap.get(FILE_KEY).add(f.getPath());
                     }
                 }
             }
@@ -1373,7 +1380,7 @@ public class BookMetaServiceImpl implements BookMetaService {
         return 0;
     }
 
-    //批量获取图书元数据
+    //批量从书苑获取图书元数据
     @Override
     @Async
     public void bookMetaBatchEmail(String conMetaId, String toEmail) {
@@ -1410,6 +1417,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     emailResult.setMessage("成功");
                                     log.info("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
                                             0, metaId, "success", new Date());
+                                    log.info("开始获取图书{}的目录和页码");
+                                    getPageAndCata(bookMeta.getMetaId());
                                 } else {
                                     emailResult.setMessage("失败");
                                     log.debug("{\"status\":\"{}\",\"metaId\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
@@ -1442,64 +1451,46 @@ public class BookMetaServiceImpl implements BookMetaService {
         }
     }
 
-    //根据drid，从书苑获取页码和目录
-    /*@Override
+    //异步获取书苑数据的页码和目录
     @Async
-    public void getPageAndCata(Integer drid) {
-        if (drid > 0) {
-            drid--;
-            List<String> metaIdList = bookMetaDao.findMetaIdByDrid(drid);
-            if (metaIdList != null && metaIdList.size() > 0) {
-                int cnt = 0;
-                for (String metaId : metaIdList) {
-                    try {
-                        long start = System.currentTimeMillis();
-                        cnt++;
-                        BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
-                        //补充页码和目录
-                        if (bookMeta != null) {
-                            boolean flag = false;
-                            if (StringUtils.isEmpty(bookMeta.getCebxPage())) {
-                                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
-                                bookMeta.setCebxPage(cebxPage);
-                                flag = true;
-                            }
-                            if (StringUtils.isEmpty(bookMeta.getFoamatCatalog())) {
-                                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
-                                bookMeta.setFoamatCatalog(cata);
-                                flag = true;
-                                if (StringUtils.isEmpty(bookMeta.getStreamCatalog())) {
-                                    bookMeta.setStreamCatalog(cata);
-                                }
-                            }
-                            if (flag) {
-                                bookMetaDao.updateBookMetaById(bookMeta);
-                                //temp表补充页码和目录
-                                ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
-                                temp.setMetaId(bookMeta.getMetaId());
-                                temp.setCebxPage(bookMeta.getCebxPage());
-                                temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
-                                temp.setStreamCatalog(bookMeta.getStreamCatalog());
-                                bookMetaDataTempDao.update(temp);
-                                long end = System.currentTimeMillis();
-                                log.info("总共{}，已完成{}，获取图书{}的页码和目录，耗时{}毫秒", metaIdList.size(), cnt, metaId, (end - start));
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.warn("获取图书{}的页码和目录时，出现异常{}", metaId, e.getMessage());
-                    }
-                }
+    public void getPageAndCata(String metaId) {
+        if (!StringUtils.isEmpty(metaId)) {
+            try {
+                BookMeta bookMeta = new BookMeta();
+                bookMeta.setMetaId(metaId);
+                String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
+                String cata = getCebxData(getCataLog + bookMeta.getMetaId());
+                bookMeta.setCebxPage(cebxPage);
+                bookMeta.setStreamCatalog(cata);
+                bookMetaDao.updateBookMetaById(bookMeta);
+                //更新到temp表
+                ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
+                temp.setMetaId(bookMeta.getMetaId());
+                temp.setCebxPage(bookMeta.getCebxPage());
+                temp.setStreamCatalog(bookMeta.getStreamCatalog());
+                bookMetaDataTempDao.update(temp);
+                log.info("获取图书{}页码和目录成功", metaId);
+            } catch (Exception e) {
+                log.info("获取图书{}页码和目录异常", metaId);
             }
         }
-    }*/
+    }
 
     //根据drid，从书苑获取页码和目录
     @Override
     @Async
-    public void getPageAndCata(Integer drid, String toEmail) {
-        if (drid > 0 && !StringUtils.isEmpty(toEmail)) {
-            int maxDrid = bookMetaDao.getMaxDrid();
-            List<EmailResult> emailResults = new ArrayList<>();
+    public void getPageAndCata(Integer dridMin, Integer dridMax, String toEmail) {
+        if (dridMin > 0 && !StringUtils.isEmpty(toEmail)) {
+            //如果没有输入最大值，则从数据库中获取
+            int maxDrid;
+            if (dridMax != null) {
+                maxDrid = dridMax;
+                if (dridMin > dridMax) {
+                    maxDrid = bookMetaDao.getMaxDrid();
+                }
+            } else {
+                maxDrid = bookMetaDao.getMaxDrid();
+            }
             //获取日期格式转换
             ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
             DateFormat df = threadLocal.get();
@@ -1507,11 +1498,13 @@ public class BookMetaServiceImpl implements BookMetaService {
                 df = new SimpleDateFormat("yyyyMMddHHmmss");
                 threadLocal.set(df);
             }
-            while (drid < maxDrid + 1) {
+            //用于邮件发送
+            List<EmailResult> emailResults = new ArrayList<>();
+            while (dridMin < maxDrid + 1) {
                 EmailResult emailResult = new EmailResult();
-                emailResult.setId(String.valueOf(drid));
+                emailResult.setId(String.valueOf(dridMin));
                 try {
-                    List<String> metaIds = bookMetaDao.findMetaIdByDrid(drid);
+                    List<String> metaIds = bookMetaDao.findMetaIdByDrid(dridMin);
                     if (metaIds != null && metaIds.size() > 0) {
                         for (String metaId : metaIds) {
                             long start = System.currentTimeMillis();
@@ -1550,9 +1543,9 @@ public class BookMetaServiceImpl implements BookMetaService {
                     }
                 } catch (Exception e) {
                     emailResult.setMessage("失败");
-                    log.warn("获取图书{}的页码和目录时，出现异常{}", drid, e.getMessage());
+                    log.warn("获取图书{}的页码和目录时，出现异常{}", dridMin, e.getMessage());
                 }
-                drid++;
+                dridMin++;
                 emailResults.add(emailResult);
             }
             //生成检查结果
@@ -1642,7 +1635,6 @@ public class BookMetaServiceImpl implements BookMetaService {
         bookMeta.setEbookPrice(ebookPrice);
         return bookMeta;
     }
-
 
     //调用接口获取数据
     private String getCebxData(String url) {

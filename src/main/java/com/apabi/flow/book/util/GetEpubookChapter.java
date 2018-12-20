@@ -85,6 +85,7 @@ public class GetEpubookChapter {
                 threadLocal.set(df);
             }
             if (epubookMeta != null && fileName != null && fileName.length() > 0) {
+                log.info("解析图书{}开始", path);
                 Book book = getEpubook(path);
                 if (book != null) {
                     //获取meta数据
@@ -206,11 +207,11 @@ public class GetEpubookChapter {
                                 JSONArray json = JSONArray.fromObject(cataTree.getChildren());
                                 epubookMeta.setStreamCatalog(json.toString());
                             } else {
-                                log.warn("图书《" + epubookMeta.getTitle() + "》目录获取有误！");
+                                log.warn("图书《" + epubookMeta.getMetaid() + "》目录获取有误！");
                                 return null;
                             }
                             long end2 = System.currentTimeMillis();
-                            log.info("获取图书：" + epubookMeta.getTitle() + "所有章节，耗时：" + (end2 - start2) + "毫秒");
+                            log.info("获取图书：" + epubookMeta.getMetaid() + "所有章节，耗时：" + (end2 - start2) + "毫秒");
                             //抽取文件
                             long start1 = System.currentTimeMillis();
                             //抽取css样式文件，并保存
@@ -220,7 +221,7 @@ public class GetEpubookChapter {
                             //抽取字体文件，并保存
                             saveTtfFile(book, styleUrl);
                             long end1 = System.currentTimeMillis();
-                            log.info("获取图书：" + epubookMeta.getTitle() + "，样式文件及图片，耗时：" + (end1 - start1) + "毫秒");
+                            log.info("获取图书：" + epubookMeta.getMetaid() + "，样式文件及图片，耗时：" + (end1 - start1) + "毫秒");
 
                             epubookMeta.setHasflow(1);
                             epubookMeta.setIsoptimize(1);
@@ -281,6 +282,11 @@ public class GetEpubookChapter {
             if (suffix.toLowerCase().equals("epub")) {
                 EpubReader epubReader = new EpubReader();
                 InputStream inputStr = new FileInputStream(path);
+                File file = new File(path);
+                if (file != null && file.length() == 0) {
+                    log.error("文件:{},无内容", path);
+                    return null;
+                }
                 Book book = epubReader.readEpub(inputStr);
                 return book;
             }

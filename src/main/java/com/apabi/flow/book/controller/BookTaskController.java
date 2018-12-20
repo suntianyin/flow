@@ -1,14 +1,10 @@
 package com.apabi.flow.book.controller;
 
-import com.apabi.flow.book.model.BookBatchRes;
-import com.apabi.flow.book.model.BookMetaVo;
 import com.apabi.flow.book.model.BookTask;
 import com.apabi.flow.book.model.BookTaskResult;
-import com.apabi.flow.book.service.BookMetaService;
 import com.apabi.flow.book.service.BookTaskResultService;
 import com.apabi.flow.book.service.BookTaskService;
 import com.apabi.flow.book.service.impl.BookTaskServiceImpl;
-import com.apabi.flow.book.task.BookBatchTask;
 import com.apabi.flow.book.util.ReadBook;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

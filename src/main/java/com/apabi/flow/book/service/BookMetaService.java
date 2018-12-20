@@ -81,7 +81,7 @@ public interface BookMetaService {
     void bookMetaBatchEmail(String conMetaId, String toEmail);
 
     //根据drid，从书苑获取页码和目录
-    void getPageAndCata(Integer drid, String toEmail);
+    void getPageAndCata(Integer dridMin, Integer dridMax, String toEmail);
 
     //Excel批量导入图书元数据
     List<BookMetaFromExcel> importBookMetaFromExcel(Map<Integer, Map<Object, Object>> data);

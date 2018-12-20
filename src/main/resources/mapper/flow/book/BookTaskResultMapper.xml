@@ -1,189 +1,200 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.apabi.flow.book.dao.BookTaskResultMapper">
-  <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.BookTaskResult">
-    <id column="ID" jdbcType="VARCHAR" property="id" />
-    <result column="TASK_ID" jdbcType="VARCHAR" property="taskId" />
-    <result column="STATUS" jdbcType="DECIMAL" property="status" />
-    <result column="FILE_NAME" jdbcType="VARCHAR" property="fileName" />
-    <result column="META_ID" jdbcType="VARCHAR" property="metaId" />
-    <result column="TITLE" jdbcType="VARCHAR" property="title" />
-    <result column="ISBN" jdbcType="VARCHAR" property="isbn" />
-    <result column="ISBN13" jdbcType="VARCHAR" property="isbn13" />
-    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
-    <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher" />
-    <result column="HAS_FLOW" jdbcType="DECIMAL" property="hasFlow" />
-    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    ID, TASK_ID, STATUS, FILE_NAME, META_ID, TITLE, ISBN, ISBN13, CREATOR, PUBLISHER, 
+    <resultMap id="BaseResultMap" type="com.apabi.flow.book.model.BookTaskResult">
+        <id column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="TASK_ID" jdbcType="VARCHAR" property="taskId"/>
+        <result column="STATUS" jdbcType="DECIMAL" property="status"/>
+        <result column="FILE_ISBN" jdbcType="VARCHAR" property="fileIsbn"/>
+        <result column="FILE_NAME" jdbcType="VARCHAR" property="fileName"/>
+        <result column="META_ID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="TITLE" jdbcType="VARCHAR" property="title"/>
+        <result column="ISBN" jdbcType="VARCHAR" property="isbn"/>
+        <result column="ISBN13" jdbcType="VARCHAR" property="isbn13"/>
+        <result column="CREATOR" jdbcType="VARCHAR" property="creator"/>
+        <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher"/>
+        <result column="HAS_FLOW" jdbcType="DECIMAL" property="hasFlow"/>
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    ID, TASK_ID, STATUS, FILE_ISBN, FILE_NAME, META_ID, TITLE, ISBN, ISBN13, CREATOR, PUBLISHER,
     HAS_FLOW, CREATE_TIME,UPDATE_TIME
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from APABI_BOOK_TASK_RESULT
-    where ID = #{id,jdbcType=VARCHAR}
-  </select>
-  <select id="selectTaskInfoList" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from APABI_BOOK_TASK_RESULT
-    where TASK_ID = #{id,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_TASK_RESULT
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+    <select id="selectTaskInfoList" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_TASK_RESULT
+        where TASK_ID = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from APABI_BOOK_TASK_RESULT
     where ID = #{id,jdbcType=VARCHAR}
   </delete>
-  <delete id="deleteByTaskId" parameterType="java.lang.String">
+    <delete id="deleteByTaskId" parameterType="java.lang.String">
     delete from APABI_BOOK_TASK_RESULT
     where TASK_ID = #{taskId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.apabi.flow.book.model.BookTaskResult">
+    <insert id="insert" parameterType="com.apabi.flow.book.model.BookTaskResult">
     insert into APABI_BOOK_TASK_RESULT (ID, TASK_ID, STATUS, 
-      FILE_NAME, META_ID, TITLE, 
+      FILE_ISBN, FILE_NAME, META_ID, TITLE,
       ISBN, ISBN13, CREATOR, 
       PUBLISHER, HAS_FLOW, CREATE_TIME,UPDATE_TIME
       )
     values (#{id,jdbcType=VARCHAR}, #{taskId,jdbcType=VARCHAR}, #{status,jdbcType=DECIMAL}, 
-      #{fileName,jdbcType=VARCHAR}, #{metaId,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{fileIsbn,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, #{metaId,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
       #{isbn,jdbcType=VARCHAR}, #{isbn13,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, 
       #{publisher,jdbcType=VARCHAR}, #{hasFlow,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP},
       #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.apabi.flow.book.model.BookTaskResult">
-    insert into APABI_BOOK_TASK_RESULT
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        ID,
-      </if>
-      <if test="taskId != null">
-        TASK_ID,
-      </if>
-      <if test="status != null">
-        STATUS,
-      </if>
-      <if test="fileName != null">
-        FILE_NAME,
-      </if>
-      <if test="metaId != null">
-        META_ID,
-      </if>
-      <if test="title != null">
-        TITLE,
-      </if>
-      <if test="isbn != null">
-        ISBN,
-      </if>
-      <if test="isbn13 != null">
-        ISBN13,
-      </if>
-      <if test="creator != null">
-        CREATOR,
-      </if>
-      <if test="publisher != null">
-        PUBLISHER,
-      </if>
-      <if test="hasFlow != null">
-        HAS_FLOW,
-      </if>
-      <if test="createTime != null">
-        CREATE_TIME,
-      </if>
-      <if test="updateTime != null">
-        UPDATE_TIME,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=VARCHAR},
-      </if>
-      <if test="taskId != null">
-        #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=DECIMAL},
-      </if>
-      <if test="fileName != null">
-        #{fileName,jdbcType=VARCHAR},
-      </if>
-      <if test="metaId != null">
-        #{metaId,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="isbn != null">
-        #{isbn,jdbcType=VARCHAR},
-      </if>
-      <if test="isbn13 != null">
-        #{isbn13,jdbcType=VARCHAR},
-      </if>
-      <if test="creator != null">
-        #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="publisher != null">
-        #{publisher,jdbcType=VARCHAR},
-      </if>
-      <if test="hasFlow != null">
-        #{hasFlow,jdbcType=DECIMAL},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.book.model.BookTaskResult">
-    update APABI_BOOK_TASK_RESULT
-    <set>
-      <if test="taskId != null">
-        TASK_ID = #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        STATUS = #{status,jdbcType=DECIMAL},
-      </if>
-      <if test="fileName != null">
-        FILE_NAME = #{fileName,jdbcType=VARCHAR},
-      </if>
-      <if test="metaId != null">
-        META_ID = #{metaId,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        TITLE = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="isbn != null">
-        ISBN = #{isbn,jdbcType=VARCHAR},
-      </if>
-      <if test="isbn13 != null">
-        ISBN13 = #{isbn13,jdbcType=VARCHAR},
-      </if>
-      <if test="creator != null">
-        CREATOR = #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="publisher != null">
-        PUBLISHER = #{publisher,jdbcType=VARCHAR},
-      </if>
-      <if test="hasFlow != null">
-        HAS_FLOW = #{hasFlow,jdbcType=DECIMAL},
-      </if>
-      <if test="createTime != null">
-        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where ID = #{id,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.book.model.BookTaskResult">
+    <insert id="insertSelective" parameterType="com.apabi.flow.book.model.BookTaskResult">
+        insert into APABI_BOOK_TASK_RESULT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="taskId != null">
+                TASK_ID,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="fileIsbn != null">
+                FILE_ISBN,
+            </if>
+            <if test="fileName != null">
+                FILE_NAME,
+            </if>
+            <if test="metaId != null">
+                META_ID,
+            </if>
+            <if test="title != null">
+                TITLE,
+            </if>
+            <if test="isbn != null">
+                ISBN,
+            </if>
+            <if test="isbn13 != null">
+                ISBN13,
+            </if>
+            <if test="creator != null">
+                CREATOR,
+            </if>
+            <if test="publisher != null">
+                PUBLISHER,
+            </if>
+            <if test="hasFlow != null">
+                HAS_FLOW,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=DECIMAL},
+            </if>
+            <if test="fileIsbn != null">
+                #{fileIsbn,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="metaId != null">
+                #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null">
+                #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn13 != null">
+                #{isbn13,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="publisher != null">
+                #{publisher,jdbcType=VARCHAR},
+            </if>
+            <if test="hasFlow != null">
+                #{hasFlow,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.book.model.BookTaskResult">
+        update APABI_BOOK_TASK_RESULT
+        <set>
+            <if test="taskId != null">
+                TASK_ID = #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=DECIMAL},
+            </if>
+            <if test="fileIsbn != null">
+                FILE_ISBN = #{fileIsbn,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                FILE_NAME = #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="metaId != null">
+                META_ID = #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null">
+                ISBN = #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn13 != null">
+                ISBN13 = #{isbn13,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                CREATOR = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="publisher != null">
+                PUBLISHER = #{publisher,jdbcType=VARCHAR},
+            </if>
+            <if test="hasFlow != null">
+                HAS_FLOW = #{hasFlow,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.apabi.flow.book.model.BookTaskResult">
     update APABI_BOOK_TASK_RESULT
     set TASK_ID = #{taskId,jdbcType=VARCHAR},
       STATUS = #{status,jdbcType=DECIMAL},
+      FILE_ISBN = #{fileIsbn,jdbcType=VARCHAR},
       FILE_NAME = #{fileName,jdbcType=VARCHAR},
       META_ID = #{metaId,jdbcType=VARCHAR},
       TITLE = #{title,jdbcType=VARCHAR},
@@ -196,43 +207,46 @@
       UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
     where ID = #{id,jdbcType=VARCHAR}
   </update>
-  <update id="updateTaskByMetaId" parameterType="com.apabi.flow.book.model.BookTaskResult">
-    update APABI_BOOK_TASK_RESULT
-    <set>
-      <if test="taskId != null">
-        TASK_ID = #{taskId,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        STATUS = #{status,jdbcType=DECIMAL},
-      </if>
-      <if test="fileName != null">
-        FILE_NAME = #{fileName,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        TITLE = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="isbn != null">
-        ISBN = #{isbn,jdbcType=VARCHAR},
-      </if>
-      <if test="isbn13 != null">
-        ISBN13 = #{isbn13,jdbcType=VARCHAR},
-      </if>
-      <if test="creator != null">
-        CREATOR = #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="publisher != null">
-        PUBLISHER = #{publisher,jdbcType=VARCHAR},
-      </if>
-      <if test="hasFlow != null">
-        HAS_FLOW = #{hasFlow,jdbcType=DECIMAL},
-      </if>
-      <if test="createTime != null">
-        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where META_ID = #{metaId,jdbcType=VARCHAR}
-  </update>
+    <update id="updateTaskByMetaId" parameterType="com.apabi.flow.book.model.BookTaskResult">
+        update APABI_BOOK_TASK_RESULT
+        <set>
+            <if test="taskId != null">
+                TASK_ID = #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=DECIMAL},
+            </if>
+            <if test="fileIsbn != null">
+                FILE_ISBN = #{fileIsbn,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                FILE_NAME = #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn != null">
+                ISBN = #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn13 != null">
+                ISBN13 = #{isbn13,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                CREATOR = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="publisher != null">
+                PUBLISHER = #{publisher,jdbcType=VARCHAR},
+            </if>
+            <if test="hasFlow != null">
+                HAS_FLOW = #{hasFlow,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where META_ID = #{metaId,jdbcType=VARCHAR}
+    </update>
 </mapper>
