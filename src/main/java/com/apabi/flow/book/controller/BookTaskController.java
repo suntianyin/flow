@@ -98,6 +98,7 @@ public class BookTaskController {
                 model.addAttribute("filePath", bookTask.getTaskPath());
             }
             model.addAttribute("taskResultList", resultList);
+            model.addAttribute("taskId", taskId);
             return "bookTask/bookTaskResult";
         }
         return null;
@@ -108,14 +109,15 @@ public class BookTaskController {
     @ResponseBody
     public String batchChapter(@RequestParam("fileInfo") String fileInfo,
                                @RequestParam("filePath") String filePath,
+                               @RequestParam("taskId") String taskId,
                                @RequestParam("fileType") String fileType) {
         if (!StringUtils.isEmpty(fileInfo)) {
             if (!StringUtils.isEmpty(filePath)) {
                 try {
                     if (fileType.equals("epub")) {
-                        readBook.batchEpubTask(fileInfo, filePath);
+                        readBook.batchEpubTask(fileInfo, filePath, taskId);
                     } else if (fileType.equals("cebx")) {
-                        readBook.batchCebxTask(fileInfo, filePath);
+                        readBook.batchCebxTask(fileInfo, filePath, taskId);
                     }
                     log.info("批量上传任务{}已开始", filePath);
                     return "success";

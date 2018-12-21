@@ -28,10 +28,12 @@
                 return;
             }
             var fileType = $("#fileType").val();
+            var taskId = $("#taskId").val();
             var formData = new FormData();
             formData.append('fileInfo', fileInfo);
             formData.append("filePath", filePath);
             formData.append("fileType", fileType);
+            formData.append("taskId", taskId);
             $("input[type='checkbox']").prop("disabled", true);
             $.ajax({
                 url: RootPath() + "/bookTask/batchChapter",
@@ -96,6 +98,7 @@
             <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
                 <table border="0" class="form-find" style="height: 45px;">
                     <tr>
+                        <input id = "taskId" name="taskId" value="${taskId!''}" type="hidden"/>
                         <th>文件路径：</th>
                         <td>
                             <input id="filePath" name="filePath" type="text" value="${filePath!'' }" class="txt"
