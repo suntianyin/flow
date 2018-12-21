@@ -80,10 +80,10 @@
 
   <!-- 注意 外协单位 名称模糊查询 和 外协单位 id 查询的区别，根据不同的条件参数查询 -->
   <select id="listBatchSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
-    SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.TITLE COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
+    SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.NAME COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
     pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
     pb.DELETE_FLAG,DOCUMENT_FORMAT,DISTRIBUTION_OUT_TIME,SUBMIT_TIME,PRODUCTION_SCHEDULING_TIME
-    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_AUTH_COPYRIGHT_OWNER pi
     ON pb.COPYRIGHT_OWNER = pi.ID LEFT JOIN APABI_BOOK_PRO_OUT_UNIT po ON pb.OUT_UNIT = po.UNIT_ID
     WHERE 1=1
     <if test="id != null and id != ''">
@@ -96,7 +96,7 @@
       AND pb.BATCH_ID = #{batchId,jdbcType=VARCHAR}
     </if>
     <if test="copyrightOwner != null and copyrightOwner != ''">
-      AND pi.TITLE LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
+      AND pi.NAME LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
     </if>
     <if test="batchState != null">
       AND pb.BATCH_STATE = #{batchState.code,jdbcType=DECIMAL}
@@ -117,10 +117,10 @@
   </select>
 
   <select id="listBatchSelective" parameterType="java.util.Map" resultMap="BaseResultMap">
-    SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.TITLE COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
+    SELECT pb.ID, pb.MANAGER, pb.BATCH_ID, po.UNIT_NAME OUT_UNIT, pb.SOURCE_TYPE, pi.NAME COPYRIGHT_OWNER, pb.DOCUMENT_NUM, pb.BATCH_STATE,
     pb.CREATOR, pb.AUDITOR, pb.CHECKER, pb.MEMO, pb.AUDIT_TIME, pb.CHECK_TIME, pb.CREATE_TIME, pb.UPDATE_TIME,
     pb.DELETE_FLAG,DOCUMENT_FORMAT,DISTRIBUTION_OUT_TIME,SUBMIT_TIME,PRODUCTION_SCHEDULING_TIME
-    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    FROM APABI_BOOK_PRO_BATCH pb LEFT JOIN APABI_AUTH_COPYRIGHT_OWNER pi
     ON pb.COPYRIGHT_OWNER = pi.ID LEFT JOIN APABI_BOOK_PRO_OUT_UNIT po ON pb.OUT_UNIT = po.UNIT_ID
     WHERE 1=1
     <if test="id != null and id != ''">
@@ -133,7 +133,7 @@
       AND pb.BATCH_ID = #{batchId,jdbcType=VARCHAR}
     </if>
     <if test="copyrightOwner != null and copyrightOwner != ''">
-      AND pi.TITLE LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
+      AND pi.NAME LIKE CONCAT(CONCAT('%',#{copyrightOwner,jdbcType=VARCHAR}),'%')
     </if>
     <if test="batchState != null">
       AND pb.BATCH_STATE = #{batchState.code,jdbcType=DECIMAL}

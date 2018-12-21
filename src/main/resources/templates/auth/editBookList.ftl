@@ -35,10 +35,10 @@
         function AcceptClick() {
                 $("#loading").show();
                 Loading(true, "正在提交数据...");
-            if (isNull($('#agreementNum').val())) {
-                tipDialog("协议编号 不能为空！", 3, -1);
-                return;
-            }
+            // if (isNull($('#agreementNum').val())) {
+            //     tipDialog("协议编号 不能为空！", 3, -1);
+            //     return;
+            // }
             if (isNull($('#bookListNum').val())) {
                 tipDialog("授权书单编号 不能为空！", 3, -1);
                 return;
@@ -103,7 +103,7 @@
                         },
                         error: function (data) {
                             Loading(false);
-                            alertDialog(data.responseText, -1);
+                            alertDialog("输入信息有误，请核实后提交", -1);
                         }
                     });
                 }, 200);
@@ -120,16 +120,17 @@
            </div>
         <form id="form1">
             <table border="0" class="form-find" style="height: 45px;">
-                <tr>
-                    <input id="id" name="id" type="hidden" value="${bookList.id!''}" class="txt" style="width: 300px"/>
-                    <td>协议编号:</td>
-                    <td>
-                        <input id="agreementNum" name="agreementNum" type="text" value="${bookList.agreementNum!''}" class="txt" style="width: 300px"/>
-                    </td>
-                </tr>
+                <#--<tr>-->
+                    <#--<input id="id" name="id" type="hidden" value="${bookList.id!''}" class="txt" style="width: 300px"/>-->
+                    <#--<td>协议编号:</td>-->
+                    <#--<td>-->
+                        <#--<input id="agreementNum" name="agreementNum" type="text" value="${bookList.agreementNum!''}" class="txt" style="width: 300px"/>-->
+                    <#--</td>-->
+                <#--</tr>-->
                 <tr>
                     <td>授权书单编号:</td>
                     <td>
+                        <input id="id" name="id" type="hidden" value="${bookList.id!''}" class="txt" style="width: 300px"/>
                         <input id="bookListNum" name="bookListNum" type="text" value="${bookList.bookListNum!''}" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
                 </tr>
@@ -152,9 +153,9 @@
                     <td>
                         <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 307px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
-                            <#if publishers??>
-                                <#list publishers as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                            <#if copyrightOwners??>
+                                <#list copyrightOwners as list>
+                                    <option value="${(list.id)!''}">${(list.name)!''}</option>
                                 </#list>
                             </#if>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>

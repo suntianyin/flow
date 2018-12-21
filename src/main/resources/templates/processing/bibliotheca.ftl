@@ -169,7 +169,7 @@
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
             // var duplicateFlag = $("#duplicateFlag").val();
-            var bibliothecaState = $("#bibliothecaState").val();
+            var bibliothecaState = $("#bibliothecaState").val().trim();
 
             confirmDialog("温馨提示", "注：您确定要对当前查询结果导出到Excel文件？", function (r) {
                 if (r) {
@@ -177,6 +177,25 @@
                     window.setTimeout(function () {
                         try {
                             window.location.href = "${ctx}/processing/bibliotheca/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
+            });
+        }
+        //授权清单导出
+        function btn_exportData(){
+            if (isNull($('#batchId').val())) {
+                tipDialog("批次号不能为空，信息异常", 3, -1);
+                return;
+            }
+            var batchId = $('#batchId').val().trim();
+            confirmDialog("温馨提示", "注：您确定要对当前查询结果导出到Excel文件？", function (r) {
+                if (r) {
+                    Loading(true, "正在提交数据...");
+                    window.setTimeout(function () {
+                        try {
+                            window.location.href = "${ctx}/processing/bibliotheca/exportData2?batchId=" + batchId;
                         } catch (e) {
                         }
                     }, 200);
@@ -209,6 +228,11 @@
             <div class="PartialButton">
                 <button id="batch-import" title="导出查询结果" class="tools_btn" onclick="btn_exportOutUnitData()">
                     <span><i class="fa fa-outdent"></i>&nbsp;导出查询结果</span></button>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
+                <button id="batch-import" title="导出排产结果" class="tools_btn" onclick="btn_exportData()">
+                    <span><i class="fa fa-outdent"></i>&nbsp;导出排产结果</span></button>
                 <div class="tools_separator"></div>
             </div>
         </div>

@@ -517,4 +517,20 @@
       AND pb.END_DATE <![CDATA[<]]> #{endDate1}
     </if>
   </select>
+  <select id="findByCopyrightOwnerId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_COPYRIGHT_AGREEMENT
+    where COPYRIGHT_OWNER_ID = #{copyrightOwnerId,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateStatusByPrimaryKeySelective" parameterType="com.apabi.flow.auth.model.CopyrightAgreement">
+    update APABI_COPYRIGHT_AGREEMENT
+    <set>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where CAID = #{caid,jdbcType=VARCHAR}
+  </update>
 </mapper>
