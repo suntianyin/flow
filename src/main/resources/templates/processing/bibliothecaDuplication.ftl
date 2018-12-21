@@ -344,7 +344,7 @@
                     <#if ltRateCheckFlagNoList??>
                         <#list ltRateCheckFlagNoList as list>
                             <#if list.rateFlag==1>
-                        <tr class="gradeA odd" role="row" style="background: #00FF66" >
+                        <tr class="gradeA odd" role="row" style="background: #BBFFBB" >
                             <td><input type="checkbox" name="ltNo"
                                        value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
                             <td>${(list.bibliotheca.isbn)!''}</td>
@@ -394,7 +394,7 @@
                             </td>
                         </tr>
                             <#else>
-                            <tr class="gradeA odd" role="row" style="background: #3366FF">
+                            <tr class="gradeA odd" role="row" style="background: #84C1FF">
                                 <td><input type="checkbox" name="ltNo"
                                            value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
                                 <td>${(list.bibliotheca.isbn)!''}</td>

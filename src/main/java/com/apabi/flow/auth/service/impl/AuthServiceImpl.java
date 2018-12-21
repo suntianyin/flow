@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -62,5 +63,28 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public List<CopyrightAgreement> findAll() {
         return copyrightAgreementMapper.findAll();
+    }
+
+    @Override
+    public CopyrightAgreement findByCopyrightOwnerId(String copyrightOwnerId) {
+        List<CopyrightAgreement> list = copyrightAgreementMapper.findByCopyrightOwnerId(copyrightOwnerId);
+        if(list.size()>1) {
+            Calendar cal = Calendar.getInstance();
+            for (CopyrightAgreement c : list) {
+                cal.setTime(c.getEndDate());
+                cal.add(Calendar.YEAR, c.getYearNum());
+                c.setEndDate(cal.getTime());
+            }
+            list.sort((CopyrightAgreement c1, CopyrightAgreement c2) -> c1.getEndDate().compareTo(c2.getEndDate()));
+            return list.get(list.size() - 1);
+        }else {
+            return null;
+        }
+
+    }
+
+    @Override
+    public int updateStatusByPrimaryKeySelective(CopyrightAgreement record) {
+        return copyrightAgreementMapper.updateStatusByPrimaryKeySelective(record);
     }
 }

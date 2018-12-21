@@ -1,6 +1,7 @@
 package com.apabi.flow.processing.controller;
 
 import com.apabi.flow.admin.service.AuthUserService;
+import com.apabi.flow.auth.dao.CopyrightOwnerMapper;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.util.ParamsUtils;
@@ -64,7 +65,7 @@ public class BatchController {
 
 
     @Autowired
-    private PublisherDao publisherDao;
+    private CopyrightOwnerMapper copyrightOwnerMapper;
 
     /**
      * 批次展示页面
@@ -209,7 +210,7 @@ public class BatchController {
     @GetMapping("/add/index")
     public String addIndex(Model model) {
         model.addAttribute("outUnitList", outUnitMapper.selectAll());
-        model.addAttribute("copyrightOwnerList", publisherDao.findAll());
+        model.addAttribute("copyrightOwnerList", copyrightOwnerMapper.findAll());
         return "processing/addBatch";
     }
 
@@ -277,7 +278,7 @@ public class BatchController {
 
             model.addAttribute("batch", batch);
             model.addAttribute("outUnitList", outUnitMapper.selectAll());
-            model.addAttribute("copyrightOwnerList", publisherDao.findAll());
+            model.addAttribute("copyrightOwnerList", copyrightOwnerMapper.findAll());
 
             long end = System.currentTimeMillis();
             logger.info("修改批次信息耗时：" + (end - start) + "毫秒");
@@ -374,13 +375,10 @@ public class BatchController {
             batchService.updateBatch(batch);
             Map map = new HashMap();
             map.put("batchId", batch.getBatchId());
-            List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
-            for (Bibliotheca bibliotheca : bibliothecas) {
-                if (bibliotheca.getBibliothecaState().getCode() == 2) {
-                    bibliotheca.setBibliothecaState(BibliothecaStateEnum.HAS_PROCESS);
-                    bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
-                }
-            }
+            map.put("currentState", BibliothecaStateEnum.NOREPEAT);
+            map.put("nextState", BibliothecaStateEnum.HAS_PROCESS);
+            map.put("updateTime", new Date());
+            bibliothecaMapper.updateByBatchIdAndState(map);
         } catch (Exception e) {
             logger.error("排产出现异常： {}", e);
             return new ResultEntity(500, "请联系管理员，系统异常！");
@@ -473,13 +471,13 @@ public class BatchController {
                 return new ResultEntity(403, "您与单位没有绑定外协关系，请联系管理员！");
             }
             Batch batch = batchService.selectByBatchId(batchId);
-                batch.setUpdateTime(new Date());
-                batch.setBatchId(batch.getBatchId());
-                //当 提交书单审核时，则设置 当前批次为待查从
-                batch.setBatchState(BatchStateEnum.WAITING_CHECKED);
-                batch.setSubmitTime(new Date());
-                batchService.updateBatch(batch);
-                return new ResultEntity(200, "提交书单审核成功！");
+            batch.setUpdateTime(new Date());
+            batch.setBatchId(batch.getBatchId());
+            //当 提交书单审核时，则设置 当前批次为待查从
+            batch.setBatchState(BatchStateEnum.WAITING_CHECKED);
+            batch.setSubmitTime(new Date());
+            batchService.updateBatch(batch);
+            return new ResultEntity(200, "提交书单审核成功！");
         } catch (Exception e) {
             logger.error("修改批次状态出现异常： {}", e);
         }

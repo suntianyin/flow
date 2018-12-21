@@ -237,7 +237,7 @@
                     </div>
                 </div>
                 <div style=" float:left;width: 78%;height: 90%;border: #2d2625 solid 1px;">
-                    <textarea id="htmlEditor" style="width:99.9%; height: 725px;resize: none;">
+                    <textarea id="htmlEditor" style="width:99.9%; height: 725%;resize: none;">
                             <#if bookChapter??>
                                 <input id="chapterComid" value="${bookChapter.comId}" type="hidden"/>
                                 <input id="chapterNum" value="${bookChapter.chapterNum}" type="hidden"/>

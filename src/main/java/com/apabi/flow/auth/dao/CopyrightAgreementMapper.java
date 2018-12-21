@@ -25,4 +25,8 @@ public interface CopyrightAgreementMapper {
     int updateFileNameAndFilePathByCaid(@Param("caid")String caid, @Param("agreementFileName")String agreementFileName, @Param("agreementFilePath")String agreementFilePath);
 
     List<CopyrightAgreement> findAll();
+
+    List<CopyrightAgreement> findByCopyrightOwnerId(String copyrightOwnerId);
+
+    int updateStatusByPrimaryKeySelective(CopyrightAgreement record);
 }

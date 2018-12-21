@@ -139,7 +139,7 @@
                     },
                     error: function (data) {
                         Loading(false);
-                        alertDialog(data.responseText, -1);
+                        alertDialog("输入信息有误，请核实后提交", -1);
                     }
                 });
             }, 200);
@@ -174,9 +174,9 @@
                     <td>
                         <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 307px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
-                            <#if publishers??>
-                                <#list publishers as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                            <#if copyrightOwners??>
+                                <#list copyrightOwners as list>
+                                    <option value="${(list.id)!''}">${(list.name)!''}</option>
                                 </#list>
                             </#if>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>

@@ -1,9 +1,6 @@
 package com.apabi.flow.book.util;
 
-import com.apabi.flow.book.dao.BookChapterBakDao;
-import com.apabi.flow.book.dao.BookChapterDao;
-import com.apabi.flow.book.dao.BookShardDao;
-import com.apabi.flow.book.dao.BookTaskResultMapper;
+import com.apabi.flow.book.dao.*;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookMetaService;
 import com.apabi.flow.book.task.ReadCebxBook;
@@ -50,6 +47,9 @@ public class ReadBook {
 
     @Autowired
     BookTaskResultMapper bookTaskResultMapper;
+
+    @Autowired
+    BookTaskMapper bookTaskMapper;
 
     @Autowired
     BookChapterDao bookChapterDao;
@@ -172,7 +172,7 @@ public class ReadBook {
 
     //多线程上传epub任务
     @Async
-    public void batchEpubTask(String fileInfo, String filePath) {
+    public void batchEpubTask(String fileInfo, String filePath, String taskId) {
         if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
             try {
                 long start = System.currentTimeMillis();
@@ -189,6 +189,12 @@ public class ReadBook {
                             fileInfoMap.put(fileId[0], filePath + File.separator + fileId[1]);
                         }
                     }
+                    //更改任务状态
+                    BookTask bookTask = new BookTask();
+                    bookTask.setId(taskId);
+                    bookTask.setStatus(3);
+                    bookTask.setUpdateTime(new Date());
+                    bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                     //创建上传epub任务
                     ReadEpubook readEpubook = new ReadEpubook(filePathQueue,
                             fileInfoMap,
@@ -210,12 +216,16 @@ public class ReadBook {
                     executor.shutdown();
                     while (true) {
                         if (executor.isTerminated()) {
-                            //扫描结果入库
+                            //上传结果入库
                             List<BookTaskResult> taskResultList = createBookTask(bookBatchResList);
                             for (BookTaskResult result : taskResultList) {
                                 result.setUpdateTime(new Date());
                                 bookTaskResultMapper.updateTaskByMetaId(result);
                             }
+                            //更改任务状态
+                            bookTask.setStatus(4);
+                            bookTask.setUpdateTime(new Date());
+                            bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                             long end = System.currentTimeMillis();
                             log.info("批量上传目录{}已完成，耗时：{}毫秒", filePath, (end - start));
                             break;
@@ -366,7 +376,7 @@ public class ReadBook {
 
     //多线程上传cebx任务
     @Async
-    public void batchCebxTask(String fileInfo, String filePath) {
+    public void batchCebxTask(String fileInfo, String filePath, String taskId) {
         if (!StringUtils.isEmpty(fileInfo) && !StringUtils.isEmpty(filePath)) {
             try {
                 long start = System.currentTimeMillis();
@@ -382,7 +392,13 @@ public class ReadBook {
                             fileInfoMap.put(fileId[0], filePath + File.separator + fileId[1]);
                         }
                     }
-                    //创建上传epub任务
+                    //更改任务状态
+                    BookTask bookTask = new BookTask();
+                    bookTask.setId(taskId);
+                    bookTask.setStatus(3);
+                    bookTask.setUpdateTime(new Date());
+                    bookTaskMapper.updateByPrimaryKeySelective(bookTask);
+                    //创建上传cebx任务
                     ReadCebxBook readCebxBook = new ReadCebxBook(filePathQueue,
                             fileInfoMap,
                             bookBatchResList,
@@ -404,12 +420,16 @@ public class ReadBook {
                     executor.shutdown();
                     while (true) {
                         if (executor.isTerminated()) {
-                            //扫描结果入库
+                            //上传结果入库
                             List<BookTaskResult> taskResultList = createBookTask(bookBatchResList);
                             for (BookTaskResult result : taskResultList) {
                                 result.setUpdateTime(new Date());
                                 bookTaskResultMapper.updateTaskByMetaId(result);
                             }
+                            //更改任务状态
+                            bookTask.setStatus(4);
+                            bookTask.setUpdateTime(new Date());
+                            bookTaskMapper.updateByPrimaryKeySelective(bookTask);
                             long end = System.currentTimeMillis();
                             log.info("批量上传目录{}已完成，耗时：{}毫秒", filePath, (end - start));
                             break;

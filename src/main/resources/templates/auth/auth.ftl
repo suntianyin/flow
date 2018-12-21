@@ -122,9 +122,9 @@
                     <td>
                         <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 307px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
-                            <#if publishers??>
-                                <#list publishers as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                            <#if copyrightOwners??>
+                                <#list copyrightOwners as list>
+                                    <option value="${(list.id)!''}">${(list.name)!''}</option>
                                 </#list>
                             </#if>
                         </select>
@@ -150,7 +150,7 @@
                     </td>
                     <th>内容合作经理：</th>
                     <td>
-                        <input id="contentManagerName" type="text" value="${contentManagerName!'' }" class="txt" style="width: 200px"/>
+                        <input id="contentManagerName" name="contentManagerName" type="text" value="${contentManagerName!'' }" class="txt" style="width: 200px"/>
                     </td>
 
                     <td>

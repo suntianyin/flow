@@ -3,8 +3,10 @@ package com.apabi.flow.book.model;
 import java.util.Date;
 
 public class BookTask {
+
     private String id;
 
+    //状态。0：失败，1：扫描进行中；2：扫描完成；3：上传进行中；4：上传完成
     private Integer status;
 
     private Date createTime;

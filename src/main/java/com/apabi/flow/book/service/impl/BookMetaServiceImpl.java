@@ -822,6 +822,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 String title;
                                 String isbn = null;
                                 String isbnMeta = null;
+                                String isbnFileName = null;
                                 //获取文件名
                                 fileName = newFile.getName();
                                 if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
@@ -834,6 +835,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         isbnMeta = getIsbn4Meta(book);
                                         //获取文件中的isbn
                                         isbn = getIsbn4Content(book);
+                                        //从文件名中获取isbn
+                                        isbnFileName = getIsbn4FileName(fileName);
                                         //isbn = getIsbnForContent(book);
                                         //使用文件中获取的isbn
                                         if (!StringUtils.isEmpty(isbn)) {
@@ -851,6 +854,14 @@ public class BookMetaServiceImpl implements BookMetaService {
                                                 String isbn13 = isbnMeta.replace("-", "");
                                                 metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
                                             }
+                                        } else if (!StringUtils.isEmpty(isbnFileName)) {
+                                            //如果文件中的isbn和插件获取的isbn为空，则使用文件名中的isbn
+                                            metaBatches = bookMetaDao.findBookMetaBatchByIsbn(isbnFileName);
+                                            //使用isbn13查找
+                                            if (metaBatches.size() == 0) {
+                                                String isbn13 = isbnFileName.replace("-", "");
+                                                metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
+                                            }
                                         }
                                     }
                                 }
@@ -859,10 +870,12 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         //文件名
                                         bookMetaBatch.setFileName(fileName);
                                         //从文件中获取的isbn
-                                        if (StringUtils.isEmpty(isbn)) {
+                                        if (!StringUtils.isEmpty(isbn)) {
+                                            bookMetaBatch.setFileIsbn(isbn);
+                                        } else if (!StringUtils.isEmpty(isbnMeta)) {
                                             bookMetaBatch.setFileIsbn(isbnMeta);
                                         } else {
-                                            bookMetaBatch.setFileIsbn(isbn);
+                                            bookMetaBatch.setFileIsbn(isbnFileName);
                                         }
                                         //获取书名
                                         title = book.getTitle();
@@ -883,11 +896,16 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     if (StringUtils.isEmpty(isbn)) {
                                         isbn = getIsbn4Content(book);
                                     }
+                                    if (StringUtils.isEmpty(isbnFileName)) {
+                                        isbnFileName = getIsbn4FileName(fileName);
+                                    }
                                     //文件isbn
-                                    if (StringUtils.isEmpty(isbn)) {
+                                    if (!StringUtils.isEmpty(isbn)) {
+                                        bookMetaBatch.setFileIsbn(isbn);
+                                    } else if (!StringUtils.isEmpty(isbnMeta)) {
                                         bookMetaBatch.setFileIsbn(isbnMeta);
                                     } else {
-                                        bookMetaBatch.setFileIsbn(isbn);
+                                        bookMetaBatch.setFileIsbn(isbnFileName);
                                     }
                                     //获取书名
                                     title = book.getTitle();
@@ -1174,6 +1192,18 @@ public class BookMetaServiceImpl implements BookMetaService {
         return null;
     }
 
+    //从文件名获取isbn
+    private static String getIsbn4FileName(String fileName) throws Exception {
+        if (!StringUtils.isEmpty(fileName)) {
+            String isbn = getIsbn13(fileName);
+            if (StringUtils.isEmpty(isbn)) {
+                isbn = getIsbn10(fileName);
+            }
+            return isbn;
+        }
+        return null;
+    }
+
     //从内容中获取isbn
     private static String getIsbnForContent(Book book) throws IOException {
         if (book != null) {
@@ -1437,6 +1467,77 @@ public class BookMetaServiceImpl implements BookMetaService {
                 }
                 //生成检查结果
                 String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "getShuyuan.xlsx";
+                BookUtil.exportExcelEmail(emailResults, resultPath);
+                log.info("获取书苑数据结果已生成到{}", config.getEmail());
+                //表格路径
+                List<String> results = new ArrayList<>();
+                results.add(resultPath);
+                //将发送结果发送邮件
+                EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+                eMailUtil.createSender();
+                eMailUtil.sendAttachmentsMail(results, "获取书苑数据结果", toEmail);
+                log.info("获取书苑数据结果已发送邮件");
+            }
+        }
+    }
+
+    //根据drid，批量获取图书元数据
+    @Override
+    @Async
+    public void getMetaByDridEmail(String drids, String toEmail) {
+        if (!StringUtils.isEmpty(drids) && !StringUtils.isEmpty(toEmail)) {
+            String[] dridStr = drids.split("\r\n");
+            if (dridStr != null && dridStr.length > 0) {
+                List<EmailResult> emailResults = new ArrayList<>();
+                //获取日期格式转换
+                ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+                DateFormat df = threadLocal.get();
+                if (df == null) {
+                    df = new SimpleDateFormat("yyyyMMddHHmmss");
+                    threadLocal.set(df);
+                }
+                for (String drid : dridStr) {
+                    EmailResult emailResult = new EmailResult();
+                    emailResult.setId(drid);
+                    try {
+                        if (!StringUtils.isEmpty(drid)) {
+                            List<String> metaIds = bookMetaDao.findMetaIdByDrid(Integer.valueOf(drid));
+                            //如果磐石没有，则从书苑获取
+                            if (metaIds == null) {
+                                SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaByDrid(Integer.valueOf(drid));
+                                BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
+                                //新增到磐石数据库
+                                bookMeta.setHasCebx(1);
+                                bookMetaDao.insertBookMeta(bookMeta);
+                                ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                                bookMetaDataTemp.setHasCebx(1);
+                                bookMetaDataTempDao.insert(bookMetaDataTemp);
+                                //获取书苑数据，更新到流式图书
+                                boolean ress = insertShuyuanData(sCmfMeta);
+                                if (ress) {
+                                    emailResult.setMessage("成功");
+                                    log.info("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            0, drid, "success", new Date());
+                                    log.info("开始获取图书{}的目录和页码");
+                                    getPageAndCata(bookMeta.getMetaId());
+                                } else {
+                                    emailResult.setMessage("失败");
+                                    log.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            -2, drid, "新增书苑数据异常", new Date());
+                                }
+                            } else {
+                                emailResult.setMessage("磐石已存在");
+                            }
+                        }
+                    } catch (Exception e) {
+                        emailResult.setMessage("失败");
+                        log.warn("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                -1, drid, e.getMessage(), new Date());
+                    }
+                    emailResults.add(emailResult);
+                }
+                //生成检查结果
+                String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "shuyuanByDrid.xlsx";
                 BookUtil.exportExcelEmail(emailResults, resultPath);
                 log.info("获取书苑数据结果已生成到{}", config.getEmail());
                 //表格路径

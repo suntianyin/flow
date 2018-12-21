@@ -150,9 +150,13 @@
                                             <#if list.status == 0>
                                                 任务创建失败
                                             <#elseif list.status == 1>
-                                                进行中
-                                            <#else >
-                                                已完成
+                                                扫描进行中
+                                            <#elseif list.status == 2>
+                                                扫描完成
+                                            <#elseif list.status == 3>
+                                                上传进行中
+                                            <#elseif list.status == 4>
+                                                上传完成
                                             </#if>
                                         <#else>
                                             任务创建失败
