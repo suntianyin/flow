@@ -42,7 +42,7 @@ public class AmazonConsumer implements Runnable {
             ip = host.split(":")[0];
             port = host.split(":")[1];
             id = idQueue.take();
-            amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port, countDownLatch);
+            amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
             amazonMetaDao.addAmazonMeta(amazonMeta);
             LOGGER.info(simpleDateFormat.format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
         } catch (Exception e) {

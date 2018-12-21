@@ -94,7 +94,7 @@ public class ParseMarcUtil {
                 } else {
                     class_ = split[1].trim();
                 }
-                class_ = class_.substring(17,20).trim();
+                class_ = class_.substring(17, 20).trim();
                 nlcBookMarc.setClass_(class_);
             }
             // ISBN

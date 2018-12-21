@@ -328,4 +328,10 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
         }
         return "";
     }
+
+    public static void main(String[] args) throws Exception {
+        AmazonMetaServiceImpl amazonMetaService = new AmazonMetaServiceImpl();
+        AmazonMeta amazonMeta = amazonMetaService.crawl("9787535491657");
+        System.out.println(amazonMeta);
+    }
 }

@@ -30,6 +30,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -81,7 +82,7 @@ public class CrawlAmazonUtils {
             return false;
         };
         // 把代理设置到请求配置
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(60000).setConnectTimeout(60000).setConnectionRequestTimeout(60000).build();
+        RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(60000).setConnectTimeout(60000).setRedirectsEnabled(false).setConnectionRequestTimeout(60000).build();
         // SocketConfig
         SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(60000).build();
         // 实例化CloseableHttpClient对象
@@ -99,12 +100,12 @@ public class CrawlAmazonUtils {
         // 访问豆瓣主题首页
         HttpGet httpGet = new HttpGet(url);
         // 请求配置
-        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
-        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+        httpGet.setHeader("Accept-Encoding", "gzip, deflate, br");
+        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.9");
+        httpGet.setHeader("Cache-Control", "max-age=0");
         httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Cookie", "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932; csm-hit=tb:XPFXH94D44VDXC8TG5T4+s-XPFXH94D44VDXC8TG5T4|1542683794538&adb:adblk_no");
-        httpGet.setHeader("Upgrade-Insecure-Request", "1");
+        httpGet.setHeader("Upgrade-Insecure-Requests", "1");
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
         return httpGet;
     }
@@ -144,7 +145,8 @@ public class CrawlAmazonUtils {
                 httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
                 httpGet.setHeader("Cache-Control", "max-age=0");
                 httpGet.setHeader("Connection", "keep-alive");
-                httpGet.setHeader("Cookie", "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932; csm-hit=tb:XPFXH94D44VDXC8TG5T4+s-XPFXH94D44VDXC8TG5T4|1542683794538&adb:adblk_no");
+                String cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; csm-hit=tb:s-P63E93DFJZCXMX6XPCD8|" + System.currentTimeMillis() + "&adb:adblk_no; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932";
+                httpGet.setHeader("Cookie", cookie);
                 httpGet.setHeader("Host", "www.amazon.cn");
                 httpGet.setHeader("Upgrade-Insecure-Request", "1");
                 httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
@@ -199,7 +201,7 @@ public class CrawlAmazonUtils {
      * @param id amazonId
      * @return 抓取返回的amazon数据
      */
-    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port, CountDownLatch countDownLatch) throws Exception {
+    public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) throws Exception {
         AmazonMeta amazonMeta = new AmazonMeta();
         String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_9?s=books&ie=UTF8&qid=1542259479&sr=1-9";
         // 访问amazonId的详情页
@@ -224,7 +226,8 @@ public class CrawlAmazonUtils {
                 httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
                 httpGet.setHeader("Cache-Control", "max-age=0");
                 httpGet.setHeader("Connection", "keep-alive");
-                httpGet.setHeader("Cookie", "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932; csm-hit=tb:XPFXH94D44VDXC8TG5T4+s-XPFXH94D44VDXC8TG5T4|1542683794538&adb:adblk_no");
+                String cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; csm-hit=tb:s-P63E93DFJZCXMX6XPCD8|" + (System.currentTimeMillis() + 1000) + "&adb:adblk_no; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932";
+                httpGet.setHeader("Cookie", cookie);
                 httpGet.setHeader("Host", "www.amazon.cn");
                 httpGet.setHeader("Upgrade-Insecure-Request", "1");
                 httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
@@ -233,7 +236,7 @@ public class CrawlAmazonUtils {
                     if (response != null) {
                         statusCode = response.getStatusLine().getStatusCode();
                         if (statusCode == HttpStatus.SC_OK) {
-                            String html = EntityUtils.toString(response.getEntity());
+                            String html = EntityUtils.toString(response.getEntity(), "UTF-8");
                             amazonMeta = parseAmazonMeta(html);
                         }
                     }
@@ -296,16 +299,38 @@ public class CrawlAmazonUtils {
         AmazonMeta amazonMeta = null;
         try {
             CloseableHttpClient client = getCloseableHttpClient(ip, port);
-            HttpGet httpGet = generateHttpGet("https://www.amazon.cn/s/ref=nb_sb_noss?__mk_zh_CN=%E4%BA%9A%E9%A9%AC%E9%80%8A%E7%BD%91%E7%AB%99&url=search-alias%3Dstripbooks&field-keywords=" + isbn);
+            HttpGet httpGet = new HttpGet("https://www.amazon.cn/s/ref=nb_sb_noss?__mk_zh_CN=%E4%BA%9A%E9%A9%AC%E9%80%8A%E7%BD%91%E7%AB%99&url=search-alias%3Dstripbooks&field-keywords=" + isbn);
+            httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
+            httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+            httpGet.setHeader("Cache-Control", "max-age=0");
+            httpGet.setHeader("Connection", "keep-alive");
+            String cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; csm-hit=tb:s-P63E93DFJZCXMX6XPCD8|" + (System.currentTimeMillis() + 500) + "&adb:adblk_no; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932";
+            httpGet.setHeader("Cookie", cookie);
+            httpGet.setHeader("Host", "www.amazon.cn");
+            httpGet.setHeader("Upgrade-Insecure-Requests", "1");
+            Random index = new Random();
+            String userAgent = DomParseUtil.ua[Math.abs(index.nextInt()%15)];
+            httpGet.setHeader("User-Agent", userAgent);
             CloseableHttpResponse response = client.execute(httpGet);
-            String idHtml = EntityUtils.toString(response.getEntity());
+            String idHtml = EntityUtils.toString(response.getEntity(), "UTF-8");
             Document document = Jsoup.parse(idHtml);
             String id = getAmazonIdInPage(document);
-            String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_1?s=books&ie=UTF8&qid=1536026272&sr=1-1&keywords=" + isbn;
-            HttpGet httpGet2 = generateHttpGet(url);
-            CloseableHttpResponse response2 = client.execute(httpGet2);
-            String itemHtml = EntityUtils.toString(response2.getEntity());
-            amazonMeta = parseAmazonMeta(itemHtml);
+            if (StringUtils.isNotEmpty(id)) {
+                String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_1?s=books&ie=UTF8&sr=1-1&keywords=" + isbn;
+                HttpGet httpGet2 = generateHttpGet(url);
+                cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; csm-hit=tb:s-P63E93DFJZCXMX6XPCD8|" + (System.currentTimeMillis() + 500) + "&adb:adblk_no; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932";
+                httpGet2.setHeader("Cookie", cookie);
+                httpGet2.setHeader("Host", "www.amazon.cn");
+                httpGet2.setHeader("User-Agent", userAgent);
+                CloseableHttpResponse response2 = client.execute(httpGet2);
+                if (response2.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    String itemHtml = EntityUtils.toString(response2.getEntity(), "UTF-8");
+                    if (StringUtils.isNotEmpty(itemHtml)) {
+                        amazonMeta = parseAmazonMeta(itemHtml);
+                    }
+                }
+            }
         } catch (Exception e) {
             throw new Exception(e);
         }
@@ -321,16 +346,30 @@ public class CrawlAmazonUtils {
     private static String getAmazonIdInPage(Document document) {
         if (document != null) {
             String val = "";
-            if (document.select("input[name='asin']") != null) {
-                val = document.select("input[name='asin']").val();
+            Elements elements = document.select("input[name='asin']");
+            if (elements != null && elements.size() > 0) {
+                val = elements.get(0).val();
             }
             if ("".equalsIgnoreCase(val)) {
                 val = document.select("#result_0").attr("data-asin");
             }
             if ("".equalsIgnoreCase(val)) {
-                Element select = document.select("a[class='a-link-normal a-text-normal']").get(0);
-                String[] split = select.attr("href").split("/");
-                val = split[4];
+                try {
+                    Element select = document.select("a[class='a-link-normal a-text-normal']").get(0);
+                    String[] split = select.attr("href").split("/");
+                    val = split[4];
+                } catch (Exception e) {
+                }
+            }
+            if ("".equalsIgnoreCase(val)) {
+                try {
+                    Element select = document.select("div[class='s-access-image cfMarker']").get(0);
+                    //https://www.amazon.cn/dp/B0011C345Y/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1544772644&amp;sr=1-1&amp;keywords=9787503671432
+                    String href = select.attr("href");
+                    String part = href.split("//www.amazon.cn/dp/")[1];
+                    val = part.substring(0, part.indexOf("/"));
+                } catch (Exception e) {
+                }
             }
             return val;
         }
@@ -508,7 +547,7 @@ public class CrawlAmazonUtils {
                 }
             }
         }
-        if(StringUtils.isNotEmpty(amazonMeta.getIssuedDate())){
+        if (StringUtils.isNotEmpty(amazonMeta.getIssuedDate())) {
             String issuedDate = StringToolUtil.issuedDateFormat(amazonMeta.getIssuedDate());
             issuedDate = issuedDate.replaceAll(" 00:00:00", "");
             amazonMeta.setIssuedDate(issuedDate);
@@ -519,9 +558,8 @@ public class CrawlAmazonUtils {
     }
 
     public static void main(String[] args) throws Exception {
-
-        AmazonMeta amazonMeta = crawlAmazonMetaByIsbn("9787513331432", "212.164.234.207", "45859");
+        AmazonMeta amazonMeta = crawlAmazonMetaByIsbn("9787532757558", "94.236.199.216", "52448");
+//        AmazonMeta amazonMeta = crawlAmazonMetaById("B07FDT8P6C", "118.174.220.36", "43205");
         System.out.println(amazonMeta);
-
     }
 }

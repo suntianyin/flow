@@ -35,12 +35,16 @@ public class NlcBookMarcCategoryService {
     public String categoryParse() {
         List<NlcBookMarcCategory> categoryList = nlcBookMarcCategoryDao.findCategoryMoreThan2PagesAndNotCrawled();
         for (int i = 0; i < categoryList.size(); i++) {
-            final NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
+            NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
             try {
                 CrawlNlcMarcCategoryUtil.crawlNlcBookMarcByCategoryCode(categoryList.get(i).getId(), categoryList.get(i).getPage(), nlcIpPoolUtils, nlcBookMarcDao);
                 nlcBookMarcCategoryDao.update(categoryList.get(i).setStatus("1"));
             } catch (Exception e) {
-                nlcBookMarcCategoryDao.update(categoryList.get(i).setStatus("0"));
+                try {
+                    nlcBookMarcCategoryDao.update(categoryList.get(i).setStatus("0"));
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
                 e.printStackTrace();
             }
         }

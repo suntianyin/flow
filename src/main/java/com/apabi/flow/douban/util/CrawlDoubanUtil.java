@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -22,8 +23,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
@@ -38,7 +37,6 @@ import java.util.List;
  * @Date 2018/10/15 18:03
  **/
 public class CrawlDoubanUtil {
-    private static Logger LOGGER = LoggerFactory.getLogger(CrawlDoubanUtil.class);
     private static final int RETRY_COUNT = 3;
 
     /**
@@ -105,10 +103,9 @@ public class CrawlDoubanUtil {
         httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
         httpGet.setHeader("Cache-Control", "max-age=0");
         httpGet.setHeader("Connection", "keep-alive");
-        httpGet.setHeader("Host", "book.douban.com");
         httpGet.setHeader("Upgrade-Insecure-Request", "1");
         httpGet.setHeader("Cookie", DoubanCookieUtils.getCookie() + "; __utmt=1; __utma=30149280.97956999.1540178056.1540178056.1540178056.1; __utmb=30149280.1.10.1540178056; __utmc=30149280; __utmz=30149280.1540178056.1.1.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; as=\"https://sec.douban.com/b?r=https%3A%2F%2Fbook.douban.com%2F\"; ps=y");
-        httpGet.setHeader("User-Agent", UserAgentUtils.getUserAgent());
+        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
         return httpGet;
     }
 
@@ -183,8 +180,6 @@ public class CrawlDoubanUtil {
                 doubanMeta = parseDoubanMeta(html);
             }
         } catch (IOException e) {
-            //e.printStackTrace();
-            //throw new IOException();
         } finally {
             httpGet.releaseConnection();
             httpGet.abort();
@@ -215,10 +210,12 @@ public class CrawlDoubanUtil {
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         String url = "https://api.douban.com/v2/book/isbn/" + isbn;
         HttpGet httpGet = generateHttpGet(url);
+        httpGet.setHeader("Host", "api.douban.com");
+        httpGet.setHeader("Cookie", "ll=\"108169\"; bid=826yiZ-eZnk; douban-fav-remind=1; ap_v=0,6.0; gr_session_id_22c937bbd8ebd703f2d8e9445f7dfd03=4de855b1-1a0e-4d67-8fc6-afa44281cfc3; gr_session_id_22c937bbd8ebd703f2d8e9445f7dfd03_4de855b1-1a0e-4d67-8fc6-afa44281cfc3=true; viewed=\"30276249_30335756_30317420_2116333\"; gr_cs1_4de855b1-1a0e-4d67-8fc6-afa44281cfc3=user_id%3A0; gr_user_id=cc43e77d-64cd-4722-ab60-e4a0974d9e7e; _vwo_uuid_v2=DFEBCA1C98E7DDF3532A76362A6E34777|2a2ad930b768df966e67c07409a887da; __utma=30149280.1231564111.1540195466.1544671060.1544678484.8; __utmb=30149280.3.10.1544678484; __utmc=30149280; __utmz=30149280.1544671060.7.5.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)");
         CloseableHttpResponse response = null;
         try {
             response = client.execute(httpGet);
-            if (response != null) {
+            if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 doubanMeta = new DoubanMeta();
                 String html = EntityUtils.toString(response.getEntity());
                 if (StringUtils.isNotEmpty(html)) {

@@ -282,6 +282,23 @@
         </encoder>
     </appender>
 
+    <!-- ISBN全局抓取DOUBAN,AMAZON爬虫任务日志配置 -->
+    <appender name="ISBN_DANGDANG_AMAZON_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/isbn_douban_amazon.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- 针对FetchPageAgainConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageAgainConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageAgainConsumer的STDOUT的日志配置 -->
@@ -400,6 +417,14 @@
         <appender-ref ref="STDOUT"/>
         <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
         <appender-ref ref="DANGDANG_CRAWL"/>
+    </logger>
+
+    <!-- 针对dangdang定时任务抓取配置的日志 -->
+    <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDoubanAmazonConsumer" level="INFO" additivity="false">
+        <!-- 对于JD全局抓取日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
+        <appender-ref ref="ISBN_DANGDANG_AMAZON_CRAWL"/>
     </logger>
 
 

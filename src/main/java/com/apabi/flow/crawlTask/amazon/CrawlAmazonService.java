@@ -111,8 +111,7 @@ public class CrawlAmazonService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-
-         long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startDateTime = simpleDateFormat.format(startTime);
         LOGGER.info(startDateTime + " spring boot初始化完毕，开始执行amazon爬虫....");
