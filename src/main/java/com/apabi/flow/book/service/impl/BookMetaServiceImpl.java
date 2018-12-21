@@ -822,6 +822,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 String title;
                                 String isbn = null;
                                 String isbnMeta = null;
+                                String isbnFileName = null;
                                 //获取文件名
                                 fileName = newFile.getName();
                                 if (!org.apache.commons.lang.StringUtils.isEmpty(fileName)) {
@@ -834,6 +835,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         isbnMeta = getIsbn4Meta(book);
                                         //获取文件中的isbn
                                         isbn = getIsbn4Content(book);
+                                        //从文件名中获取isbn
+                                        isbnFileName = getIsbn4FileName(fileName);
                                         //isbn = getIsbnForContent(book);
                                         //使用文件中获取的isbn
                                         if (!StringUtils.isEmpty(isbn)) {
@@ -851,6 +854,14 @@ public class BookMetaServiceImpl implements BookMetaService {
                                                 String isbn13 = isbnMeta.replace("-", "");
                                                 metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
                                             }
+                                        } else if (!StringUtils.isEmpty(isbnFileName)) {
+                                            //如果文件中的isbn和插件获取的isbn为空，则使用文件名中的isbn
+                                            metaBatches = bookMetaDao.findBookMetaBatchByIsbn(isbnFileName);
+                                            //使用isbn13查找
+                                            if (metaBatches.size() == 0) {
+                                                String isbn13 = isbnFileName.replace("-", "");
+                                                metaBatches = bookMetaDao.findBookMetaBatchByIsbn13(isbn13);
+                                            }
                                         }
                                     }
                                 }
@@ -859,10 +870,12 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         //文件名
                                         bookMetaBatch.setFileName(fileName);
                                         //从文件中获取的isbn
-                                        if (StringUtils.isEmpty(isbn)) {
+                                        if (!StringUtils.isEmpty(isbn)) {
+                                            bookMetaBatch.setFileIsbn(isbn);
+                                        } else if (!StringUtils.isEmpty(isbnMeta)) {
                                             bookMetaBatch.setFileIsbn(isbnMeta);
                                         } else {
-                                            bookMetaBatch.setFileIsbn(isbn);
+                                            bookMetaBatch.setFileIsbn(isbnFileName);
                                         }
                                         //获取书名
                                         title = book.getTitle();
@@ -883,11 +896,16 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     if (StringUtils.isEmpty(isbn)) {
                                         isbn = getIsbn4Content(book);
                                     }
+                                    if (StringUtils.isEmpty(isbnFileName)) {
+                                        isbnFileName = getIsbn4FileName(fileName);
+                                    }
                                     //文件isbn
-                                    if (StringUtils.isEmpty(isbn)) {
+                                    if (!StringUtils.isEmpty(isbn)) {
+                                        bookMetaBatch.setFileIsbn(isbn);
+                                    } else if (!StringUtils.isEmpty(isbnMeta)) {
                                         bookMetaBatch.setFileIsbn(isbnMeta);
                                     } else {
-                                        bookMetaBatch.setFileIsbn(isbn);
+                                        bookMetaBatch.setFileIsbn(isbnFileName);
                                     }
                                     //获取书名
                                     title = book.getTitle();
@@ -1170,6 +1188,18 @@ public class BookMetaServiceImpl implements BookMetaService {
                     }
                 }
             }
+        }
+        return null;
+    }
+
+    //从文件名获取isbn
+    private static String getIsbn4FileName(String fileName) throws Exception {
+        if (!StringUtils.isEmpty(fileName)) {
+            String isbn = getIsbn13(fileName);
+            if (StringUtils.isEmpty(isbn)) {
+                isbn = getIsbn10(fileName);
+            }
+            return isbn;
         }
         return null;
     }
