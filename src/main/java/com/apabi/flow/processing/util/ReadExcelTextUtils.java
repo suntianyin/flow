@@ -62,18 +62,18 @@ public class ReadExcelTextUtils {
         }
         String ext = fileName.substring(fileName.lastIndexOf("."));
         try {
-            if (".xls".equals(ext)) {
-                wb = new HSSFWorkbook(in);
-            } else if (".xlsx".equals(ext)) {
+//            if (".xls".equals(ext)) {
+//                wb = new HSSFWorkbook(in);
+//            } else if (".xlsx".equals(ext)) {
 //                wb = new XSSFWorkbook(in);
                 try {
                     wb = WorkbookFactory.create(in);
                 } catch (InvalidFormatException e) {
                     e.printStackTrace();
                 }
-            } else {
-                wb = null;
-            }
+//            } else {
+//                wb = null;
+//            }
         } catch (FileNotFoundException e) {
             logger.error("FileNotFoundException", e);
         } catch (IOException e) {
@@ -163,8 +163,33 @@ public class ReadExcelTextUtils {
                         }
                         break;
                     }
+                    if (title.equals("版权期限起始时间")) {
+//                        if (cell.toString().contains("月")){
+                            Date date = HSSFDateUtil.getJavaDate(cell.getNumericCellValue());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            cellvalue = dateFormat.format(date);
+//                        }else{
+//                            cellvalue = cell.toString();
+//                        }
+                        break;
+                    }
+                    if (title.equals("版权期限终止时间")) {
+//                        if (cell.toString().contains("月")){
+                            Date date = HSSFDateUtil.getJavaDate(cell.getNumericCellValue());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            cellvalue = dateFormat.format(date);
+//                        }else{
+//                            cellvalue = cell.toString();
+//                        }
+                        break;
+                    }
                     if (title.equals("纸书价格")) {
                         DecimalFormat df = new DecimalFormat("2");
+                        cellvalue = df.format(cell.getNumericCellValue());
+                        break;
+                    }
+                    if (title.equals("电子书价格（元）")) {
+                        DecimalFormat df = new DecimalFormat("#.##");
                         cellvalue = df.format(cell.getNumericCellValue());
                         break;
                     }

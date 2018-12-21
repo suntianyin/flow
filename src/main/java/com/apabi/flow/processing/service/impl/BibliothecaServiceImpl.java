@@ -1,5 +1,6 @@
 package com.apabi.flow.processing.service.impl;
 
+import com.apabi.flow.auth.service.ResourceService;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
 import com.apabi.flow.common.UUIDCreater;
@@ -74,6 +75,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
     @Autowired
     private OutUnitMapper outUnitMapper;
+
+
 
 
     /**
@@ -673,7 +676,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
      * @param response
      */
     @Override
-    public String writeData2Excel(String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheetName, HttpServletResponse response) throws Exception {
+    public String writeData2Excel(int type,String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheetName, HttpServletResponse response) throws Exception {
         Workbook workbook = null;
         if (fileName.toLowerCase().endsWith("xls")) {//2003
             workbook = new XSSFWorkbook();
@@ -682,7 +685,6 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         } else {
             throw new BizException("文件名后缀必须是 .xls 或 .xlsx");
         }
-
         ServletOutputStream out = null;
 
         //create sheet
@@ -695,7 +697,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 //创建表头单元格,填值
                 titleRow.createCell(i).setCellValue(excelTitle[i]);
             }
-            autoCreateRow(sheet, excelModelList);
+            if(type==1) {
+                autoCreateRow(sheet, excelModelList);
+            }else if(type==2){
+                autoCreateRow2(sheet, excelModelList);
+            }
             // 设置响应头
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
             out = response.getOutputStream();
@@ -733,13 +739,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         // 遍历所有数据
         for (int i = 0; i < excelModelList.size(); i++) {
             BibliothecaExcelModel bem = excelModelList.get(i);
-
             list = Arrays.asList(bem.getIdentifier(), bem.getMetaId(), bem.getBatchId(), bem.getOriginalFilename(), bem.getTitle(),
                     bem.getAuthor(), bem.getPublisher(), bem.getIsbn(), bem.getPublishTime(), bem.getEdition(),
                     bem.getPaperPrice(), bem.geteBookPrice(), bem.getDocumentFormat(), bem.getMemo(), bem.getDuplicateFlag() == null ? "" : bem.getDuplicateFlag().getDesc(),
                     bem.getBibliothecaState() == null ? "" : bem.getBibliothecaState().getDesc(), bem.getCompletedFlag() == null ? "" : bem.getCompletedFlag().getDesc(),
                     bem.getCreator(), bem.getCreateTime() == null ? "" : new SimpleDateFormat("yyyy-MM-dd").format(bem.getCreateTime()));
-            // 创建 excel 行
             Row row = sheet.createRow(i + 1);
 
             // 逐个单元格添加数据
@@ -748,7 +752,23 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             }
         }
     }
+    private void autoCreateRow2(Sheet sheet, List<BibliothecaExcelModel> excelModelList) throws Exception {
 
+        List<String> list = null;
+        // 遍历所有数据
+        for (int i = 0; i < excelModelList.size(); i++) {
+            BibliothecaExcelModel bem = excelModelList.get(i);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            list = Arrays.asList(String.valueOf(i+1),bem.getIdentifier(), bem.getIsbn(), bem.getTitle(),bem.getAuthor(), bem.getPublisher(), bem.getPublishTime()== null ? "" : new SimpleDateFormat("yyyy/MM/dd").format(sdf.parse(StringToolUtil.issuedDateFormat(bem.getPublishTime()))),
+                    bem.getPaperPrice(), bem.geteBookPrice(),"","",bem.getMetaId(),bem.getBatchId());
+            Row row = sheet.createRow(i + 1);
+
+            // 逐个单元格添加数据
+            for (int j = 0; j < list.size(); j++) {
+                row.createCell(j).setCellValue(list.get(j));
+            }
+        }
+    }
     /**
      * null to ""
      *

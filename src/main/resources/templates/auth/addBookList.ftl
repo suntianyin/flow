@@ -14,14 +14,19 @@
             }
             return false;
         }
+        //选择事件
+        // function gradeChange(){
+        //     var copyrightOwnerId = document.getElementById("copyrightOwnerId").val();
+        //     alert(copyrightOwnerId);
+        // }
         //保存事件
         function AcceptClick() {
             $("#loading").show();
             Loading(true, "正在提交数据...");
-            if (isNull($('#agreementNum').val())) {
-                tipDialog("协议编号 不能为空！", 3, -1);
-                return;
-            }
+            // if (isNull($('#agreementNum').val())) {
+            //     tipDialog("协议编号 不能为空！", 3, -1);
+            //     return;
+            // }
             if (isNull($('#bookListNum').val())) {
                 tipDialog("授权书单编号 不能为空！", 3, -1);
                 return;
@@ -87,7 +92,7 @@
                     },
                     error: function (data) {
                         Loading(false);
-                        alertDialog(data.responseText, -1);
+                        alertDialog("输入信息有误，请核实后提交", -1);
                     }
                 });
             }, 200);
@@ -102,12 +107,12 @@
         </div>
         <form id="form1" enctype="multipart/form-data" method="post">
             <table border="0" class="form-find" style="height: 45px;">
-                <tr>
-                    <td>协议编号:</td>
-                    <td>
-                        <input id="agreementNum" name="agreementNum" type="text" class="txt" style="width: 300px"/>
-                    </td>
-                </tr>
+                <#--<tr>-->
+                    <#--<td>协议编号:</td>-->
+                    <#--<td>-->
+                        <#--<input id="agreementNum" readonly="readonly" name="agreementNum" type="text" class="txt" style="width: 300px"/>-->
+                    <#--</td>-->
+                <#--</tr>-->
                 <tr>
                     <td>授权书单编号:</td>
                     <td>
@@ -131,11 +136,11 @@
                 <tr>
                     <td>版权所有者:</td>
                     <td>
-                        <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 307px; height: 24px;">
+                        <select id="copyrightOwnerId" name="copyrightOwnerId"  underline="true" style="width: 307px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
-                            <#if publishers??>
-                                <#list publishers as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                            <#if copyrightOwners??>
+                                <#list copyrightOwners as list>
+                                    <option value="${(list.id)!''}">${(list.name)!''}</option>
                                 </#list>
                             </#if>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>

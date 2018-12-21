@@ -17,29 +17,29 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class BibliothecaExcelModel {
-
+    //编号
     private String identifier;
-
+    //
     private String metaId;
 
     private String batchId;
 
     private String originalFilename;
-
+    //书名
     private String title;
-
+    //作者
     private String author;
-
+    //出版社
     private String publisher;
-
+    //书号
     private String isbn;
-
+    //出版日期
     private String publishTime;
 
     private String edition;
-
+    //纸书价格（元）
     private String paperPrice;
-
+    //电子书价格（元）
     private String eBookPrice;
 
     private String documentFormat;

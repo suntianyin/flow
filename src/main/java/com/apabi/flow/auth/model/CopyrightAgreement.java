@@ -25,7 +25,7 @@ public class CopyrightAgreement {
 
     private AuthTypeEnum authType;
 
-    private int assignPercent;
+    private Double assignPercent;
 
     private int assignRule;
 
@@ -151,11 +151,11 @@ public class CopyrightAgreement {
         this.authType = authType;
     }
 
-    public int getAssignPercent() {
+    public Double getAssignPercent() {
         return assignPercent;
     }
 
-    public void setAssignPercent(int assignPercent) {
+    public void setAssignPercent(Double assignPercent) {
         this.assignPercent = assignPercent;
     }
 

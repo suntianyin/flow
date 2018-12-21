@@ -101,6 +101,9 @@
         function bookListFileDownload(id) {
             window.location.href="${ctx}/bookList/bookListFileDownload?id="+id;
         }
+        function bookDetail (bookListNum,batchNum) {
+            window.location.href="${ctx}/bookList/bookDetail?bookListNum="+bookListNum+'&batchNum='+batchNum;
+        }
     </script>
 </head>
 <body>
@@ -124,9 +127,9 @@
                     <td>
                         <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 257px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
-                            <#if publishers??>
-                                <#list publishers as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                            <#if copyrightOwners??>
+                                <#list copyrightOwners as list>
+                                    <option value="${(list.id)!''}">${(list.name)!''}</option>
                                 </#list>
                             </#if>
                         </select>
@@ -205,7 +208,7 @@
                                 <a style="cursor:pointer;" onclick="deleteById('${list.id! "" }');">删除&nbsp;</a>
                                 <a style="cursor:pointer;" onclick="bookListFileAdd('${list.id! "" }');">上传附件&nbsp;</a>
                                 <a style="cursor:pointer;" onclick="bookListFileDownload('${list.id! "" }');">下载附件&nbsp;</a>
-                                <a style="cursor:pointer;" onclick="bookListFileDownload('${list.id! "" }');">授权资源查看&nbsp;</a>
+                                <a style="cursor:pointer;" onclick="bookDetail('${list.bookListNum! "" }','${list.batchNum! "" }');">授权资源查看&nbsp;</a>
                             </td>
                         </tr>
                         </#list>

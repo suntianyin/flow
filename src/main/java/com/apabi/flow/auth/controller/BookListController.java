@@ -2,10 +2,17 @@ package com.apabi.flow.auth.controller;
 
 import com.apabi.flow.auth.dao.BookListMapper;
 import com.apabi.flow.auth.model.BookList;
+import com.apabi.flow.auth.model.CopyrightAgreement;
+import com.apabi.flow.auth.model.CopyrightOwner;
+import com.apabi.flow.auth.model.Resource;
+import com.apabi.flow.auth.service.AuthService;
 import com.apabi.flow.auth.service.BookListService;
+import com.apabi.flow.auth.service.CopyrightOwnerService;
+import com.apabi.flow.auth.service.ResourceService;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.util.ParamsUtils;
 import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.processing.constant.BizException;
 import com.apabi.flow.publisher.model.Publisher;
 import com.apabi.flow.publisher.service.PublisherService;
 import com.github.pagehelper.Page;
@@ -39,14 +46,22 @@ public class BookListController {
     private BookListService bookListService;
 
     @Autowired
-    private PublisherService publisherService;
-
-    @Autowired
     BookListMapper bookListMapper;
 
     @Autowired
     ApplicationConfig config;
 
+    @Autowired
+    private CopyrightOwnerService copyrightOwnerService;
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private ResourceService resourceService;
+
+    @Autowired
+    private PublisherService publisherService;
 
     @GetMapping("/index")
     public String index(@RequestParam(value = "copyrightOwnerId", required = false) String copyrightOwnerId,
@@ -63,7 +78,7 @@ public class BookListController {
         try {
 
             long start = System.currentTimeMillis();
-            List<Publisher> publishers = publisherService.findAll();
+            List<CopyrightOwner> copyrightOwners = copyrightOwnerService.findAll();
             //搜索保留
             model.addAttribute("copyrightOwnerId", copyrightOwnerId);
             model.addAttribute("authEndDate", authEndDate);
@@ -73,7 +88,7 @@ public class BookListController {
             model.addAttribute("bookListNum", bookListNum);
             model.addAttribute("authorizeNum", authorizeNum);
             model.addAttribute("coopertor", coopertor);
-            model.addAttribute("publishers", publishers);
+            model.addAttribute("copyrightOwners", copyrightOwners);
             PageHelper.startPage(pageNum, pageSize);
             Map<String, Object> paramsMap = new HashMap<>();
             ParamsUtils.checkParameterAndPut2Map(paramsMap, "copyrightOwnerId", copyrightOwnerId);
@@ -106,27 +121,33 @@ public class BookListController {
         return "auth/bookList";
     }
 
-    private static Map<String, String> publisher = new HashMap<>();
+    private static Map<String, String> copyrightOwner = new HashMap<>();
 
     @RequestMapping("/add/index")
     public String addIndex(Model model) {
-        List<Publisher> publishers = publisherService.findAll();
-        model.addAttribute("publishers", publishers);
-        for (Publisher p : publishers) {
-            publisher.put(p.getId(), p.getTitle());
+        List<CopyrightOwner> copyrightOwners = copyrightOwnerService.findAll();
+        model.addAttribute("copyrightOwners", copyrightOwners);
+        for (CopyrightOwner p : copyrightOwners) {
+            copyrightOwner.put(p.getId(), p.getName());
         }
         return "/auth/addBookList";
     }
 
     @PostMapping("/add")
-    public String add(@RequestBody BookList bookList) {
-        String s = UUIDCreater.nextId();
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        bookList.setOpertor(userDetails.getUsername());
-        bookList.setOperteDate(new Date());
-        bookList.setId(s);
-        bookList.setCopyrightOwner(publisher.get(bookList.getCopyrightOwnerId()));
-        int add = bookListService.add(bookList);
+    public Object add(@RequestBody BookList bookList) throws BizException {
+            CopyrightAgreement copyrightAgreement = authService.findByCopyrightOwnerId(bookList.getCopyrightOwnerId());
+            if(copyrightAgreement!=null){
+                String s = UUIDCreater.nextId();
+                bookList.setAgreementNum(copyrightAgreement.getAgreementNum());
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                bookList.setOpertor(userDetails.getUsername());
+                bookList.setOperteDate(new Date());
+                bookList.setId(s);
+                bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
+                int add = bookListService.add(bookList);
+            }else{
+                throw new BizException("当前版权所有者无版权协议");
+            }
         return "redirect:/bookList/index";
     }
 
@@ -136,10 +157,10 @@ public class BookListController {
         if (StringUtils.isNotBlank(id)) {
             bookList = bookListService.selectByPrimaryKey(id);
         }
-        List<Publisher> publishers = publisherService.findAll();
-        model.addAttribute("publishers", publishers);
-        for (Publisher p : publishers) {
-            publisher.put(p.getId(), p.getTitle());
+        List<CopyrightOwner> copyrightOwners = copyrightOwnerService.findAll();
+        model.addAttribute("copyrightOwners", copyrightOwners);
+        for (CopyrightOwner p : copyrightOwners) {
+            copyrightOwner.put(p.getId(), p.getName());
         }
         model.addAttribute("submitDate", bookList.getSubmitDate().toString());
         model.addAttribute("authEndDate", bookList.getAuthEndDate().toString());
@@ -149,12 +170,18 @@ public class BookListController {
     }
 
     @PostMapping("/update")
-    public String update(@RequestBody BookList bookList) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        bookList.setOpertor(userDetails.getUsername());
-        bookList.setOperteDate(new Date());
-        bookList.setCopyrightOwner(publisher.get(bookList.getCopyrightOwnerId()));
-        int add = bookListService.updateByPrimaryKeySelective(bookList);
+    public String update(@RequestBody BookList bookList) throws BizException {
+        CopyrightAgreement copyrightAgreement = authService.findByCopyrightOwnerId(bookList.getCopyrightOwnerId());
+        if(copyrightAgreement!=null) {
+            bookList.setAgreementNum(copyrightAgreement.getAgreementNum());
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            bookList.setOpertor(userDetails.getUsername());
+            bookList.setOperteDate(new Date());
+            bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
+            int add = bookListService.updateByPrimaryKeySelective(bookList);
+        }else{
+            throw new BizException("当前版权所有者无版权协议");
+        }
         return "redirect:/bookList/index";
     }
 
@@ -315,4 +342,42 @@ public class BookListController {
         }
         return "<script type='text/javascript'>alert('下载成功！');history.back();</script>";
     }
+    private static Map<String ,String> copyrightOwnerMap=new HashMap<>();
+    private static Map<String ,String> publisherMap=new HashMap<>();
+    @RequestMapping("/bookDetail")
+    public String bookDetail(@RequestParam String bookListNum,@RequestParam String batchNum,Model model) {
+        //根据批次号绑定资源授权书单编号
+        resourceService.updateByBooklistNum(bookListNum,batchNum);
+        //根据书单编号查资源
+        List<Publisher> publishers = publisherService.findAll();
+        model.addAttribute("publishers", publishers);
+        for (Publisher p:publishers) {
+            publisherMap.put(p.getId(),p.getTitle());
+        }
+        List<CopyrightOwner> all = copyrightOwnerService.findAll();
+        for (CopyrightOwner copyrightOwner1:all){
+            copyrightOwnerMap.put(copyrightOwner1.getId(),copyrightOwner1.getName());
+        }
+        model.addAttribute("CopyrightOwner", all);
+        long start = System.currentTimeMillis();
+        PageHelper.startPage(1, 10);
+        Map paramsMap=new HashMap();
+        paramsMap.put("booklistNum",bookListNum);
+        Page<Resource> page = resourceService.listResource(paramsMap);
+        page.forEach(r->r.setPublisher(publisherMap.get(r.getPublisher())));
+        page.forEach(r->r.setCopyrightOwner(copyrightOwnerMap.get(r.getCopyrightOwner())));
+        if (page != null && !page.isEmpty()) {
+            model.addAttribute("ResourceList", page.getResult());
+            model.addAttribute("pages", page.getPages());
+            model.addAttribute("pageNum", page.getPageNum());
+        } else {
+            model.addAttribute("ResourceList", Collections.emptyList());
+            model.addAttribute("pages", 1);
+            model.addAttribute("pageNum", 1);
+        }
+        long end = System.currentTimeMillis();
+        log.info("协议资源信息列表查询耗时：" + (end - start) + "毫秒");
+        return "auth/resource";
+    }
+
 }

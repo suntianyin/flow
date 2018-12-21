@@ -26,4 +26,10 @@ public interface AuthService {
     int saveAgreementFileNameAndPath(String caid, String filePath);
 
     List<CopyrightAgreement> findAll();
+
+    CopyrightAgreement findByCopyrightOwnerId(String copyrightOwnerId);
+
+    int updateStatusByPrimaryKeySelective(CopyrightAgreement record);
+
+
 }

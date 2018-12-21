@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.auth.dao.ResourceMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.auth.model.Resource">
+    <id column="RESR_ID" jdbcType="VARCHAR" property="resrId" />
+    <result column="BOOKLIST_NUM" jdbcType="VARCHAR" property="booklistNum" />
+    <result column="INSERT_DATE" jdbcType="TIMESTAMP" property="insertDate" />
+    <result column="META_ID" jdbcType="VARCHAR" property="metaId" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+    <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher" />
+    <result column="ISSUED_DATE" jdbcType="TIMESTAMP" property="issuedDate" />
+    <result column="ISBN" jdbcType="VARCHAR" property="isbn" />
+    <result column="EDITION_ORDER" jdbcType="VARCHAR" property="editionOrder" />
+    <result column="PAPER_PRICE" jdbcType="DECIMAL" property="paperPrice" />
+    <result column="E_PRICE" jdbcType="DECIMAL" property="ePrice" />
+    <result column="ISONLY_OWNER" jdbcType="VARCHAR" property="isonlyOwner" />
+    <result column="ASSIGN_RULE" jdbcType="DECIMAL" property="assignRule" />
+    <result column="ASSIGN_PERCENT" jdbcType="DECIMAL" property="assignPercent" />
+    <result column="COPYRIGHT_OWNER" jdbcType="VARCHAR" property="copyrightOwner" />
+    <result column="IS_B2B" jdbcType="VARCHAR" property="isB2b" />
+    <result column="IS_CLOUD" jdbcType="VARCHAR" property="isCloud" />
+    <result column="AUTH_TYPE" jdbcType="DECIMAL" property="authType" />
+    <result column="STATUS"  property="status" typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.auth.constant.ResourceStatusEnum"/>
+    <result column="AUTH_START_DATE" jdbcType="TIMESTAMP" property="authStartDate" />
+    <result column="AUTH_END_DATE" jdbcType="TIMESTAMP" property="authEndDate" />
+    <result column="FREEREAD_PERCENT" jdbcType="VARCHAR" property="freereadPercent" />
+    <result column="IS_COPY_NUM" jdbcType="DECIMAL" property="isCopyNum" />
+    <result column="IS_DATABASE_SALE" jdbcType="DECIMAL" property="isDatabaseSale" />
+    <result column="IS_CHAPTER_SALE" jdbcType="DECIMAL" property="isChapterSale" />
+    <result column="IS_TIME_SALE" jdbcType="DECIMAL" property="isTimeSale" />
+    <result column="IS_FREE_READ" jdbcType="DECIMAL" property="isFreeRead" />
+    <result column="IS_POD" jdbcType="DECIMAL" property="isPod" />
+    <result column="IS_SERIALISE" jdbcType="DECIMAL" property="isSerialise" />
+    <result column="OTHER" jdbcType="VARCHAR" property="other" />
+    <result column="HAS_ORIGINALEDITION" jdbcType="DECIMAL" property="hasOriginaledition" />
+    <result column="HAS_FLOW" jdbcType="DECIMAL" property="hasFlow" />
+    <result column="HAS_DATABASE" jdbcType="DECIMAL" property="hasDatabase" />
+    <result column="HAS_MULTIMEDIA" jdbcType="DECIMAL" property="hasMultimedia" />
+    <result column="HAS_POD" jdbcType="DECIMAL" property="hasPod" />
+    <result column="HAS_OTHER" jdbcType="VARCHAR" property="hasOther" />
+    <result column="NC_START_DATE" jdbcType="TIMESTAMP" property="ncStartDate" />
+    <result column="NC_END_DATE" jdbcType="TIMESTAMP" property="ncEndDate" />
+    <result column="IS_PUBLICEDITION" jdbcType="DECIMAL" property="isPublicedition" />
+    <result column="IS_FORMATEXPIRE" jdbcType="DECIMAL" property="isFormatexpire" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="BATCH_NUM" jdbcType="VARCHAR" property="batchNum" />
+    <result column="IDENTIFIER" jdbcType="VARCHAR" property="identifier" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+    <result column="OPERATE_DATE" jdbcType="TIMESTAMP" property="operateDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    RESR_ID, BOOKLIST_NUM, INSERT_DATE, META_ID, TITLE, CREATOR, PUBLISHER, ISSUED_DATE, 
+    ISBN, EDITION_ORDER, PAPER_PRICE, E_PRICE, ISONLY_OWNER, ASSIGN_RULE, ASSIGN_PERCENT, 
+    COPYRIGHT_OWNER, IS_B2B, IS_CLOUD, AUTH_TYPE, STATUS, AUTH_START_DATE, AUTH_END_DATE, 
+    FREEREAD_PERCENT, IS_COPY_NUM, IS_DATABASE_SALE, IS_CHAPTER_SALE, IS_TIME_SALE, IS_FREE_READ, 
+    IS_POD, IS_SERIALISE, OTHER, HAS_ORIGINALEDITION, HAS_FLOW, HAS_DATABASE, HAS_MULTIMEDIA, 
+    HAS_POD, HAS_OTHER, NC_START_DATE, NC_END_DATE, IS_PUBLICEDITION, IS_FORMATEXPIRE, 
+    REMARK, BATCH_NUM ,IDENTIFIER,OPERATOR,OPERATE_DATE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_AUTH_RESOURCE
+    where RESR_ID = #{resrId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_AUTH_RESOURCE
+    where RESR_ID = #{resrId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.auth.model.Resource">
+    insert into APABI_AUTH_RESOURCE (RESR_ID, BOOKLIST_NUM, INSERT_DATE, 
+      META_ID, TITLE, CREATOR, 
+      PUBLISHER, ISSUED_DATE, ISBN, 
+      EDITION_ORDER, PAPER_PRICE, E_PRICE, 
+      ISONLY_OWNER, ASSIGN_RULE, ASSIGN_PERCENT, 
+      COPYRIGHT_OWNER, IS_B2B, IS_CLOUD, 
+      AUTH_TYPE, STATUS, AUTH_START_DATE, 
+      AUTH_END_DATE, FREEREAD_PERCENT, IS_COPY_NUM, 
+      IS_DATABASE_SALE, IS_CHAPTER_SALE, IS_TIME_SALE, 
+      IS_FREE_READ, IS_POD, IS_SERIALISE, 
+      OTHER, HAS_ORIGINALEDITION, HAS_FLOW, 
+      HAS_DATABASE, HAS_MULTIMEDIA, HAS_POD, 
+      HAS_OTHER, NC_START_DATE, NC_END_DATE, 
+      IS_PUBLICEDITION, IS_FORMATEXPIRE, REMARK, 
+      BATCH_NUM,IDENTIFIER,OPERATOR,OPERATE_DATE)
+    values (#{resrId,jdbcType=VARCHAR}, #{booklistNum,jdbcType=VARCHAR}, #{insertDate,jdbcType=TIMESTAMP},
+      #{metaId,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR},
+      #{publisher,jdbcType=VARCHAR}, #{issuedDate,jdbcType=TIMESTAMP}, #{isbn,jdbcType=VARCHAR},
+      #{editionOrder,jdbcType=VARCHAR}, #{paperPrice,jdbcType=DECIMAL}, #{ePrice,jdbcType=DECIMAL}, 
+      #{isonlyOwner,jdbcType=VARCHAR}, #{assignRule,jdbcType=DECIMAL}, #{assignPercent,jdbcType=DECIMAL},
+      #{copyrightOwner,jdbcType=VARCHAR}, #{isB2b,jdbcType=VARCHAR}, #{isCloud,jdbcType=VARCHAR},
+      #{authType,jdbcType=DECIMAL}, #{status.code,jdbcType=DECIMAL}, #{authStartDate,jdbcType=TIMESTAMP},
+      #{authEndDate,jdbcType=TIMESTAMP}, #{freereadPercent,jdbcType=VARCHAR}, #{isCopyNum,jdbcType=DECIMAL},
+      #{isDatabaseSale,jdbcType=DECIMAL}, #{isChapterSale,jdbcType=DECIMAL}, #{isTimeSale,jdbcType=DECIMAL}, 
+      #{isFreeRead,jdbcType=DECIMAL}, #{isPod,jdbcType=DECIMAL}, #{isSerialise,jdbcType=DECIMAL}, 
+      #{other,jdbcType=VARCHAR}, #{hasOriginaledition,jdbcType=DECIMAL}, #{hasFlow,jdbcType=DECIMAL},
+      #{hasDatabase,jdbcType=DECIMAL}, #{hasMultimedia,jdbcType=DECIMAL}, #{hasPod,jdbcType=DECIMAL}, 
+      #{hasOther,jdbcType=VARCHAR}, #{ncStartDate,jdbcType=TIMESTAMP}, #{ncEndDate,jdbcType=TIMESTAMP},
+      #{isPublicedition,jdbcType=DECIMAL}, #{isFormatexpire,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR},
+      #{batchNum,jdbcType=VARCHAR},#{identifier,jdbcType=VARCHAR},#{operator,jdbcType=VARCHAR},#{operateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.auth.model.Resource">
+    insert into APABI_AUTH_RESOURCE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="resrId != null">
+        RESR_ID,
+      </if>
+      <if test="booklistNum != null">
+        BOOKLIST_NUM,
+      </if>
+      <if test="insertDate != null">
+        INSERT_DATE,
+      </if>
+      <if test="metaId != null">
+        META_ID,
+      </if>
+      <if test="title != null">
+        TITLE,
+      </if>
+      <if test="creator != null">
+        CREATOR,
+      </if>
+      <if test="publisher != null">
+        PUBLISHER,
+      </if>
+      <if test="issuedDate != null">
+        ISSUED_DATE,
+      </if>
+      <if test="isbn != null">
+        ISBN,
+      </if>
+      <if test="editionOrder != null">
+        EDITION_ORDER,
+      </if>
+      <if test="paperPrice != null">
+        PAPER_PRICE,
+      </if>
+      <if test="ePrice != null">
+        E_PRICE,
+      </if>
+      <if test="isonlyOwner != null">
+        ISONLY_OWNER,
+      </if>
+      <if test="assignRule != null">
+        ASSIGN_RULE,
+      </if>
+      <if test="assignPercent != null">
+        ASSIGN_PERCENT,
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER,
+      </if>
+      <if test="isB2b != null">
+        IS_B2B,
+      </if>
+      <if test="isCloud != null">
+        IS_CLOUD,
+      </if>
+      <if test="authType != null">
+        AUTH_TYPE,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="authStartDate != null">
+        AUTH_START_DATE,
+      </if>
+      <if test="authEndDate != null">
+        AUTH_END_DATE,
+      </if>
+      <if test="freereadPercent != null">
+        FREEREAD_PERCENT,
+      </if>
+      <if test="isCopyNum != null">
+        IS_COPY_NUM,
+      </if>
+      <if test="isDatabaseSale != null">
+        IS_DATABASE_SALE,
+      </if>
+      <if test="isChapterSale != null">
+        IS_CHAPTER_SALE,
+      </if>
+      <if test="isTimeSale != null">
+        IS_TIME_SALE,
+      </if>
+      <if test="isFreeRead != null">
+        IS_FREE_READ,
+      </if>
+      <if test="isPod != null">
+        IS_POD,
+      </if>
+      <if test="isSerialise != null">
+        IS_SERIALISE,
+      </if>
+      <if test="other != null">
+        OTHER,
+      </if>
+      <if test="hasOriginaledition != null">
+        HAS_ORIGINALEDITION,
+      </if>
+      <if test="hasFlow != null">
+        HAS_FLOW,
+      </if>
+      <if test="hasDatabase != null">
+        HAS_DATABASE,
+      </if>
+      <if test="hasMultimedia != null">
+        HAS_MULTIMEDIA,
+      </if>
+      <if test="hasPod != null">
+        HAS_POD,
+      </if>
+      <if test="hasOther != null">
+        HAS_OTHER,
+      </if>
+      <if test="ncStartDate != null">
+        NC_START_DATE,
+      </if>
+      <if test="ncEndDate != null">
+        NC_END_DATE,
+      </if>
+      <if test="isPublicedition != null">
+        IS_PUBLICEDITION,
+      </if>
+      <if test="isFormatexpire != null">
+        IS_FORMATEXPIRE,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="batchNum != null">
+        BATCH_NUM,
+      </if>
+      <if test="identifier != null">
+        IDENTIFIER,
+      </if>
+      <if test="operator != null">
+        OPERATOR,
+      </if>
+      <if test="operateDate != null">
+        OPERATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="resrId != null">
+        #{resrId,jdbcType=VARCHAR},
+      </if>
+      <if test="booklistNum != null">
+        #{booklistNum,jdbcType=VARCHAR},
+      </if>
+      <if test="insertDate != null">
+        #{insertDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="metaId != null">
+        #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDate != null">
+        #{issuedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isbn != null">
+        #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="editionOrder != null">
+        #{editionOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        #{paperPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="ePrice != null">
+        #{ePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isonlyOwner != null">
+        #{isonlyOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="assignRule != null">
+        #{assignRule,jdbcType=DECIMAL},
+      </if>
+      <if test="assignPercent != null">
+        #{assignPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="copyrightOwner != null">
+        #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="isB2b != null">
+        #{isB2b,jdbcType=VARCHAR},
+      </if>
+      <if test="isCloud != null">
+        #{isCloud,jdbcType=VARCHAR},
+      </if>
+      <if test="authType != null">
+        #{authType,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="authStartDate != null">
+        #{authStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authEndDate != null">
+        #{authEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="freereadPercent != null">
+        #{freereadPercent,jdbcType=VARCHAR},
+      </if>
+      <if test="isCopyNum != null">
+        #{isCopyNum,jdbcType=DECIMAL},
+      </if>
+      <if test="isDatabaseSale != null">
+        #{isDatabaseSale,jdbcType=DECIMAL},
+      </if>
+      <if test="isChapterSale != null">
+        #{isChapterSale,jdbcType=DECIMAL},
+      </if>
+      <if test="isTimeSale != null">
+        #{isTimeSale,jdbcType=DECIMAL},
+      </if>
+      <if test="isFreeRead != null">
+        #{isFreeRead,jdbcType=DECIMAL},
+      </if>
+      <if test="isPod != null">
+        #{isPod,jdbcType=DECIMAL},
+      </if>
+      <if test="isSerialise != null">
+        #{isSerialise,jdbcType=DECIMAL},
+      </if>
+      <if test="other != null">
+        #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="hasOriginaledition != null">
+        #{hasOriginaledition,jdbcType=DECIMAL},
+      </if>
+      <if test="hasFlow != null">
+        #{hasFlow,jdbcType=DECIMAL},
+      </if>
+      <if test="hasDatabase != null">
+        #{hasDatabase,jdbcType=DECIMAL},
+      </if>
+      <if test="hasMultimedia != null">
+        #{hasMultimedia,jdbcType=DECIMAL},
+      </if>
+      <if test="hasPod != null">
+        #{hasPod,jdbcType=DECIMAL},
+      </if>
+      <if test="hasOther != null">
+        #{hasOther,jdbcType=VARCHAR},
+      </if>
+      <if test="ncStartDate != null">
+        #{ncStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ncEndDate != null">
+        #{ncEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isPublicedition != null">
+        #{isPublicedition,jdbcType=DECIMAL},
+      </if>
+      <if test="isFormatexpire != null">
+        #{isFormatexpire,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="batchNum != null">
+        #{batchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="identifier != null">
+        #{identifier,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByBooklistNum" >
+  update APABI_AUTH_RESOURCE
+  <set>
+  <if test="booklistNum != null">
+    BOOKLIST_NUM = #{booklistNum,jdbcType=VARCHAR},
+  </if>
+  </set>
+    where BATCH_NUM = #{batchNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.auth.model.Resource">
+    update APABI_AUTH_RESOURCE
+    <set>
+      <if test="booklistNum != null">
+        BOOKLIST_NUM = #{booklistNum,jdbcType=VARCHAR},
+      </if>
+      <if test="metaId != null">
+        META_ID = #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDate != null">
+        ISSUED_DATE = #{issuedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isbn != null">
+        ISBN = #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        PAPER_PRICE = #{paperPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="ePrice != null">
+        E_PRICE = #{ePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        STATUS = #{status.code,jdbcType=DECIMAL},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        OPERATE_DATE = #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where RESR_ID = #{resrId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeySelective2" parameterType="com.apabi.flow.auth.model.Resource">
+    update APABI_AUTH_RESOURCE
+    <set>
+      <if test="booklistNum != null">
+        BOOKLIST_NUM = #{booklistNum,jdbcType=VARCHAR},
+      </if>
+      <if test="insertDate != null">
+        INSERT_DATE = #{insertDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="metaId != null">
+        META_ID = #{metaId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="issuedDate != null">
+        ISSUED_DATE = #{issuedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isbn != null">
+        ISBN = #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="editionOrder != null">
+        EDITION_ORDER = #{editionOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="paperPrice != null">
+        PAPER_PRICE = #{paperPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="ePrice != null">
+        E_PRICE = #{ePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="isonlyOwner != null">
+        ISONLY_OWNER = #{isonlyOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="assignRule != null">
+        ASSIGN_RULE = #{assignRule,jdbcType=DECIMAL},
+      </if>
+      <if test="assignPercent != null">
+        ASSIGN_PERCENT = #{assignPercent,jdbcType=DECIMAL},
+      </if>
+      <if test="copyrightOwner != null">
+        COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="isB2b != null">
+        IS_B2B = #{isB2b,jdbcType=VARCHAR},
+      </if>
+      <if test="isCloud != null">
+        IS_CLOUD = #{isCloud,jdbcType=VARCHAR},
+      </if>
+      <if test="authType != null">
+        AUTH_TYPE = #{authType,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        STATUS = #{status.code,jdbcType=DECIMAL},
+      </if>
+      <if test="authStartDate != null">
+        AUTH_START_DATE = #{authStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="authEndDate != null">
+        AUTH_END_DATE = #{authEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="freereadPercent != null">
+        FREEREAD_PERCENT = #{freereadPercent,jdbcType=VARCHAR},
+      </if>
+      <if test="isCopyNum != null">
+        IS_COPY_NUM = #{isCopyNum,jdbcType=DECIMAL},
+      </if>
+      <if test="isDatabaseSale != null">
+        IS_DATABASE_SALE = #{isDatabaseSale,jdbcType=DECIMAL},
+      </if>
+      <if test="isChapterSale != null">
+        IS_CHAPTER_SALE = #{isChapterSale,jdbcType=DECIMAL},
+      </if>
+      <if test="isTimeSale != null">
+        IS_TIME_SALE = #{isTimeSale,jdbcType=DECIMAL},
+      </if>
+      <if test="isFreeRead != null">
+        IS_FREE_READ = #{isFreeRead,jdbcType=DECIMAL},
+      </if>
+      <if test="isPod != null">
+        IS_POD = #{isPod,jdbcType=DECIMAL},
+      </if>
+      <if test="isSerialise != null">
+        IS_SERIALISE = #{isSerialise,jdbcType=DECIMAL},
+      </if>
+      <if test="other != null">
+        OTHER = #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="hasOriginaledition != null">
+        HAS_ORIGINALEDITION = #{hasOriginaledition,jdbcType=DECIMAL},
+      </if>
+      <if test="hasFlow != null">
+        HAS_FLOW = #{hasFlow,jdbcType=DECIMAL},
+      </if>
+      <if test="hasDatabase != null">
+        HAS_DATABASE = #{hasDatabase,jdbcType=DECIMAL},
+      </if>
+      <if test="hasMultimedia != null">
+        HAS_MULTIMEDIA = #{hasMultimedia,jdbcType=DECIMAL},
+      </if>
+      <if test="hasPod != null">
+        HAS_POD = #{hasPod,jdbcType=DECIMAL},
+      </if>
+      <if test="hasOther != null">
+        HAS_OTHER = #{hasOther,jdbcType=VARCHAR},
+      </if>
+      <if test="ncStartDate != null">
+        NC_START_DATE = #{ncStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ncEndDate != null">
+        NC_END_DATE = #{ncEndDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isPublicedition != null">
+        IS_PUBLICEDITION = #{isPublicedition,jdbcType=DECIMAL},
+      </if>
+      <if test="isFormatexpire != null">
+        IS_FORMATEXPIRE = #{isFormatexpire,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="batchNum != null">
+        BATCH_NUM = #{batchNum,jdbcType=VARCHAR},
+      </if>
+      <if test="identifier != null">
+        IDENTIFIER = #{identifier,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        OPERATE_DATE = #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+
+    </set>
+    where RESR_ID = #{resrId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.auth.model.Resource">
+    update APABI_AUTH_RESOURCE
+    set BOOKLIST_NUM = #{booklistNum,jdbcType=VARCHAR},
+      INSERT_DATE = #{insertDate,jdbcType=TIMESTAMP},
+      META_ID = #{metaId,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      ISSUED_DATE = #{issuedDate,jdbcType=TIMESTAMP},
+      ISBN = #{isbn,jdbcType=VARCHAR},
+      EDITION_ORDER = #{editionOrder,jdbcType=VARCHAR},
+      PAPER_PRICE = #{paperPrice,jdbcType=DECIMAL},
+      E_PRICE = #{ePrice,jdbcType=DECIMAL},
+      ISONLY_OWNER = #{isonlyOwner,jdbcType=VARCHAR},
+      ASSIGN_RULE = #{assignRule,jdbcType=DECIMAL},
+      ASSIGN_PERCENT = #{assignPercent,jdbcType=DECIMAL},
+      COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR},
+      IS_B2B = #{isB2b,jdbcType=VARCHAR},
+      IS_CLOUD = #{isCloud,jdbcType=VARCHAR},
+      AUTH_TYPE = #{authType,jdbcType=DECIMAL},
+      STATUS = #{status.code,jdbcType=DECIMAL},
+      AUTH_START_DATE = #{authStartDate,jdbcType=TIMESTAMP},
+      AUTH_END_DATE = #{authEndDate,jdbcType=TIMESTAMP},
+      FREEREAD_PERCENT = #{freereadPercent,jdbcType=VARCHAR},
+      IS_COPY_NUM = #{isCopyNum,jdbcType=DECIMAL},
+      IS_DATABASE_SALE = #{isDatabaseSale,jdbcType=DECIMAL},
+      IS_CHAPTER_SALE = #{isChapterSale,jdbcType=DECIMAL},
+      IS_TIME_SALE = #{isTimeSale,jdbcType=DECIMAL},
+      IS_FREE_READ = #{isFreeRead,jdbcType=DECIMAL},
+      IS_POD = #{isPod,jdbcType=DECIMAL},
+      IS_SERIALISE = #{isSerialise,jdbcType=DECIMAL},
+      OTHER = #{other,jdbcType=VARCHAR},
+      HAS_ORIGINALEDITION = #{hasOriginaledition,jdbcType=DECIMAL},
+      HAS_FLOW = #{hasFlow,jdbcType=DECIMAL},
+      HAS_DATABASE = #{hasDatabase,jdbcType=DECIMAL},
+      HAS_MULTIMEDIA = #{hasMultimedia,jdbcType=DECIMAL},
+      HAS_POD = #{hasPod,jdbcType=DECIMAL},
+      HAS_OTHER = #{hasOther,jdbcType=VARCHAR},
+      NC_START_DATE = #{ncStartDate,jdbcType=TIMESTAMP},
+      NC_END_DATE = #{ncEndDate,jdbcType=TIMESTAMP},
+      IS_PUBLICEDITION = #{isPublicedition,jdbcType=DECIMAL},
+      IS_FORMATEXPIRE = #{isFormatexpire,jdbcType=DECIMAL},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      BATCH_NUM = #{batchNum,jdbcType=VARCHAR},
+      IDENTIFIER= #{identifier,jdbcType=VARCHAR},
+      OPERATOR= #{operator,jdbcType=VARCHAR},
+      OPERATE_DATE= #{operateDate,jdbcType=TIMESTAMP}
+    where RESR_ID = #{resrId,jdbcType=VARCHAR}
+  </update>
+  <select id="listResource" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from APABI_AUTH_RESOURCE pb
+    WHERE 1=1
+    <if test="resrId != null and resrId != ''">
+      AND pb.RESR_ID =#{resrId}
+    </if>
+    <if test="booklistNum != null and booklistNum != ''">
+      AND pb.BOOKLIST_NUM =#{booklistNum}
+    </if>
+    <if test="metaId != null and metaId != ''">
+      AND pb.META_ID =#{metaId}
+    </if>
+    <if test="batchNum != null and batchNum != ''">
+      AND pb.BATCH_NUM =#{batchNum}
+    </if>
+    <if test="title != null and title != ''">
+      AND pb.TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="creator != null and creator != ''">
+      AND pb.CREATOR LIKE CONCAT(CONCAT('%',#{creator,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="copyrightOwner != null and copyrightOwner != ''">
+      AND pb.COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR}
+    </if>
+    <if test="status != null and status != ''or status == '0'.toString() ">
+      AND pb.STATUS = #{status}
+    </if>
+    <if test="isbn != null and isbn != ''or isbn == '0'.toString() ">
+      AND pb.ISBN = #{isbn}
+    </if>
+    <if test="startDate != null">
+      AND pb.AUTH_START_DATE <![CDATA[>=]]> #{startDate}
+    </if>
+    <if test="startDate1 != null">
+      AND pb.AUTH_START_DATE <![CDATA[<]]> #{startDate1}
+    </if>
+    <if test="endDate != null">
+      AND pb.AUTH_END_DATE <![CDATA[>=]]> #{endDate}
+    </if>
+    <if test="endDate1 != null">
+      AND pb.AUTH_END_DATE <![CDATA[<]]> #{endDate1}
+    </if>
+  </select>
+  <select id="listResource1" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    pb.RESR_ID, pb.BOOKLIST_NUM, pb.INSERT_DATE, pb.META_ID, pb.TITLE, pb.CREATOR, pi.TITLE PUBLISHER, pb.ISSUED_DATE,
+    pb.ISBN, pb.EDITION_ORDER, pb.PAPER_PRICE, pb.E_PRICE, pb.ISONLY_OWNER, pb.ASSIGN_RULE, pb.ASSIGN_PERCENT,
+    pb.COPYRIGHT_OWNER, pb.IS_B2B, pb.IS_CLOUD, pb.AUTH_TYPE, pb.STATUS, pb.AUTH_START_DATE, pb.AUTH_END_DATE,
+    pb.FREEREAD_PERCENT, pb.IS_COPY_NUM, pb.IS_DATABASE_SALE, pb.IS_CHAPTER_SALE, pb.IS_TIME_SALE, pb.IS_FREE_READ,
+    pb.IS_POD, pb.IS_SERIALISE, pb.OTHER, pb.HAS_ORIGINALEDITION, pb.HAS_FLOW, pb.HAS_DATABASE, pb.HAS_MULTIMEDIA,
+    pb.HAS_POD, pb.HAS_OTHER, pb.NC_START_DATE, pb.NC_END_DATE, pb.IS_PUBLICEDITION, pb.IS_FORMATEXPIRE,
+    pb.REMARK, pb.BATCH_NUM ,pb.IDENTIFIER,pb.OPERATOR,pb.OPERATE_DATE
+    from APABI_AUTH_RESOURCE pb LEFT JOIN APABI_PUBLISHER_INFO pi
+    ON pb.PUBLISHER = pi.ID
+    WHERE 1=1
+    <if test="resrId != null and resrId != ''">
+      AND pb.RESR_ID =#{resrId}
+    </if>
+    <if test="booklistNum != null and booklistNum != ''">
+      AND pb.BOOKLIST_NUM =#{booklistNum}
+    </if>
+    <if test="metaId != null and metaId != ''">
+      AND pb.META_ID =#{metaId}
+    </if>
+    <if test="batchNum != null and batchNum != ''">
+      AND pb.BATCH_NUM =#{batchNum}
+    </if>
+    <if test="title != null and title != ''">
+      AND pb.TITLE LIKE CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="creator != null and creator != ''">
+      AND pb.CREATOR LIKE CONCAT(CONCAT('%',#{creator,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="copyrightOwner != null and copyrightOwner != ''">
+      AND pb.COPYRIGHT_OWNER = #{copyrightOwner,jdbcType=VARCHAR}
+    </if>
+    <if test="status != null and status != ''or status == '0'.toString() ">
+      AND pb.STATUS = #{status}
+    </if>
+    <if test="isbn != null and isbn != ''or isbn == '0'.toString() ">
+      AND pb.ISBN = #{isbn}
+    </if>
+    <if test="startDate != null">
+      AND pb.AUTH_START_DATE <![CDATA[>=]]> #{startDate}
+    </if>
+    <if test="startDate1 != null">
+      AND pb.AUTH_START_DATE <![CDATA[<]]> #{startDate1}
+    </if>
+    <if test="endDate != null">
+      AND pb.AUTH_END_DATE <![CDATA[>=]]> #{endDate}
+    </if>
+    <if test="endDate1 != null">
+      AND pb.AUTH_END_DATE <![CDATA[<]]> #{endDate1}
+    </if>
+  </select>
+
+  <update id="updateByBatchNumAndMetaId" parameterType="com.apabi.flow.auth.model.Resource">
+    update APABI_AUTH_RESOURCE
+    set
+    <if test="ePrice != null">
+      E_PRICE = #{ePrice,jdbcType=DECIMAL},
+    </if>
+    <if test="authStartDate != null">
+      AUTH_START_DATE = #{authStartDate,jdbcType=TIMESTAMP},
+    </if>
+    <if test="authEndDate != null">
+      AUTH_END_DATE = #{authEndDate,jdbcType=TIMESTAMP},
+    </if>
+    <if test="status != null">
+      STATUS= #{status.code,jdbcType=VARCHAR},
+    </if>
+    <if test="operator != null">
+      OPERATOR= #{operator,jdbcType=VARCHAR},
+    </if>
+    <if test="operateDate != null">
+      OPERATE_DATE= #{operateDate,jdbcType=TIMESTAMP}
+    </if>
+    where BATCH_NUM = #{batchNum,jdbcType=VARCHAR} AND META_ID = #{metaId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.auth.dao.CopyrightOwnerMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.auth.model.CopyrightOwner">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="PINYIN" jdbcType="VARCHAR" property="pinyin" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="OPERATE_DATE" jdbcType="TIMESTAMP" property="operateDate" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, NAME, STATUS, PINYIN, REMARK, OPERATE_DATE, OPERATOR
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_AUTH_COPYRIGHT_OWNER
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_AUTH_COPYRIGHT_OWNER
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.auth.model.CopyrightOwner">
+    insert into APABI_AUTH_COPYRIGHT_OWNER (ID, NAME, STATUS, 
+      PINYIN, REMARK, OPERATE_DATE, 
+      OPERATOR)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=DECIMAL},
+      #{pinyin,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{operateDate,jdbcType=TIMESTAMP},
+      #{operator,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.auth.model.CopyrightOwner">
+    insert into APABI_AUTH_COPYRIGHT_OWNER
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="pinyin != null">
+        PINYIN,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="operateDate != null">
+        OPERATE_DATE,
+      </if>
+      <if test="operator != null">
+        OPERATOR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="pinyin != null">
+        #{pinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.auth.model.CopyrightOwner">
+    update APABI_AUTH_COPYRIGHT_OWNER
+    <set>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="pinyin != null">
+        PINYIN = #{pinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        OPERATE_DATE = #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.auth.model.CopyrightOwner">
+    update APABI_AUTH_COPYRIGHT_OWNER
+    set NAME = #{name,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=DECIMAL},
+      PINYIN = #{pinyin,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      OPERATE_DATE = #{operateDate,jdbcType=TIMESTAMP},
+      OPERATOR = #{operator,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="listCopyrightOwner" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_AUTH_COPYRIGHT_OWNER pb
+    WHERE 1=1
+    <if test="name != null and name != ''">
+      AND pb.NAME LIKE CONCAT(CONCAT('%',#{name,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="pinyin != null and pinyin != ''">
+      AND pb.PINYIN LIKE CONCAT(CONCAT('%',#{pinyin,jdbcType=VARCHAR}),'%')
+    </if>
+  </select>
+  <select id="findAll"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_AUTH_COPYRIGHT_OWNER
+  </select>
+</mapper>

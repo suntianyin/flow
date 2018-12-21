@@ -56,6 +56,7 @@
         <result property="name" column="name" />
         <result property="url" column="url" />
         <result property="type" column="type" />
+        <result property="viewOrder" column="view_order" />
     </resultMap>
 
     <resultMap id="authGroupResult" type="com.apabi.flow.admin.model.AuthGroup">
@@ -321,13 +322,13 @@
 
     <!-- 通过用户名查询用户的模块权限-->
     <select id="getUserModuleResByUserName" resultMap="getUserRes">
-        select DISTINCT ar.id,ar.name,ar.type,ar.url,ar.parent_id,ar.menu_id
+        select DISTINCT ar.id,ar.name,ar.type,ar.url,ar.parent_id,ar.menu_id,ar.view_order
         from  auth_user au,
 			  auth_user_group aug,
 			  auth_role_group arg,
               auth_res_role arr,
               auth_res ar
-        where ar.id = arr.res_id and arr.role_id = arg.role_id and arg.group_id = aug.group_id and aug.user_id = au.id and ar.type = 1 and au.user_name = #{name}
+        where ar.id = arr.res_id and arr.role_id = arg.role_id and arg.group_id = aug.group_id and aug.user_id = au.id and ar.type = 1 and au.user_name = #{name} ORDER BY ar.view_order
 	</select>
 
 </mapper>

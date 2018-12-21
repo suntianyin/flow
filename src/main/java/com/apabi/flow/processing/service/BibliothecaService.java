@@ -105,8 +105,8 @@ public interface BibliothecaService {
      * @param excelTitle
      * @param excelModelList
      * @param sheet1
-     * @param out
+     * @param
      * @return
      */
-    String writeData2Excel(String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheet1, HttpServletResponse response) throws Exception;
+    String writeData2Excel(int type,String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheet1, HttpServletResponse response) throws Exception;
 }
