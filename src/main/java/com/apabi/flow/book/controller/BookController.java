@@ -699,6 +699,18 @@ public class BookController {
         return "error";
     }
 
+    //根据drid，批量获取图书内容
+    @RequestMapping(value = "/getMetaByDrid", method = RequestMethod.POST)
+    @ResponseBody
+    public String getMetaByDrid(@RequestParam("drids") String drids,
+                                @RequestParam("toEmail") String toEmail) {
+        if (!StringUtils.isEmpty(drids) && !StringUtils.isEmpty(toEmail)) {
+            bookMetaService.getMetaByDridEmail(drids, toEmail);
+            return "success";
+        }
+        return "error";
+    }
+
     //编辑图书内容
     @GetMapping("/bookChapterEdit")
     public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {

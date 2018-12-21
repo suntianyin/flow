@@ -1481,6 +1481,77 @@ public class BookMetaServiceImpl implements BookMetaService {
         }
     }
 
+    //根据drid，批量获取图书元数据
+    @Override
+    @Async
+    public void getMetaByDridEmail(String drids, String toEmail) {
+        if (!StringUtils.isEmpty(drids) && !StringUtils.isEmpty(toEmail)) {
+            String[] dridStr = drids.split("\r\n");
+            if (dridStr != null && dridStr.length > 0) {
+                List<EmailResult> emailResults = new ArrayList<>();
+                //获取日期格式转换
+                ThreadLocal<DateFormat> threadLocal = new ThreadLocal<>();
+                DateFormat df = threadLocal.get();
+                if (df == null) {
+                    df = new SimpleDateFormat("yyyyMMddHHmmss");
+                    threadLocal.set(df);
+                }
+                for (String drid : dridStr) {
+                    EmailResult emailResult = new EmailResult();
+                    emailResult.setId(drid);
+                    try {
+                        if (!StringUtils.isEmpty(drid)) {
+                            List<String> metaIds = bookMetaDao.findMetaIdByDrid(Integer.valueOf(drid));
+                            //如果磐石没有，则从书苑获取
+                            if (metaIds == null) {
+                                SCmfMeta sCmfMeta = sCmfMetaDao.findSCmfBookMetaByDrid(Integer.valueOf(drid));
+                                BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
+                                //新增到磐石数据库
+                                bookMeta.setHasCebx(1);
+                                bookMetaDao.insertBookMeta(bookMeta);
+                                ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                                bookMetaDataTemp.setHasCebx(1);
+                                bookMetaDataTempDao.insert(bookMetaDataTemp);
+                                //获取书苑数据，更新到流式图书
+                                boolean ress = insertShuyuanData(sCmfMeta);
+                                if (ress) {
+                                    emailResult.setMessage("成功");
+                                    log.info("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            0, drid, "success", new Date());
+                                    log.info("开始获取图书{}的目录和页码");
+                                    getPageAndCata(bookMeta.getMetaId());
+                                } else {
+                                    emailResult.setMessage("失败");
+                                    log.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                            -2, drid, "新增书苑数据异常", new Date());
+                                }
+                            } else {
+                                emailResult.setMessage("磐石已存在");
+                            }
+                        }
+                    } catch (Exception e) {
+                        emailResult.setMessage("失败");
+                        log.warn("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                -1, drid, e.getMessage(), new Date());
+                    }
+                    emailResults.add(emailResult);
+                }
+                //生成检查结果
+                String resultPath = config.getEmail() + File.separator + df.format(new Date()) + "shuyuanByDrid.xlsx";
+                BookUtil.exportExcelEmail(emailResults, resultPath);
+                log.info("获取书苑数据结果已生成到{}", config.getEmail());
+                //表格路径
+                List<String> results = new ArrayList<>();
+                results.add(resultPath);
+                //将发送结果发送邮件
+                EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
+                eMailUtil.createSender();
+                eMailUtil.sendAttachmentsMail(results, "获取书苑数据结果", toEmail);
+                log.info("获取书苑数据结果已发送邮件");
+            }
+        }
+    }
+
     //异步获取书苑数据的页码和目录
     @Async
     public void getPageAndCata(String metaId) {

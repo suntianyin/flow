@@ -80,6 +80,9 @@ public interface BookMetaService {
     //批量获取图书元数据
     void bookMetaBatchEmail(String conMetaId, String toEmail);
 
+    //根据drid，批量获取图书元数据
+    void getMetaByDridEmail(String drids, String toEmail);
+
     //根据drid，从书苑获取页码和目录
     void getPageAndCata(Integer dridMin, Integer dridMax, String toEmail);
 

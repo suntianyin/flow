@@ -119,10 +119,10 @@
         <!--工具栏-->
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
-                <a id="batchDelete" href="javascript:;" title="批量删除流式内容"
+            <#--<a id="batchDelete" href="javascript:;" title="批量删除流式内容"
                    class="tools_btn"><span><i class="fa fa-minus"></i>&nbsp;批量删除流式内容</span></a>
                 <a id="batchAdd" href="javascript:;" title="批量获取书苑元数据"
-                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;批量获取书苑元数据</span></a>
+                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;批量获取书苑元数据</span></a>-->
             </div>
         </div>
         <!--列表-->
@@ -140,17 +140,27 @@
                         <th>METAID：</th>
                         <td>
                             <textarea id="metaId" name="metaId" rows="10" cols="50"></textarea>
-                            （METAID之间以回车键换行分隔，不要有空行）
+                            <input id="batchDelete" type="button" class="btnSearch" value="批量删除流式内容"/>
+                            <input id="batchAdd" type="button" class="btnSearch" value="批量获取书苑元数据"/>
+                            <span>（METAID之间以回车键换行分隔，不要有空行）</span>
                         </td>
+                    </tr>
+                    <tr>
                         <th>DRID：</th>
                         <td>
-                            <input id="dridMin" type="text" class="txt" style="width: 100px"/>-
-                            <input id="dridMax" type="text" class="txt" style="width: 100px"/>
+                            <textarea id="drid" name="drid" rows="10" cols="50"></textarea>
+                            <input id="getMetaByDrid" type="button" class="btnSearch" value="根据drid获取书苑数据"/>
+                            （DRID之间以回车键换行分隔，不要有空行）
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>DRID：</th>
                         <td>
+                            <input id="dridMin" type="text" class="txt" style="width: 150px"/>-
+                            <input id="dridMax" type="text" class="txt" style="width: 150px"/>
                             <input id="pageAndCata" type="button" class="btnSearch" value="获取目录和页码"
                                    onclick="getPageAndCata()"/>
                             （获取该范围的目录和页码，如果上限不输入，则取书苑最大值）
-                        </td>
                         </td>
                     </tr>
                 </table>
@@ -231,6 +241,52 @@
                 formData.append('toEmail', toEmail);
                 $.ajax({
                     url: RootPath() + "/book/bookMetaBatchEmail",
+                    type: "POST",
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data == "success") {
+                            tipDialog("正在操作，请注意查收邮件！", 3, 1);
+                        } else if (data == "error") {
+                            tipCss('批量操作', '失败，联系管理员！');
+                        }
+                    },
+                    error: function (data) {
+                        Loading(false);
+                        alertDialog(data.responseText, -1);
+                    }
+                });
+            }
+        });
+    });
+
+    //根据drid，批量获取书苑元数据
+    $("#getMetaByDrid").click(function () {
+        var drids = $("#drid").val();
+        if (drids == "") {
+            tipDialog("DRID不能为空", 3, -1);
+            return;
+        }
+        var toEmail = $("#toEmail").val();
+        if (toEmail == "") {
+            tipDialog("收件人不能为空", 3, -1);
+            return;
+        } else {
+            var res = isEmail(toEmail);
+            if (res == false) {
+                tipDialog("请检查收件邮箱", 3, -1);
+                return;
+            }
+        }
+        confirmDialog("温馨提示", "请确认是否要从书苑获取这些图书？", function (res) {
+            if (res) {
+                var formData = new FormData();
+                formData.append('drids', drids);
+                formData.append('toEmail', toEmail);
+                $.ajax({
+                    url: RootPath() + "/book/getMetaByDrid",
                     type: "POST",
                     data: formData,
                     cache: false,
