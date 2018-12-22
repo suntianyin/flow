@@ -27,6 +27,9 @@ import com.apabi.shuyuan.book.model.SCmfDigitObject;
 import com.apabi.shuyuan.book.model.SCmfDigitResfileSite;
 import com.apabi.shuyuan.book.model.SCmfMeta;
 import com.github.pagehelper.Page;
+import net.sf.jazzlib.ZipEntry;
+import net.sf.jazzlib.ZipException;
+import net.sf.jazzlib.ZipInputStream;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.Book;
@@ -1137,16 +1140,50 @@ public class BookMetaServiceImpl implements BookMetaService {
             try {
                 String suffix = path.substring(path.lastIndexOf(".") + 1);
                 if (suffix.toLowerCase().equals(EPUB_SUFFIX)) {
+                    log.info("扫描文件{}开始", path);
                     EpubReader epubReader = new EpubReader();
+                    //EpubReader2 epubReader = new EpubReader2();
                     InputStream inputStr = new FileInputStream(path);
+                    File file = new File(path);
+                    if (file != null && file.length() == 0) {
+                        log.error("文件:{}，无内容", path);
+                        return null;
+                    }
                     Book book = epubReader.readEpub(inputStr);
                     return book;
+                    //验证epub文件的有效性
+                    /*boolean res = checkEpub(inputStr);
+                    if (res) {
+                        Book book = epubReader.readEpub(inputStr);
+                        return book;
+                    } else {
+                        log.error("文件{}存在错误！", path);
+                    }*/
                 }
             } catch (Exception e) {
-                log.warn("请检查文件" + path);
+                log.warn("文件{}存在错误！请检查文件", path);
             }
         }
         return null;
+    }
+
+    //验证epub文件的有效性
+    private static boolean checkEpub(InputStream inputStr) throws IOException {
+        ZipInputStream zipInputStream = new ZipInputStream(inputStr);
+        try {
+            ZipEntry zipEntry;
+            do {
+                zipEntry = zipInputStream.getNextEntry();
+
+            } while (zipEntry != null);
+            return true;
+        } catch (ZipException var3) {
+            zipInputStream.closeEntry();
+            if (var3.getMessage().contains("Wrong Local header signature:") || var3.getMessage().contains("EOF in header")) {
+                return false;
+            }
+        }
+        return false;
     }
 
     //从内容中获取isbn

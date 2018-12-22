@@ -8,12 +8,14 @@ import com.apabi.flow.book.service.BookShardService;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
+import net.sf.jazzlib.ZipEntry;
+import net.sf.jazzlib.ZipException;
+import net.sf.jazzlib.ZipInputStream;
 import net.sf.json.JSONArray;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.MediaType;
-import nl.siegmann.epublib.domain.TOCReference;
+import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.ResourceUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,6 +32,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 /**
  * @author guanpp
@@ -85,7 +88,6 @@ public class GetEpubookChapter {
                 threadLocal.set(df);
             }
             if (epubookMeta != null && fileName != null && fileName.length() > 0) {
-                log.info("解析图书{}开始", path);
                 Book book = getEpubook(path);
                 if (book != null) {
                     //获取meta数据
@@ -280,6 +282,7 @@ public class GetEpubookChapter {
         if (path != null && path.length() > 0) {
             String suffix = path.substring(path.lastIndexOf(".") + 1);
             if (suffix.toLowerCase().equals("epub")) {
+                log.info("解析图书{}开始", path);
                 EpubReader epubReader = new EpubReader();
                 InputStream inputStr = new FileInputStream(path);
                 File file = new File(path);
@@ -287,11 +290,33 @@ public class GetEpubookChapter {
                     log.error("文件:{},无内容", path);
                     return null;
                 }
+                //验证epub文件的有效性
+                /*ZipInputStream zipInputStream = new ZipInputStream(inputStr);
+                loadResources(zipInputStream, "UTF-8");*/
                 Book book = epubReader.readEpub(inputStr);
                 return book;
+                /*boolean res = checkEpub(inputStr);
+                if (res) {
+                    Book book = epubReader.readEpub(inputStr);
+                    return book;
+                } else {
+                    log.error("文件{}存在错误！", path);
+                }*/
             }
         }
         return null;
+    }
+
+    //验证epub文件的有效性
+    private static boolean checkEpub(InputStream inputStr) throws IOException {
+        ZipInputStream zipInputStream = new ZipInputStream(inputStr);
+        try {
+            zipInputStream.getNextEntry();
+            return true;
+        } catch (IOException var3) {
+            zipInputStream.closeEntry();
+        }
+        return false;
     }
 
     //获取图书标题、作者、出版社、出版日期、类型、语言等数据
