@@ -4,10 +4,7 @@ import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.dao.CmfDigitObjectDao;
 import com.apabi.flow.book.dao.CmfDigitResfileSiteDao;
 import com.apabi.flow.book.dao.CmfMetaDao;
-import com.apabi.flow.book.model.BookMeta;
-import com.apabi.flow.book.model.CmfDigitObject;
-import com.apabi.flow.book.model.CmfDigitResfileSite;
-import com.apabi.flow.book.model.CmfMeta;
+import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
@@ -90,24 +87,35 @@ public class GetBook4ShuyuanTask {
                             BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                             if (bookMeta != null) {
                                 bookMeta.setHasCebx(1);
-                                int res = bookMetaDao.insertBookMeta(bookMeta);
-                                if (res > 0) {
+                                //查询该书在磐石是否存在，因为书苑存在同一个id，不同drid的情况
+                                int contBook = bookMetaDao.countBookMetaVoById(bookMeta.getMetaId());
+                                if (contBook > 0) {
+                                    //如果磐石存在，则更新
+                                    bookMetaDao.updateBookMetaById(bookMeta);
+                                    //图书元数据temp表，同样更新
                                     ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
-                                    //新增到图书元数据temp表
                                     metaDataTemp.setHasCebx(1);
-                                    apabiBookMetaDataTempDao.insert(metaDataTemp);
-                                    //获取书苑数据，更新到流式图书
-                                    boolean ress = insertShuyuanData(sCmfMeta);
-                                    if (ress) {
-                                        logger.info("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
-                                                0, i, "success", new Date());
+                                    apabiBookMetaDataTempDao.update(metaDataTemp);
+                                } else {
+                                    int res = bookMetaDao.insertBookMeta(bookMeta);
+                                    if (res > 0) {
+                                        ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
+                                        //新增到图书元数据temp表
+                                        metaDataTemp.setHasCebx(1);
+                                        apabiBookMetaDataTempDao.insert(metaDataTemp);
+                                        //获取书苑数据，更新到流式图书
+                                        boolean ress = insertShuyuanData(sCmfMeta);
+                                        if (ress) {
+                                            logger.info("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                                    0, i, "success", new Date());
+                                        } else {
+                                            logger.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
+                                                    -2, i, "新增书苑数据异常", new Date());
+                                        }
                                     } else {
                                         logger.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
-                                                -2, i, "新增书苑数据异常", new Date());
+                                                -2, i, "新增图书元数据异常", new Date());
                                     }
-                                } else {
-                                    logger.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
-                                            -2, i, "新增图书元数据异常", new Date());
                                 }
                             } else {
                                 logger.debug("{\"status\":\"{}\",\"drid\":\"{}\",\"message\":\"{}\",\"time\":\"{}\"}",
