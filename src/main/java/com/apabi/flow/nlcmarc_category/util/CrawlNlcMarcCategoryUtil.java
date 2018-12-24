@@ -225,8 +225,11 @@ public class CrawlNlcMarcCategoryUtil {
                 break;
             }
             try {
+                host = nlcIpPoolUtils.getIp();
+                ip = host.split(":")[0];
+                port = host.split(":")[1];
                 // 切换ip
-                indexHttpGet = switchIp(indexHttpGet, nlcIpPoolUtils, ip, port);
+                indexHttpGet = switchIp(indexHttpGet, ip, port);
                 // 防封ip
                 Thread.sleep(300);
                 // 访问国图首页
@@ -291,7 +294,10 @@ public class CrawlNlcMarcCategoryUtil {
                     CloseableHttpResponse categoryHomeResponse = client.execute(codeHomePageUrlHttpGet);
                     // 如果没能访问类别首页成功则切ip重试
                     if (categoryHomeResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                        codeHomePageUrlHttpGet = switchIp(codeHomePageUrlHttpGet, nlcIpPoolUtils, ip, port);
+                        host = nlcIpPoolUtils.getIp();
+                        ip = host.split(":")[0];
+                        port = host.split(":")[1];
+                        codeHomePageUrlHttpGet = switchIp(codeHomePageUrlHttpGet, ip, port);
                         client.execute(codeHomePageUrlHttpGet);
                     }
                 } catch (Exception e) {
@@ -370,15 +376,11 @@ public class CrawlNlcMarcCategoryUtil {
      * 根据nlcIpPoolUtils池中的ip切换ip
      *
      * @param httpGet
-     * @param nlcIpPoolUtils
      * @param ip
      * @param port
      * @return
      */
-    public static HttpGet switchIp(HttpGet httpGet, NlcIpPoolUtils nlcIpPoolUtils, String ip, String port) {
-        String host = nlcIpPoolUtils.getIp();
-        ip = host.split(":")[0];
-        port = host.split(":")[1];
+    public static HttpGet switchIp(HttpGet httpGet, String ip, String port) {
         HttpHost httpHost = new HttpHost(ip, Integer.parseInt(port));
         RequestConfig requestConfig = RequestConfig.custom().setProxy(httpHost).build();
         httpGet.setConfig(requestConfig);
@@ -402,7 +404,7 @@ public class CrawlNlcMarcCategoryUtil {
         Random random = new Random();
         HttpGet pageHttpGet = CrawlNlcMarcCategoryUtil.generateHttpGet(pageUrl);
         // 每执行一次切换一次ip
-        pageHttpGet = CrawlNlcMarcCategoryUtil.switchIp(pageHttpGet, nlcIpPoolUtils, ip, port);
+        pageHttpGet = CrawlNlcMarcCategoryUtil.switchIp(pageHttpGet, ip, port);
         // 防封ip
         Thread.sleep(random.nextInt(300) + 200);
         client = CrawlNlcMarcCategoryUtil.getCloseableHttpClient(ip, port);
