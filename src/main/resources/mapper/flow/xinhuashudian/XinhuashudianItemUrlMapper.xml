@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.xinhuashudaun.dao.XinhuashudianItemUrlDao">
+
+    <resultMap id="BaseResultMap" type="com.apabi.flow.xinhuashudaun.model.XinhuashudianItemUrl">
+        <id column="URL" jdbcType="VARCHAR" property="url"/>
+        <result column="STATUS" jdbcType="VARCHAR" property="status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      URL, STATUS
+    </sql>
+
+    <!-- 根据主键查询 -->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from XINHUASHUDIAN_ITEM_URL
+        where URL = #{url,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 查询所有未抓取的数据 -->
+    <select id="findWithoutCrawled" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from XINHUASHUDIAN_ITEM_URL
+        where STATUS = '0'
+    </select>
+
+    <!-- 统计数据数量 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from XINHUASHUDIAN_ITEM_URL
+    </select>
+
+    <!-- 统计数据数量 -->
+    <select id="countWithoutCrawled" resultType="java.lang.Integer">
+        select count(*) from XINHUASHUDIAN_ITEM_URL
+        where status = '0'
+    </select>
+
+    <!-- 根据主键删除数据 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from XINHUASHUDIAN_ITEM_URL
+        where URL = #{url,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="com.apabi.flow.xinhuashudaun.model.XinhuashudianItemUrl">
+        insert into XINHUASHUDIAN_ITEM_URL
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="url != null">
+                URL,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.xinhuashudaun.model.XinhuashudianItemUrl">
+        update XINHUASHUDIAN_ITEM_URL
+        <set>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where URL = #{url,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 更新数据为已抓取 -->
+    <update id="updateHasCrawled" parameterType="java.lang.String">
+        update XINHUASHUDIAN_ITEM_URL
+        set STATUS = '1'
+        where URL = #{url,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

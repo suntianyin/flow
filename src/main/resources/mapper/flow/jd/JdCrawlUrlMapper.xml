@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.jd.dao.JdCrawlUrlDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.jd.model.JdCrawlUrl">
+        <id column="URL" jdbcType="VARCHAR" property="url"/>
+        <result column="STATUS" jdbcType="VARCHAR" property="status"/>
+        <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
+        <result column="PAGE_NUM" jdbcType="VARCHAR" property="pageNum"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      URL, STATUS, DESCRIPTION, PAGE_NUM
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+      select *
+      from JD_CRAWL_URL
+    </select>
+
+    <select id="findAllWithNoPage" resultMap="BaseResultMap">
+        select *
+        from JD_CRAWL_URL
+        where PAGE_NUM = 0
+    </select>
+
+    <!-- 根据url查询数据-->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from JD_CRAWL_URL
+        where URL = #{url,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 删除数据 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from JD_CRAWL_URL
+        where URL = #{url,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="com.apabi.flow.jd.model.JdCrawlUrl">
+        insert into JD_CRAWL_URL
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="url != null">
+                URL,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="description != null">
+                DESCRIPTION,
+            </if>
+            <if test="pageNum != null">
+                PAGE_NUM,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="pageNum != null">
+                #{pageNum,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.jd.model.JdCrawlUrl">
+        update JD_CRAWL_URL
+        <set>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="pageNum != null">
+                PAGE_NUM = #{pageNum,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where URL = #{url,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

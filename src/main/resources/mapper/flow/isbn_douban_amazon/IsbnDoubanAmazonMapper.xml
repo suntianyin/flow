@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.isbn_douban_amazon.dao.IsbnDoubanAmazonDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon">
+        <id column="ISBN" jdbcType="VARCHAR" property="isbn"/>
+        <result column="DOUBAN_STATUS" jdbcType="VARCHAR" property="doubanStatus"/>
+        <result column="AMAZON_STATUS" jdbcType="VARCHAR" property="amazonStatus"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ISBN, DOUBAN_STATUS, AMAZON_STATUS
+    </sql>
+
+    <!-- 查询需要抓取的isbn数据 -->
+    <select id="findAllWithoutCrawledByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DOUBAN_AMAZON
+        where STATUS = '0'
+    </select>
+
+    <!-- 根据isbn查询数据 -->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DOUBAN_AMAZON
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 查询所有数据 -->
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        *
+        from ISBN_DOUBAN_AMAZON
+    </select>
+
+    <!-- 删除数据 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from ISBN_DOUBAN_AMAZON
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon">
+        insert into ISBN_DOUBAN_AMAZON
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="isbn != null">
+                ISBN,
+            </if>
+            <if test="doubanStatus != null">
+                DOUBAN_STATUS,
+            </if>
+            <if test="amazonStatus != null">
+                AMAZON_STATUS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="isbn != null">
+                #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanStatus != null">
+                #{doubanStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="amazonStatus != null">
+                #{amazonStatus,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 总计数量总数 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from ISBN_DOUBAN_AMAZON
+    </select>
+
+    <!-- 统计需要抓取的数量 -->
+    <select id="countWithoutCrawled" resultType="java.lang.Integer">
+        select count(*) from ISBN_DOUBAN_AMAZON
+        where STATUS = '0'
+    </select>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon">
+        update ISBN_DOUBAN_AMAZON
+        <set>
+            <if test="doubanStatus != null">
+                DOUBAN_STATUS = #{doubanStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="amazonStatus != null">
+                AMAZON_STATUS = #{amazonStatus,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 更新该isbn在douban已抓取-->
+    <update id="updateDoubanCrawled" parameterType="java.lang.String">
+        update ISBN_DOUBAN_AMAZON
+        set
+        DOUBAN_STATUS = '1'
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 更新该isbn在amazon已抓取 -->
+    <update id="updateAmazonCrawled" parameterType="java.lang.String">
+        update ISBN_DOUBAN_AMAZON
+        set
+        AMAZON_STATUS = '1'
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 更新该isbn已抓取 -->
+    <update id="updateStatusHasCrawled" parameterType="java.lang.String">
+        update ISBN_DOUBAN_AMAZON
+        set
+        STATUS = '1'
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.subject.dao.ApabiBookMetadataSubjectDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.subject.model.ApabiBookMetadataSubject">
+        <id column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="META_ID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="NLC_MARC_IDENTIFIER" jdbcType="VARCHAR" property="nlcMarcIdentifier"/>
+        <result column="TITLE" jdbcType="VARCHAR" property="title"/>
+        <result column="AUTHOR" jdbcType="VARCHAR" property="author"/>
+        <result column="TOPIC600" jdbcType="VARCHAR" property="topic600"/>
+        <result column="OTHER600" jdbcType="VARCHAR" property="other600"/>
+        <result column="FIRST_LETTER600" jdbcType="VARCHAR" property="firstLetter600"/>
+        <result column="TIME600" jdbcType="VARCHAR" property="time600"/>
+        <result column="FORM600" jdbcType="VARCHAR" property="form600"/>
+        <result column="SUBJECT600" jdbcType="VARCHAR" property="subject600"/>
+        <result column="PERIOD600" jdbcType="VARCHAR" property="period600"/>
+        <result column="ORGANIZATION600" jdbcType="VARCHAR" property="organization600"/>
+        <result column="CODE600" jdbcType="VARCHAR" property="code600"/>
+        <result column="TOPIC601" jdbcType="VARCHAR" property="topic601"/>
+        <result column="OTHER601" jdbcType="VARCHAR" property="other601"/>
+        <result column="MEETING601" jdbcType="VARCHAR" property="meeting601"/>
+        <result column="MEETING_PLACE601" jdbcType="VARCHAR" property="meetingPlace601"/>
+        <result column="MEETING_DATE601" jdbcType="VARCHAR" property="meetingDate601"/>
+        <result column="FORM601" jdbcType="VARCHAR" property="form601"/>
+        <result column="SUBJECT601" jdbcType="VARCHAR" property="subject601"/>
+        <result column="PERIOD601" jdbcType="VARCHAR" property="period601"/>
+        <result column="CODE601" jdbcType="VARCHAR" property="code601"/>
+        <result column="TOPIC604" jdbcType="VARCHAR" property="topic604"/>
+        <result column="SUBJECT604" jdbcType="VARCHAR" property="subject604"/>
+        <result column="CODE604" jdbcType="VARCHAR" property="code604"/>
+        <result column="TOPIC605" jdbcType="VARCHAR" property="topic605"/>
+        <result column="SUBJECT605" jdbcType="VARCHAR" property="subject605"/>
+        <result column="CODE605" jdbcType="VARCHAR" property="code605"/>
+        <result column="TOPIC606" jdbcType="VARCHAR" property="topic606"/>
+        <result column="SUBJECT606" jdbcType="VARCHAR" property="subject606"/>
+        <result column="PERIOD606" jdbcType="VARCHAR" property="period606"/>
+        <result column="GEOGRAPHICAL606" jdbcType="VARCHAR" property="geographical606"/>
+        <result column="FORM606" jdbcType="VARCHAR" property="form606"/>
+        <result column="TOPIC607" jdbcType="VARCHAR" property="topic607"/>
+        <result column="SUBJECT607" jdbcType="VARCHAR" property="subject607"/>
+        <result column="GEOGRAPHICAL607" jdbcType="VARCHAR" property="geographical607"/>
+        <result column="CODE607" jdbcType="VARCHAR" property="code607"/>
+        <result column="TOPIC608" jdbcType="VARCHAR" property="topic608"/>
+        <result column="SUBJECT608" jdbcType="VARCHAR" property="subject608"/>
+        <result column="PERIOD608" jdbcType="VARCHAR" property="period608"/>
+        <result column="CODE608" jdbcType="VARCHAR" property="code608"/>
+        <result column="OPERATOR" jdbcType="VARCHAR" property="operator"/>
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        ID, META_ID, NLC_MARC_IDENTIFIER, TITLE, AUTHOR, TOPIC600, OTHER600, FIRST_LETTER600,
+        TIME600, FORM600, SUBJECT600, PERIOD600, ORGANIZATION600, CODE600, TOPIC601, OTHER601,
+        MEETING601, MEETING_PLACE601, MEETING_DATE601, FORM601, SUBJECT601, PERIOD601, CODE601,
+        TOPIC604, SUBJECT604, CODE604, TOPIC605, SUBJECT605, CODE605, TOPIC606, SUBJECT606,
+        PERIOD606, GEOGRAPHICAL606, FORM606, TOPIC607, SUBJECT607, GEOGRAPHICAL607, CODE607,
+        TOPIC608, SUBJECT608, PERIOD608, CODE608, OPERATOR, CREATE_TIME, UPDATE_TIME
+    </sql>
+
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA_SUBJECT
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from APABI_BOOK_METADATA_SUBJECT
+        where ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.apabi.flow.subject.model.ApabiBookMetadataSubject">
+        insert into APABI_BOOK_METADATA_SUBJECT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="metaId != null">
+                META_ID,
+            </if>
+            <if test="nlcMarcIdentifier != null">
+                NLC_MARC_IDENTIFIER,
+            </if>
+            <if test="title != null">
+                TITLE,
+            </if>
+            <if test="author != null">
+                AUTHOR,
+            </if>
+            <if test="topic600 != null">
+                TOPIC600,
+            </if>
+            <if test="other600 != null">
+                OTHER600,
+            </if>
+            <if test="firstLetter600 != null">
+                FIRST_LETTER600,
+            </if>
+            <if test="time600 != null">
+                TIME600,
+            </if>
+            <if test="form600 != null">
+                FORM600,
+            </if>
+            <if test="subject600 != null">
+                SUBJECT600,
+            </if>
+            <if test="period600 != null">
+                PERIOD600,
+            </if>
+            <if test="organization600 != null">
+                ORGANIZATION600,
+            </if>
+            <if test="code600 != null">
+                CODE600,
+            </if>
+            <if test="topic601 != null">
+                TOPIC601,
+            </if>
+            <if test="other601 != null">
+                OTHER601,
+            </if>
+            <if test="meeting601 != null">
+                MEETING601,
+            </if>
+            <if test="meetingPlace601 != null">
+                MEETING_PLACE601,
+            </if>
+            <if test="meetingDate601 != null">
+                MEETING_DATE601,
+            </if>
+            <if test="form601 != null">
+                FORM601,
+            </if>
+            <if test="subject601 != null">
+                SUBJECT601,
+            </if>
+            <if test="period601 != null">
+                PERIOD601,
+            </if>
+            <if test="code601 != null">
+                CODE601,
+            </if>
+            <if test="topic604 != null">
+                TOPIC604,
+            </if>
+            <if test="subject604 != null">
+                SUBJECT604,
+            </if>
+            <if test="code604 != null">
+                CODE604,
+            </if>
+            <if test="topic605 != null">
+                TOPIC605,
+            </if>
+            <if test="subject605 != null">
+                SUBJECT605,
+            </if>
+            <if test="code605 != null">
+                CODE605,
+            </if>
+            <if test="topic606 != null">
+                TOPIC606,
+            </if>
+            <if test="subject606 != null">
+                SUBJECT606,
+            </if>
+            <if test="period606 != null">
+                PERIOD606,
+            </if>
+            <if test="geographical606 != null">
+                GEOGRAPHICAL606,
+            </if>
+            <if test="form606 != null">
+                FORM606,
+            </if>
+            <if test="topic607 != null">
+                TOPIC607,
+            </if>
+            <if test="subject607 != null">
+                SUBJECT607,
+            </if>
+            <if test="geographical607 != null">
+                GEOGRAPHICAL607,
+            </if>
+            <if test="code607 != null">
+                CODE607,
+            </if>
+            <if test="topic608 != null">
+                TOPIC608,
+            </if>
+            <if test="subject608 != null">
+                SUBJECT608,
+            </if>
+            <if test="period608 != null">
+                PERIOD608,
+            </if>
+            <if test="code608 != null">
+                CODE608,
+            </if>
+            <if test="operator != null">
+                OPERATOR,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="metaId != null">
+                #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcIdentifier != null">
+                #{nlcMarcIdentifier,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="topic600 != null">
+                #{topic600,jdbcType=VARCHAR},
+            </if>
+            <if test="other600 != null">
+                #{other600,jdbcType=VARCHAR},
+            </if>
+            <if test="firstLetter600 != null">
+                #{firstLetter600,jdbcType=VARCHAR},
+            </if>
+            <if test="time600 != null">
+                #{time600,jdbcType=VARCHAR},
+            </if>
+            <if test="form600 != null">
+                #{form600,jdbcType=VARCHAR},
+            </if>
+            <if test="subject600 != null">
+                #{subject600,jdbcType=VARCHAR},
+            </if>
+            <if test="period600 != null">
+                #{period600,jdbcType=VARCHAR},
+            </if>
+            <if test="organization600 != null">
+                #{organization600,jdbcType=VARCHAR},
+            </if>
+            <if test="code600 != null">
+                #{code600,jdbcType=VARCHAR},
+            </if>
+            <if test="topic601 != null">
+                #{topic601,jdbcType=VARCHAR},
+            </if>
+            <if test="other601 != null">
+                #{other601,jdbcType=VARCHAR},
+            </if>
+            <if test="meeting601 != null">
+                #{meeting601,jdbcType=VARCHAR},
+            </if>
+            <if test="meetingPlace601 != null">
+                #{meetingPlace601,jdbcType=VARCHAR},
+            </if>
+            <if test="meetingDate601 != null">
+                #{meetingDate601,jdbcType=VARCHAR},
+            </if>
+            <if test="form601 != null">
+                #{form601,jdbcType=VARCHAR},
+            </if>
+            <if test="subject601 != null">
+                #{subject601,jdbcType=VARCHAR},
+            </if>
+            <if test="period601 != null">
+                #{period601,jdbcType=VARCHAR},
+            </if>
+            <if test="code601 != null">
+                #{code601,jdbcType=VARCHAR},
+            </if>
+            <if test="topic604 != null">
+                #{topic604,jdbcType=VARCHAR},
+            </if>
+            <if test="subject604 != null">
+                #{subject604,jdbcType=VARCHAR},
+            </if>
+            <if test="code604 != null">
+                #{code604,jdbcType=VARCHAR},
+            </if>
+            <if test="topic605 != null">
+                #{topic605,jdbcType=VARCHAR},
+            </if>
+            <if test="subject605 != null">
+                #{subject605,jdbcType=VARCHAR},
+            </if>
+            <if test="code605 != null">
+                #{code605,jdbcType=VARCHAR},
+            </if>
+            <if test="topic606 != null">
+                #{topic606,jdbcType=VARCHAR},
+            </if>
+            <if test="subject606 != null">
+                #{subject606,jdbcType=VARCHAR},
+            </if>
+            <if test="period606 != null">
+                #{period606,jdbcType=VARCHAR},
+            </if>
+            <if test="geographical606 != null">
+                #{geographical606,jdbcType=VARCHAR},
+            </if>
+            <if test="form606 != null">
+                #{form606,jdbcType=VARCHAR},
+            </if>
+            <if test="topic607 != null">
+                #{topic607,jdbcType=VARCHAR},
+            </if>
+            <if test="subject607 != null">
+                #{subject607,jdbcType=VARCHAR},
+            </if>
+            <if test="geographical607 != null">
+                #{geographical607,jdbcType=VARCHAR},
+            </if>
+            <if test="code607 != null">
+                #{code607,jdbcType=VARCHAR},
+            </if>
+            <if test="topic608 != null">
+                #{topic608,jdbcType=VARCHAR},
+            </if>
+            <if test="subject608 != null">
+                #{subject608,jdbcType=VARCHAR},
+            </if>
+            <if test="period608 != null">
+                #{period608,jdbcType=VARCHAR},
+            </if>
+            <if test="code608 != null">
+                #{code608,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="count"  resultType="java.lang.Long">
+        select count(*) from APABI_BOOK_METADATA_SUBJECT
+    </select>
+
+    <update id="update" parameterType="com.apabi.flow.subject.model.ApabiBookMetadataSubject">
+        update APABI_BOOK_METADATA_SUBJECT
+        <set>
+            <if test="metaId != null">
+                META_ID = #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcIdentifier != null">
+                NLC_MARC_IDENTIFIER = #{nlcMarcIdentifier,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                AUTHOR = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="topic600 != null">
+                TOPIC600 = #{topic600,jdbcType=VARCHAR},
+            </if>
+            <if test="other600 != null">
+                OTHER600 = #{other600,jdbcType=VARCHAR},
+            </if>
+            <if test="firstLetter600 != null">
+                FIRST_LETTER600 = #{firstLetter600,jdbcType=VARCHAR},
+            </if>
+            <if test="time600 != null">
+                TIME600 = #{time600,jdbcType=VARCHAR},
+            </if>
+            <if test="form600 != null">
+                FORM600 = #{form600,jdbcType=VARCHAR},
+            </if>
+            <if test="subject600 != null">
+                SUBJECT600 = #{subject600,jdbcType=VARCHAR},
+            </if>
+            <if test="period600 != null">
+                PERIOD600 = #{period600,jdbcType=VARCHAR},
+            </if>
+            <if test="organization600 != null">
+                ORGANIZATION600 = #{organization600,jdbcType=VARCHAR},
+            </if>
+            <if test="code600 != null">
+                CODE600 = #{code600,jdbcType=VARCHAR},
+            </if>
+            <if test="topic601 != null">
+                TOPIC601 = #{topic601,jdbcType=VARCHAR},
+            </if>
+            <if test="other601 != null">
+                OTHER601 = #{other601,jdbcType=VARCHAR},
+            </if>
+            <if test="meeting601 != null">
+                MEETING601 = #{meeting601,jdbcType=VARCHAR},
+            </if>
+            <if test="meetingPlace601 != null">
+                MEETING_PLACE601 = #{meetingPlace601,jdbcType=VARCHAR},
+            </if>
+            <if test="meetingDate601 != null">
+                MEETING_DATE601 = #{meetingDate601,jdbcType=VARCHAR},
+            </if>
+            <if test="form601 != null">
+                FORM601 = #{form601,jdbcType=VARCHAR},
+            </if>
+            <if test="subject601 != null">
+                SUBJECT601 = #{subject601,jdbcType=VARCHAR},
+            </if>
+            <if test="period601 != null">
+                PERIOD601 = #{period601,jdbcType=VARCHAR},
+            </if>
+            <if test="code601 != null">
+                CODE601 = #{code601,jdbcType=VARCHAR},
+            </if>
+            <if test="topic604 != null">
+                TOPIC604 = #{topic604,jdbcType=VARCHAR},
+            </if>
+            <if test="subject604 != null">
+                SUBJECT604 = #{subject604,jdbcType=VARCHAR},
+            </if>
+            <if test="code604 != null">
+                CODE604 = #{code604,jdbcType=VARCHAR},
+            </if>
+            <if test="topic605 != null">
+                TOPIC605 = #{topic605,jdbcType=VARCHAR},
+            </if>
+            <if test="subject605 != null">
+                SUBJECT605 = #{subject605,jdbcType=VARCHAR},
+            </if>
+            <if test="code605 != null">
+                CODE605 = #{code605,jdbcType=VARCHAR},
+            </if>
+            <if test="topic606 != null">
+                TOPIC606 = #{topic606,jdbcType=VARCHAR},
+            </if>
+            <if test="subject606 != null">
+                SUBJECT606 = #{subject606,jdbcType=VARCHAR},
+            </if>
+            <if test="period606 != null">
+                PERIOD606 = #{period606,jdbcType=VARCHAR},
+            </if>
+            <if test="geographical606 != null">
+                GEOGRAPHICAL606 = #{geographical606,jdbcType=VARCHAR},
+            </if>
+            <if test="form606 != null">
+                FORM606 = #{form606,jdbcType=VARCHAR},
+            </if>
+            <if test="topic607 != null">
+                TOPIC607 = #{topic607,jdbcType=VARCHAR},
+            </if>
+            <if test="subject607 != null">
+                SUBJECT607 = #{subject607,jdbcType=VARCHAR},
+            </if>
+            <if test="geographical607 != null">
+                GEOGRAPHICAL607 = #{geographical607,jdbcType=VARCHAR},
+            </if>
+            <if test="code607 != null">
+                CODE607 = #{code607,jdbcType=VARCHAR},
+            </if>
+            <if test="topic608 != null">
+                TOPIC608 = #{topic608,jdbcType=VARCHAR},
+            </if>
+            <if test="subject608 != null">
+                SUBJECT608 = #{subject608,jdbcType=VARCHAR},
+            </if>
+            <if test="period608 != null">
+                PERIOD608 = #{period608,jdbcType=VARCHAR},
+            </if>
+            <if test="code608 != null">
+                CODE608 = #{code608,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                OPERATOR = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+</mapper>
