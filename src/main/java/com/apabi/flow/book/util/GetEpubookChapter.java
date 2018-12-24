@@ -1,6 +1,7 @@
 package com.apabi.flow.book.util;
 
 import com.apabi.flow.book.dao.BookFileDao;
+import com.apabi.flow.book.epublib.EpubReader2;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookChapterService;
 import com.apabi.flow.book.service.BookMetaService;
@@ -283,16 +284,15 @@ public class GetEpubookChapter {
             String suffix = path.substring(path.lastIndexOf(".") + 1);
             if (suffix.toLowerCase().equals("epub")) {
                 log.info("解析图书{}开始", path);
-                EpubReader epubReader = new EpubReader();
+                //EpubReader epubReader = new EpubReader();
+                EpubReader2 epubReader = new EpubReader2();
                 InputStream inputStr = new FileInputStream(path);
                 File file = new File(path);
                 if (file != null && file.length() == 0) {
                     log.error("文件:{},无内容", path);
                     return null;
                 }
-                //验证epub文件的有效性
-                /*ZipInputStream zipInputStream = new ZipInputStream(inputStr);
-                loadResources(zipInputStream, "UTF-8");*/
+                //Book book = epubReader.readEpub(inputStr);
                 Book book = epubReader.readEpub(inputStr);
                 return book;
                 /*boolean res = checkEpub(inputStr);
@@ -305,18 +305,6 @@ public class GetEpubookChapter {
             }
         }
         return null;
-    }
-
-    //验证epub文件的有效性
-    private static boolean checkEpub(InputStream inputStr) throws IOException {
-        ZipInputStream zipInputStream = new ZipInputStream(inputStr);
-        try {
-            zipInputStream.getNextEntry();
-            return true;
-        } catch (IOException var3) {
-            zipInputStream.closeEntry();
-        }
-        return false;
     }
 
     //获取图书标题、作者、出版社、出版日期、类型、语言等数据

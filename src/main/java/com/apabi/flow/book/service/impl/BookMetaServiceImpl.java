@@ -4,6 +4,7 @@ import com.apabi.flow.book.dao.*;
 import com.apabi.flow.book.entity.MongoBookChapter;
 import com.apabi.flow.book.entity.MongoBookMeta;
 import com.apabi.flow.book.entity.MongoBookShard;
+import com.apabi.flow.book.epublib.EpubReader2;
 import com.apabi.flow.book.model.*;
 import com.apabi.flow.book.service.BookChapterService;
 import com.apabi.flow.book.service.BookMetaService;
@@ -1141,8 +1142,8 @@ public class BookMetaServiceImpl implements BookMetaService {
                 String suffix = path.substring(path.lastIndexOf(".") + 1);
                 if (suffix.toLowerCase().equals(EPUB_SUFFIX)) {
                     log.info("扫描文件{}开始", path);
-                    EpubReader epubReader = new EpubReader();
-                    //EpubReader2 epubReader = new EpubReader2();
+                    //EpubReader epubReader = new EpubReader();
+                    EpubReader2 epubReader = new EpubReader2();
                     InputStream inputStr = new FileInputStream(path);
                     File file = new File(path);
                     if (file != null && file.length() == 0) {
