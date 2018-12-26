@@ -150,7 +150,8 @@ public class GetEpubookChapter {
                                 //图书号和章节号拼接id
                                 chapter.setComId(epubookMeta.getMetaid() + i);
                                 chapter.setChapterNum(i);
-                                cataChapter.put(contents.get(i).getHref(), i);
+                                String href = getHref(contents.get(i).getHref());
+                                cataChapter.put(href, i);
 
                                 doc = Jsoup.parse(new String(contents.get(i).getData(), "utf-8"));
                                 //替换章节末尾引用文献序号
@@ -378,7 +379,8 @@ public class GetEpubookChapter {
                 }
                 int startNum = 0;
                 if (tocs != null && tocs.size() > 0) {
-                    startNum = cataChapter.get(tocs.get(0).getResource().getHref());
+                    String href = getHref(tocs.get(0).getResource().getHref());
+                    startNum = cataChapter.get(href);
                 }
                 if (startNum > 0) {
                     for (int i = 0; i < startNum; i++) {
@@ -405,6 +407,15 @@ public class GetEpubookChapter {
         return null;
     }
 
+    //截取指定字符串
+    private String getHref(String href) {
+        int idx = href.lastIndexOf("/");
+        if (idx < 0) {
+            idx = 0;
+        }
+        return href.substring(idx).replace("/", "");
+    }
+
     //通过分析目录文件，获取层次目录
     private BookCataRows getCataRowsByNcx(Book book, Map<String, Integer> cataChapter) {
         if (book != null) {
@@ -428,11 +439,12 @@ public class GetEpubookChapter {
     //构建目录树
     private void createCataLog(org.dom4j.Element element, BookCataRows parentCata, Map<String, Integer> cataChapter) {
         if (element != null) {
-            List<org.dom4j.Element> childEle = element.elements();
+            List<org.dom4j.Element> childEle = element.elements("li");
             if (childEle != null && childEle.size() > 1) {
                 BookCataRows cataRows = new BookCataRows();
                 cataRows.setChapterName(element.element("a").getTextTrim());
                 String url = element.element("a").attributeValue("href");
+                url = getHref(url);
                 cataRows.setUrl(url);
                 cataRows.setChapterNum(cataChapter.get(url));
                 for (org.dom4j.Element child : childEle) {
@@ -443,6 +455,7 @@ public class GetEpubookChapter {
                 BookCataRows bookCataRows = new BookCataRows();
                 bookCataRows.setChapterName(element.element("a").getTextTrim());
                 String url = element.element("a").attributeValue("href");
+                url = getHref(url);
                 bookCataRows.setUrl(url);
                 bookCataRows.setChapterNum(cataChapter.get(url));
                 parentCata.getChildren().add(bookCataRows);
@@ -458,6 +471,7 @@ public class GetEpubookChapter {
                 BookCataRows cataRows = new BookCataRows();
                 cataRows.setChapterName(toc.getTitle());
                 String url = toc.getResource().getHref();
+                url = getHref(url);
                 cataRows.setUrl(url);
                 cataRows.setChapterNum(cataChapter.get(url));
                 for (TOCReference child : childTocs) {
@@ -468,6 +482,7 @@ public class GetEpubookChapter {
                 BookCataRows bookCataRows = new BookCataRows();
                 bookCataRows.setChapterName(toc.getTitle());
                 String url = toc.getResource().getHref();
+                url = getHref(url);
                 bookCataRows.setUrl(url);
                 bookCataRows.setChapterNum(cataChapter.get(url));
                 parentCata.getChildren().add(bookCataRows);
