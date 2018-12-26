@@ -627,14 +627,14 @@ public class GetEpubookChapter {
     private int insertEpubookByChapterShard(EpubookMeta epubookMeta,
                                             List<BookChapter> chapterList,
                                             List<BookShard> chapterShardList) {
-        /*int res = bookShardService.insertBookShard(chapterShardList);
+        int res = bookShardService.insertBookShard(chapterShardList);
         if (res == 1) {
             int res1 = bookChapterService.insertBookChapter(chapterList);
             if (res1 == 1) {
                 bookMetaService.saveEpubookMeta(epubookMeta);
                 return 1;
             }
-        }*/
+        }
         return 0;
     }
 
