@@ -1168,25 +1168,6 @@ public class BookMetaServiceImpl implements BookMetaService {
         return null;
     }
 
-    //验证epub文件的有效性
-    private static boolean checkEpub(InputStream inputStr) throws IOException {
-        ZipInputStream zipInputStream = new ZipInputStream(inputStr);
-        try {
-            ZipEntry zipEntry;
-            do {
-                zipEntry = zipInputStream.getNextEntry();
-
-            } while (zipEntry != null);
-            return true;
-        } catch (ZipException var3) {
-            zipInputStream.closeEntry();
-            if (var3.getMessage().contains("Wrong Local header signature:") || var3.getMessage().contains("EOF in header")) {
-                return false;
-            }
-        }
-        return false;
-    }
-
     //从内容中获取isbn
     private static String getIsbn4Content(Book book) throws IOException {
         if (book != null) {

@@ -711,21 +711,54 @@ public class BookController {
         return "error";
     }
 
-    //编辑图书内容
-    @GetMapping("/bookChapterEdit")
-    public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
+    //图书编辑页面，图书元数据获取
+    @GetMapping("/bookChapterEditMeta")
+    @ResponseBody
+    public BookMetaVo bookChapterEditMeta(@RequestParam("metaid") String metaid) {
+        long start = System.currentTimeMillis();
+        if (!StringUtils.isEmpty(metaid)) {
+            BookMetaVo bookMetaVo = bookMetaService.selectBookMetaById(metaid);
+            long end = System.currentTimeMillis();
+            log.info("获取图书" + metaid + "编辑页面的元数据，耗时：" + (end - start) + "毫秒");
+            return bookMetaVo;
+        }
+        return null;
+    }
+
+    //图书编辑页面，首页获取
+    @GetMapping("/bookChapterEditCover")
+    @ResponseBody
+    public BookChapter bookChapterEditCover(@RequestParam("metaid") String metaid) {
+        long start = System.currentTimeMillis();
+        if (!StringUtils.isEmpty(metaid)) {
+            BookChapter bookChapter = bookChapterService.selectChapterById(metaid, 0);
+            long end = System.currentTimeMillis();
+            log.info("获取图书" + metaid + "编辑页面的首页，耗时：" + (end - start) + "毫秒");
+            return bookChapter;
+        }
+        return null;
+    }
+
+    //图书编辑页面，目录获取
+    @GetMapping("/bookChapterEditCata")
+    @ResponseBody
+    public String bookChapterEditCata(@RequestParam("metaid") String metaid) {
         long start = System.currentTimeMillis();
         if (!StringUtils.isEmpty(metaid)) {
             String cataRows = bookMetaService.getCataTreeById(metaid);
-            BookMetaVo bookMetaVo = bookMetaService.selectBookMetaById(metaid);
-            BookChapter bookChapter = bookChapterService.selectChapterById(metaid, 0);
-            model.addAttribute("bookMetaVo", bookMetaVo);
-            model.addAttribute("cataRows", cataRows);
-            model.addAttribute("bookChapter", bookChapter);
+            long end = System.currentTimeMillis();
+            log.info("获取图书" + metaid + "编辑页面的目录，耗时：" + (end - start) + "毫秒");
+            return cataRows;
+        }
+        return "error";
+    }
+
+    //图书内容编辑页面跳转
+    @GetMapping("/bookChapterEdit")
+    public String bookChapterEdit(@RequestParam("metaid") String metaid, Model model) {
+        if (!StringUtils.isEmpty(metaid)) {
             model.addAttribute("metaId", metaid);
         }
-        long end = System.currentTimeMillis();
-        log.info("获取图书" + metaid + "编辑页面耗时：" + (end - start) + "毫秒");
         return "book/bookChapterEdit";
     }
 
