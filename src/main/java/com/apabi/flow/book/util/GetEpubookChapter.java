@@ -18,6 +18,10 @@ import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -205,7 +209,7 @@ public class GetEpubookChapter {
                             //获取目录信息，并添加章节号和章节字数
                             //List<BookCataRows> catalogList = getCataRowData(book, map);
                             BookCataRows cataTree = getCataRows(book, cataChapter);
-                            if (cataTree != null) {
+                            if (cataTree != null && cataTree.getChildren().size() > 0) {
                                 //目录结构树
                                 JSONArray json = JSONArray.fromObject(cataTree.getChildren());
                                 epubookMeta.setStreamCatalog(json.toString());
@@ -366,11 +370,16 @@ public class GetEpubookChapter {
         if (book != null) {
             try {
                 List<TOCReference> tocs = book.getTableOfContents().getTocReferences();
+                BookCataRows root = new BookCataRows();
+                //如果toc不存在，则从ncx文件中获取目录数据
+                if (tocs != null && tocs.size() == 0) {
+                    root = getCataRowsByNcx(book, cataChapter);
+                    return root;
+                }
                 int startNum = 0;
                 if (tocs != null && tocs.size() > 0) {
                     startNum = cataChapter.get(tocs.get(0).getResource().getHref());
                 }
-                BookCataRows root = new BookCataRows();
                 if (startNum > 0) {
                     for (int i = 0; i < startNum; i++) {
                         BookCataRows cata = new BookCataRows();
@@ -386,7 +395,6 @@ public class GetEpubookChapter {
                 for (TOCReference toc : tocs) {
                     createCataTree(toc, root, cataChapter);
                 }
-                //cataChapter.clear();
                 return root;
             } catch (Exception e) {
                 log.warn("图书" + book.getTitle() + e.getMessage());
@@ -395,6 +403,51 @@ public class GetEpubookChapter {
             }
         }
         return null;
+    }
+
+    //通过分析目录文件，获取层次目录
+    private BookCataRows getCataRowsByNcx(Book book, Map<String, Integer> cataChapter) {
+        if (book != null) {
+            Resource ncx = book.getNcxResource();
+            try {
+                org.dom4j.Document doc = DocumentHelper.parseText(new String(ncx.getData(), "UTF-8"));
+                List<org.dom4j.Element> lis = doc.getRootElement().element("body").element("nav").element("ol").elements("li");
+                BookCataRows root = new BookCataRows();
+                for (org.dom4j.Element element : lis) {
+                    createCataLog(element, root, cataChapter);
+                }
+                return root;
+            } catch (Exception e) {
+                log.warn("获取图书{}的NCX文件数据时，发生异常{}", book.getTitle(), e.getMessage());
+            }
+
+        }
+        return null;
+    }
+
+    //构建目录树
+    private void createCataLog(org.dom4j.Element element, BookCataRows parentCata, Map<String, Integer> cataChapter) {
+        if (element != null) {
+            List<org.dom4j.Element> childEle = element.elements();
+            if (childEle != null && childEle.size() > 1) {
+                BookCataRows cataRows = new BookCataRows();
+                cataRows.setChapterName(element.element("a").getTextTrim());
+                String url = element.element("a").attributeValue("href");
+                cataRows.setUrl(url);
+                cataRows.setChapterNum(cataChapter.get(url));
+                for (org.dom4j.Element child : childEle) {
+                    createCataLog(child, cataRows, cataChapter);
+                }
+                parentCata.getChildren().add(cataRows);
+            } else {
+                BookCataRows bookCataRows = new BookCataRows();
+                bookCataRows.setChapterName(element.element("a").getTextTrim());
+                String url = element.element("a").attributeValue("href");
+                bookCataRows.setUrl(url);
+                bookCataRows.setChapterNum(cataChapter.get(url));
+                parentCata.getChildren().add(bookCataRows);
+            }
+        }
     }
 
     //构建目录树
@@ -574,14 +627,14 @@ public class GetEpubookChapter {
     private int insertEpubookByChapterShard(EpubookMeta epubookMeta,
                                             List<BookChapter> chapterList,
                                             List<BookShard> chapterShardList) {
-        int res = bookShardService.insertBookShard(chapterShardList);
+        /*int res = bookShardService.insertBookShard(chapterShardList);
         if (res == 1) {
             int res1 = bookChapterService.insertBookChapter(chapterList);
             if (res1 == 1) {
                 bookMetaService.saveEpubookMeta(epubookMeta);
                 return 1;
             }
-        }
+        }*/
         return 0;
     }
 
