@@ -203,13 +203,6 @@ public class GetBook4ShuyuanTask {
         return null;
     }
 
-    //@Scheduled(cron = "*/5 * * * * ?")
-    private void test() {
-        String cata = getCebxData(getCataLog + "m.20180703-XRT-JSDX-0023");
-        String page = getCebxData(getCebxPage + "m.20180703-XRT-JSDX-0023");
-        logger.info(page + "," + cata);
-    }
-
     //写文件
     private boolean writeFile(File file, Integer maxDrid) {
         if (file != null) {
