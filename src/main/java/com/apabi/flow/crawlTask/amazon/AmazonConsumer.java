@@ -32,7 +32,6 @@ public class AmazonConsumer implements Runnable {
 
     @Override
     public void run() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = "";
         String ip = "";
         String port = "";
@@ -43,10 +42,14 @@ public class AmazonConsumer implements Runnable {
             port = host.split(":")[1];
             id = idQueue.take();
             amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
-            amazonMetaDao.addAmazonMeta(amazonMeta);
-            LOGGER.info(simpleDateFormat.format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            try {
+                amazonMetaDao.addAmazonMeta(amazonMeta);
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            } catch (Exception e) {
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            }
         } catch (Exception e) {
-            LOGGER.info(simpleDateFormat.format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "并添加至数据库失败，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "失败，列表中剩余：" + countDownLatch.getCount() + "个数据...");
         } finally {
             countDownLatch.countDown();
         }

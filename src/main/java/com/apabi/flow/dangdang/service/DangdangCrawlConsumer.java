@@ -59,11 +59,13 @@ public class DangdangCrawlConsumer implements Runnable {
                 LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                 dangdangItemUrlDao.updateHasCrawled(url);
             }
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "为组合销售套书，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            dangdangItemUrlDao.updateHasCrawled(url);
         } catch (Exception e) {
             LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "失败，列表中剩余：" + countDownLatch.getCount() + "个数据...");
         } finally {
             countDownLatch.countDown();
         }
-
     }
 }

@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author pipi
  * @date 2018/10/26 11:12
@@ -21,4 +23,5 @@ public interface ApabiBookMetaDataDao {
     Page<String> findIsbnByPageWithoutCrawledNlc();
     void updateNlcMarcId(@Param("nlibraryId") String nlibraryId,@Param("isbn") String isbn);
     int findIsbnCount();
+    List<ApabiBookMetaData> findByIsbn13(String isbn13);
 }

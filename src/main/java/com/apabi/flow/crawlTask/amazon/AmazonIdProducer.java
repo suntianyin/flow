@@ -35,7 +35,7 @@ public class AmazonIdProducer implements Runnable {
             String host = ipPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
-            List<String> amazonIdList = CrawlAmazonUtils.crawlAmazonIdList(url, ip,port, countDownLatch);
+            List<String> amazonIdList = CrawlAmazonUtils.crawlAmazonIdList(url, ip,port);
             for (String id : amazonIdList) {
                 idList.add(id);
             }

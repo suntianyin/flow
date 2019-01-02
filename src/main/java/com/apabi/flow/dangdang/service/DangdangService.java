@@ -87,20 +87,26 @@ public class DangdangService {
      */
     @RequestMapping("crawlUrl")
     public String crawlDangdangMetaUrl() {
-        NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
-        List<DangdangCrawlPageUrl> dangdangCrawlPageUrlList = dangdangCrawlPageUrlDao.findWithoutCrawled();
-        LinkedBlockingQueue<DangdangCrawlPageUrl> urlQueue = new LinkedBlockingQueue(dangdangCrawlPageUrlList);
-        int urlListSize = dangdangCrawlPageUrlList.size();
-        CountDownLatch countDownLatch = new CountDownLatch(urlListSize);
-        DangdangCrawlItemConsumer consumer = new DangdangCrawlItemConsumer(urlQueue, countDownLatch, dangdangItemUrlDao, dangdangCrawlPageUrlDao, nlcIpPoolUtils);
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
-        for (int i = 0; i < urlListSize; i++) {
-            executorService.execute(consumer);
-        }
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        int pageSize = 5000;
+        int count = dangdangCrawlPageUrlDao.countWithoutCrawled();
+        int pageNum = (count / pageSize) + 1;
+        for (int i = 1; i <= pageNum; i++) {
+            NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
+            PageHelper.startPage(i, pageSize);
+            Page<DangdangCrawlPageUrl> dangdangCrawlPageUrlList = dangdangCrawlPageUrlDao.findWithoutCrawledByPage();
+            LinkedBlockingQueue<DangdangCrawlPageUrl> urlQueue = new LinkedBlockingQueue(dangdangCrawlPageUrlList);
+            int urlListSize = dangdangCrawlPageUrlList.size();
+            CountDownLatch countDownLatch = new CountDownLatch(urlListSize);
+            DangdangCrawlItemConsumer consumer = new DangdangCrawlItemConsumer(urlQueue, countDownLatch, dangdangItemUrlDao, dangdangCrawlPageUrlDao, nlcIpPoolUtils);
+            ExecutorService executorService = Executors.newFixedThreadPool(50);
+            for (int j = 0; j < urlListSize; j++) {
+                executorService.execute(consumer);
+            }
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return "success";
     }
@@ -108,7 +114,6 @@ public class DangdangService {
 
     @RequestMapping("crawl")
     public String crawlDangdangMeta() {
-
         int count = dangdangItemUrlDao.count();
         int pageSize = 10000;
         int pageNum = (count / pageSize) + 1;
@@ -224,7 +229,7 @@ public class DangdangService {
     @RequestMapping("crawlByPrice")
     public String crawlByPrice() {
         int count = dangdangItemUrlDao.countWithoutCrawled();
-        int pageSize = 10000;
+        int pageSize = 5000;
         int pageNum = (count / pageSize) + 1;
         ExecutorService executorService = Executors.newFixedThreadPool(200);
         for (int i = 1; i <= pageNum; i++) {
@@ -244,7 +249,32 @@ public class DangdangService {
                 e.printStackTrace();
             }
         }
+        executorService.shutdown();
         return "success";
     }
 
+    @RequestMapping("generateAllUrl")
+    public String generateAllUrl() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\dd.txt"));
+        String line = "";
+        while ((line = bufferedReader.readLine()) != null) {
+            String url = line.split("\t")[0];
+            String itemCount = line.split("\t")[1];
+            int pageNum = (Integer.parseInt(itemCount) / 60) + 1 > 100 ? 100 : (Integer.parseInt(itemCount) / 60) + 1;
+            for (int i = 1; i <= pageNum; i++) {
+                DangdangCrawlPageUrl dangdangCrawlPageUrl = new DangdangCrawlPageUrl();
+                String prefix = url.substring(0, url.lastIndexOf("/") + 1);
+                String suffix = url.substring(url.lastIndexOf("/") + 1, url.length());
+                String pageNumber = "pg" + i + "-";
+                String finalUrl = prefix + pageNumber + suffix;
+                dangdangCrawlPageUrl.setUrl(finalUrl);
+                dangdangCrawlPageUrl.setStatus("0");
+                try {
+                    dangdangCrawlPageUrlDao.insert(dangdangCrawlPageUrl);
+                } catch (Exception e) {
+                }
+            }
+        }
+        return "success";
+    }
 }

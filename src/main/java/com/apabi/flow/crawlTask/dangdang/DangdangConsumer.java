@@ -38,8 +38,6 @@ public class DangdangConsumer implements Runnable {
         String port = "";
         String id = "";
         String url = "";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String time = simpleDateFormat.format(new Date());
         try {
             url = dangdangUrlQueue.take();
             String host = nlcIpPoolUtils.getIp();
@@ -49,12 +47,12 @@ public class DangdangConsumer implements Runnable {
             DangdangMetadata dangdangMetadata = CrawlDangdangUtils.crawlDangdangMetaByUrl(url, ip, port);
             try {
                 dangdangMetadataDao.insert(dangdangMetadata);
-                LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "并添加至数据库成功，列表中剩余：" + consumerCountDownLatch.getCount() + "个数据...");
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "并添加至数据库成功，列表中剩余：" + consumerCountDownLatch.getCount() + "个数据...");
             } catch (Exception e) {
-                LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "在数据库中已存在，列表中剩余：" + consumerCountDownLatch.getCount() + "个数据...");
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "在数据库中已存在，列表中剩余：" + consumerCountDownLatch.getCount() + "个数据...");
             }
         } catch (Exception e) {
-            LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "失败，列表中剩余：" + consumerCountDownLatch.getCount() + "个数据...");
+            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在dangdang抓取" + id + "失败，列表中剩余：" + consumerCountDownLatch.getCount() + "个数据...");
         } finally {
             consumerCountDownLatch.countDown();
         }

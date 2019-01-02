@@ -198,6 +198,13 @@
     </sql>
 
     <!-- 根据metaId查询图书数据 -->
+    <select id="count" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM APABI_BOOK_METADATA
+    </select>
+
+    <!-- 根据metaId查询图书数据 -->
     <select id="findBookSearchByMetaId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>

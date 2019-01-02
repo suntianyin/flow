@@ -1,5 +1,6 @@
 package com.apabi.flow.douban.util;
 
+import com.apabi.flow.douban.exception.KindleException;
 import com.apabi.flow.douban.model.AmazonMeta;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @Author pipi
@@ -113,12 +113,10 @@ public class CrawlAmazonUtils {
     /**
      * 从amazon根据抓取列表获取该页面中的amazon数据，如果抓取不到，则切换ip重试，重试次数为3.
      *
-     * @param url            专题分页url
-     * @param countDownLatch 线程安全计数器
+     * @param url 专题分页url
      * @return 抓取回来的id列表
      */
-    public static List<String> crawlAmazonIdList(String url, String ip, String port, CountDownLatch countDownLatch) {
-        long startTime = System.currentTimeMillis();
+    public static List<String> crawlAmazonIdList(String url, String ip, String port) {
         int retryCount = 0;
         List<String> idList = new ArrayList<>();
         // 访问amazon主题首页
@@ -131,7 +129,7 @@ public class CrawlAmazonUtils {
             int statusCode = HttpStatus.SC_NOT_FOUND;
             // 如果失败了，则切换ip重试
             while (statusCode != HttpStatus.SC_OK) {
-                if (retryCount == RETRY_COUNT) {
+                if (retryCount == RETRY_COUNT - 1) {
                     break;
                 }
                 // 切换ip计数
@@ -170,7 +168,6 @@ public class CrawlAmazonUtils {
                 }
                 retryCount++;
             }
-            long endTime = System.currentTimeMillis();
         } catch (Exception e) {
         } finally {
             httpGet.releaseConnection();
@@ -202,7 +199,7 @@ public class CrawlAmazonUtils {
      * @return 抓取返回的amazon数据
      */
     public static AmazonMeta crawlAmazonMetaById(String id, String ip, String port) throws Exception {
-        AmazonMeta amazonMeta = new AmazonMeta();
+        AmazonMeta amazonMeta = null;
         String url = "https://www.amazon.cn/dp/" + id + "/ref=sr_1_9?s=books&ie=UTF8&qid=1542259479&sr=1-9";
         // 访问amazonId的详情页
         HttpGet httpGet = new HttpGet(url);
@@ -217,35 +214,33 @@ public class CrawlAmazonUtils {
                 }
                 // 实例化CloseableHttpClient对象
                 client = getCloseableHttpClient(ip, port);
-                HttpHost proxy = new HttpHost(ip, Integer.parseInt(port));
                 // 请求配置
-                RequestConfig config = RequestConfig.custom().setProxy(proxy).setSocketTimeout(5000).setConnectTimeout(5000).setConnectionRequestTimeout(5000).build();
-                httpGet.setConfig(config);
                 httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
                 httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
                 httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
                 httpGet.setHeader("Cache-Control", "max-age=0");
                 httpGet.setHeader("Connection", "keep-alive");
-                String cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; csm-hit=tb:s-P63E93DFJZCXMX6XPCD8|" + (System.currentTimeMillis() + 1000) + "&adb:adblk_no; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932";
+                String cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932; csm-hit=tb:2WZHSGZHSV6Q9SDR0ZQP+s-556CS23PXVVQSECW0BP5|" + (System.currentTimeMillis() + 1000) + "&adb:adblk_no&t:1545811394410";
                 httpGet.setHeader("Cookie", cookie);
                 httpGet.setHeader("Host", "www.amazon.cn");
                 httpGet.setHeader("Upgrade-Insecure-Request", "1");
-                httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
-                try {
-                    response = client.execute(httpGet);
-                    if (response != null) {
-                        statusCode = response.getStatusLine().getStatusCode();
-                        if (statusCode == HttpStatus.SC_OK) {
-                            String html = EntityUtils.toString(response.getEntity(), "UTF-8");
-                            amazonMeta = parseAmazonMeta(html);
+                Random index = new Random();
+                String userAgent = DomParseUtil.ua[Math.abs(index.nextInt() % 15)];
+                httpGet.setHeader("User-Agent", userAgent);
+                response = client.execute(httpGet);
+                if (response != null) {
+                    statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode == HttpStatus.SC_OK) {
+                        String html = EntityUtils.toString(response.getEntity(), "UTF-8");
+                        if (StringUtils.isNotEmpty(html) && !html.contains("ISBN")) {
+                            throw new KindleException();
                         }
+                        amazonMeta = parseAmazonMeta(html);
+                        amazonMeta.setAmazonId(id);
                     }
-                } catch (IOException e) {
                 }
                 retryCount++;
             }
-        } catch (Exception e) {
-            throw new Exception(e);
         } finally {
             httpGet.releaseConnection();
             httpGet.abort();
@@ -310,7 +305,7 @@ public class CrawlAmazonUtils {
             httpGet.setHeader("Host", "www.amazon.cn");
             httpGet.setHeader("Upgrade-Insecure-Requests", "1");
             Random index = new Random();
-            String userAgent = DomParseUtil.ua[Math.abs(index.nextInt()%15)];
+            String userAgent = DomParseUtil.ua[Math.abs(index.nextInt() % 15)];
             httpGet.setHeader("User-Agent", userAgent);
             CloseableHttpResponse response = client.execute(httpGet);
             String idHtml = EntityUtils.toString(response.getEntity(), "UTF-8");
@@ -557,9 +552,46 @@ public class CrawlAmazonUtils {
         return amazonMeta;
     }
 
+    /**
+     * 根据给定的url抓取该url中图书列表的页数
+     *
+     * @param url
+     * @param ip
+     * @param port
+     * @return
+     * @throws IOException
+     */
+    public static String crawlPriceUrlPageNum(String url, String ip, String port) throws IOException {
+        String pageNum = "0";
+        CloseableHttpClient client = getCloseableHttpClient(ip, port);
+        HttpGet httpGet = generateHttpGet(url);
+        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch, br");
+        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+        httpGet.setHeader("Cache-Control", "max-age=0");
+        httpGet.setHeader("Connection", "keep-alive");
+        String cookie = "x-wl-uid=1Sej1iP4/xSgeBoROi9739Cfoj1fYJu1Gd7CoVMzGC1X/mh56G/VkWH0my91c1w+Wpd8VRNxBniE=; session-token=1BVVJTP1+RaldFDZsmiNmTj4usN3+B0bryOUeoJsmBgXnwczc5CJ0TC634d/OdZZqiViu3EIXxwlf+W7lesdUQL7jbBOStBPPbYw40J92gjbcuXEUB4wH+zQk+eIvzPG0Bi5JCPfNZPImFbPpUO6+tH/7uzNH4Ir4l85D57VPmEnEfFkfsMOXX2HsDR+Z0+0; csm-hit=tb:s-P63E93DFJZCXMX6XPCD8|" + (System.currentTimeMillis() + 500) + "&adb:adblk_no; ubid-acbcn=458-6935151-3884818; session-id-time=2082729601l; session-id=457-1376902-6982932";
+        httpGet.setHeader("Cookie", cookie);
+        httpGet.setHeader("Host", "www.amazon.cn");
+        httpGet.setHeader("Upgrade-Insecure-Requests", "1");
+        Random index = new Random();
+        String userAgent = DomParseUtil.ua[Math.abs(index.nextInt() % 15)];
+        httpGet.setHeader("User-Agent", userAgent);
+        CloseableHttpResponse response = client.execute(httpGet);
+        String html = EntityUtils.toString(response.getEntity());
+        Document document = Jsoup.parse(html);
+        String finalPageNum = "0";
+        Elements finalPageNumElement = document.select("span[class='pagnDisabled']");
+        if (finalPageNumElement != null && finalPageNumElement.size() > 0) {
+            finalPageNum = finalPageNumElement.get(0).text();
+            return finalPageNum;
+        }
+        pageNum = document.select("span[class='pagnLink']").last().text();
+        return pageNum;
+    }
+
     public static void main(String[] args) throws Exception {
-        AmazonMeta amazonMeta = crawlAmazonMetaByIsbn("9787532757558", "94.236.199.216", "52448");
-//        AmazonMeta amazonMeta = crawlAmazonMetaById("B07FDT8P6C", "118.174.220.36", "43205");
+        AmazonMeta amazonMeta = crawlAmazonMetaById("B07CTKGQK1", "197.254.108.134", "51881");
         System.out.println(amazonMeta);
     }
 }

@@ -107,7 +107,6 @@ public class IsbnDoubanAmazonConsumer implements Runnable {
         } catch (Exception e) {
         } finally {
             countDownLatch.countDown();
-            isbnDoubanAmazonDao.updateStatusHasCrawled(isbnValue);
         }
     }
 }

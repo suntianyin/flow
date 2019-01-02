@@ -37,6 +37,7 @@ public class JdItemIdProducer implements Runnable {
         String port = "";
         String url = "";
         try {
+            LOGGER.info(DATE_FORMAT.format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在urlQueue中有" + urlQueue.size() + "个数据...");
             String host = nlcIpPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];

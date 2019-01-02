@@ -3,6 +3,7 @@ package com.apabi.flow.douban.service.impl;
 import com.apabi.flow.douban.dao.AmazonMetaDao;
 import com.apabi.flow.douban.model.AmazonMeta;
 import com.apabi.flow.douban.service.AmazonMetaService;
+import com.apabi.flow.douban.util.CrawlAmazonUtils;
 import com.apabi.flow.douban.util.DomParseUtil;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.github.pagehelper.Page;
@@ -330,8 +331,8 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
     }
 
     public static void main(String[] args) throws Exception {
-        AmazonMetaServiceImpl amazonMetaService = new AmazonMetaServiceImpl();
-        AmazonMeta amazonMeta = amazonMetaService.crawl("9787535491657");
+        AmazonMeta amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById("B0011BD3MY", "128.201.158.129", "53281");
         System.out.println(amazonMeta);
+
     }
 }

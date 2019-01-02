@@ -165,7 +165,6 @@ public class CrawlDangdangUtils {
                         isbn13 = infoElement.text().split("：")[1];
                     }
                 }
-
                 if (infoElement.text().contains("所属分类")) {
                     Elements elements = infoElement.select("span[class='lie']");
                     for (Element element : elements) {
@@ -204,6 +203,7 @@ public class CrawlDangdangUtils {
     }
 
     public static void main(String[] args) throws IOException {
-        crawlDangdangPriceUrlPage("http://category.dangdang.com/cp01.03.00.00.00.00-srsort_pubdate_desc-f0%7C0%7C0%7C0%7C0%7C1%7C0%7C0%7C0%7C0%7C0%7C0%7C0%7C0%7C-lp22-hp23.html", "176.196.238.234", "44648");
+        DangdangMetadata dangdangMetadata = crawlDangdangMetaByUrl("http://product.dangdang.com/410263984.html", "176.196.238.234", "44648");
+        System.out.println(dangdangMetadata);
     }
 }

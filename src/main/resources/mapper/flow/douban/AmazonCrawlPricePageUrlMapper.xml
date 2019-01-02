@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.apabi.flow.dangdang.dao.DangdangCrawlPageUrlDao">
-    <resultMap id="BaseResultMap" type="com.apabi.flow.dangdang.model.DangdangCrawlPageUrl">
+<mapper namespace="com.apabi.flow.douban.dao.AmazonCrawlPricePageUrlDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.douban.model.AmazonCrawlPricePageUrl">
         <id column="URL" jdbcType="VARCHAR" property="url"/>
         <result column="STATUS" jdbcType="VARCHAR" property="status"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-      URL, STATUS
+        URL, STATUS
     </sql>
 
-    <!-- 查询所有数据 -->
-    <select id="countWithoutCrawled" resultType="java.lang.Integer">
-        select count(*)
-        from DANGDANG_CRAWL_PAGE_URL
-        where status = '0'
+    <!-- 分页查询未抓取的数据 -->
+    <select id="findByPageWithoutCrawled" resultMap="BaseResultMap">
+        select
+        *
+        from AMAZON_CRAWL_PRICE_PAGE_URL
+        where 1=1
     </select>
 
-    <!-- 查询所有数据 -->
-    <select id="findAll" resultMap="BaseResultMap">
-        select *
-        from DANGDANG_CRAWL_PAGE_URL
-    </select>
 
-    <!-- 查询所有数据 -->
-    <select id="findWithoutCrawledByPage" resultMap="BaseResultMap">
-        select *
-        from DANGDANG_CRAWL_PAGE_URL
-        where status = '0'
-    </select>
-
-    <!-- 根据id查询数据 -->
+    <!-- 根据主键查询 -->
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from DANGDANG_CRAWL_PAGE_URL
+        from AMAZON_CRAWL_PRICE_PAGE_URL
         where URL = #{url,jdbcType=VARCHAR}
     </select>
 
-    <!-- 删除数据 -->
+    <!-- 统计数据数量 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from AMAZON_CRAWL_PRICE_PAGE_URL
+    </select>
+
+    <!-- 统计数据数量 -->
+    <select id="countWithoutCrawled" resultType="java.lang.Integer">
+        select count(*) from AMAZON_CRAWL_PRICE_PAGE_URL
+        where status = '0'
+    </select>
+
+    <!-- 根据主键删除 -->
     <delete id="delete" parameterType="java.lang.String">
-        delete from DANGDANG_CRAWL_PAGE_URL
+        delete from AMAZON_CRAWL_PRICE_PAGE_URL
         where URL = #{url,jdbcType=VARCHAR}
     </delete>
 
     <!-- 插入数据 -->
-    <insert id="insert" parameterType="com.apabi.flow.dangdang.model.DangdangCrawlPageUrl">
-        insert into DANGDANG_CRAWL_PAGE_URL
+    <insert id="insert" parameterType="com.apabi.flow.douban.model.AmazonCrawlPricePageUrl">
+        insert into AMAZON_CRAWL_PRICE_PAGE_URL
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="url != null">
                 URL,
@@ -65,14 +65,9 @@
         </trim>
     </insert>
 
-    <!-- 统计个数 -->
-    <select id="count" resultType="java.lang.Long">
-        select count(*) from DANGDANG_CRAWL_PAGE_URL
-    </select>
-
     <!-- 更新数据 -->
-    <update id="update" parameterType="com.apabi.flow.dangdang.model.DangdangCrawlPageUrl">
-        update DANGDANG_CRAWL_PAGE_URL
+    <update id="update" parameterType="com.apabi.flow.douban.model.AmazonCrawlPricePageUrl">
+        update AMAZON_CRAWL_PRICE_PAGE_URL
         <set>
             <if test="status != null">
                 STATUS = #{status,jdbcType=VARCHAR},
@@ -81,13 +76,11 @@
         where URL = #{url,jdbcType=VARCHAR}
     </update>
 
-    <!-- 更新数据为已抓取 -->
+    <!-- 更新数据为已更新 -->
     <update id="updateHasCrawled" parameterType="java.lang.String">
-        update DANGDANG_CRAWL_PAGE_URL
-        set STATUS = '1'
+        update AMAZON_CRAWL_PRICE_PAGE_URL
+        set status = '1'
         where URL = #{url,jdbcType=VARCHAR}
     </update>
-
-
 
 </mapper>

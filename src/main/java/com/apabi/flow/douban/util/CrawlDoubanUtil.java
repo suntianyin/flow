@@ -162,7 +162,7 @@ public class CrawlDoubanUtil {
      * @return
      */
     public static DoubanMeta crawlDoubanMetaById(String id, String ip, String port) {
-        DoubanMeta doubanMeta = new DoubanMeta();
+        DoubanMeta doubanMeta = null;
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         String url = "https://api.douban.com/v2/book/" + id;
         HttpGet httpGet = new HttpGet(url);
@@ -175,7 +175,8 @@ public class CrawlDoubanUtil {
         CloseableHttpResponse response = null;
         try {
             response = client.execute(httpGet);
-            if (response != null) {
+            if (response != null && response.getStatusLine().getStatusCode()==HttpStatus.SC_OK) {
+                doubanMeta = new DoubanMeta();
                 String html = EntityUtils.toString(response.getEntity());
                 doubanMeta = parseDoubanMeta(html);
             }

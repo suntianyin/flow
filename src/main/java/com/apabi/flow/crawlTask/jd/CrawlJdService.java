@@ -4,6 +4,8 @@ import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.jd.dao.JdCrawlUrlDao;
 import com.apabi.flow.jd.dao.JdMetadataDao;
 import com.apabi.flow.jd.model.JdCrawlUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -22,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 //@Order(3)
 //@Component
 public class CrawlJdService implements ApplicationRunner {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlJdService.class);
 
     @Autowired
     private JdCrawlUrlDao jdCrawlUrlDao;
@@ -43,6 +46,7 @@ public class CrawlJdService implements ApplicationRunner {
         List<JdCrawlUrl> jdCrawlUrlList = jdCrawlUrlDao.findAll();
         NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
         int listSize = jdCrawlUrlList.size();
+        LOGGER.info("京东定时任务从数据库中查询到URL列表大小为：" + listSize);
         LinkedBlockingQueue<String> urlQueue = new LinkedBlockingQueue();
         LinkedBlockingQueue<String> jdItemIdQueue = new LinkedBlockingQueue();
         for (JdCrawlUrl jdCrawlUrl : jdCrawlUrlList) {
@@ -54,7 +58,7 @@ public class CrawlJdService implements ApplicationRunner {
             }
         }
         CountDownLatch urlListCountDownLatch = new CountDownLatch(listSize);
-        JdItemIdProducer producer = new JdItemIdProducer(urlQueue, jdItemIdQueue, urlListCountDownLatch,nlcIpPoolUtils);
+        JdItemIdProducer producer = new JdItemIdProducer(urlQueue, jdItemIdQueue, urlListCountDownLatch, nlcIpPoolUtils);
         ExecutorService executorService = Executors.newFixedThreadPool(cpuProcessorAmount * 3);
         for (int i = 0; i < listSize; i++) {
             executorService.execute(producer);
@@ -65,8 +69,9 @@ public class CrawlJdService implements ApplicationRunner {
             e.printStackTrace();
         }
         int itemIdQueueSize = jdItemIdQueue.size();
+        LOGGER.info("京东定时任务由生产者生产的itemUrl大小为：" + itemIdQueueSize);
         CountDownLatch itemIdQueueCountDownLatch = new CountDownLatch(itemIdQueueSize);
-        JdConsumer consumer = new JdConsumer(jdItemIdQueue, itemIdQueueCountDownLatch, jdMetadataDao,nlcIpPoolUtils);
+        JdConsumer consumer = new JdConsumer(jdItemIdQueue, itemIdQueueCountDownLatch, jdMetadataDao, nlcIpPoolUtils);
         for (int i = 0; i < itemIdQueueSize; i++) {
             executorService.execute(consumer);
         }

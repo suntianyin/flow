@@ -1,6 +1,7 @@
 package com.apabi.flow.dangdang.dao;
 
 import com.apabi.flow.dangdang.model.DangdangCrawlPageUrl;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,9 @@ import java.util.List;
 @Repository
 public interface DangdangCrawlPageUrlDao {
 
-    List<DangdangCrawlPageUrl> findWithoutCrawled();
+    int countWithoutCrawled();
+
+    Page<DangdangCrawlPageUrl> findWithoutCrawledByPage();
 
     void updateHasCrawled(String url);
 

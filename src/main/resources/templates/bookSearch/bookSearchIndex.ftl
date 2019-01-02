@@ -274,7 +274,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="panel-body">
+            <tr class="panel-body">
                 <div class="row">
                     <table id="table-list"
                            class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
@@ -341,7 +341,8 @@
                         </tbody>
                     </table>
                 </div>
-                <ul class="pagination" style="float:right;" id="pagination"></ul>
+
+                共${totalCount}条；共${totalPageNum}页<ul class="pagination" style="float:right;" id="pagination"></ul>
             </div>
         </div>
     </div>

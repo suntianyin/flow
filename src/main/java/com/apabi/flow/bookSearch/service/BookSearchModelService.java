@@ -11,4 +11,5 @@ import java.util.Map;
 public interface BookSearchModelService {
     BookSearchModel findBookSearchByMetaId(String metaId);
     Page<BookSearchModel> findBookSearchByPage(Map<String,String> params);
+    int count();
 }

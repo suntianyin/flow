@@ -18,7 +18,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  **/
 public class JdConsumer implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdConsumer.class);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private LinkedBlockingQueue<String> jdItemIdQueue;
     private CountDownLatch itemIdQueueCountDownLatch;
     private JdMetadataDao jdMetadataDao;
@@ -36,15 +35,23 @@ public class JdConsumer implements Runnable {
         String ip = "";
         String url = "";
         String port = "";
+        String id = "";
         try {
+            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "此时jdItemQueue中有" + jdItemIdQueue.size() + "条数据");
+            id = jdItemIdQueue.take();
             String host = nlcIpPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
-            url = "http:" + jdItemIdQueue.take();
+            url = "http:" + id;
             JdMetadata jdMetadata = CrawlJdUtils.crawlJdMetadataByUrl(url, ip, port);
-            jdMetadataDao.insert(jdMetadata);
-            LOGGER.info(DATE_FORMAT.format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在jd抓取" + jdMetadata.getJdItemId() + "并添加至数据库成功，列表中剩余：" + itemIdQueueCountDownLatch.getCount() + "个数据...");
+            try {
+                jdMetadataDao.insert(jdMetadata);
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在jd抓取" + id + "并添加至数据库成功，列表中剩余：" + itemIdQueueCountDownLatch.getCount() + "个数据...");
+            } catch (Exception e) {
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在jd抓取" + id + "在数据库中已存在，列表中剩余：" + itemIdQueueCountDownLatch.getCount() + "个数据...");
+            }
         } catch (Exception e) {
+            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在jd抓取" + id + "失败，列表中剩余：" + itemIdQueueCountDownLatch.getCount() + "个数据...");
         } finally {
             itemIdQueueCountDownLatch.countDown();
         }

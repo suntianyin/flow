@@ -38,12 +38,28 @@
         MEDIUM_COVER, LARGE_COVER
     </sql>
 
+    <!-- 统计数据总数 -->
+    <select id="count" resultType="java.lang.Integer">
+        select
+        count(*)
+        from DOUBAN_METADATA
+    </select>
+
     <!-- 根据doubanId查询数据 -->
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from DOUBAN_METADATA
         where DOUBANID = #{doubanId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据doubanid排序分页查询数据 -->
+    <select id="findByPageOrderByDoubanId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM DOUBAN_METADATA
+        WHERE 1=1
+        order by doubanid
     </select>
 
     <!-- 分页查询数据 -->

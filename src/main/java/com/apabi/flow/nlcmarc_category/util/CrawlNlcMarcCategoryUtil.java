@@ -326,7 +326,7 @@ public class CrawlNlcMarcCategoryUtil {
                 // 标记队列大小
                 int pageUrlQueueSize = pageUrlQueue.size();
                 CountDownLatch pageUrlCountDownLatch = new CountDownLatch(pageUrlQueueSize);
-                ExecutorService pageUrlExecutorService = Executors.newFixedThreadPool(4 * CPU_COUNT);
+                ExecutorService pageUrlExecutorService = Executors.newFixedThreadPool(10 * CPU_COUNT);
                 NlcBookMarcCategoryPageUrlConsumer consumer = new NlcBookMarcCategoryPageUrlConsumer(pageUrlQueue, client, marcHrefQueue, nlcIpPoolUtils, pageUrlCountDownLatch);
                 for (int i = 0; i < pageUrlQueueSize; i++) {
                     pageUrlExecutorService.execute(consumer);

@@ -299,6 +299,57 @@
         </encoder>
     </appender>
 
+    <!-- AMAZON根据价格抓取爬虫任务日志配置 -->
+    <appender name="AMAZON_ITEM_URL_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/amazon_price.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- DOUBAN根据ID抓取爬虫任务日志配置 -->
+    <appender name="DOUBAN_ID_CRAWL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/douban_id.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- DOUBAN与APABI根据ISBN13映射任务日志配置 -->
+    <appender name="DOUBAN_APABI_ISBN13" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mapping/douban_apabi_isbn13.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- 针对FetchPageAgainConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageAgainConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageAgainConsumer的STDOUT的日志配置 -->
@@ -413,20 +464,43 @@
 
     <!-- 针对dangdang定时任务抓取配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="INFO" additivity="false">
-        <!-- 对于JD全局抓取日志配置 -->
+        <!-- 对于dangdang全局抓取日志配置 -->
         <appender-ref ref="STDOUT"/>
         <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
         <appender-ref ref="DANGDANG_CRAWL"/>
     </logger>
 
-    <!-- 针对dangdang定时任务抓取配置的日志 -->
+    <!-- 针对isbn_douban_amazon抓取配置的日志 -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDoubanAmazonConsumer" level="INFO" additivity="false">
-        <!-- 对于JD全局抓取日志配置 -->
+        <!-- 对于isbn_douban_amazon抓取日志配置 -->
         <appender-ref ref="STDOUT"/>
-        <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
+        <!-- 对于isbn_douban_amazon任务输出至日志文件的日志配置 -->
         <appender-ref ref="ISBN_DANGDANG_AMAZON_CRAWL"/>
     </logger>
 
+    <!-- 针对amazon根据价格抓取配置的日志 -->
+    <logger name="com.apabi.flow.douban.service.impl.AmazonItemUrlConsumer" level="INFO" additivity="false">
+        <!-- 对于amazon根据价格抓取日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于amazon根据价格抓取日志配置 -->
+        <appender-ref ref="AMAZON_ITEM_URL_CRAWL"/>
+    </logger>
+
+    <!-- 针对douban根据id抓取配置的日志 -->
+    <logger name="com.apabi.flow.douban.service.impl.DoubanIdConsumer" level="INFO" additivity="false">
+        <!-- 对于douban根据id抓取输出日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于douban根据id抓取日志配置 -->
+        <appender-ref ref="DOUBAN_ID_CRAWL"/>
+    </logger>
+
+    <!-- 针对douban与apabi根据isbn13映射配置的日志 -->
+    <logger name="com.apabi.flow.match_data.service.ApabiBookMetaDoubanMatcherIsbn13Consumer" level="INFO" additivity="false">
+        <!-- 对于douban与apabi根据isbn13映射输出日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于douban与apabi根据isbn13映射日志文件配置 -->
+        <appender-ref ref="DOUBAN_APABI_ISBN13"/>
+    </logger>
 
     <!--从书苑获取图书数据，新增到流式图书库中-->
     <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">

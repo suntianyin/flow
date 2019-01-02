@@ -295,12 +295,5 @@
         VALUES(<include refid="Base_Value_list"/>)
     </insert>
 
-    <!--    &lt;!&ndash; 添加AmazonMeta &ndash;&gt;
-        <insert id="addAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
-            INSERT INTO AMAZON_METADATA
-            (<include refid="Base_Column_List"/>)
-            VALUES(<include refid="Base_Value_list"/>)
-        </insert>-->
-
 
 </mapper>

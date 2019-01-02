@@ -55,7 +55,6 @@ public class DangdangCrawlItemConsumer implements Runnable {
                     dangdangItemUrl.setStatus("0");
                     dangdangItemUrlDao.insert(dangdangItemUrl);
                 } catch (Exception e) {
-
                 }
             }
             dangdangCrawlPageUrlDao.updateHasCrawled(url);

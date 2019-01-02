@@ -40,7 +40,7 @@ public class IsbnDoubanAmazonServiceImpl implements IsbnDoubanAmazonService {
         int count = isbnDoubanAmazonDao.countWithoutCrawled();
         int pageSize = 5000;
         int pageNum = (count / pageSize) + 1;
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 20);
+        ExecutorService executorService = Executors.newFixedThreadPool(50);
         for (int i = 1; i <= pageNum; i++) {
             NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
             PageHelper.startPage(i, pageSize);

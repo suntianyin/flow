@@ -16,7 +16,8 @@
         select
         <include refid="Base_Column_List"/>
         from ISBN_DOUBAN_AMAZON
-        where STATUS = '0'
+        where DOUBAN_STATUS = '0'
+        or AMAZON_STATUS = '0'
     </select>
 
     <!-- 根据isbn查询数据 -->

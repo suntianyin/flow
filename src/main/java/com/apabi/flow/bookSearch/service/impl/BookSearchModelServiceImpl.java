@@ -29,7 +29,12 @@ public class BookSearchModelServiceImpl implements BookSearchModelService {
     }
 
     @Override
-    public Page<BookSearchModel> findBookSearchByPage(Map<String,String> params) {
+    public Page<BookSearchModel> findBookSearchByPage(Map<String, String> params) {
         return bookSearchModelDao.findBookSearchByPage(params);
+    }
+
+    @Override
+    public int count() {
+        return bookSearchModelDao.count();
     }
 }

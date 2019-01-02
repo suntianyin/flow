@@ -4,7 +4,6 @@ import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
 import com.apabi.flow.douban.model.DoubanMeta;
 import com.apabi.flow.douban.util.CrawlDoubanUtil;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +42,14 @@ public class DoubanConsumer implements Runnable {
             ip = host.split(":")[0];
             port = host.split(":")[1];
             doubanMeta = CrawlDoubanUtil.crawlDoubanMetaById(id, ip, port);
-            if (StringUtils.isNotEmpty(doubanMeta.getDoubanId())) {
+            try {
                 doubanMetaDao.insert(doubanMeta);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = simpleDateFormat.format(new Date());
-                LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            } catch (Exception e) {
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (Exception e) {
-            //e.printStackTrace();
+            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "失败，列表中剩余：" + countDownLatch.getCount() + "个数据...");
         } finally {
             countDownLatch.countDown();
         }

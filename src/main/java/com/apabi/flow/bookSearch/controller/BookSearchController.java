@@ -112,11 +112,16 @@ public class BookSearchController {
             params.put("isbn13", "");
         }
 
+        long totalCount = 0;
+        long totalPageNum = 1;
         PageHelper.startPage(pageNum, DEFAULT_PAGE_SIZE);
         Page<BookSearchModel> page = null;
-
         if (parameterMap.size() > 0) {
             page = bookSearchModelService.findBookSearchByPage(params);
+            totalCount = page.getTotal();
+            totalPageNum = page.getPages();
+        }else {
+            totalCount = bookSearchModelService.count();
         }
 
         if (page != null && !page.isEmpty()) {
@@ -141,6 +146,8 @@ public class BookSearchController {
         model.addAttribute("isPublicCopyRight", isPublicCopyRight);
         model.addAttribute("saleStatus", saleStatus);
         model.addAttribute("page", page);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("totalPageNum", totalPageNum);
         return "bookSearch/bookSearchIndex";
     }
 
