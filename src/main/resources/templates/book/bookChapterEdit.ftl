@@ -7,7 +7,7 @@
     <script charset="utf-8" src="${ctx}/editor/kindeditor-all.js"></script>
     <script charset="utf-8" src="${ctx}/editor/lang/zh-CN.js"></script>
     <script charset="utf-8" src="${ctx}/js/zTree3/js/jquery.ztree.all.js"></script>
-    <link rel="stylesheet" href="${ctx}/js/zTree3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="${ctx}/js/zTree3/css/zTreeStyle/zTreeStyle.css" type="text/css"/>
     <style>
         html {
             overflow-y: hidden;
@@ -169,7 +169,10 @@
             success: function (data) {
                 if (data != null) {
                 <#--var cssUrl = '${bookMetaVo.cssUrl?replace('\n','')}'.substring(12);-->
-                    var cssUrl = data.cssUrl.replace('\n', '').substring(12);
+                    var cssUrl = data.cssUrl;
+                    if (cssUrl != null && cssUrl != '') {
+                        cssUrl = cssUrl.replace('\n', '').substring(12);
+                    }
                     KindEditor.ready(function (K) {
                         htmlEditor = K.create('#htmlEditor', {
                             cssPath: cssUrl,
