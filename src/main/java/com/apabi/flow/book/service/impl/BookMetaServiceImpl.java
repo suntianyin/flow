@@ -1573,7 +1573,7 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     //异步获取书苑数据的页码和目录
     @Async
-    public void getPageAndCata(String metaId) {
+    private void getPageAndCata(String metaId) {
         if (!StringUtils.isEmpty(metaId)) {
             try {
                 BookMeta bookMeta = new BookMeta();
@@ -1581,13 +1581,13 @@ public class BookMetaServiceImpl implements BookMetaService {
                 String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
                 String cata = getCebxData(getCataLog + bookMeta.getMetaId());
                 bookMeta.setCebxPage(cebxPage);
-                bookMeta.setStreamCatalog(cata);
+                bookMeta.setFoamatCatalog(cata);
                 bookMetaDao.updateBookMetaById(bookMeta);
                 //更新到temp表
                 ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
                 temp.setMetaId(bookMeta.getMetaId());
                 temp.setCebxPage(bookMeta.getCebxPage());
-                temp.setStreamCatalog(bookMeta.getStreamCatalog());
+                temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
                 bookMetaDataTempDao.update(temp);
                 log.info("获取图书{}页码和目录成功", metaId);
             } catch (Exception e) {
@@ -1637,9 +1637,9 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     bookMeta.setCebxPage(cebxPage);
                                     flag = true;
                                 }
-                                if (StringUtils.isEmpty(bookMeta.getStreamCatalog())) {
+                                if (StringUtils.isEmpty(bookMeta.getFoamatCatalog())) {
                                     String cata = getCebxData(getCataLog + bookMeta.getMetaId());
-                                    bookMeta.setStreamCatalog(cata);
+                                    bookMeta.setFoamatCatalog(cata);
                                     flag = true;
                                 }
                                 if (flag) {
@@ -1648,7 +1648,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
                                     temp.setMetaId(bookMeta.getMetaId());
                                     temp.setCebxPage(bookMeta.getCebxPage());
-                                    temp.setStreamCatalog(bookMeta.getStreamCatalog());
+                                    temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
                                     bookMetaDataTempDao.update(temp);
                                     emailResult.setMessage("成功");
                                     long end = System.currentTimeMillis();
