@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author guanpp
  * @date 2018/10/31 11:19
- * @description 0：成功，-1：错误，-2：异常，1：任务执行完一次的时间节点
+ * @description
  */
 @Component
 public class GetBook4ShuyuanTask {

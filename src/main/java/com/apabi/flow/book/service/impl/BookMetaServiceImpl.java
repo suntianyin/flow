@@ -1573,7 +1573,7 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     //异步获取书苑数据的页码和目录
     @Async
-    private void getPageAndCata(String metaId) {
+    public void getPageAndCata(String metaId) {
         if (!StringUtils.isEmpty(metaId)) {
             try {
                 BookMeta bookMeta = new BookMeta();
@@ -1643,12 +1643,14 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     flag = true;
                                 }
                                 if (flag) {
+                                    bookMeta.setUpdateTime(new Date());
                                     bookMetaDao.updateBookMetaById(bookMeta);
                                     //temp表补充页码和目录
                                     ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
                                     temp.setMetaId(bookMeta.getMetaId());
                                     temp.setCebxPage(bookMeta.getCebxPage());
                                     temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
+                                    temp.setUpdateTime(new Date());
                                     bookMetaDataTempDao.update(temp);
                                     emailResult.setMessage("成功");
                                     long end = System.currentTimeMillis();

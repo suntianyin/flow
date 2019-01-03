@@ -33,7 +33,7 @@ function jqPaging(pathurl, totalPages, currentPages) {
         last: '<li class="last"><a href="javascript:void(0);">最后一页</a></li>',
         page: '<li class="page"><a href="javascript:void(0);">{{page}}</a></li>',
         totalPages: totalPages,
-        visiblePages: 3,
+        visiblePages: 5,
         currentPage: currentPages,
         onPageChange: function (num, type) {
             if (type != "init") {
