@@ -9,19 +9,20 @@
     <title>批次信息</title>
     <script type="text/javascript">
 
-        $(function(){
+        $(function () {
             var manager = $("#manager").val().trim();
             var copyrightOwner = $("#copyrightOwner").val().trim();
             var outUnit = $("#outUnit").val().trim();
             var batchState = $("#batchState").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
-            var pathurl = "index?manager=" + manager + "&copyrightOwner=" + copyrightOwner + "&outUnit=" + outUnit + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime ;;
+            var pathurl = "index?manager=" + manager + "&copyrightOwner=" + copyrightOwner + "&outUnit=" + outUnit + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime;
+            ;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
             $("#batchState").val("${(batchState.getCode())!''}");
-            jqPaging(pathurl,totalPages,currentPages);
+            jqPaging(pathurl, totalPages, currentPages);
 
 //            $("#batch-import").click(function () {
 //                var fileObj = document.getElementById("importFile").files[0]; // js 获取文件对象
@@ -85,7 +86,7 @@
             var batchState = $("#batchState").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
-            window.location.href = "index?manager=" + manager + "&copyrightOwner=" + copyrightOwner + "&outUnit=" + outUnit + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime ;
+            window.location.href = "index?manager=" + manager + "&copyrightOwner=" + copyrightOwner + "&outUnit=" + outUnit + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime;
         }
 
         //编辑批次
@@ -99,20 +100,65 @@
         //查看书单
         function checkBibliotheca(batchId) {
 
-            if (isNull(batchId)){
+            if (isNull(batchId)) {
                 tipDialog("批次号不能为空", 3, -1);
                 return;
             }
             window.location.href = "${ctx}/processing/bibliotheca/index?batchId=" + $.trim(batchId);
         }
+        //书目解析
+        function parsing(id,path,batchId) {
+            if (isNull(path)) {
+                tipDialog("资源路径不能为空", 3, -1);
+                return;
+            }
+            var formData = new FormData();
+            formData.append('id',id);
+            formData.append('path',path);
+            formData.append('batchId',batchId);
+            var url = "${ctx}/processing/bibliotheca/parsing";
+            var note = "注：请核实资源路径："+path+"是否正确？";
+            confirmDialog("温馨提示", note, function (r) {
+                if (r) {
+                    Loading(true, "正在提交数据...");
+                    window.setTimeout(function () {
+                        try {
+                            $.ajax({
+                                url: url,
+                                type: "POST",
+                                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+                                async: false,
+                                processData: false,
+                                contentType: false,
+                                data:formData,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        tipDialog(data.msg, 3, 1);
+                                    } else {
+                                        tipDialog(data.msg, 3, -1);
+                                    }
+                                    location.reload();
+                                },
+                                error: function (data) {
+                                    Loading(false);
+                                    tipDialog("服务器异常！", 3, -1);
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
+            });
+        }
+
         //书单查重
         function checkDuplication(id, batchId) {
             loading();
-            if (isNull(id)){
+            if (isNull(id)) {
                 tipDialog("数据异常", 3, -1);
                 return;
             }
-            if (isNull(batchId)){
+            if (isNull(batchId)) {
                 tipDialog("批次号不能为空", 3, -1);
                 return;
             }
@@ -127,13 +173,13 @@
         // }
         // 排产
         function updateBatchState(id, identifier) {
-            if (isNull(id)){
+            if (isNull(id)) {
                 tipDialog("数据异常！", 3, -1);
                 return;
             }
 
             var note = "注：您确定要排产当前批次信息？";
-            if (!isNull(identifier)){
+            if (!isNull(identifier)) {
                 note = "注：您确定要排产 批次号为：" + identifier + " 的批次信息？";
             }
 
@@ -149,16 +195,16 @@
                                 contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
                                 async: false,
                                 success: function (data) {
-                                    if (data.status == 200){
+                                    if (data.status == 200) {
                                         tipDialog(data.msg, 3, 1);
-                                    }else{
+                                    } else {
                                         tipDialog(data.msg, 3, -1);
                                     }
                                     location.reload();
                                 },
                                 error: function (data) {
                                     Loading(false);
-                                    tipDialog("服务器异常！",3, -1);
+                                    tipDialog("服务器异常！", 3, -1);
                                 }
                             });
                         } catch (e) {
@@ -195,7 +241,7 @@
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
                 <a id="lr-add" title="新增批次" onclick="btn_addBatch()" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp新增</span></a>
+                                class="fa fa-plus"></i>&nbsp新增</span></a>
                 <div class="tools_separator"></div>
             </div>
             <#--<div class="PartialButton">
@@ -224,7 +270,8 @@
 
                     <th>版权所有者：</th>
                     <td>
-                        <input id="copyrightOwner" type="text" value="${copyrightOwner!'' }" class="txt" style="width: 200px"/>
+                        <input id="copyrightOwner" type="text" value="${copyrightOwner!'' }" class="txt"
+                               style="width: 200px"/>
                     </td>
 
                     <th>批次状态：</th>
@@ -248,7 +295,11 @@
 
                     <th>创建时间：</th>
                     <td>
-                        <input id="beginTime" name="beginTime" type="date" value="${(beginTime?string("yyyy-MM-dd"))! '' }" class="txt" style="width: 200px"/>至<input id="endTime" name="endTime" type="date" value="${(endTime?string("yyyy-MM-dd"))! '' }" class="txt" style="width: 200px"/>
+                        <input id="beginTime" name="beginTime" type="date"
+                               value="${(beginTime?string("yyyy-MM-dd"))! '' }" class="txt"
+                               style="width: 200px"/>至<input id="endTime" name="endTime" type="date"
+                                                             value="${(endTime?string("yyyy-MM-dd"))! '' }" class="txt"
+                                                             style="width: 200px"/>
                     </td>
 
                     <td>
@@ -273,6 +324,7 @@
                         <th>文档大概数量</th>
                         <th>批次状态</th>
                         <th>创建人</th>
+                        <th>资源路径</th>
                         <#--<th>书单审核人</th>-->
                         <#--<th>书单查重人</th>-->
                         <th>备注</th>
@@ -287,7 +339,7 @@
                     <tbody>
                     <#if batchList??>
                         <#list batchList as list>
-                        <tr class="gradeA odd" role="row">
+                            <tr class="gradeA odd" role="row">
                             <td>${(list.manager)!''}</td>
                             <td>${(list.batchId)! '' }</td>
                             <td>${(list.outUnit)! '' }</td>
@@ -297,8 +349,9 @@
                             <td>${(list.documentNum)! '' }</td>
                             <td>${(list.batchState.getDesc())! '' }</td>
                             <td>${(list.creator)! '' }</td>
-                            <#--<td>${(list.auditor)! '' }</td>-->
-                            <#--<td>${(list.checker) !''}</td>-->
+                            <td>${(list.resourcePath)! '' }</td>
+                        <#--<td>${(list.auditor)! '' }</td>-->
+                        <#--<td>${(list.checker) !''}</td>-->
                             <td>${(list.memo)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>${(list.distributionOutTime?datetime)! '' }</td>
@@ -306,19 +359,30 @@
                             <td>${(list.checkTime?datetime)! '' }</td>
                             <td>${(list.productionSchedulingTime?datetime)! '' }</td>
                             <td>
-                                <a href="javascript:void(0);" onclick="updateBatch('${(list.id)!''}')">编辑</a>
-                                <#--<a href="javascript:void(0);" ">删除</a>-->
-                                <a href="javascript:void(0);" onclick="checkBibliotheca('${(list.batchId)!''}')">查看书单</a>
-                                <#--<a href="javascript:void(0);" onclick="auditBatch('${(list.id)!''}')">书单审核</a>-->
-                            <#--<#if (list.batchState.getCode())<4 >-->
-                                <a href="javascript:void(0);" onclick="checkDuplication('${(list.id)!''}','${(list.batchId)!''}')">查重</a>
-                            <#--<#else>-->
-                                <#--<span style="color: #7c7c7c;">查重</span>-->
-                            <#--</#if>-->
+                        <a href="javascript:void(0);" onclick="updateBatch('${(list.id)!''}')">编辑</a>
+                        <#--<a href="javascript:void(0);" ">删除</a>-->
+                            <#if (list.batchState.code)??>
+                                <#if list.batchState.code == 1>
+                                    <a href="javascript:void(0);" onclick="parsing('${(list.id)!''}','${(list.resourcePath)!''}','${(list.batchId)!''}')">书目解析</a>
+                                <#else>
+                                    <span style="color: #7c7c7c;"><i>书目解析</i></span>
+                                </#if>
+                            </#if>
+                        <a href="javascript:void(0);" onclick="checkBibliotheca('${(list.batchId)!''}')">查看书单</a>
+                        <#--<a href="javascript:void(0);" onclick="auditBatch('${(list.id)!''}')">书单审核</a>-->
 
-                                <a href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}','${(list.batchId)!''}')">排产</a>
+                        <#--<#if (list.batchState.getCode())<4 >-->
+                        <a
+                        href="javascript:void(0);" onclick="checkDuplication('${(list.id)!''}','${(list.batchId)!''}')">
+                                查重</a>
+                        <#--<#else>-->
+                        <#--<span style="color: #7c7c7c;">查重</span>-->
+                        <#--</#if>-->
+
+                        <a
+                        href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}','${(list.batchId)!''}')">排产</a>
                             </td>
-                        </tr>
+                            </tr>
                         </#list>
                     </#if>
                     </tbody>

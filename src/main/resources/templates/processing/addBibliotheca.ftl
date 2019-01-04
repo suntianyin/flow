@@ -150,7 +150,7 @@
                             <option value="">--请选择出版社--</option>
                             <#if publisherList??>
                                 <#list publisherList as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                                    <option value="${(list.id)!''},${(list.title)!''}">${(list.title)!''}</option>
                                 </#list>
                             </#if>
                         </select>

@@ -123,7 +123,16 @@ public class ApabiBookMeta implements Serializable {
     @Column(name = "ISREADCEBXFLOW")
     private Integer isReadCebxFlow;
 
+    @Column(name = "EDITIONORDER")
+    private String editionOrder;
 
+    public String getEditionOrder() {
+        return editionOrder;
+    }
+
+    public void setEditionOrder(String editionOrder) {
+        this.editionOrder = editionOrder;
+    }
 
     public String getIsbn() {
         return isbn;

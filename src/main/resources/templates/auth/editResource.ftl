@@ -6,6 +6,8 @@
 <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
+    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet"/>
+    <script src="${ctx}/js/select2/select2.min.js"></script>
     <title>修改协议资源信息</title>
     <script type="text/javascript">
         $(function () {
@@ -13,6 +15,10 @@
             $("#publisher").val("${(resource.publisher)!'' }");
             $('#issuedDate').val(time("${(issuedDate)!'' }"));
 
+        });
+        //下拉列表 模糊查询
+        $(document).ready(function () {
+            $('.js-example-basic-single').select2();
         });
         function Check() {
             var isbn = document.getElementById("isbn").value;
@@ -153,7 +159,7 @@
                 <tr>
                     <td>出版社:</td>
                     <td>
-                        <select id="publisher" name="publisher" underline="true" style="width: 307px; height: 24px;">
+                        <select id="publisher" name="publisher" underline="true" class="js-example-basic-single" style="width: 307px; height: 24px;">
                             <option value="">--请选择出版社--</option>
                             <#if publishers??>
                                 <#list publishers as list>

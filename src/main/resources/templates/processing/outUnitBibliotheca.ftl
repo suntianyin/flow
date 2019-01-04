@@ -438,7 +438,7 @@
                             <td>${(list.batchId)! '' }</td>
                             <td>${(list.title)! '' }</td>
                             <td>${(list.author)! '' }</td>
-                            <td>${(list.publisher)! '' }</td>
+                            <td>${(list.publisherName)! '' }</td>
                             <td>${(list.isbn)! '' }</td>
                             <td>${(list.publishTime)! '' }</td>
                             <td>${(list.edition) !''}</td>

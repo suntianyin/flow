@@ -52,6 +52,16 @@ public class Batch {
 
     private Date productionSchedulingTime;//排产时间
 
+    private String resourcePath;
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
     public Date getDistributionOutTime() {
         return distributionOutTime;
     }

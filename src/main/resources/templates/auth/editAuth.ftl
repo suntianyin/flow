@@ -6,8 +6,11 @@
 <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
+    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet"/>
+    <script src="${ctx}/js/select2/select2.min.js"></script>
     <title>修改授权协议信息</title>
     <script type="text/javascript">
+
         $(function () {
             $("#authType").val("${(copyrightAgreement.authType.getCode())!'' }");
             $("#assignRule").val("${(copyrightAgreement.assignRule)!'' }");
@@ -35,7 +38,10 @@
             $("#copyrightOwnerId").val("${(copyrightAgreement.copyrightOwnerId)!'' }");
 
         });
-
+        //下拉列表 模糊查询
+        $(document).ready(function () {
+            $('.js-example-basic-single').select2();
+        });
         function time(now1){
             var now=new Date(now1);
             //格式化日，如果小于9，前面补0
@@ -215,7 +221,7 @@
                 <tr>
                     <td>版权所有者:</td>
                     <td>
-                        <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 307px; height: 24px;">
+                        <select id="copyrightOwnerId" name="copyrightOwnerId" class="js-example-basic-single" underline="true" style="width: 307px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
                             <#if copyrightOwners??>
                                 <#list copyrightOwners as list>

@@ -6,6 +6,8 @@
     <#include "../common/metabootstraps.ftl">
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
+    <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet"/>
+    <script src="${ctx}/js/select2/select2.min.js"></script>
     <title>版权协议管理</title>
     <script type="text/javascript">
 
@@ -22,7 +24,10 @@
             var currentPages = ${pageNum!''};
             jqPaging(pathurl,totalPages,currentPages);
         });
-
+        //下拉列表 模糊查询
+        $(document).ready(function () {
+            $('.js-example-basic-single').select2();
+        });
         //检索
         function btn_Search() {
             var copyrightOwnerId = $("#copyrightOwnerId").val().trim();
@@ -120,7 +125,7 @@
                 <tr>
                     <th>版权所有者：</th>
                     <td>
-                        <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" style="width: 307px; height: 24px;">
+                        <select id="copyrightOwnerId" name="copyrightOwnerId" class="js-example-basic-single" underline="true" style="width: 307px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
                             <#if copyrightOwners??>
                                 <#list copyrightOwners as list>

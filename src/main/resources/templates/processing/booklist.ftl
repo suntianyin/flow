@@ -9,19 +9,20 @@
     <title>书单录入</title>
     <script type="text/javascript">
 
-        $(function(){
+        $(function () {
             var manager = $("#manager").val().trim();
             var batchId = $("#batchId").val().trim();
             var copyrightOwner = $("#copyrightOwner").val().trim();
             var batchState = $("#batchState").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
-            var pathurl = "index?manager=" + manager + "&copyrightOwner=" + copyrightOwner + "&batchId=" + batchId + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime ;;
+            var pathurl = "index?manager=" + manager + "&copyrightOwner=" + copyrightOwner + "&batchId=" + batchId + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime;
+            ;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
             $("#batchState").val("${(batchState.getCode())!''}");
-            jqPaging(pathurl,totalPages,currentPages);
+            jqPaging(pathurl, totalPages, currentPages);
         });
 
         //检索
@@ -32,7 +33,7 @@
             var batchState = $("#batchState").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
-            window.location.href = "index?manager=" + manager + "&batchId=" + batchId + "&copyrightOwner=" + copyrightOwner + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime ;
+            window.location.href = "index?manager=" + manager + "&batchId=" + batchId + "&copyrightOwner=" + copyrightOwner + "&batchState=" + batchState + "&beginTime=" + beginTime + "&endTime=" + endTime;
         }
 
         function isNull(str) {
@@ -44,24 +45,66 @@
 
         //编辑书单
         function updateBooklist(batchId) {
-            if (isNull(batchId)){
+            if (isNull(batchId)) {
                 tipDialog("批次号不能为空", 3, -1);
                 return;
             }
             window.location.href = "${ctx}/processing/bibliotheca/outUnit/index?batchId=" + $.trim(batchId);
-//            loading();
+        }
+
+        //书目解析
+        function parsing(id, path ,batchId) {
+            if (isNull(path)) {
+                tipDialog("资源路径不能为空", 3, -1);
+                return;
+            }
+            var formData = new FormData();
+            formData.append('id',id);
+            formData.append('path',path);
+            formData.append('batchId',batchId);
+            var url = "${ctx}/processing/bibliotheca/parsing";
+            var note = "注：请核实资源路径：" + path + "是否正确？";
+            confirmDialog("温馨提示", note, function (r) {
+                if (r) {
+                    Loading(true, "正在提交数据...");
+                    window.setTimeout(function () {
+                        try {
+                            $.ajax({
+                                url: url,
+                                type: "POST",
+                                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+                                async: false,
+                                processData: false,
+                                contentType: false,
+                                data:formData,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        tipDialog(data.msg, 3, 1);
+                                    } else {
+                                        tipDialog(data.msg, 3, -1);
+                                    }
+                                    location.reload();
+                                },
+                                error: function (data) {
+                                    Loading(false);
+                                    tipDialog("服务器异常！", 3, -1);
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
+            });
         }
 
         //提交书单审核
         function uploadBooklistAudit(batchId) {
-
-            if (isNull(batchId)){
+            if (isNull(batchId)) {
                 tipDialog("批次号不能为空", 3, -1);
                 return;
             }
-
             var url = "/processing/batch/uploadBooklistAudit?batchId=" + batchId;
-            confirmDialog("温馨提示", "注：您确定要对当前批次："+ batchId + " 提交书单审核？", function (r) {
+            confirmDialog("温馨提示", "注：您确定要对当前批次：" + batchId + " 提交书单审核？", function (r) {
                 if (r) {
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
@@ -73,18 +116,18 @@
                                 async: false,
                                 success: function (data) {
 //                                    Loading(false);
-                                    if (data.status == 200){
+                                    if (data.status == 200) {
                                         tipDialog(data.msg, 3, 1);
                                         /*top.frames[tabiframeId()].location.reload();
                                         closeDialog();*/
-                                    }else{
+                                    } else {
                                         tipDialog(data.msg, 3, -1);
                                     }
                                     location.reload();
                                 },
                                 error: function (data) {
                                     Loading(false);
-                                    tipDialog("服务器异常！",3, -1);
+                                    tipDialog("服务器异常！", 3, -1);
                                 }
                             });
                         } catch (e) {
@@ -95,46 +138,46 @@
         }
 
         //提交制作审核
-//         function uploadMakeAudit(batchId) {
-//
-//             if (isNull(batchId)){
-//                 tipDialog("批次号不能为空", 3, -1);
-//                 return;
-//             }
-//
-//             var url = "/processing/batch/uploadMakeAudit?batchId=" + batchId;
-//             confirmDialog("温馨提示", "注：您确定要对当前批次："+ batchId + " 提交制作审核？", function (r) {
-//                 if (r) {
-//                     Loading(true, "正在提交数据...");
-//                     window.setTimeout(function () {
-//                         try {
-//                             $.ajax({
-//                                 url: RootPath() + url,
-//                                 type: "get",
-//                                 contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
-//                                 async: false,
-//                                 success: function (data) {
-// //                                    Loading(false);
-//                                     if (data.status == 200){
-//                                         tipDialog(data.msg, 3, 1);
-//                                         /*top.frames[tabiframeId()].location.reload();
-//                                         closeDialog();*/
-//                                     }else{
-//                                         tipDialog(data.msg, 3, -1);
-//                                     }
-//                                     location.reload();
-//                                 },
-//                                 error: function (data) {
-//                                     Loading(false);
-//                                     tipDialog("服务器异常！",3, -1);
-//                                 }
-//                             });
-//                         } catch (e) {
-//                         }
-//                     }, 200);
-//                 }
-//             });
-//         }
+        //         function uploadMakeAudit(batchId) {
+        //
+        //             if (isNull(batchId)){
+        //                 tipDialog("批次号不能为空", 3, -1);
+        //                 return;
+        //             }
+        //
+        //             var url = "/processing/batch/uploadMakeAudit?batchId=" + batchId;
+        //             confirmDialog("温馨提示", "注：您确定要对当前批次："+ batchId + " 提交制作审核？", function (r) {
+        //                 if (r) {
+        //                     Loading(true, "正在提交数据...");
+        //                     window.setTimeout(function () {
+        //                         try {
+        //                             $.ajax({
+        //                                 url: RootPath() + url,
+        //                                 type: "get",
+        //                                 contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+        //                                 async: false,
+        //                                 success: function (data) {
+        // //                                    Loading(false);
+        //                                     if (data.status == 200){
+        //                                         tipDialog(data.msg, 3, 1);
+        //                                         /*top.frames[tabiframeId()].location.reload();
+        //                                         closeDialog();*/
+        //                                     }else{
+        //                                         tipDialog(data.msg, 3, -1);
+        //                                     }
+        //                                     location.reload();
+        //                                 },
+        //                                 error: function (data) {
+        //                                     Loading(false);
+        //                                     tipDialog("服务器异常！",3, -1);
+        //                                 }
+        //                             });
+        //                         } catch (e) {
+        //                         }
+        //                     }, 200);
+        //                 }
+        //             });
+        //         }
 
         function auditBatch(id) {
             var url = "/processing/batch/auditBatch/index?id=" + id;
@@ -168,7 +211,8 @@
 
                     <th>版权所有者：</th>
                     <td>
-                        <input id="copyrightOwner" type="text" value="${copyrightOwner!'' }" class="txt" style="width: 200px"/>
+                        <input id="copyrightOwner" type="text" value="${copyrightOwner!'' }" class="txt"
+                               style="width: 200px"/>
                     </td>
 
                     <th>批次状态：</th>
@@ -193,7 +237,11 @@
 
                     <th>创建时间：</th>
                     <td>
-                        <input id="beginTime" name="beginTime" type="date" value="${(beginTime?string("yyyy-MM-dd"))! '' }" class="txt" style="width: 200px"/>至<input id="endTime" name="endTime" type="date" value="${(endTime?string("yyyy-MM-dd"))! '' }" class="txt" style="width: 200px"/>
+                        <input id="beginTime" name="beginTime" type="date"
+                               value="${(beginTime?string("yyyy-MM-dd"))! '' }" class="txt"
+                               style="width: 200px"/>至<input id="endTime" name="endTime" type="date"
+                                                             value="${(endTime?string("yyyy-MM-dd"))! '' }" class="txt"
+                                                             style="width: 200px"/>
                     </td>
 
                     <td>
@@ -217,6 +265,7 @@
                         <th>文档大概数量</th>
                         <th>批次状态</th>
                         <th>创建人</th>
+                        <th>资源路径</th>
                         <#--<th>书单审核人</th>-->
                         <th>书单查重人</th>
                         <th>备注</th>
@@ -227,7 +276,7 @@
                     <tbody>
                     <#if batchList??>
                         <#list batchList as list>
-                        <tr class="gradeA odd" role="row">
+                            <tr class="gradeA odd" role="row">
                             <td>${(list.manager)!''}</td>
                             <td>${(list.batchId)! '' }</td>
                             <td>${(list.outUnit)! '' }</td>
@@ -236,38 +285,29 @@
                             <td>${(list.documentNum)! '' }</td>
                             <td>${(list.batchState.getDesc())! '' }</td>
                             <td>${(list.creator)! '' }</td>
-                            <#--<td>${(list.auditor)! '' }</td>-->
+                            <td>${(list.resourcePath)! '' }</td>
+                        <#--<td>${(list.auditor)! '' }</td>-->
                             <td>${(list.checker) !''}</td>
                             <td>${(list.memo)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
-                                <a href="javascript:void(0);" onclick="updateBooklist('${(list.batchId)!''}')">编辑书单</a>
-                                <#if (list.batchState.code)??>
-                                    <#if list.batchState.code == 1 >
-                                        <a href="javascript:void(0);" onclick="uploadBooklistAudit('${list.batchId}')">提交书单审核</a>
-                                    <#else>
-                                        <span style="color: #7c7c7c;"><i>提交书单审核</i></span>
-                                    </#if>
-
-                                    <#--<#if list.batchState.code == 6 >-->
-                                        <#--<span style="color: #7c7c7c;"><i>提交制作审核</i></span>-->
-                                    <#--<#else>-->
-                                        <#--<a href="javascript:void(0);" onclick="uploadMakeAudit('${list.batchId}')">提交制作审核</a>-->
-                                    <#--</#if>-->
+                        <a href="javascript:void(0);" onclick="updateBooklist('${(list.batchId)!''}')">编辑书单</a>
+                            <#if (list.batchState.code)??>
+                                <#if list.batchState.code == 1>
+                                    <a href="javascript:void(0);" onclick="parsing('${(list.id)!''}','${(list.resourcePath)!''}','${(list.batchId)!''}')">书目解析</a>
+                                <#else>
+                                    <span style="color: #7c7c7c;"><i>书目解析</i></span>
+                                </#if>
+                            </#if>
+                            <#if (list.batchState.code)??>
+                                <#if list.batchState.code == 1||list.batchState.code == 7||list.batchState.code == 8 >
+                                    <a href="javascript:void(0);" onclick="uploadBooklistAudit('${list.batchId}')">提交书单审核</a>
                                 <#else>
                                     <span style="color: #7c7c7c;"><i>提交书单审核</i></span>
-                                    <#--<span style="color: #7c7c7c;"><i>提交制作审核</i></span>-->
                                 </#if>
-
-                                <#if (list.batchState.code)??>
-
-                                <#else>
-
-                                </#if>
-
-
+                            </#if>
                             </td>
-                        </tr>
+                            </tr>
                         </#list>
                     </#if>
                     </tbody>

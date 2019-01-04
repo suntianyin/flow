@@ -295,5 +295,11 @@
             AND RELATEPUBLISHERID = #{relatePublisherID,jdbcType=VARCHAR}
         </if>
     </select>
-
+    <select id="findIdByTitle" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+        ID
+        from APABI_PUBLISHER_INFO
+        WHERE 1=1
+            AND TITLE = #{title}
+    </select>
 </mapper>

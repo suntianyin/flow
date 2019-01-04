@@ -9,6 +9,7 @@
     <title>管理员书目信息</title>
     <script type="text/javascript">
 
+
         $(function () {
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
@@ -54,7 +55,13 @@
                 top.frames[iframe].AcceptClick();
             });
         }
-
+        //书目信息pdf查看
+        function pdf(id) {
+            var url = "/processing/bibliotheca/pdf?id=" + id;
+            openDialog(url, "pdf", "书目信息pdf查看", 800, 800, function (iframe) {
+                top.frames[iframe].AcceptClick();
+            });
+        }
         function updateBatchState(id) {
             var url = "/processing/batch/editBatchState/index?id=" + id;
             openDialog(url, "updateBatchState", "编辑批次状态", 350, 100, function (iframe) {
@@ -320,7 +327,7 @@
                             <td>${(list.batchId)! '' }</td>
                             <td>${(list.title)! '' }</td>
                             <td>${(list.author)! '' }</td>
-                            <td>${(list.publisher)! '' }</td>
+                            <td>${(list.publisherName)! '' }</td>
                             <td>${(list.isbn)! '' }</td>
                             <td>${(list.publishTime)! '' }</td>
                             <td>${(list.edition) !''}</td>
@@ -345,6 +352,8 @@
                                    onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
                                 <a href="javascript:void(0);"
                                    onclick="updateBibliothecaExclude('${(list.id)!''}')">分拣</a>
+                                <a href="javascript:void(0);"
+                                onclick="pdf('${(list.id)!''}')">书目信息pdf查看</a>
                             </#if>
                             </td>
                         </tr>

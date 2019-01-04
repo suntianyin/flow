@@ -28,4 +28,6 @@ public interface BatchMapper {
     List<Batch> listBatchSelective(Map map);
 
     Page<Batch> listBatchSelectiveByPage(Map map);
+
+    int updateStateByPrimaryKey(Batch record);
 }

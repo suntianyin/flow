@@ -17,11 +17,14 @@ import java.util.Map;
 public enum BatchStateEnum implements BaseEnum<BatchStateEnum, Integer>,CodeBaseEnum {
     WAITING_DISTRIBUTION(0, "待分配"),
     WAITING_INPUT(1, "待书单"),
+    BEGIN_SCANNING(7, "正在扫描书目"),
+    FINISH_SCANNING(8, "书目扫描完成"),
     WAITING_CHECKED(2, "待查重"),
     WAITING_PRODUCTION(3, "待排产"),
     PRODUCTION(4, "已排产"),
     PROCESSING(5, "制作中"),
     COMPLETED(6, "已完成");
+
 
     private Integer code;
     private String desc;

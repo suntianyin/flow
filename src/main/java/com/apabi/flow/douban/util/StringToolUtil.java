@@ -196,10 +196,10 @@ public class StringToolUtil {
     }
 
     public static void main(String[] args) {
-        String result = metaidFormat("2012-01");
-        System.out.println(result);
+//        String result = metaidFormat("sdfsd");
+//        System.out.println(result);
 
-        String result2 = issuedDateFormat("2018年6月25日");
+        String result2 = issuedDateFormat("2018-1-1");
         System.out.println(result2);
 
     }

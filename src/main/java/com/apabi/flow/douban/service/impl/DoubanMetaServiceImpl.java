@@ -1,5 +1,6 @@
 package com.apabi.flow.douban.service.impl;
 
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaRepository;
 import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
@@ -24,11 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author pipi
@@ -339,6 +339,355 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
             }
         }
         return doubanMetaList;
+    }
+    @Transactional(value = "transactionManager",isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class, timeout = 6)
+    public List<ApabiBookMetaTemp> searchMetaDataTempsByISBNMultiThread(String isbn13,String ip,String port){
+        // 创建ApabiBookMetaTempReturnedList
+        List<ApabiBookMetaTemp> apabiBookMetaTempReturnedList = new ArrayList<>();
+
+        if (!StringUtils.isEmpty(isbn13)) {
+            // 对isbn13进行清洗
+            if (isbn13.contains("-")) {
+                isbn13 = isbn13.replace("-", "");
+            }
+            // 查询temp表中是否有该isbn的数据
+            List<ApabiBookMetaTemp> apabiBookMetaTempList = apabiBookMetaTempRepository.findApabiBookMetaTempByIsbn13Is(isbn13);
+            String metaId = "";
+            if (apabiBookMetaTempList != null && apabiBookMetaTempList.size() > 0) {
+                metaId = apabiBookMetaTempList.get(0).getMetaId();
+            }
+            // 查询meta_data表中是否有该数据
+            List<ApabiBookMeta> apabiBookMetaList = apabiBookMetaRepository.findApabiBookMetasByIsbn13Is(isbn13);
+            // 首先查出meta_data表中hasFlow和hasCebx字段的值
+            Integer hasFlow = 0;
+            Integer hasCebx = 0;
+            if (apabiBookMetaList != null && apabiBookMetaList.size() > 0) {
+                if (apabiBookMetaList.get(0).getHasFlow() != null) {
+                    hasFlow = apabiBookMetaList.get(0).getHasFlow();
+                }
+                if (apabiBookMetaList.get(0).getHasCebx() != null) {
+                    hasCebx = apabiBookMetaList.get(0).getHasCebx();
+                }
+            }
+            // 如果在meta_data库中查询到直接返回
+            if (apabiBookMetaList != null && apabiBookMetaList.size() != 0) {
+                // 遍历apabiBookMetaList
+                for (int i = 0; i < apabiBookMetaList.size(); i++) {
+                    ApabiBookMeta apabiBookMeta = apabiBookMetaList.get(i);
+                    if (apabiBookMeta != null) {
+                        // 如果apabiBookMeta不为null，则将apabiBookMeta的属性值拷贝到新创建的apabiBookMetaTemp
+                        ApabiBookMetaTemp apabiBookMetaTemp = new ApabiBookMetaTemp();
+                        BeanUtils.copyProperties(apabiBookMeta, apabiBookMetaTemp);
+                        // 将apabiBookMetaTemp添加到返回结果列表
+                        apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
+                    }
+                }
+                // 直接返回
+                return apabiBookMetaTempReturnedList;
+            } else {
+                // 如果meta_data库中没有数据，则去douban库查询
+                List<DoubanMeta> doubanMetaSearchList = doubanMetaRepository.findDoubanMetasByIsbn13Is(isbn13);
+                // 不论在豆瓣上有没有检索到,都首先查询amazon数据,没有数据则抓取amazon页面
+                AmazonMeta amazonMeta = null;
+                try {
+                    amazonMeta = amazonMetaService.findOrCrawlAmazonMetaByIsbn(isbn13);
+                } catch (Exception e) {
+                    // 查询或者抓取amazon数据，如果catch住异常，则不做处理
+                    e.printStackTrace();
+                    log.info("抓取amazon，处理" + isbn13 + "出错...");
+                    log.info(e.getMessage());
+
+                }
+                // 如果豆瓣库中有，则直接返回
+                if (doubanMetaSearchList != null && doubanMetaSearchList.size() > 0) {
+                    for (DoubanMeta doubanMeta : doubanMetaSearchList) {
+                        if (doubanMeta.getIssueddate() != null && "".equalsIgnoreCase("")) {
+                            ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
+                            if (StringUtils.isNotEmpty(metaId)) {
+                                apabiBookMetaTemp.setMetaId(metaId);
+                            }
+                            // 把该数据写入到temp库中
+                            if (doubanMeta.getIssueddate() != null) {
+                                // 根据查询到的temp表中的数据设置apabiBookMetaTemp的更新时间和创建时间
+                                if (apabiBookMetaTempList != null && apabiBookMetaTempList.size() > 0 && apabiBookMetaTempList.get(0).getCreateTime() != null) {
+                                    apabiBookMetaTemp.setCreateTime(apabiBookMetaTempList.get(0).getCreateTime());
+                                } else {
+                                    apabiBookMetaTemp.setCreateTime(new Date());
+                                }
+                                if (apabiBookMetaTempList != null && apabiBookMetaTempList.size() > 0 && apabiBookMetaTempList.get(0).getUpdateTime() != null) {
+                                    apabiBookMetaTemp.setUpdateTime(apabiBookMetaTempList.get(0).getUpdateTime());
+                                } else {
+                                    apabiBookMetaTemp.setUpdateTime(new Date());
+                                }
+                                if (amazonMeta != null) {
+                                    apabiBookMetaTemp = BeanTransformUtil.mergeApabiBookMetaTempWithAmazon(apabiBookMetaTemp, amazonMeta);
+                                }
+
+                                // 判断并设置是否发布
+                                if (apabiBookMetaTempList != null && apabiBookMetaTempList.size() > 0) {
+                                    if (apabiBookMetaTempList.get(0).getHasPublish() == null) {
+                                        apabiBookMetaTemp.setHasPublish(0);
+                                    } else {
+                                        apabiBookMetaTemp.setHasPublish(apabiBookMetaTempList.get(0).getHasPublish());
+                                    }
+                                }
+                                // 当temp表中没有该数据，才将其插入到temp表中
+                                if (apabiBookMetaTempList == null || apabiBookMetaTempList.size() == 0) {
+                                    apabiBookMetaTemp.setCreateTime(new Date());
+                                    apabiBookMetaTemp.setUpdateTime(new Date());
+                                    apabiBookMetaTemp.setHasPublish(0);
+                                    apabiBookMetaTemp.setHasCebx(hasCebx);
+                                    apabiBookMetaTemp.setHasFlow(hasFlow);
+                                    apabiBookMetaTempRepository.save(apabiBookMetaTemp);
+                                }
+                            }
+                            apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
+                        } else {
+                            ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
+                            apabiBookMetaTemp.setMetaId(metaId);
+                            apabiBookMetaTemp.setUpdateTime(doubanMeta.getUpdateTime());
+                            apabiBookMetaTemp.setCreateTime(doubanMeta.getCreateTime());
+                            apabiBookMetaTemp.setHasFlow(hasFlow);
+                            apabiBookMetaTemp.setHasCebx(hasCebx);
+                            apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
+                        }
+                    }
+                    return apabiBookMetaTempReturnedList;
+                } else {
+                    // 如果douban表中没有，则取douban抓取
+                    DoubanMeta doubanMeta = new DoubanMeta();
+                    String resUrl = "https://api.douban.com/v2/book/isbn/" + isbn13;
+                    try {
+                        // 发送请求，返回Json数据
+                        JSONObject book = getJson(resUrl,ip,port);
+                        // 如果能爬取到douban的数据，以douban的数据为主！
+                        if (book != null) {
+                            // 创建douban数据实例
+                            // 将返回的Json数据实例Json对象
+                            JSONObject jsonobject = JSONObject.fromObject(book);
+                            // 设置DouBan实例对象
+                            if (book.toString().contains("id")) {
+                                doubanMeta.setDoubanId(jsonobject.getString("id"));
+                            }
+                            if (book.toString().contains("title")) {
+                                doubanMeta.setTitle(jsonobject.getString("title").replace("'", "''"));
+                            }
+                            if (book.toString().contains("author")) {
+                                if (jsonobject.getJSONArray("author").size() != 0) {
+                                    doubanMeta.setAuthor(jsonobject.getJSONArray("author").getString(0).replace("'", "''"));
+                                }
+                            }
+                            if (book.toString().contains("publisher")) {
+                                doubanMeta.setPublisher(jsonobject.getString("publisher").replace("'", "''"));
+                            }
+                            if (book.toString().contains("alt_title")) {
+                                doubanMeta.setAltTitle(jsonobject.getString("alt_title").replace("'", "''"));
+                            }
+                            if (book.toString().contains("subtitle")) {
+                                doubanMeta.setSubtitle(jsonobject.getString("subtitle").replace("'", "''"));
+                            }
+                            if (book.toString().contains("translator")) {
+                                if (jsonobject.getJSONArray("translator").size() != 0) {
+                                    doubanMeta.setTranslator(jsonobject.getJSONArray("translator").getString(0).replace("'", "''"));
+                                }
+                            }
+                            if (book.toString().contains("isbn10")) {
+                                doubanMeta.setIsbn10(jsonobject.getString("isbn10"));
+                            }
+                            if (book.toString().contains("isbn13")) {
+                                doubanMeta.setIsbn13(jsonobject.getString("isbn13"));
+                            }
+                            if (book.toString().contains("pubdate")) {
+                                doubanMeta.setIssueddate(jsonobject.getString("pubdate"));
+                            }
+                            if (book.toString().contains("pages")) {
+                                doubanMeta.setPages(jsonobject.getString("pages"));
+                            }
+                            if (book.toString().contains("price")) {
+                                doubanMeta.setPrice(jsonobject.getString("price"));
+                            }
+                            if (book.toString().contains("binding")) {
+                                doubanMeta.setBinding(jsonobject.getString("binding").replace("'", "''"));
+                            }
+                            if (book.toString().contains("series\":")) {
+                                doubanMeta.setSeries(JSONObject.fromObject(jsonobject.getString("series")).getString("title").replace("'", "''"));
+                            }
+                            if (book.toString().contains("rating")) {
+                                doubanMeta.setAverage(JSONObject.fromObject(jsonobject.getString("rating")).getString("average").replace("'", "''"));
+                            }
+                            if (book.toString().contains("summary")) {
+                                doubanMeta.setSummary(jsonobject.getString("summary").replace("'", "''"));
+                            }
+                            if (book.toString().contains("author_intro")) {
+                                doubanMeta.setAuthorIntro(jsonobject.getString("author_intro").replace("'", "''"));
+                            }
+                            if (book.toString().contains("catalog")) {
+                                doubanMeta.setCatalog(jsonobject.getString("catalog").replace("'", "''"));
+                            }
+                            if (book.toString().contains("tags")) {
+                                String tags = "";
+                                for (Object titles : jsonobject.getJSONArray("tags")) {
+                                    tags += JSONObject.fromObject(titles).getString("title") + " ";
+                                }
+                                doubanMeta.setTags(tags.replace("'", "''"));
+                            }
+                            if (book.toString().contains("images")) {
+                                doubanMeta.setSmallCover(jsonobject.getJSONObject("images").getString("small"));
+                                doubanMeta.setLargeCover(jsonobject.getJSONObject("images").getString("large"));
+                                doubanMeta.setMediumCover(jsonobject.getJSONObject("images").getString("medium"));
+                            }
+                            if (book.toString().contains("ebook_price")) {
+                                doubanMeta.setEbookPrice(jsonobject.getString("ebook_price"));
+                            }
+                            if (book.toString().contains("origin_title")) {
+                                doubanMeta.setOriginTitle(jsonobject.getString("origin_title").replace("'", "''"));
+                            }
+                            // 将amazon数据merge到doubanMeta
+                            doubanMeta = BeanTransformUtil.mergeDoubanWithAmazon(doubanMeta, amazonMeta);
+                            // 将爬取到的数据添加到豆瓣数据库中
+                            doubanMeta.setCreateTime(new Date());
+                            doubanMeta.setUpdateTime(new Date());
+                            // 对出版日期进行清洗
+                            if (StringUtils.isNotEmpty(doubanMeta.getIssueddate())) {
+                                String s = StringToolUtil.issuedDateFormat(doubanMeta.getIssueddate());
+                                if (s.contains(" 00:00:00")) {
+                                    s = s.replaceAll(" 00:00:00", "");
+                                }
+                                doubanMeta.setIssueddate(s);
+                            }
+                            // 将douban抓取到的数据添加到douban表
+                            doubanMetaRepository.save(doubanMeta);
+                            // 如果issuedDate字段不为null，则把douban的数据添加到temp表
+                            if (doubanMeta.getIssueddate() != null && !"".equalsIgnoreCase(doubanMeta.getIssueddate())) {
+                                ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
+                                // 设置新插入数据的创建时间和更新时间
+                                if (apabiBookMetaTempList == null || apabiBookMetaTempList.size() == 0) {
+                                    apabiBookMetaTemp.setCreateTime(new Date());
+                                    apabiBookMetaTemp.setUpdateTime(new Date());
+                                } else {
+                                    Date createTime = apabiBookMetaTempList.get(0).getCreateTime();
+                                    Date updateTime = apabiBookMetaTempList.get(0).getUpdateTime();
+                                    if (createTime != null) {
+                                        apabiBookMetaTemp.setCreateTime(createTime);
+                                    } else {
+                                        apabiBookMetaTemp.setCreateTime(new Date());
+                                    }
+                                    if (updateTime != null) {
+                                        apabiBookMetaTemp.setUpdateTime(updateTime);
+                                    } else {
+                                        apabiBookMetaTemp.setUpdateTime(new Date());
+                                    }
+                                }
+                                // 根据isbn13设置isbn
+                                String isbn = null;
+                                if (apabiBookMetaTemp.getIsbn13() != null && (apabiBookMetaTemp.getIsbn() == null || "".equalsIgnoreCase(apabiBookMetaTemp.getIsbn()))) {
+                                    isbn = Isbn13ToIsbnUtil.transform(apabiBookMetaTemp.getIsbn13());
+                                }
+                                if (apabiBookMetaTemp.getIsbn() != null && !"".equalsIgnoreCase(apabiBookMetaTemp.getIsbn())) {
+                                    isbn = apabiBookMetaTemp.getIsbn();
+                                }
+                                apabiBookMetaTemp.setIsbn(isbn);
+                                if (amazonMeta != null) {
+                                    // 如果amazon的数据不为空，将amazon的数据内容补充到apabiBookMetaTemp中
+                                    apabiBookMetaTemp = BeanTransformUtil.mergeApabiBookMetaTempWithAmazon(apabiBookMetaTemp, amazonMeta);
+                                }
+                                // 设置apabiBookMetaTemp是否发布为0
+                                apabiBookMetaTemp.setHasPublish(0);
+                                apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
+                                // 判断并设置是否发布
+                                if (apabiBookMetaTempList != null && apabiBookMetaTempList.size() > 0) {
+                                    if (apabiBookMetaTempList.get(0).getHasPublish() == null) {
+                                        apabiBookMetaTemp.setHasPublish(0);
+                                    } else {
+                                        apabiBookMetaTemp.setHasPublish(apabiBookMetaTempList.get(0).getHasPublish());
+                                    }
+                                }
+                                // 只有当temp表中没有该数据，才向temp中添加该数据
+                                if (apabiBookMetaTempList == null || apabiBookMetaTempList.size() == 0) {
+                                    // 由于temp表中没有数据，则没有发布；且当前时间为创建时间和更新时间
+                                    apabiBookMetaTemp.setUpdateTime(new Date());
+                                    apabiBookMetaTemp.setCreateTime(new Date());
+                                    apabiBookMetaTemp.setHasPublish(0);
+                                    apabiBookMetaTemp.setHasCebx(hasCebx);
+                                    apabiBookMetaTemp.setHasFlow(hasFlow);
+                                    apabiBookMetaTempRepository.save(apabiBookMetaTemp);
+                                }
+                            }
+                            Thread.sleep(1000 * 3);
+                        } else {
+                            // 如果douban数据抓取不到，则以amazon的数据为主
+                            if (amazonMeta != null) {
+                                doubanMeta = BeanTransformUtil.transform2DoubanMetaFromAmazon(amazonMeta);
+                                ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
+                                if (doubanMeta.getIssueddate() != null && !"".equalsIgnoreCase(doubanMeta.getIssueddate())) {
+                                    String s = StringToolUtil.issuedDateFormat(doubanMeta.getIssueddate());
+                                    if (s.contains(" 00:00:00")) {
+                                        s = s.replace(" 00:00:00", "");
+                                    }
+                                    apabiBookMetaTemp.setIssueddate(s);
+                                }
+                                // 将amazon的数据补充到apabiBookMetaTemp
+                                if (apabiBookMetaTempList != null && apabiBookMetaTempList.size() > 0) {
+                                    apabiBookMetaTemp = BeanTransformUtil.mergeApabiBookMetaTempWithAmazon(apabiBookMetaTemp, amazonMeta);
+                                    apabiBookMetaTemp.setHasPublish(0);
+                                    apabiBookMetaTemp.setDataSource("amazon");
+                                    apabiBookMetaTemp.setMetaId(metaId);
+                                    apabiBookMetaTemp.setHasFlow(hasFlow);
+                                    apabiBookMetaTemp.setHasCebx(hasCebx);
+                                    Date updateTime = apabiBookMetaTempList.get(0).getUpdateTime();
+                                    Date createTime = apabiBookMetaTempList.get(0).getCreateTime();
+                                    apabiBookMetaTemp.setUpdateTime(updateTime);
+                                    apabiBookMetaTemp.setCreateTime(createTime);
+                                } else {
+                                    // 只有temp表中没有该数据，才向表中添加该数据
+                                    apabiBookMetaTemp.setHasPublish(0);
+                                    apabiBookMetaTemp.setUpdateTime(new Date());
+                                    apabiBookMetaTemp.setCreateTime(new Date());
+                                    apabiBookMetaTemp.setHasCebx(hasCebx);
+                                    apabiBookMetaTemp.setHasFlow(hasFlow);
+                                    apabiBookMetaTemp.setDataSource("amazon");
+                                    apabiBookMetaTemp.setAmazonId(amazonMeta.getAmazonId());
+                                    apabiBookMetaTemp.setAbstract_(amazonMeta.getAbstract_());
+                                    apabiBookMetaTemp.setTranslator(amazonMeta.getTranslator());
+                                    apabiBookMetaTemp.setPostScript(amazonMeta.getPostScript());
+                                    apabiBookMetaTemp.setPreface(amazonMeta.getPreface());
+                                    apabiBookMetaTemp.setOriginTitle(amazonMeta.getOriginTitle());
+                                    apabiBookMetaTempRepository.save(apabiBookMetaTemp);
+                                }
+                                apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
+                            }
+                        }
+                        // 如果查询不到结果，则将展示结果定义为---
+                        if (doubanMeta == null && (apabiBookMetaTempReturnedList == null || apabiBookMetaTempReturnedList.size() == 0)) {
+                            ApabiBookMetaTemp apabiBookMetaTemp = new ApabiBookMetaTemp();
+                            apabiBookMetaTemp.setMetaId("---");
+                            apabiBookMetaTemp.setIsbn13(isbn13);
+                            apabiBookMetaTemp.setIsbn("---");
+                            apabiBookMetaTemp.setTitle("---");
+                            apabiBookMetaTemp.setCreator("---");
+                            apabiBookMetaTemp.setPublisher("---");
+                            apabiBookMetaTemp.setIssueddate("---");
+                            apabiBookMetaTemp.setUpdateTime(null);
+                            apabiBookMetaTemp.setHasCebx(0);
+                            apabiBookMetaTemp.setHasFlow(0);
+                            apabiBookMetaTemp.setPaperPrice("---");
+                            apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
+                        }
+                        // 如果在douban中抓取到数据，且apabiBookMetaTempReturnedList中没有数据，则将douban数据转化为temp数据，并添加到展示列表
+                        if (doubanMeta != null && (apabiBookMetaTempReturnedList == null || apabiBookMetaTempReturnedList.size() == 0)) {
+                            ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
+                            apabiBookMetaTempList.add(apabiBookMetaTemp);
+                        }
+                        return apabiBookMetaTempReturnedList;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        log.info("获取数据发生异常，【异常信息】：" + e.getMessage());
+                    }
+                }
+                return apabiBookMetaTempReturnedList;
+            }
+        }
+        return apabiBookMetaTempReturnedList;
     }
 
     @Override
@@ -740,5 +1089,39 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
             log.info(e.getMessage());
         }
         return jsonObjects;
+    }
+
+    private JSONObject getJson(String resUrl,String ip,String port) {
+        JSONObject jsonObjects = null;
+        IpPoolUtils ipPoolUtils = new IpPoolUtils();
+        try {
+            HttpResponse response = HttpUtils2.doGetEntity(resUrl,ip,port);
+            if (response.getStatusLine().getStatusCode() == 404) {
+                System.out.println("ISBN:" + resUrl.substring(resUrl.lastIndexOf("/"), resUrl.length()) + "不存在...");
+                jsonObjects = null;
+            }
+            if (response.getStatusLine().getStatusCode() == 200) {
+                String sr = EntityUtils.toString(getEntityFromResponse(response));
+                jsonObjects = JSONObject.fromObject(sr);
+            }
+            if(response.getStatusLine().getStatusCode() == 400){
+                getJson(resUrl,ipPoolUtils.getIp().split(":")[0],ipPoolUtils.getIp().split(":")[1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+        }
+        return jsonObjects;
+    }
+
+    public static void main(String[] args) {
+        DoubanMetaServiceImpl doubanMetaService = new DoubanMetaServiceImpl();
+        IpPoolUtils ipPoolUtils = new IpPoolUtils();
+        String host = ipPoolUtils.getIp();
+        String ip = host.split(":")[0];
+        String port = host.split(":")[1];
+        String isbn13 = "9787540488376";
+        JSONObject json = doubanMetaService.getJson("https://api.douban.com/v2/book/isbn/" + isbn13,ip,port);
+        System.out.println(json);
     }
 }
