@@ -109,4 +109,7 @@ public interface BibliothecaService {
      * @return
      */
     String writeData2Excel(int type,String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheet1, HttpServletResponse response) throws Exception;
+
+
+    void  parsing(String path,String id,String username,String batchId)throws InterruptedException;
 }

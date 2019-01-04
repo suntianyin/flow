@@ -142,4 +142,9 @@ public class BatchServiceImpl implements BatchService {
 
     }
 
+    @Override
+    public int updateStateByPrimaryKey(Batch record) {
+        return batchMapper.updateStateByPrimaryKey(record);
+    }
+
 }

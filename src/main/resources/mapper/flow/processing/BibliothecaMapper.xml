@@ -10,6 +10,7 @@
     <result column="TITLE" jdbcType="VARCHAR" property="title" />
     <result column="AUTHOR" jdbcType="VARCHAR" property="author" />
     <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher" />
+    <result column="PUBLISHER_NAME" jdbcType="VARCHAR" property="publisherName" />
     <result column="ISBN" jdbcType="VARCHAR" property="isbn" />
     <result column="PUBLISH_TIME" jdbcType="VARCHAR" property="publishTime" />
     <result column="EDITION" jdbcType="VARCHAR" property="edition" />
@@ -34,7 +35,7 @@
             javaType="com.apabi.flow.processing.constant.DeleteFlagEnum"/>
   </resultMap>
   <sql id="Base_Column_List">
-    ID, IDENTIFIER, META_ID, BATCH_ID, ORIGINAL_FILENAME, TITLE, AUTHOR, PUBLISHER, ISBN, PUBLISH_TIME, EDITION,
+    ID, IDENTIFIER, META_ID, BATCH_ID, ORIGINAL_FILENAME, TITLE, AUTHOR, PUBLISHER,PUBLISHER_NAME, ISBN, PUBLISH_TIME, EDITION,
     PAPER_PRICE, E_BOOK_PRICE, DOCUMENT_FORMAT, MEMO, DUPLICATE_FLAG, BIBLIOTHECA_STATE, 
     COMPLETED_FLAG, CREATOR, CREATE_TIME, UPDATE_TIME, DELETE_FLAG
   </sql>
@@ -50,14 +51,14 @@
   </delete>
   <insert id="insert" parameterType="com.apabi.flow.processing.model.Bibliotheca">
     insert into APABI_BOOK_PRO_BIBLIOTHECA (ID, IDENTIFIER, META_ID, BATCH_ID, ORIGINAL_FILENAME,
-      TITLE, AUTHOR, PUBLISHER, 
+      TITLE, AUTHOR, PUBLISHER, PUBLISHER_NAME,
       ISBN, PUBLISH_TIME, EDITION, 
       PAPER_PRICE, E_BOOK_PRICE, DOCUMENT_FORMAT, 
       MEMO, DUPLICATE_FLAG, BIBLIOTHECA_STATE, 
       COMPLETED_FLAG, CREATOR, CREATE_TIME, 
       UPDATE_TIME, DELETE_FLAG)
     values (#{id,jdbcType=VARCHAR}, #{identifier,jdbcType=VARCHAR}, #{metaId,jdbcType=VARCHAR}, #{batchId,jdbcType=VARCHAR}, #{originalFilename,jdbcType=VARCHAR},
-      #{title,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{publisher,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{publisher,jdbcType=VARCHAR}, #{publisherName,jdbcType=VARCHAR},
       #{isbn,jdbcType=VARCHAR}, #{publishTime,jdbcType=VARCHAR}, #{edition,jdbcType=VARCHAR}, 
       #{paperPrice,jdbcType=VARCHAR}, #{eBookPrice,jdbcType=VARCHAR}, #{documentFormat,jdbcType=VARCHAR}, 
       #{memo,jdbcType=VARCHAR}, #{duplicateFlag.code,jdbcType=DECIMAL},
@@ -92,6 +93,9 @@
       </if>
       <if test="publisher != null">
         PUBLISHER,
+      </if>
+      <if test="publisherName != null">
+        PUBLISHER_NAME,
       </if>
       <if test="isbn != null">
         ISBN,
@@ -161,6 +165,9 @@
       <if test="publisher != null">
         #{publisher,jdbcType=VARCHAR},
       </if>
+      <if test="publisherName != null">
+        #{publisherName,jdbcType=VARCHAR},
+      </if>
       <if test="isbn != null">
         #{isbn,jdbcType=VARCHAR},
       </if>
@@ -229,6 +236,9 @@
       <if test="publisher != null">
         PUBLISHER = #{publisher,jdbcType=VARCHAR},
       </if>
+      <if test="publisherName != null">
+        PUBLISHER_NAME =#{publisherName,jdbcType=VARCHAR},
+      </if>
       <if test="isbn != null">
         ISBN = #{isbn,jdbcType=VARCHAR},
       </if>
@@ -283,6 +293,7 @@
       TITLE = #{title,jdbcType=VARCHAR},
       AUTHOR = #{author,jdbcType=VARCHAR},
       PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      PUBLISHER_NAME = #{publisherName,jdbcType=VARCHAR},
       ISBN = #{isbn,jdbcType=VARCHAR},
       PUBLISH_TIME = #{publishTime,jdbcType=VARCHAR},
       EDITION = #{edition,jdbcType=VARCHAR},
@@ -312,7 +323,7 @@
   </update>
 
   <select id="listBibliothecaSelectiveByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
-    SELECT pb.ID, pb.IDENTIFIER, pb.META_ID, pb.BATCH_ID, pb.ORIGINAL_FILENAME, pb.TITLE, pb.AUTHOR, pi.TITLE PUBLISHER, pb.ISBN, pb.PUBLISH_TIME, pb.EDITION,
+    SELECT pb.ID, pb.IDENTIFIER, pb.META_ID, pb.BATCH_ID, pb.ORIGINAL_FILENAME, pb.TITLE, pb.AUTHOR, pi.TITLE PUBLISHER,pb.PUBLISHER_NAME, pb.ISBN, pb.PUBLISH_TIME, pb.EDITION,
     pb.PAPER_PRICE, pb.E_BOOK_PRICE, pb.DOCUMENT_FORMAT, MEMO, pb.DUPLICATE_FLAG, pb.BIBLIOTHECA_STATE,
     pb.COMPLETED_FLAG, pb.CREATOR, pb.CREATE_TIME, pb.UPDATE_TIME, pb.DELETE_FLAG
     FROM APABI_BOOK_PRO_BIBLIOTHECA pb LEFT JOIN APABI_PUBLISHER_INFO pi
@@ -364,7 +375,7 @@
   </select>
 
   <select id="listBibliothecaSelective" parameterType="java.util.Map" resultMap="BaseResultMap">
-    SELECT pb.ID, pb.IDENTIFIER, pb.META_ID, pb.BATCH_ID, pb.ORIGINAL_FILENAME, pb.TITLE, pb.AUTHOR, pi.TITLE PUBLISHER, pb.ISBN, pb.PUBLISH_TIME, pb.EDITION,
+    SELECT pb.ID, pb.IDENTIFIER, pb.META_ID, pb.BATCH_ID, pb.ORIGINAL_FILENAME, pb.TITLE, pb.AUTHOR, pi.TITLE PUBLISHER,pb.PUBLISHER_NAME, pb.ISBN, pb.PUBLISH_TIME, pb.EDITION,
     pb.PAPER_PRICE, pb.E_BOOK_PRICE, pb.DOCUMENT_FORMAT, MEMO, pb.DUPLICATE_FLAG, pb.BIBLIOTHECA_STATE,
     pb.COMPLETED_FLAG, pb.CREATOR, pb.CREATE_TIME, pb.UPDATE_TIME, pb.DELETE_FLAG
     FROM APABI_BOOK_PRO_BIBLIOTHECA pb LEFT JOIN APABI_PUBLISHER_INFO pi

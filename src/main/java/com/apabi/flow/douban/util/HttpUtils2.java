@@ -84,6 +84,15 @@ public class HttpUtils2 {
 		return httpClient.execute(httpGet);
 	}
 
+	public static HttpResponse httpGet(String url, Map<String, String> httpHeaders,String ip,String port)
+			throws ClientProtocolException, IOException {
+		HttpGet httpGet = new HttpGet(url);
+		setRequestConfig(httpGet,ip,port);
+		setRequestHeaders(httpGet, httpHeaders);
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		return httpClient.execute(httpGet);
+	}
+
 	public static HttpResponse httpGet(String url, Map<String, String> httpHeaders, HttpClientContext hcc)
 			throws Exception {
 		HttpGet httpGet = new HttpGet(url);
@@ -117,6 +126,13 @@ public class HttpUtils2 {
 		return response;
 	}
 
+	public static HttpResponse doGetEntity(String url, Map<String, String> httpHeaders,String ip,String port)
+			throws ClientProtocolException, IOException {
+		HttpResponse response = httpGet(url, httpHeaders,ip,port);
+
+		return response;
+	}
+
 	public static HttpEntity doGetEntity(String url, Map<String, String> httpHeaders, HttpClientContext hcc)
 			throws Exception {
 		HttpResponse response = httpGet(url, httpHeaders, hcc);
@@ -125,6 +141,10 @@ public class HttpUtils2 {
 
 	public static HttpResponse doGetEntity(String url) throws ClientProtocolException, IOException {
 		return doGetEntity(url, (Map) null);
+	}
+
+	public static HttpResponse doGetEntity(String url,String ip,String port) throws ClientProtocolException, IOException {
+		return doGetEntity(url, (Map) null,ip,port);
 	}
 
 	public static HttpEntity doPostEntity(String url, Map<String, String> httpHeaders, HttpEntity entity)
@@ -178,6 +198,13 @@ public class HttpUtils2 {
 	private static void setRequestConfig(HttpRequestBase httpRequest) {
 		RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout)
 				.setConnectTimeout(connectTimeout).setSocketTimeout(socketTimeout).build();
+		httpRequest.setConfig(requestConfig);
+	}
+
+	private static void setRequestConfig(HttpRequestBase httpRequest,String ip,String port) {
+		HttpHost httpHost = new HttpHost(ip,Integer.parseInt(port));
+		RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(connectionRequestTimeout)
+				.setConnectTimeout(connectTimeout).setSocketTimeout(socketTimeout).setProxy(httpHost).build();
 		httpRequest.setConfig(requestConfig);
 	}
 

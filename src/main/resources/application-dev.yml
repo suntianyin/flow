@@ -1,11 +1,13 @@
 ctx: http://localhost:8084/flowadmin
 cebxHtmlExe: E:\cebxTool\cebx2Html\Cebx2Html.exe
+copyRightExtractExe: C:\java\CopyRightExtract\CopyrightExtract.exe
+targetCopyRightDir: C:\java\target
 targetCebxDir: F:\cebxHtml
 styleUrl: F:\style
 uploadXml: F:\upload\flow\xml
 uploadEpub: F:\upload\flow\epub
 uploadCebx: F:\upload\flow\cebx
-upAuthFile: F:\upload\flow\auth
+upAuthFile: /Users/suntianyin/Downloads/auth
 email: F:\email
 batchSize: 100
 threadTime: 3

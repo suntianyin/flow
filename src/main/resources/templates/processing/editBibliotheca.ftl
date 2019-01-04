@@ -12,7 +12,7 @@
     <script type="text/javascript">
 
         $(function () {
-            $("#publisher").val("${(bibliotheca.publisher)!'' }");
+            $("#publisher").val("${(bibliotheca.publisher)!'' },${(bibliotheca.publisherName)!'' }");
         });
 
         //下拉列表 模糊查询
@@ -141,7 +141,7 @@
                             <option value="">--请选择出版社--</option>
                             <#if publisherList??>
                                 <#list publisherList as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                                    <option value="${(list.id)!''},${(list.title)!''}">${(list.title)!''}</option>
                                 </#list>
                             </#if>
                         </select>

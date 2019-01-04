@@ -155,11 +155,18 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>资源路径:</td>
+                    <td>
+                        <input id="resourcePath" name="resourcePath" type="text" class="txt" style="width: 300px"/>
+                    </td>
+                </tr>
+                <tr>
                     <td>备注:</td>
                     <td>
                         <textarea id="memo" name="memo" class="txt" style="width: 300px; height: 60px;"></textarea>
                     </td>
                 </tr>
+
             <#--<tr>
                 <td>操作人:</td>
                 <td>

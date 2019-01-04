@@ -78,4 +78,7 @@ public interface BatchService {
      * @return
      */
     boolean updateBatchStateAndBibliothecaState(Batch batch, BibliothecaStateEnum currentState, BibliothecaStateEnum nextState)throws Exception ;
+
+    int updateStateByPrimaryKey(Batch record);
+
 }

@@ -86,7 +86,6 @@ public class BibliothecaController {
      * @param batchId
      * @param title
      * @param publisher
-     * @param duplicateFlag
      * @param bibliothecaState
      * @param pageNum
      * @param pageSize
@@ -308,6 +307,8 @@ public class BibliothecaController {
                 return new ResultEntity(400, "请检查必填项是否完整！");
             }
             //书目添加
+            bibliotheca.setPublisherName(bibliotheca.getPublisher().split(",")[1]);
+            bibliotheca.setPublisher(bibliotheca.getPublisher().split(",")[0]);
 //            bibliotheca.setBibliothecaState(BibliothecaStateEnum.NEW);
             if (bibliothecaService.addBibliothecaList(Arrays.asList(bibliotheca))) {
                 return new ResultEntity(200, "添加成功");
@@ -410,10 +411,14 @@ public class BibliothecaController {
                     || StringUtils.isBlank(bibliotheca.getOriginalFilename())) {
                 return new ResultEntity(400, "请检查必填项是否完整！");
             }
-
+            bibliotheca.setPublisherName(bibliotheca.getPublisher().split(",")[1]);
+            bibliotheca.setPublisher(bibliotheca.getPublisher().split(",")[0]);
             //书目更新
-            if (bibliothecaService.updateBibliotheca(bibliotheca) == 1) {
+            int i = bibliothecaService.updateBibliotheca(bibliotheca);
+            if ( i== 1) {
                 return new ResultEntity(200, "修改成功");
+            }else if (i==-1){
+                return new ResultEntity(500, "出版日期有误!");
             }
             return new ResultEntity(500, "修改失败!");
         } catch (Exception e) {
@@ -794,6 +799,30 @@ public class BibliothecaController {
             return new ResultEntity(400, "isbn校验错误！请输入正确的isbn");
         }
     }
+    //书目解析
+    @RequestMapping(value="/parsing",method = RequestMethod.POST)
+    @ResponseBody
+    public Object parsing(@RequestParam(value = "path") String path,@RequestParam(value = "id") String id,@RequestParam(value = "batchId") String batchId) throws InterruptedException{
+        File file = new File(path);
+        if (file.exists()) {
+            UserDetails userDetails =(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = userDetails.getUsername();
+            bibliothecaService.parsing(path,id,username,batchId);
+            Batch batch=new Batch();
+            batch.setId(id);
+            batch.setBatchState(BatchStateEnum.BEGIN_SCANNING);
+            batch.setUpdateTime(new Date());
+            batchService.updateStateByPrimaryKey(batch);
+            return new ResultEntity(200, "已经开始解析请耐心等待");
+        } else {
+            return new ResultEntity(500, "资源路径不存在请核实");
+        }
+    }
+    @RequestMapping({"/pdf"})
+    public String pdf(@RequestParam(value = "id") String id) throws InterruptedException{
+            return "/processing/pdf";
+    }
+
 
 
 }

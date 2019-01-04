@@ -11,6 +11,14 @@ public class ApplicationConfig {
     @Value("${cebxHtmlExe}")
     private String cebxHtmlExe;
 
+    //书目解析
+    @Value("${copyRightExtractExe}")
+    private String copyRightExtractExe;
+
+    //书目解析
+    @Value("${targetCopyRightDir}")
+    private String targetCopyRightDir;
+
     //cebx解析目标文件夹
     @Value("${targetCebxDir}")
     private String targetCebxDir;
@@ -47,8 +55,24 @@ public class ApplicationConfig {
     @Value("${threadTime}")
     private Integer threadTime;
 
+    public String getTargetCopyRightDir() {
+        return targetCopyRightDir;
+    }
+
+    public void setTargetCopyRightDir(String targetCopyRightDir) {
+        this.targetCopyRightDir = targetCopyRightDir;
+    }
+
     public String getCebxHtmlExe() {
         return cebxHtmlExe;
+    }
+
+    public String getCopyRightExtractExe() {
+        return copyRightExtractExe;
+    }
+
+    public void setCopyRightExtractExe(String copyRightExtractExe) {
+        this.copyRightExtractExe = copyRightExtractExe;
     }
 
     public void setCebxHtmlExe(String cebxHtmlExe) {

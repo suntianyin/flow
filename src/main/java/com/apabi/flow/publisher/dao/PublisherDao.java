@@ -26,5 +26,8 @@ public interface PublisherDao {
     int editPublisher(Publisher publisher);
 
     List<Publisher> findAll();
+
     List<Publisher> listPublishersByIdAndTitleAndRelatePublisherID(@Param("id")String id, @Param("title")String title, @Param("relatePublisherID")String relatePublisherID);
+
+    String findIdByTitle(String title);
 }

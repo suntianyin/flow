@@ -128,6 +128,17 @@ public class ApabiBookMetaTemp implements Serializable {
     @Column(name = "ISREADCEBXFLOW")
     private Integer isReadCebxFlow;
 
+    @Column(name = "EDITIONORDER")
+    private String editionOrder;
+
+    public String getEditionOrder() {
+        return editionOrder;
+    }
+
+    public void setEditionOrder(String editionOrder) {
+        this.editionOrder = editionOrder;
+    }
+
     public Integer getIsReadEpub() {
         return isReadEpub;
     }

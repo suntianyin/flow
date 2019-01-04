@@ -1,5 +1,7 @@
 ctx: http://flow.apabi.com/flowadmin
 cebxHtmlExe: D:\cebxTool\cebx2Html\Cebx2Html.exe
+copyRightExtractExe: D:\copyRightTool\Cebx2Html.exe
+targetCopyRightDir: D:\copyRightDir
 targetCebxDir: D:\cebxHtml
 styleUrl: D:\style
 uploadXml: D:\upload\flow\xml

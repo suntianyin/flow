@@ -175,6 +175,9 @@ public class BeanTransformUtil {
             String isbn = Isbn13ToIsbnUtil.transform(isbn13);
             apabiBookMetaTemp.setIsbn(isbn);
         }
+        if (apabiBookMetaTemp.getEditionOrder() == null || "".equalsIgnoreCase(apabiBookMetaTemp.getEditionOrder())) {
+            apabiBookMetaTemp.setEditionOrder(amazonMeta.getEditionOrder());
+        }
         return apabiBookMetaTemp;
     }
 

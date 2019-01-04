@@ -27,6 +27,8 @@ public class Bibliotheca {
 
     private String publisher;
 
+    private String publisherName;
+
     private String isbn;
 
     private String publishTime;
@@ -231,6 +233,14 @@ public class Bibliotheca {
         this.deleteFlag = deleteFlag;
     }
 
+    public String getPublisherName() {
+        return publisherName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
+    }
+
     @Override
     public String toString() {
         return "Bibliotheca{" +
@@ -242,6 +252,7 @@ public class Bibliotheca {
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", publisher='" + publisher + '\'' +
+                ", publisherName='" + publisherName + '\'' +
                 ", isbn='" + isbn + '\'' +
                 ", publishTime='" + publishTime + '\'' +
                 ", edition='" + edition + '\'' +

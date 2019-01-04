@@ -4,8 +4,13 @@ import com.apabi.flow.auth.service.ResourceService;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
 import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.config.ApplicationConfig;
+import com.apabi.flow.crawlTask.util.IpPoolUtils;
+import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
+import com.apabi.flow.douban.model.ApabiBookMetaTemp;
+import com.apabi.flow.douban.service.DoubanMetaService;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.*;
 import com.apabi.flow.processing.dao.BatchMapper;
@@ -16,18 +21,25 @@ import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.model.BibliothecaExcelModel;
 import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
+import com.apabi.flow.processing.service.MyTask;
+import com.apabi.flow.processing.util.IsbnCheck;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -36,11 +48,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,7 +72,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class BibliothecaServiceImpl implements BibliothecaService {
-
+    private static final Logger logger = LoggerFactory.getLogger(BibliothecaServiceImpl.class);
     @Autowired
     private BibliothecaMapper bibliothecaMapper;
 
@@ -76,7 +93,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Autowired
     private OutUnitMapper outUnitMapper;
 
-
+    @Autowired
+    private DoubanMetaService doubanMetaService;
 
 
     /**
@@ -107,6 +125,15 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         int size = 0;
         for (Bibliotheca bibliotheca : bibliothecaList) {
             try {
+                String publishTime = bibliotheca.getPublishTime();
+                if (StringUtils.isNotBlank(publishTime)) {
+                    publishTime = StringToolUtil.issuedDateFormat(publishTime);
+                    publishTime = publishTime.replaceAll(" 00:00:00", "");
+                    if (StringUtils.isBlank(publishTime)) {
+                        throw new Exception("出版日期格式错误！");
+                    }
+                    bibliotheca.setPublishTime(publishTime);
+                }
                 bibliotheca.setId(UUIDCreater.nextId());
                 bibliotheca.setCreateTime(new Date());
                 bibliotheca.setUpdateTime(new Date());
@@ -173,6 +200,15 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
     public int updateBibliotheca(Bibliotheca bibliotheca) throws Exception {
         try {
+            String publishTime = bibliotheca.getPublishTime();
+            if (StringUtils.isNotBlank(publishTime)) {
+                publishTime = StringToolUtil.issuedDateFormat(publishTime);
+                publishTime = publishTime.replaceAll(" 00:00:00", "");
+                if (StringUtils.isBlank(publishTime)) {
+                    return -1;
+                }
+                bibliotheca.setPublishTime(publishTime);
+            }
             bibliotheca.setUpdateTime(new Date());
             return bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
         } catch (DataAccessException e) {
@@ -259,9 +295,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 map.put("isbn", bibliotheca.getIsbn());
                 List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
                 Iterator<Bibliotheca> iterator = bibliothecas.iterator();
-                while(iterator.hasNext()){
+                while (iterator.hasNext()) {
                     Bibliotheca b = iterator.next();
-                    if(b.getBatchId().equalsIgnoreCase(batchId))
+                    if (b.getBatchId().equalsIgnoreCase(batchId))
                         iterator.remove();   //注意这个地方
                 }
 
@@ -349,11 +385,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                             //no CEBX
                             if (bibliothecas.size() == 0) {
 
-                                duplicationCheckEntities.add(genDuplicationCheckEntity(null,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
                                         DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
                             } else {
                                 for (Bibliotheca b : bibliothecas) {
-                                    duplicationCheckEntities.add(genDuplicationCheckEntity(b,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
+                                    duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_LT_FLAG,
                                             DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
                                 }
                             }
@@ -367,11 +403,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     if (bookMeta.getHasCebx() == 1) {
                         //has CEBX
                         if (bibliothecas.size() == 0) {
-                            duplicationCheckEntities.add(genDuplicationCheckEntity(null,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                            duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
                                     DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
                         } else {
                             for (Bibliotheca b : bibliothecas) {
-                                duplicationCheckEntities.add(genDuplicationCheckEntity(b,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
                                         DuplicationCheckEntity.CheckFlag.DUPLICATE_YES));
                             }
                         }
@@ -379,11 +415,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     } else {
                         //no CEBX
                         if (bibliothecas.size() == 0) {
-                            duplicationCheckEntities.add(genDuplicationCheckEntity(null,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                            duplicationCheckEntities.add(genDuplicationCheckEntity(null, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
                                     DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
                         } else {
                             for (Bibliotheca b : bibliothecas) {
-                                duplicationCheckEntities.add(genDuplicationCheckEntity(b,bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
+                                duplicationCheckEntities.add(genDuplicationCheckEntity(b, bibliotheca, bookMeta, DuplicationCheckEntity.RateFlag.DUPLICATE_RATE_GT_EQ_FLAG,
                                         DuplicationCheckEntity.CheckFlag.DUPLICATE_NO));
                             }
                         }
@@ -566,7 +602,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             throw new Exception("服务器异常，请重新尝试或联系管理员");
         }
     }
-    public void production(Bibliotheca bibliotheca){
+
+    public void production(Bibliotheca bibliotheca) {
         //判断是否是待排产
         Map map = new HashMap();
         map.put("batchId", bibliotheca.getBatchId());
@@ -637,6 +674,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 if (StringUtils.isNotBlank(publishTime)) {
                     publishTime = StringToolUtil.issuedDateFormat(publishTime);
                     publishTime = publishTime.replaceAll(" 00:00:00", "");
+                    if (StringUtils.isBlank(publishTime)) {
+                        throw new BizException("出版日期格式错误，请检查数据重新导入！");
+                    }
                 }
                 String edition = (String) entry.getValue().get("版次");
                 String paperPrice = (String) entry.getValue().get("纸书价格");
@@ -676,7 +716,12 @@ public class BibliothecaServiceImpl implements BibliothecaService {
      * @param response
      */
     @Override
-    public String writeData2Excel(int type,String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheetName, HttpServletResponse response) throws Exception {
+    public String writeData2Excel(int type, String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheetName, HttpServletResponse response) throws Exception {
+//        // 拿到模板文件
+//        String path = System.getProperty("user.dir");
+//        String filePath = path + "/src/main/resources/temp/temp.xls";
+//        FileInputStream tps = new FileInputStream(new File(filePath));
+//        final Workbook tpWorkbook = WorkbookFactory.create(tps);
         Workbook workbook = null;
         if (fileName.toLowerCase().endsWith("xls")) {//2003
             workbook = new XSSFWorkbook();
@@ -686,8 +731,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             throw new BizException("文件名后缀必须是 .xls 或 .xlsx");
         }
         ServletOutputStream out = null;
-
+//        workbook=tpWorkbook;
         //create sheet
+//        Sheet sheet =workbook.getSheet("Sheet1");
         Sheet sheet = workbook.createSheet(sheetName);
         //遍历数据集，将其写入excel中
         try {
@@ -697,9 +743,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 //创建表头单元格,填值
                 titleRow.createCell(i).setCellValue(excelTitle[i]);
             }
-            if(type==1) {
+            if (type == 1) {
                 autoCreateRow(sheet, excelModelList);
-            }else if(type==2){
+            } else if (type == 2) {
                 autoCreateRow2(sheet, excelModelList);
             }
             // 设置响应头
@@ -727,6 +773,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
     }
 
+
     /**
      * 自动添加 excel 行数据
      *
@@ -752,6 +799,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             }
         }
     }
+
     private void autoCreateRow2(Sheet sheet, List<BibliothecaExcelModel> excelModelList) throws Exception {
 
         List<String> list = null;
@@ -759,8 +807,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         for (int i = 0; i < excelModelList.size(); i++) {
             BibliothecaExcelModel bem = excelModelList.get(i);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            list = Arrays.asList(String.valueOf(i+1),bem.getIdentifier(), bem.getIsbn(), bem.getTitle(),bem.getAuthor(), bem.getPublisher(), bem.getPublishTime()== null ? "" : new SimpleDateFormat("yyyy/MM/dd").format(sdf.parse(StringToolUtil.issuedDateFormat(bem.getPublishTime()))),
-                    bem.getPaperPrice(), bem.geteBookPrice(),"","",bem.getMetaId(),bem.getBatchId());
+            list = Arrays.asList(String.valueOf(i + 1), bem.getIdentifier(), bem.getIsbn(), bem.getTitle(), bem.getAuthor(), bem.getPublisher(), bem.getPublishTime() == null ? "" : new SimpleDateFormat("yyyy/MM/dd").format(sdf.parse(StringToolUtil.issuedDateFormat(bem.getPublishTime()))),
+                    bem.getPaperPrice(), bem.geteBookPrice(), "", "", bem.getMetaId(), bem.getBatchId());
             Row row = sheet.createRow(i + 1);
 
             // 逐个单元格添加数据
@@ -769,6 +817,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             }
         }
     }
+
     /**
      * null to ""
      *
@@ -840,4 +889,58 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
         return sb.toString();
     }
-}
+    @Autowired
+    ApplicationConfig config;
+    //书目解析
+    @Async
+    @Override
+    public void parsing(String path, String id, String username, String batchId) throws InterruptedException {
+        // 切换ip工具类
+        IpPoolUtils ipPoolUtils = new IpPoolUtils();
+        // 判断给定目录是否是一个合法的目录
+        try {
+            ArrayList<File> fileList = new ArrayList<>();
+            ArrayList<File> files = getFiles(fileList, path);
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 20, 200, TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<Runnable>(files.size()));
+
+            for (int i = 1; i <= files.size(); i++) {
+                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, doubanMetaService, publisherDao, bibliothecaMapper,ipPoolUtils,config);
+                executor.execute(myTask);
+                System.out.println("线程池中线程数目：" + executor.getPoolSize() + "，队列中等待执行的任务数目：" +
+                        executor.getQueue().size() + "，已执行玩别的任务数目：" + executor.getCompletedTaskCount());
+            }
+            executor.shutdown();
+            boolean a=true;
+            while (a) {
+                if (executor.isTerminated()) {
+                    Batch batch = new Batch();
+                    batch.setId(id);
+                    //扫描完成
+                    batch.setBatchState(BatchStateEnum.FINISH_SCANNING);
+                    batch.setUpdateTime(new Date());
+                    batchMapper.updateStateByPrimaryKey(batch);
+                    logger.info("批次扫描完成------");
+                    a=false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+    }
+        //递归获取里面的文件
+        private ArrayList<File> getFiles (ArrayList < File > fileList, String path){
+            File[] allFiles = new File(path).listFiles();
+            for (int i = 0; i < allFiles.length; i++) {
+                File file = allFiles[i];
+                if (file.isFile()) {
+                    fileList.add(file);
+                } else {
+                    getFiles(fileList, file.getAbsolutePath());
+                }
+            }
+            return fileList;
+        }
+    }
