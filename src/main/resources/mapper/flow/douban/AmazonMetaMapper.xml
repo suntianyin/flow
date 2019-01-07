@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.apabi.flow.douban.dao.AmazonMetaDao">
-    <resultMap id="AmazonMetaMapper" type="com.apabi.flow.douban.model.AmazonMeta">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.douban.model.AmazonMeta">
         <id column="AMAZONID" jdbcType="VARCHAR" property="amazonId"/>
         <result column="TITLE" jdbcType="VARCHAR" property="title"/>
         <result column="AUTHOR" jdbcType="VARCHAR" property="author"/>
@@ -25,157 +25,334 @@
         <result column="BRAND" jdbcType="VARCHAR" property="brand"/>
         <result column="ASIN" jdbcType="VARCHAR" property="asin"/>
         <result column="CLASSIFICATION" jdbcType="VARCHAR" property="classification"/>
+        <result column="POSTER" jdbcType="VARCHAR" property="poster"/>
+        <result column="READEROBJECT" jdbcType="VARCHAR" property="readerObject"/>
+        <result column="HASCRAWLED" jdbcType="DECIMAL" property="hasCrawled"/>
+        <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="EDITRECOMMEND" jdbcType="CLOB" property="editRecommend"/>
         <result column="CELEBRITYRECOMMEND" jdbcType="CLOB" property="celebrityRecommend"/>
         <result column="MEDIARECOMMENDATION" jdbcType="CLOB" property="mediaRecommendation"/>
         <result column="AUTHORINTRODUCTION" jdbcType="CLOB" property="authorIntroduction"/>
         <result column="CATALOG" jdbcType="CLOB" property="catalog"/>
         <result column="PREFACE" jdbcType="CLOB" property="preface"/>
-        <result column="ABSTRACT" jdbcType="CLOB" property="abstract_"/>
+        <result column="ABSTRACT" jdbcType="CLOB" property="abstract"/>
         <result column="SUMMARY" jdbcType="CLOB" property="summary"/>
-        <result column="POSTER" jdbcType="VARCHAR" property="poster"/>
-        <result column="READEROBJECT" jdbcType="VARCHAR" property="readerObject"/>
-        <result column="HASCRAWLED" jdbcType="INTEGER" property="hasCrawled"/>
-        <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    AMAZONID,
-    TITLE,
-    AUTHOR,
-    TRANSLATOR,
-    ISBN13,
-    ISBN10,
-    PUBLISHER,
-    ORIGINTITLE,
-    PAPERPRICE,
-    KINDLEPRICE,
-    EDITIONORDER,
-    ISSUEDDATE,
-    ORIGINSERIES,
-    BINDING,
-    PAGES,
-    LANGUAGE,
-    SERIES,
-    FORMAT,
-    PRODUCTSIZE,
-    COMMODITYWEIGHT,
-    BRAND,
-    ASIN,
-    CLASSIFICATION,
-    EDITRECOMMEND,
-    CELEBRITYRECOMMEND,
-    MEDIARECOMMENDATION,
-    AUTHORINTRODUCTION,
-    CATALOG,
-    PREFACE,
-    ABSTRACT,
-    SUMMARY,
-    POSTER,
-    READEROBJECT,
-    HASCRAWLED,
-    CREATETIME,
-    UPDATETIME,
-    POSTSCRIPT
-  </sql>
-    <sql id="Base_Value_list">
-    #{amazonId,jdbcType=VARCHAR},
-    #{title,jdbcType=VARCHAR},
-    #{author,jdbcType=VARCHAR},
-    #{translator,jdbcType=VARCHAR},
-    #{isbn13,jdbcType=VARCHAR},
-    #{isbn10,jdbcType=VARCHAR},
-    #{publisher,jdbcType=VARCHAR},
-    #{originTitle,jdbcType=VARCHAR},
-    #{paperPrice,jdbcType=VARCHAR},
-    #{kindlePrice,jdbcType=VARCHAR},
-    #{editionOrder,jdbcType=VARCHAR},
-    #{issuedDate,jdbcType=VARCHAR},
-    #{originSeries,jdbcType=VARCHAR},
-    #{binding,jdbcType=VARCHAR},
-    #{pages,jdbcType=VARCHAR},
-    #{language,jdbcType=VARCHAR},
-    #{series,jdbcType=VARCHAR},
-    #{format,jdbcType=VARCHAR},
-    #{productSize,jdbcType=VARCHAR},
-    #{commodityWeight,jdbcType=VARCHAR},
-    #{brand,jdbcType=VARCHAR},
-    #{asin,jdbcType=VARCHAR},
-    #{classification,jdbcType=VARCHAR},
-    #{editRecommend,jdbcType=CLOB},
-    #{celebrityRecommend,jdbcType=CLOB},
-    #{mediaRecommendation,jdbcType=CLOB},
-    #{authorIntroduction,jdbcType=CLOB},
-    #{catalog,jdbcType=CLOB},
-    #{preface,jdbcType=CLOB},
-    #{abstract_,jdbcType=CLOB},
-    #{summary,jdbcType=CLOB},
-    #{poster,jdbcType=VARCHAR},
-    #{readerObject,jdbcType=VARCHAR},
-    #{hasCrawled,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP},
-    #{updateTime,jdbcType=TIMESTAMP},
-    #{postScript,jdbcType=CLOB}
-  </sql>
+        AMAZONID, TITLE, AUTHOR, TRANSLATOR, ISBN13, ISBN10, PUBLISHER, ORIGINTITLE, PAPERPRICE,
+        KINDLEPRICE, EDITIONORDER, ISSUEDDATE, ORIGINSERIES, BINDING, PAGES, LANGUAGE,
+        SERIES, FORMAT, PRODUCTSIZE, COMMODITYWEIGHT, BRAND, ASIN, CLASSIFICATION, POSTER,
+        READEROBJECT, HASCRAWLED, CREATETIME, UPDATETIME,
+        EDITRECOMMEND, CELEBRITYRECOMMEND, MEDIARECOMMENDATION, AUTHORINTRODUCTION, CATALOG,
+        PREFACE, ABSTRACT, SUMMARY, POSTSCRIPT
+    </sql>
 
-    <!-- 根据amazonId查询AmazonMeta -->
-    <select id="getAmazonMetaByAmazonId" parameterType="java.lang.String" resultMap="AmazonMetaMapper">
-        SELECT
+    <!-- 根据amazonId查询数据 -->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
         <include refid="Base_Column_List"/>
-        FROM AMAZON_METADATA WHERE AMAZONID = #{amazonId}
+        from AMAZON_METADATA
+        where AMAZONID = #{amazonId,jdbcType=VARCHAR}
     </select>
 
-    <!-- 根据ISBN10查询AmazonMeta -->
-    <select id="getAmazonMetaByIsbn10" parameterType="java.lang.String" resultMap="AmazonMetaMapper">
-        SELECT
+    <!-- 根据isbn10查询数据 -->
+    <select id="findByIsbn10" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
         <include refid="Base_Column_List"/>
-        FROM AMAZON_METADATA WHERE ISBN10 = #{isbn10}
+        from AMAZON_METADATA
+        where ISBN10 = #{isbn10,jdbcType=VARCHAR}
     </select>
 
-    <!-- 根据ISBN13查询AmazonMeta -->
-    <select id="getAmazonMetaByIsbn13" parameterType="java.lang.String" resultMap="AmazonMetaMapper">
-        SELECT
+    <!-- 根据isbn13查询数据 -->
+    <select id="findByIsbn13" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
         <include refid="Base_Column_List"/>
-        FROM AMAZON_METADATA WHERE ISBN13 = #{isbn13}
+        from AMAZON_METADATA
+        where ISBN13 = #{isbn13,jdbcType=VARCHAR}
     </select>
 
-    <!-- 查询所有AmazonMeta -->
-    <select id="getAllAmazonMeta" resultMap="AmazonMetaMapper">
-        SELECT *
-        FROM AMAZON_METADATA
+    <!-- 查询所有数据 -->
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        *
+        from AMAZON_METADATA
     </select>
 
-    <!-- 分页查询AmazonMeta -->
-    <select id="findAmazonMetaByPage" parameterType="Map" resultMap="AmazonMetaMapper">
-        SELECT *
-        FROM AMAZON_METADATA
-        WHERE 1=1
+    <!-- 分页条件查询数据 -->
+    <select id="findByPage" parameterType="Map" resultMap="BaseResultMap">
+        select
+        *
+        from AMAZON_METADATA
+        where 1=1
         <if test="amazonId != null and amazonId != ''">
-            AND AMAZONID = #{amazonId,jdbcType=VARCHAR}
+            and AMAZONID = #{amazonId,jdbcType=VARCHAR}
         </if>
         <if test="author != null and author != ''">
-            AND AUTHOR = #{author,jdbcType=VARCHAR}
+            and AUTHOR = #{author,jdbcType=VARCHAR}
         </if>
         <if test="title != null and title != ''">
-            AND TITLE = #{title,jdbcType=VARCHAR}
+            and TITLE = #{title,jdbcType=VARCHAR}
         </if>
         <if test="publisher != null and publisher != ''">
-            AND PUBLISHER = #{publisher,jdbcType=VARCHAR}
+            and PUBLISHER = #{publisher,jdbcType=VARCHAR}
         </if>
         <if test="isbn13 != null and isbn13 != ''">
-            AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
+            and ISBN13 = #{isbn13,jdbcType=VARCHAR}
         </if>
         <if test="isbn10 != null and isbn10 != ''">
-            AND ISBN10 = #{isbn10,jdbcType=VARCHAR}
+            and ISBN10 = #{isbn10,jdbcType=VARCHAR}
         </if>
     </select>
 
-    <!-- 根据amazonId更新AmazonMeta-->
-    <update id="updateAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
-        UPDATE AMAZON_METADATA
-        <trim prefix="SET" suffixOverrides=",">
+    <!-- 删除数据 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from AMAZON_METADATA
+        where AMAZONID = #{amazonId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="com.apabi.flow.douban.model.AmazonMeta">
+        insert into AMAZON_METADATA
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="amazonId != null">
+                AMAZONID,
+            </if>
+            <if test="title != null">
+                TITLE,
+            </if>
+            <if test="author != null">
+                AUTHOR,
+            </if>
+            <if test="translator != null">
+                TRANSLATOR,
+            </if>
+            <if test="isbn13 != null">
+                ISBN13,
+            </if>
+            <if test="isbn10 != null">
+                ISBN10,
+            </if>
+            <if test="publisher != null">
+                PUBLISHER,
+            </if>
+            <if test="originTitle != null">
+                ORIGINTITLE,
+            </if>
+            <if test="paperPrice != null">
+                PAPERPRICE,
+            </if>
+            <if test="kindlePrice != null">
+                KINDLEPRICE,
+            </if>
+            <if test="editionOrder != null">
+                EDITIONORDER,
+            </if>
+            <if test="issuedDate != null">
+                ISSUEDDATE,
+            </if>
+            <if test="originSeries != null">
+                ORIGINSERIES,
+            </if>
+            <if test="binding != null">
+                BINDING,
+            </if>
+            <if test="pages != null">
+                PAGES,
+            </if>
+            <if test="language != null">
+                LANGUAGE,
+            </if>
+            <if test="series != null">
+                SERIES,
+            </if>
+            <if test="format != null">
+                FORMAT,
+            </if>
+            <if test="productSize != null">
+                PRODUCTSIZE,
+            </if>
+            <if test="commodityWeight != null">
+                COMMODITYWEIGHT,
+            </if>
+            <if test="brand != null">
+                BRAND,
+            </if>
+            <if test="asin != null">
+                ASIN,
+            </if>
+            <if test="classification != null">
+                CLASSIFICATION,
+            </if>
+            <if test="poster != null">
+                POSTER,
+            </if>
+            <if test="readerObject != null">
+                READEROBJECT,
+            </if>
+            <if test="hasCrawled != null">
+                HASCRAWLED,
+            </if>
+            <if test="createTime != null">
+                CREATETIME,
+            </if>
+            <if test="updateTime != null">
+                UPDATETIME,
+            </if>
+            <if test="editRecommend != null">
+                EDITRECOMMEND,
+            </if>
+            <if test="celebrityRecommend != null">
+                CELEBRITYRECOMMEND,
+            </if>
+            <if test="mediaRecommendation != null">
+                MEDIARECOMMENDATION,
+            </if>
+            <if test="authorIntroduction != null">
+                AUTHORINTRODUCTION,
+            </if>
+            <if test="catalog != null">
+                CATALOG,
+            </if>
+            <if test="preface != null">
+                PREFACE,
+            </if>
+            <if test="abstract_ != null">
+                ABSTRACT,
+            </if>
+            <if test="summary != null">
+                SUMMARY,
+            </if>
+            <if test="postScript != null">
+                POSTSCRIPT,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="amazonId != null">
+                #{amazonId,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="translator != null">
+                #{translator,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn13 != null">
+                #{isbn13,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn10 != null">
+                #{isbn10,jdbcType=VARCHAR},
+            </if>
+            <if test="publisher != null">
+                #{publisher,jdbcType=VARCHAR},
+            </if>
+            <if test="originTitle != null">
+                #{originTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="paperPrice != null">
+                #{paperPrice,jdbcType=VARCHAR},
+            </if>
+            <if test="kindlePrice != null">
+                #{kindlePrice,jdbcType=VARCHAR},
+            </if>
+            <if test="editionOrder != null">
+                #{editionOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="issuedDate != null">
+                #{issuedDate,jdbcType=VARCHAR},
+            </if>
+            <if test="originSeries != null">
+                #{originSeries,jdbcType=VARCHAR},
+            </if>
+            <if test="binding != null">
+                #{binding,jdbcType=VARCHAR},
+            </if>
+            <if test="pages != null">
+                #{pages,jdbcType=VARCHAR},
+            </if>
+            <if test="language != null">
+                #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="series != null">
+                #{series,jdbcType=VARCHAR},
+            </if>
+            <if test="format != null">
+                #{format,jdbcType=VARCHAR},
+            </if>
+            <if test="productSize != null">
+                #{productSize,jdbcType=VARCHAR},
+            </if>
+            <if test="commodityWeight != null">
+                #{commodityWeight,jdbcType=VARCHAR},
+            </if>
+            <if test="brand != null">
+                #{brand,jdbcType=VARCHAR},
+            </if>
+            <if test="asin != null">
+                #{asin,jdbcType=VARCHAR},
+            </if>
+            <if test="classification != null">
+                #{classification,jdbcType=VARCHAR},
+            </if>
+            <if test="poster != null">
+                #{poster,jdbcType=VARCHAR},
+            </if>
+            <if test="readerObject != null">
+                #{readerObject,jdbcType=VARCHAR},
+            </if>
+            <if test="hasCrawled != null">
+                #{hasCrawled,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="editRecommend != null">
+                #{editRecommend,jdbcType=CLOB},
+            </if>
+            <if test="celebrityRecommend != null">
+                #{celebrityRecommend,jdbcType=CLOB},
+            </if>
+            <if test="mediaRecommendation != null">
+                #{mediaRecommendation,jdbcType=CLOB},
+            </if>
+            <if test="authorIntroduction != null">
+                #{authorIntroduction,jdbcType=CLOB},
+            </if>
+            <if test="catalog != null">
+                #{catalog,jdbcType=CLOB},
+            </if>
+            <if test="preface != null">
+                #{preface,jdbcType=CLOB},
+            </if>
+            <if test="abstract_ != null">
+                #{abstract_,jdbcType=CLOB},
+            </if>
+            <if test="summary != null">
+                #{summary,jdbcType=CLOB},
+            </if>
+            <if test="postScript != null">
+                #{postScript,jdbcType=CLOB},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 统计数据数量 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from AMAZON_METADATA
+    </select>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.douban.model.AmazonMeta">
+        update AMAZON_METADATA
+        <set>
             <if test="title != null">
                 TITLE = #{title,jdbcType=VARCHAR},
             </if>
@@ -242,6 +419,21 @@
             <if test="classification != null">
                 CLASSIFICATION = #{classification,jdbcType=VARCHAR},
             </if>
+            <if test="poster != null">
+                POSTER = #{poster,jdbcType=VARCHAR},
+            </if>
+            <if test="readerObject != null">
+                READEROBJECT = #{readerObject,jdbcType=VARCHAR},
+            </if>
+            <if test="hasCrawled != null">
+                HASCRAWLED = #{hasCrawled,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                CREATETIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
             <if test="editRecommend != null">
                 EDITRECOMMEND = #{editRecommend,jdbcType=CLOB},
             </if>
@@ -266,34 +458,11 @@
             <if test="summary != null">
                 SUMMARY = #{summary,jdbcType=CLOB},
             </if>
-            <if test="poster != null">
-                POSTER = #{poster,jdbcType=VARCHAR},
-            </if>
-            <if test="readerObject != null">
-                READEROBJECT = #{readerObject,jdbcType=VARCHAR},
-            </if>
-            <if test="hasCrawled != null">
-                HASCRAWLED = #{hasCrawled,jdbcType=INTEGER},
-            </if>
-            <if test="createTime != null">
-                CREATETIME = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updateTime != null">
-                UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
-            </if>
             <if test="postScript != null">
-                POSTSCRIPT = #{postScript,jdbcType=CLOB}
+                POSTSCRIPT = #{postScript,jdbcType=CLOB},
             </if>
-        </trim>
-        WHERE AMAZONID = #{amazonId}
+        </set>
+        where AMAZONID = #{amazonId,jdbcType=VARCHAR}
     </update>
-
-    <!-- 添加AmazonMeta -->
-    <insert id="addAmazonMeta" parameterType="com.apabi.flow.douban.model.AmazonMeta">
-        INSERT INTO AMAZON_METADATA
-        (<include refid="Base_Column_List"/>)
-        VALUES(<include refid="Base_Value_list"/>)
-    </insert>
-
 
 </mapper>

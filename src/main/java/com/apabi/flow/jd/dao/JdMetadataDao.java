@@ -1,6 +1,7 @@
 package com.apabi.flow.jd.dao;
 
 import com.apabi.flow.jd.model.JdMetadata;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,8 @@ import java.util.List;
 @Mapper
 @Repository
 public interface JdMetadataDao {
+    int count();
+
     List<JdMetadata> findAll();
 
     int delete(String jdItemId);
@@ -24,4 +27,6 @@ public interface JdMetadataDao {
     int update(JdMetadata jdMetadata);
 
     void updateHasCrawled(String url);
+
+    Page<String> findAllIsbn13ByPage();
 }

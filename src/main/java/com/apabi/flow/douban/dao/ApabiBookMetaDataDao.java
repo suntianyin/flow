@@ -24,4 +24,5 @@ public interface ApabiBookMetaDataDao {
     void updateNlcMarcId(@Param("nlibraryId") String nlibraryId,@Param("isbn") String isbn);
     int findIsbnCount();
     List<ApabiBookMetaData> findByIsbn13(String isbn13);
+    List<ApabiBookMetaData> findByIsbn10(String isbn10);
 }

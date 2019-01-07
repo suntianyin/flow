@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,4 +23,5 @@ public interface DoubanMetaDao {
     void deleteById(String doubanId);
     Page<DoubanMeta> findByPage(Map<String,String> params);
     Page<DoubanMeta> findByPageOrderByDoubanId();
+    List<DoubanMeta> findByIsbn13(String isbn13);
 }

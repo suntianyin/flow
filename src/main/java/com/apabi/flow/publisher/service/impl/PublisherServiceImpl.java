@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.github.pagehelper.Page;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,5 +54,33 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public List<Publisher> findAll() {
         return publisherDao.findAll();
+    }
+
+    @Override
+    public void compareStandardWithDB() {
+        List<String> publisherList = new ArrayList<>();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\出版社.txt"));
+            String publisher = "";
+            while ((publisher = bufferedReader.readLine())!=null){
+                publisherList.add(publisher);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Publisher> publisherListInDB = publisherDao.findAll();
+        for (Publisher publisher : publisherListInDB) {
+            int flag = 0;
+            for (String s : publisherList) {
+                if(publisher.getTitle().equals(s)){
+                    flag = 1;
+                }
+            }
+            if(flag == 0){
+                System.out.println(publisher);
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.apabi.flow.isbn_douban_amazon.service.impl;
+package com.apabi.flow.match_data.service;
 
 import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.douban.dao.AmazonMetaDao;
@@ -9,6 +9,10 @@ import com.apabi.flow.douban.util.CrawlAmazonUtils;
 import com.apabi.flow.douban.util.CrawlDoubanUtil;
 import com.apabi.flow.isbn_douban_amazon.dao.IsbnDoubanAmazonDao;
 import com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon;
+import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
+import com.apabi.flow.nlcmarc.model.NlcBookMarc;
+import com.apabi.flow.nlcmarc.util.CrawlNlcMarcUtil;
+import com.apabi.flow.nlcmarc.util.ParseMarcUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,25 +23,27 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
- * @Date 2018-12-12 16:21
+ * @Date 2019-1-4 14:01
  **/
-public class IsbnDoubanAmazonConsumer implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(IsbnDoubanAmazonConsumer.class);
+public class CrawlDoubanAmazonNlcConsumerInJdNotInDouban implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlDoubanAmazonNlcConsumerInJdNotInDouban.class);
     private static final String SUCCESS = "1";
     private LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue;
     private CountDownLatch countDownLatch;
-    private NlcIpPoolUtils nlcIpPoolUtils;
+    private IsbnDoubanAmazonDao isbnDoubanAmazonDao;
     private DoubanMetaDao doubanMetaDao;
     private AmazonMetaDao amazonMetaDao;
-    private IsbnDoubanAmazonDao isbnDoubanAmazonDao;
+    private NlcBookMarcDao nlcBookMarcDao;
+    private NlcIpPoolUtils nlcIpPoolUtils;
 
-    public IsbnDoubanAmazonConsumer(LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue, CountDownLatch countDownLatch, NlcIpPoolUtils nlcIpPoolUtils, DoubanMetaDao doubanMetaDao, AmazonMetaDao amazonMetaDao, IsbnDoubanAmazonDao isbnDoubanAmazonDao) {
+    public CrawlDoubanAmazonNlcConsumerInJdNotInDouban(LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue, CountDownLatch countDownLatch, IsbnDoubanAmazonDao isbnDoubanAmazonDao, DoubanMetaDao doubanMetaDao, AmazonMetaDao amazonMetaDao, NlcBookMarcDao nlcBookMarcDao, NlcIpPoolUtils nlcIpPoolUtils) {
         this.isbnQueue = isbnQueue;
         this.countDownLatch = countDownLatch;
-        this.nlcIpPoolUtils = nlcIpPoolUtils;
+        this.isbnDoubanAmazonDao = isbnDoubanAmazonDao;
         this.doubanMetaDao = doubanMetaDao;
         this.amazonMetaDao = amazonMetaDao;
-        this.isbnDoubanAmazonDao = isbnDoubanAmazonDao;
+        this.nlcBookMarcDao = nlcBookMarcDao;
+        this.nlcIpPoolUtils = nlcIpPoolUtils;
     }
 
     @Override
@@ -60,11 +66,11 @@ public class IsbnDoubanAmazonConsumer implements Runnable {
                 try {
                     doubanMeta = CrawlDoubanUtil.crawlDoubanMetaByIsbn(isbnValue, ip, port);
                     if (doubanMeta != null) {
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                         try {
                             // 标记该isbn已经在douban抓取成功
                             isbnDoubanAmazonDao.updateDoubanCrawled(isbnValue);
                             doubanMetaDao.insert(doubanMeta);
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                         } catch (Exception e) {
                             LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + isbnValue + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                             e.printStackTrace();
@@ -81,11 +87,11 @@ public class IsbnDoubanAmazonConsumer implements Runnable {
                 try {
                     amazonMeta = CrawlAmazonUtils.crawlAmazonMetaByIsbn(isbnValue, ip, port);
                     if (amazonMeta != null) {
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                         try {
                             // 标记该isbn已经在amazon抓取成功
                             isbnDoubanAmazonDao.updateAmazonCrawled(isbnValue);
                             amazonMetaDao.insert(amazonMeta);
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                         } catch (Exception e) {
                             LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + isbnValue + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                         }
@@ -93,6 +99,23 @@ public class IsbnDoubanAmazonConsumer implements Runnable {
                 } catch (Exception e) {
                     LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + isbnValue + "失败，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                 }
+            }
+            // nlc抓取
+            NlcBookMarc nlcBookMarc = null;
+            String nlcBookMarcValue = null;
+            try {
+                nlcBookMarcValue = CrawlNlcMarcUtil.crawlNlcMarc(isbnValue, ip, port);
+                nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(nlcBookMarcValue);
+                if (nlcBookMarc != null) {
+                    try {
+                        nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
+                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                    } catch (Exception e) {
+                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "失败，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (Exception e) {
         } finally {

@@ -28,4 +28,5 @@ public interface PublisherService {
     //查询所有
     List<Publisher> findAll();
 
+    void compareStandardWithDB();
 }

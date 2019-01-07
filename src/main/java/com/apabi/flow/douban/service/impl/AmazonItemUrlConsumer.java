@@ -51,7 +51,7 @@ public class AmazonItemUrlConsumer implements Runnable {
             if (amazonMeta != null) {
                 try {
                     long start = System.currentTimeMillis();
-                    amazonMetaDao.addAmazonMeta(amazonMeta);
+                    amazonMetaDao.insert(amazonMeta);
                     amazonItemUrlDao.updateHasCrawled(url);
                     long end = System.currentTimeMillis();
                     LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + url + "成功，插入耗时" + (end - start) / 1000 + "秒；列表中剩余：" + countDownLatch.getCount() + "个数据...");

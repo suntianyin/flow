@@ -20,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Service
 @RequestMapping("doubanCrawl")
 public class DoubanCrawlService {
-    private static final int MIN_ID = 1037234;
+    private static final int MIN_ID = 2346293;
     private static final int MAX_ID = 7999999;
 
     @Autowired

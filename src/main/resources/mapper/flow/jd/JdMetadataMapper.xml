@@ -23,6 +23,18 @@
         LANGUAGE, FORMAT, BRAND, META_ID, CREATE_TIME, UPDATE_TIME
     </sql>
 
+    <!-- 查询京东数据个数 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from JD_METADATA
+    </select>
+
+    <!-- 分页查询所有京东isbn -->
+    <select id="findAllIsbn13ByPage" resultType="java.lang.String">
+        select isbn13
+        from JD_METADATA
+    </select>
+
     <!-- 查询所有京东数据 -->
     <select id="findAll" resultMap="BaseResultMap">
         select *

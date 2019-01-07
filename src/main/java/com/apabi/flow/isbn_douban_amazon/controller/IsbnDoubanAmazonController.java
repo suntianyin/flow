@@ -20,7 +20,7 @@ public class IsbnDoubanAmazonController {
     @ResponseBody()
     @RequestMapping("crawl")
     public String crawl(){
-        isbnDoubanAmazonService.crawl();
+        isbnDoubanAmazonService.crawlDoubanAmazon();
         return "success";
     }
 }

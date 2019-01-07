@@ -35,4 +35,8 @@ public interface IsbnDoubanAmazonDao {
     void updateAmazonCrawled(String isbn);
 
     void updateStatusHasCrawled(String isbn);
+
+    Page<IsbnDoubanAmazon> findInJdNotInDoubanByPage();
+
+    int countInJdNotInDouban();
 }

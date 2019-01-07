@@ -591,7 +591,7 @@ public class CrawlAmazonUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        AmazonMeta amazonMeta = crawlAmazonMetaById("B07CTKGQK1", "197.254.108.134", "51881");
+        AmazonMeta amazonMeta = crawlAmazonMetaById("B00EKE14DY", "117.139.126.236", "53281");
         System.out.println(amazonMeta);
     }
 }

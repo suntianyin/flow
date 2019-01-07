@@ -124,6 +124,14 @@
         where ISBN13 = #{isbn13,jdbcType=VARCHAR}
     </select>
 
+    <!-- 根据isbn10查询数据 -->
+    <select id="findByIsbn10" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA
+        where ISBN10 = #{isbn10,jdbcType=VARCHAR}
+    </select>
+
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -43,10 +43,10 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                 isbn = isbn.replaceAll("-", "");
             }
             if (isbn.length() == 10) {
-                amazonMeta = amazonMetaDao.getAmazonMetaByIsbn10(isbn);
+                amazonMeta = amazonMetaDao.findByIsbn10(isbn);
             }
             if (isbn.length() == 13) {
-                amazonMeta = amazonMetaDao.getAmazonMetaByIsbn13(isbn);
+                amazonMeta = amazonMetaDao.findByIsbn13(isbn);
             }
             if (amazonMeta == null) {
                 // 如果在表中查询不到数据，则去爬取
@@ -60,11 +60,11 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                     amazonMeta.setIssuedDate(issuedDate);
                     String amazonId = amazonMeta.getAmazonId();
                     // 根据amazonId在AMAZON_METADATA表中查询AmazonMeta
-                    AmazonMeta amazonMetaByAmazonId = amazonMetaDao.getAmazonMetaByAmazonId(amazonId);
+                    AmazonMeta amazonMetaByAmazonId = amazonMetaDao.findById(amazonId);
                     // 如果amazonId已经存在，则直接返回；不存在则将爬取到的数据入库
                     if (amazonMetaByAmazonId != null) {
                         if (amazonMeta.getPostScript() != null && amazonMetaByAmazonId.getPostScript() == null) {
-                            amazonMetaDao.updateAmazonMeta(amazonMeta);
+                            amazonMetaDao.update(amazonMeta);
                         }
                         System.out.println(amazonMeta);
                         System.out.println(amazonMetaByAmazonId);
@@ -89,7 +89,7 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                             amazonMeta.setIsbn10(isbn);
                         }
                         // 由于数据库中没有该数据，故将爬取的数据写入到数据库
-                        amazonMetaDao.addAmazonMeta(amazonMeta);
+                        amazonMetaDao.insert(amazonMeta);
                         return amazonMeta;
                     }
                 }
@@ -106,17 +106,17 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
      */
     @Override
     public void updateAmazon(AmazonMeta amazonMeta) {
-        amazonMetaDao.updateAmazonMeta(amazonMeta);
+        amazonMetaDao.update(amazonMeta);
     }
 
     @Override
     public Page<AmazonMeta> findAmazonMetaByPage(Map<String, String> params) {
-        return amazonMetaDao.findAmazonMetaByPage(params);
+        return amazonMetaDao.findByPage(params);
     }
 
     @Override
     public AmazonMeta findById(String amazonId) {
-        return amazonMetaDao.getAmazonMetaByAmazonId(amazonId);
+        return amazonMetaDao.findById(amazonId);
     }
 
     /**

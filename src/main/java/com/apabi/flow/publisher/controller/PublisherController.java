@@ -3,9 +3,6 @@ package com.apabi.flow.publisher.controller;
 import com.apabi.flow.author.util.EntityInfo;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.douban.util.StringToolUtil;
-import com.apabi.flow.publisher.constant.ClassCodeEnum;
-import com.apabi.flow.publisher.constant.ResourceTypeEnum;
-import com.apabi.flow.publisher.constant.TitleTypeEnum;
 import com.apabi.flow.publisher.model.Publisher;
 import com.apabi.flow.publisher.service.PublisherService;
 import com.apabi.flow.publisher.util.TransformPublisherFieldNameUtils;
@@ -17,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,28 +34,29 @@ import java.util.*;
 public class PublisherController {
     public static final Integer DEFAULT_PAGESIZE = 10;
     private Logger log = LoggerFactory.getLogger(PublisherController.class);
-    private Map<String,String> mapr;
+    private Map<String, String> mapr;
     @Autowired
     PublisherService publisherService;
+
     @RequestMapping("/getRelatePublisherMap")
     @ResponseBody
-    public Object getRelatePublisherMap(){
+    public Object getRelatePublisherMap() {
         List<Publisher> all = publisherService.findAll();
-        HashSet<String> set=new HashSet();
-        HashMap<String,String> map=new HashMap<>();
-        for (Publisher p:all) {
-            if(p.getRelatePublisherID()!=null)
+        HashSet<String> set = new HashSet();
+        HashMap<String, String> map = new HashMap<>();
+        for (Publisher p : all) {
+            if (p.getRelatePublisherID() != null)
                 set.add(p.getRelatePublisherID());
         }
-        for(String s :set){
+        for (String s : set) {
             Publisher p = publisherService.selectdataById(s);
-            if(p.getRelatePublisherID()!=null)
-                map.put(p.getTitle(),p.getId());
+            if (p.getRelatePublisherID() != null)
+                map.put(p.getTitle(), p.getId());
         }
-        this.mapr=map;
-        List<EntityInfo> list=new ArrayList<>();
+        this.mapr = map;
+        List<EntityInfo> list = new ArrayList<>();
         for (String key : map.keySet()) {
-            EntityInfo entityInfo=new EntityInfo();
+            EntityInfo entityInfo = new EntityInfo();
             entityInfo.setFieldName(map.get(key));
             entityInfo.setMetaValue(key);
             list.add(entityInfo);
@@ -72,34 +68,34 @@ public class PublisherController {
     @RequestMapping("/index")
     public String getPublisherMessage(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,
                                       @RequestParam(value = "id", required = false) String id,
-                                      @RequestParam(value = "title", required = false) String title ,
+                                      @RequestParam(value = "title", required = false) String title,
                                       @RequestParam(value = "relatePublisherID", required = false) String relatePublisherID,
                                       Model model) {
         try {
             long start = System.currentTimeMillis();
-            HashSet<String> set=new HashSet();
+            HashSet<String> set = new HashSet();
 //            List<String> list=new ArrayList<>();
-            HashMap<String,String> map=new HashMap<>();
+            HashMap<String, String> map = new HashMap<>();
             PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
-            String a=null;
-            if(StringUtils.isNotEmpty(relatePublisherID)){
-                a=this.mapr.get(relatePublisherID);
+            String a = null;
+            if (StringUtils.isNotEmpty(relatePublisherID)) {
+                a = this.mapr.get(relatePublisherID);
             }
-            Page<Publisher> page = publisherService.queryPage(id,title,a);
+            Page<Publisher> page = publisherService.queryPage(id, title, a);
             List<Publisher> all = publisherService.findAll();
-            for (Publisher p:all) {
-                if(p.getRelatePublisherID()!=null)
-                set.add(p.getRelatePublisherID());
+            for (Publisher p : all) {
+                if (p.getRelatePublisherID() != null)
+                    set.add(p.getRelatePublisherID());
             }
-            for(String s :set){
+            for (String s : set) {
                 Publisher p = publisherService.selectdataById(s);
-                if(p.getRelatePublisherID()!=null)
-                map.put(p.getId(),p.getTitle());
+                if (p.getRelatePublisherID() != null)
+                    map.put(p.getId(), p.getTitle());
             }
 
 //            list.addAll(set);
             //搜索保留
-            model.addAttribute("id",id);
+            model.addAttribute("id", id);
             model.addAttribute("title", title);
             model.addAttribute("relatePublisherID", relatePublisherID);
             if (page != null && !page.isEmpty()) {
@@ -109,13 +105,13 @@ public class PublisherController {
                 model.addAttribute("pageSize", DEFAULT_PAGESIZE);
                 model.addAttribute("total", page.getTotal());
 //                model.addAttribute("RelatePublisherIDset",list );
-                model.addAttribute("map",map );
+                model.addAttribute("map", map);
             } else {
                 model.addAttribute("publisherList", Collections.emptyList());
                 model.addAttribute("pages", 1);
                 model.addAttribute("pageNum", 1);
 //                model.addAttribute("RelatePublisherIDset", Collections.emptyList());
-                model.addAttribute("map",Collections.emptyMap() );
+                model.addAttribute("map", Collections.emptyMap());
             }
             long end = System.currentTimeMillis();
             log.info("出版社信息列表查询耗时：" + (end - start) + "毫秒");
@@ -125,20 +121,21 @@ public class PublisherController {
         }
         return null;
     }
+
     @GetMapping("/findRelatePublisherID")
     @ResponseBody
-    public Object findRelatePublisherID(){
-        HashSet<String> set=new HashSet();
-        HashMap<String,String> map=new HashMap<>();
+    public Object findRelatePublisherID() {
+        HashSet<String> set = new HashSet();
+        HashMap<String, String> map = new HashMap<>();
         List<Publisher> all = publisherService.findAll();
-        for (Publisher p:all) {
-            if(p.getRelatePublisherID()!=null)
+        for (Publisher p : all) {
+            if (p.getRelatePublisherID() != null)
                 set.add(p.getRelatePublisherID());
         }
-        for(String s :set){
+        for (String s : set) {
             Publisher p = publisherService.selectdataById(s);
-            if(p.getRelatePublisherID()!=null)
-                map.put(p.getId(),p.getTitle());
+            if (p.getRelatePublisherID() != null)
+                map.put(p.getId(), p.getTitle());
         }
         return map;
     }
@@ -218,11 +215,12 @@ public class PublisherController {
 
     /**
      * 跳转编辑页
-      * @param id
+     *
+     * @param id
      * @param model
      * @return
      */
-    @GetMapping ("/edit")
+    @GetMapping("/edit")
     public String editPublisherMessage(@RequestParam("id") String id, Model model) {
         try {
             long start = System.currentTimeMillis();
@@ -232,13 +230,13 @@ public class PublisherController {
             }
             Class clazz = Class.forName("com.apabi.flow.publisher.model.Publisher");
 
-            List<EntityInfo> list=new ArrayList<>();
+            List<EntityInfo> list = new ArrayList<>();
             Field[] fields = clazz.getDeclaredFields();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
             SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for (Field field : fields) {
                 // 字段名
-                EntityInfo entityInfo=new EntityInfo();
+                EntityInfo entityInfo = new EntityInfo();
                 String key = field.getName();
                 entityInfo.setFieldName(key);
                 // 字段值
@@ -258,16 +256,16 @@ public class PublisherController {
                         Date parse = simpleDateFormat.parse(value);
                         value = simpleDateFormat1.format(parse);
                     }
-                }else if ("出版社分类".equals(key)) {
-                    if(publisher.getClassCode()!=null) {
+                } else if ("出版社分类".equals(key)) {
+                    if (publisher.getClassCode() != null) {
                         value = publisher.getClassCode().getDesc();
                     }
-                }else if ("出版文献资源类型".equals(key)) {
-                    if(publisher.getResourceType()!=null) {
+                } else if ("出版文献资源类型".equals(key)) {
+                    if (publisher.getResourceType() != null) {
                         value = publisher.getResourceType().getDesc();
                     }
-                }else if ("名称类型".equals(key)) {
-                    if(publisher.getTitleType()!=null) {
+                } else if ("名称类型".equals(key)) {
+                    if (publisher.getTitleType() != null) {
                         value = publisher.getTitleType().getDesc();
                     }
                 } else {
@@ -283,10 +281,11 @@ public class PublisherController {
             log.info("查询出版社信息耗时：" + (end - start) + "毫秒");
             return "publisher/edit";
         } catch (Exception e) {
-            log.warn("Exception {}" , e);
+            log.warn("Exception {}", e);
         }
         return null;
     }
+
     // 从excel中导入数据到数据库
     @RequestMapping("/doImport")
     public void importFromExcel() {
@@ -367,8 +366,8 @@ public class PublisherController {
             String value = null;
             key = TransformPublisherFieldNameUtils.transform(key);
             if ("创建时间".equals(key)) {
-                    value = getFieldValueByFieldName(field.getName(), publisher);
-                    // 将创建时间转为字符串
+                value = getFieldValueByFieldName(field.getName(), publisher);
+                // 将创建时间转为字符串
                 if (StringUtils.isNotEmpty(value)) {
                     Date parse = simpleDateFormat.parse(value);
                     value = simpleDateFormat1.format(parse);
@@ -380,16 +379,16 @@ public class PublisherController {
                     Date parse = simpleDateFormat.parse(value);
                     value = simpleDateFormat1.format(parse);
                 }
-            }else if ("出版社分类".equals(key)) {
-                if(publisher.getClassCode()!=null) {
+            } else if ("出版社分类".equals(key)) {
+                if (publisher.getClassCode() != null) {
                     value = publisher.getClassCode().getDesc();
                 }
-            }else if ("名称类型".equals(key)) {
-                if(publisher.getTitleType()!=null) {
+            } else if ("名称类型".equals(key)) {
+                if (publisher.getTitleType() != null) {
                     value = publisher.getTitleType().getDesc();
                 }
-            }else if ("出版文献资源类型".equals(key)) {
-                if(publisher.getResourceType()!=null) {
+            } else if ("出版文献资源类型".equals(key)) {
+                if (publisher.getResourceType() != null) {
                     value = publisher.getResourceType().getDesc();
                 }
             } else {
@@ -414,5 +413,11 @@ public class PublisherController {
         } else {
             return null;
         }
+    }
+
+
+    @RequestMapping("compare")
+    public void compareStandardWithDB(){
+        publisherService.compareStandardWithDB();
     }
 }

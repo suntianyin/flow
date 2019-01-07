@@ -6,6 +6,7 @@ import com.apabi.flow.douban.dao.DoubanMetaDao;
 import com.apabi.flow.isbn_douban_amazon.dao.IsbnDoubanAmazonDao;
 import com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon;
 import com.apabi.flow.isbn_douban_amazon.service.IsbnDoubanAmazonService;
+import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,14 @@ public class IsbnDoubanAmazonServiceImpl implements IsbnDoubanAmazonService {
     @Autowired
     private AmazonMetaDao amazonMetaDao;
 
+    @Autowired
+    private NlcBookMarcDao nlcBookMarcDao;
+
     /**
      * 根据isbn在douban和amazon上抓取数据
      */
     @Override
-    public void crawl() {
+    public void crawlDoubanAmazon() {
         int count = isbnDoubanAmazonDao.countWithoutCrawled();
         int pageSize = 5000;
         int pageNum = (count / pageSize) + 1;
@@ -59,5 +63,10 @@ public class IsbnDoubanAmazonServiceImpl implements IsbnDoubanAmazonService {
             }
         }
         executorService.shutdown();
+    }
+
+    @Override
+    public void crawlDoubanAmazonNlc() {
+
     }
 }

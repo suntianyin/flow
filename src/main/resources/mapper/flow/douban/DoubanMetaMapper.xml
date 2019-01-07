@@ -38,6 +38,14 @@
         MEDIUM_COVER, LARGE_COVER
     </sql>
 
+    <!-- 根据isbn13查询数据 -->
+    <select id="findByIsbn13" resultType="java.lang.String">
+        select
+        *
+        from DOUBAN_METADATA
+        where ISBN13 = #{isbn13,jdbcType=VARCHAR}
+    </select>
+
     <!-- 统计数据总数 -->
     <select id="count" resultType="java.lang.Integer">
         select

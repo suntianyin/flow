@@ -17,17 +17,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author pipi
- * @Date 2019-1-2 14:52
+ * @Date 2019-1-3 9:07
  **/
-public class ApabiBookMetaDoubanMatcherIsbn13Consumer implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApabiBookMetaDoubanMatcherIsbn13Consumer.class);
+public class ApabiBookMetaDoubanMatcherIsbn10Consumer implements Runnable{
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApabiBookMetaDoubanMatcherIsbn10Consumer.class);
     private LinkedBlockingQueue<DoubanMeta> doubanMetaQueue;
     private CountDownLatch countDownLatch;
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
     private ApabiBookMetaDoubanMatcherDao apabiBookMetaDoubanMatcherDao;
     private int pageNum;
 
-    public ApabiBookMetaDoubanMatcherIsbn13Consumer(LinkedBlockingQueue<DoubanMeta> doubanMetaQueue, CountDownLatch countDownLatch, ApabiBookMetaDataDao apabiBookMetaDataDao, ApabiBookMetaDoubanMatcherDao apabiBookMetaDoubanMatcherDao, int pageNum) {
+    public ApabiBookMetaDoubanMatcherIsbn10Consumer(LinkedBlockingQueue<DoubanMeta> doubanMetaQueue, CountDownLatch countDownLatch, ApabiBookMetaDataDao apabiBookMetaDataDao, ApabiBookMetaDoubanMatcherDao apabiBookMetaDoubanMatcherDao, int pageNum) {
         this.doubanMetaQueue = doubanMetaQueue;
         this.countDownLatch = countDownLatch;
         this.apabiBookMetaDataDao = apabiBookMetaDataDao;
@@ -37,20 +37,20 @@ public class ApabiBookMetaDoubanMatcherIsbn13Consumer implements Runnable {
 
     @Override
     public void run() {
-        String isbn13 = "";
+        String isbn10 = "";
         DoubanMeta doubanMeta = null;
         try {
             doubanMeta = doubanMetaQueue.take();
-            isbn13 = doubanMeta.getIsbn13();
-            if (StringUtils.isNotEmpty(isbn13)) {
-                List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn13(isbn13);
+            isbn10 = doubanMeta.getIsbn10();
+            if (StringUtils.isNotEmpty(isbn10)) {
+                List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn10(isbn10);
                 if (apabiBookMetaDataList != null) {
                     if (apabiBookMetaDataList.size() == 1) {
                         // 如果douban在meta表中匹配了1项，则直接更新meta表中数据的doubanid字段
                         ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
                         apabiBookMetaData.setDoubanId(doubanMeta.getDoubanId());
                         apabiBookMetaDataDao.update(apabiBookMetaData);
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn13 + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的doubanId为：" + apabiBookMetaData.getDoubanId());
+                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn10 + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的doubanId为：" + apabiBookMetaData.getDoubanId());
                     } else if (apabiBookMetaDataList.size() > 1) {
                         // 如果douban在meta表中匹配了多项，则记录到apabi_book_meta_douban_matcher中
                         for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
@@ -61,7 +61,7 @@ public class ApabiBookMetaDoubanMatcherIsbn13Consumer implements Runnable {
                             apabiBookMetaDoubanMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
                             apabiBookMetaDoubanMatcher.setDoubanTitle(doubanMeta.getTitle());
                             apabiBookMetaDoubanMatcher.setApabiTitle(apabiBookMetaData.getTitle());
-                            apabiBookMetaDoubanMatcher.setIsbn13(isbn13);
+                            apabiBookMetaDoubanMatcher.setIsbn10(isbn10);
                             apabiBookMetaDoubanMatcher.setMetaId(apabiBookMetaData.getMetaId());
                             apabiBookMetaDoubanMatcher.setDoubanId(doubanMeta.getDoubanId());
                             try {

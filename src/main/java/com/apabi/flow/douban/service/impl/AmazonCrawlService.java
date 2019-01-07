@@ -123,9 +123,9 @@ public class AmazonCrawlService {
     @RequestMapping("crawl")
     public String crawl(){
         int count = amazonItemUrlDao.countWithoutCrawled();
-        int pageSize = 10000;
+        int pageSize = 5000;
         int pageNum = (count/pageSize)+1;
-        ExecutorService executorService = Executors.newFixedThreadPool(50);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
         for (int i = 1; i <= pageNum; i++) {
             NlcIpPoolUtils nlcIpPoolUtils = new NlcIpPoolUtils();
             PageHelper.startPage(i, pageSize);

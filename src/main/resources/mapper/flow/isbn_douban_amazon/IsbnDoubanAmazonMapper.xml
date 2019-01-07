@@ -11,6 +11,24 @@
         ISBN, DOUBAN_STATUS, AMAZON_STATUS
     </sql>
 
+
+
+    <!-- 查询在jd中存在，在douban中不存在的isbn的数量 -->
+    <select id="countInJdNotInDouban" resultType="java.lang.Integer">
+        select
+        count(*)
+        from ISBN_DOUBAN_AMAZON
+        where DOUBAN_STATUS = '0'
+    </select>
+
+    <!-- 查询在jd中存在，在douban中不存在的isbn -->
+    <select id="findInJdNotInDoubanByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DOUBAN_AMAZON
+        where DOUBAN_STATUS = '0'
+    </select>
+
     <!-- 查询需要抓取的isbn数据 -->
     <select id="findAllWithoutCrawledByPage" resultMap="BaseResultMap">
         select

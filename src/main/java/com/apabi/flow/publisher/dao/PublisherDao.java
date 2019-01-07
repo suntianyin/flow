@@ -3,6 +3,7 @@ package com.apabi.flow.publisher.dao;
 
 import com.apabi.flow.publisher.model.Publisher;
 import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @description
  */
 @Repository
+@Mapper
 public interface PublisherDao {
 
     Page<Publisher> queryPage(@Param("id")String id, @Param("title")String title, @Param("relatePublisherID")String relatePublisherID);

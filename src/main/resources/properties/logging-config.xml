@@ -350,6 +350,23 @@
         </encoder>
     </appender>
 
+    <!-- 对于jd中有，douban中没有的isbn抓取douban，amazon和nlc -->
+    <appender name="ISBN_IN_JD_NOT_IN_DOUBAN_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mapping/isbn_in_jd_not_in_douban_all.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- 针对FetchPageAgainConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageAgainConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageAgainConsumer的STDOUT的日志配置 -->
@@ -502,6 +519,14 @@
         <appender-ref ref="DOUBAN_APABI_ISBN13"/>
     </logger>
 
+    <!-- 以jd中有，douban中没有的isbn抓取douban，amazon和nlc -->
+    <logger name="com.apabi.flow.match_data.service.CrawlDoubanAmazonNlcConsumerInJdNotInDouban" level="INFO" additivity="false">
+        <!-- 对于jd中有，douban中没有的isbn抓取douban，amazon和nlc输出日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于jd中有，douban中没有的isbn抓取douban，amazon和nlc日志文件配置 -->
+        <appender-ref ref="ISBN_IN_JD_NOT_IN_DOUBAN_ALL"/>
+    </logger>
+
     <!--从书苑获取图书数据，新增到流式图书库中-->
     <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -512,6 +537,7 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
     <logger name="com.apabi.flow.book.task.GetBook4ShuyuanTask" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="GET_BOOK_SHUYUAN"/>
