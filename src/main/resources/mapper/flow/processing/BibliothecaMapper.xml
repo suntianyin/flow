@@ -423,6 +423,6 @@
     <if test="endTime != null">
       AND pb.CREATE_TIME <![CDATA[<]]> #{endTime}
     </if>
-    ORDER BY pb.CREATE_TIME DESC
+    ORDER BY pb.IDENTIFIER ASC
   </select>
 </mapper>

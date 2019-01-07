@@ -37,10 +37,9 @@ public class MyTask implements Runnable {
     private DoubanMetaService doubanMetaService;
     private PublisherDao publisherDao;
     private BibliothecaMapper bibliothecaMapper;
-    private IpPoolUtils ipPoolUtils;
     private ApplicationConfig config;
 
-    public MyTask(int i, File f, String username, String batchId, DoubanMetaService doubanMetaService, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper,IpPoolUtils ipPoolUtils,ApplicationConfig config) {
+    public MyTask(int i, File f, String username, String batchId, DoubanMetaService doubanMetaService, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper,ApplicationConfig config) {
         this.i = i;
         this.f = f;
         this.username = username;
@@ -48,7 +47,6 @@ public class MyTask implements Runnable {
         this.doubanMetaService = doubanMetaService;
         this.publisherDao = publisherDao;
         this.bibliothecaMapper = bibliothecaMapper;
-        this.ipPoolUtils = ipPoolUtils;
         this.config=config;
     }
 
@@ -57,6 +55,16 @@ public class MyTask implements Runnable {
         System.out.println("正在执行task " + i);
         String ip = "";
         String port = "";
+        Bibliotheca bibliotheca = new Bibliotheca();
+        String isbn = "";
+        String edition = "";
+        String title = "";
+        String author = "";
+        String publisherTitle = "";
+        String publisher="";
+        String publishTime = "";
+        String paperPrice = "";
+        boolean a = true;
         try {
             File file = new File(config.getTargetCopyRightDir() + File.separator +batchId);
             if(!file.exists()){
@@ -68,17 +76,7 @@ public class MyTask implements Runnable {
                     " -o " + "\"" + target + "\"" ;
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
-            Thread.sleep(3000);
-            String host = ipPoolUtils.getIp();
-            ip = host.split(":")[0];
-            port = host.split(":")[1];
-            String isbn = "";
-            String edition = "";
-            String title = "";
-            String author = "";
-            String publisherTitle = "";
-            String publisher="";
-            String publishTime = "";
+            Thread.sleep(1000);
             SAXReader saxReader = new SAXReader();
             Document doc = saxReader.read(new File(target));
             Element root = doc.getRootElement();
@@ -110,18 +108,18 @@ public class MyTask implements Runnable {
                         publishTime = publishTime.replace(" 00:00:00", "");
                     }
                 }
-                String[] split4 = split3[1].split("I", 2);
-                isbn = replaceBlank(split4[0]);
+                String[] split4 = split3[1].split("[.]", 2);
+                isbn = replaceBlank(split4[0].substring(0,split4[0].length()-1));
                 if (!IsbnCheck.CheckISBN(isbn)) {
                     isbn = "";
                 }
             }
-            boolean a = true;
-            String paperPrice = "";
-            Bibliotheca bibliotheca = new Bibliotheca();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
             //通过isbn13进行查询元数据  包含-清洗
             if (StringUtils.isNotBlank(isbn)) {
-                List<ApabiBookMetaTemp> doubanMetaList = doubanMetaService.searchMetaDataTempsByISBNMultiThread(isbn,ip,port);
+                List<ApabiBookMetaTemp> doubanMetaList = doubanMetaService.searchMetaDataTempsByISBNMultiThread(isbn);
                 if (doubanMetaList.size() > 0) {
                     ApabiBookMetaTemp apabiBookMetaTemp = doubanMetaList.get(0);
                     if (StringUtils.isNotBlank(publisherTitle)) {
@@ -182,19 +180,19 @@ public class MyTask implements Runnable {
                 bibliotheca.setBibliothecaState(BibliothecaStateEnum.INFORMATION_NO);
             }
             bibliothecaMapper.insertSelective(bibliotheca);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         System.out.println("task " + i + "执行完毕");
     }
     //编号
-    public String putong(int i) {
+    public static String putong(int i) {
         if (i < 10) {
-            return "00" + i;
-        } else if (i >= 100) {
-            return String.valueOf(i);
+            return "000" + i;
+        }else if (i >= 10&&i<=99) {
+            return "00"+i;
+        } else if (i >= 100&&i<=999) {
+            return "0"+i;
         } else
-            return "0" + i;
+            return  String.valueOf(i);
     }
 
     public static String replaceBlank(String str) {

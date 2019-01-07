@@ -22,5 +22,5 @@ public interface DoubanMetaService {
     void addDoubanMeta(DoubanMeta doubanMeta);
     void deleteDoubanMeta(String doubanId);
     void updateDoubanMeta(DoubanMeta doubanMeta);
-    List<ApabiBookMetaTemp> searchMetaDataTempsByISBNMultiThread(String isbn13,String ip,String port);
+    List<ApabiBookMetaTemp> searchMetaDataTempsByISBNMultiThread(String isbn13);
 }

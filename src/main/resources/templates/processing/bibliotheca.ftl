@@ -314,7 +314,7 @@
                     <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
-                        <th>操作</th>
+                        <th width="100">操作</th>
                     </tr>
                     </thead>
                     <tbody>
