@@ -20,6 +20,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -340,8 +343,9 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
         }
         return doubanMetaList;
     }
-    @Transactional(value = "transactionManager",isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class, timeout = 6)
-    public List<ApabiBookMetaTemp> searchMetaDataTempsByISBNMultiThread(String isbn13,String ip,String port){
+
+    //    @Transactional(value = "transactionManager",isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class, timeout = 6)
+    public List<ApabiBookMetaTemp> searchMetaDataTempsByISBNMultiThread(String isbn13) {
         // 创建ApabiBookMetaTempReturnedList
         List<ApabiBookMetaTemp> apabiBookMetaTempReturnedList = new ArrayList<>();
 
@@ -459,7 +463,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                     String resUrl = "https://api.douban.com/v2/book/isbn/" + isbn13;
                     try {
                         // 发送请求，返回Json数据
-                        JSONObject book = getJson(resUrl,ip,port);
+                        JSONObject book = getJson2(resUrl);
                         // 如果能爬取到douban的数据，以douban的数据为主！
                         if (book != null) {
                             // 创建douban数据实例
@@ -674,7 +678,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                             apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
                         }
                         // 如果在douban中抓取到数据，且apabiBookMetaTempReturnedList中没有数据，则将douban数据转化为temp数据，并添加到展示列表
-                        if (doubanMeta != null && (apabiBookMetaTempReturnedList == null || apabiBookMetaTempReturnedList.size() == 0)) {
+                        if (doubanMeta != null && StringUtils.isNotEmpty(doubanMeta.getDoubanId())&&  (apabiBookMetaTempReturnedList == null || apabiBookMetaTempReturnedList.size() == 0)) {
                             ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
                             apabiBookMetaTempList.add(apabiBookMetaTemp);
                         }
@@ -682,9 +686,9 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                     } catch (Exception e) {
                         e.printStackTrace();
                         log.info("获取数据发生异常，【异常信息】：" + e.getMessage());
+                        return apabiBookMetaTempReturnedList;
                     }
                 }
-                return apabiBookMetaTempReturnedList;
             }
         }
         return apabiBookMetaTempReturnedList;
@@ -1024,7 +1028,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                             apabiBookMetaTempReturnedList.add(apabiBookMetaTemp);
                         }
                         // 如果在douban中抓取到数据，且apabiBookMetaTempReturnedList中没有数据，则将douban数据转化为temp数据，并添加到展示列表
-                        if (doubanMeta != null && (apabiBookMetaTempReturnedList == null || apabiBookMetaTempReturnedList.size() == 0)) {
+                        if (doubanMeta != null &&( apabiBookMetaTempReturnedList == null || apabiBookMetaTempReturnedList.size() == 0)) {
                             ApabiBookMetaTemp apabiBookMetaTemp = BeanTransformUtil.transform2ApabiBookMetaTemp(doubanMeta);
                             apabiBookMetaTempList.add(apabiBookMetaTemp);
                         }
@@ -1091,37 +1095,45 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
         return jsonObjects;
     }
 
-    private JSONObject getJson(String resUrl,String ip,String port) {
+    private JSONObject getJson2(String resUrl){
         JSONObject jsonObjects = null;
         IpPoolUtils ipPoolUtils = new IpPoolUtils();
-        try {
-            HttpResponse response = HttpUtils2.doGetEntity(resUrl,ip,port);
-            if (response.getStatusLine().getStatusCode() == 404) {
-                System.out.println("ISBN:" + resUrl.substring(resUrl.lastIndexOf("/"), resUrl.length()) + "不存在...");
-                jsonObjects = null;
+        int retryCount = 0;
+        int statusCode = 404;
+        HttpResponse response = null;
+        String host = ipPoolUtils.getIp();
+        String ip = host.split(":")[0];
+        String port = host.split(":")[1];
+        while (true) {
+            retryCount++;
+            if (retryCount > 5) {
+                break;
             }
-            if (response.getStatusLine().getStatusCode() == 200) {
-                String sr = EntityUtils.toString(getEntityFromResponse(response));
-                jsonObjects = JSONObject.fromObject(sr);
+            try {
+                response = HttpUtils2.doGetEntity(resUrl, ip, port);
+                statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == HttpStatus.SC_OK) {
+                    String sr = EntityUtils.toString(getEntityFromResponse(response));
+                    jsonObjects = JSONObject.fromObject(sr);
+                    break;
+                }
+                if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                    System.out.println("ISBN:" + resUrl.substring(resUrl.lastIndexOf("/")+1, resUrl.length()) + "不存在...");
+                    break;
+                }
+            } catch (Exception e) {
+                host = ipPoolUtils.getIp();
+                ip = host.split(":")[0];
+                port = host.split(":")[1];
             }
-            if(response.getStatusLine().getStatusCode() == 400){
-                getJson(resUrl,ipPoolUtils.getIp().split(":")[0],ipPoolUtils.getIp().split(":")[1]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.info(e.getMessage());
         }
         return jsonObjects;
     }
 
     public static void main(String[] args) {
         DoubanMetaServiceImpl doubanMetaService = new DoubanMetaServiceImpl();
-        IpPoolUtils ipPoolUtils = new IpPoolUtils();
-        String host = ipPoolUtils.getIp();
-        String ip = host.split(":")[0];
-        String port = host.split(":")[1];
-        String isbn13 = "9787540488376";
-        JSONObject json = doubanMetaService.getJson("https://api.douban.com/v2/book/isbn/" + isbn13,ip,port);
+        String isbn13 = "978-7-5375-9116-4";
+        JSONObject json = doubanMetaService.getJson2("https://api.douban.com/v2/book/isbn/" + isbn13);
         System.out.println(json);
     }
 }

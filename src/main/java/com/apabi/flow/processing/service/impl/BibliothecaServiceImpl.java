@@ -895,8 +895,6 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Async
     @Override
     public void parsing(String path, String id, String username, String batchId) throws InterruptedException {
-        // 切换ip工具类
-        IpPoolUtils ipPoolUtils = new IpPoolUtils();
         // 判断给定目录是否是一个合法的目录
         try {
             ArrayList<File> fileList = new ArrayList<>();
@@ -905,7 +903,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     new ArrayBlockingQueue<Runnable>(files.size()));
 
             for (int i = 1; i <= files.size(); i++) {
-                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, doubanMetaService, publisherDao, bibliothecaMapper,ipPoolUtils,config);
+                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, doubanMetaService, publisherDao, bibliothecaMapper,config);
                 executor.execute(myTask);
                 System.out.println("线程池中线程数目：" + executor.getPoolSize() + "，队列中等待执行的任务数目：" +
                         executor.getQueue().size() + "，已执行玩别的任务数目：" + executor.getCompletedTaskCount());
