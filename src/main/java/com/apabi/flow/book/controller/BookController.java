@@ -16,6 +16,7 @@ import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
+import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.BizException;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
@@ -1443,7 +1444,7 @@ public class BookController {
     @PostMapping("/excelImportMeta")
     @ResponseBody
     public Object excelImportMeta(@RequestParam String fileInfo) {
-        ResultEntity resultEntity = null;
+        ResultEntity resultEntity = new ResultEntity();
         try {
             Set<BookMeta> set = new HashSet<>();
             List<BookMetaFromExcel> bookMetaFromExcels = BookController.bookMetaFromExcels;
@@ -1455,7 +1456,8 @@ public class BookController {
                     Iterator<BookMetaFromExcel> bookMetaFromExcel = bookMetaFromExcels.iterator();
                     while (bookMetaFromExcel.hasNext()) {
                         BookMetaFromExcel bookMetaFromExcel1 = bookMetaFromExcel.next();
-                        if (bookMetaFromExcel1.getBookMetaTemp().getMetaId().equalsIgnoreCase(split1[0])) {
+                        String metaId = bookMetaFromExcel1.getBookMetaTemp().getMetaId();
+                        if (org.apache.commons.lang3.StringUtils.isNotBlank(metaId)&& metaId.equalsIgnoreCase(split1[0])) {
                             set.add(bookMetaFromExcel1.getBookMetaTemp());
                             bookMetaFromExcel.remove();
                         }
@@ -1472,7 +1474,6 @@ public class BookController {
                     apabiBookMetaDataTempDao.insert(apabiBookMetaDataTemp);
                 }
             }
-            resultEntity = new ResultEntity();
             resultEntity.setStatus(200);
             resultEntity.setMsg("上传成功");
         } catch (Exception e) {
@@ -1489,7 +1490,6 @@ public class BookController {
         apabiBookMetaDataTemp.setIsReadEpub(0);
         apabiBookMetaDataTemp.setIsReadCebxFlow(0);
         apabiBookMetaDataTemp.setCreateTime(new Date());
-
         apabiBookMetaDataTemp.setMetaId(bookMeta.getMetaId());
         apabiBookMetaDataTemp.setIsbn(bookMeta.getIsbn());
         apabiBookMetaDataTemp.setTitle(bookMeta.getTitle());
@@ -1511,6 +1511,9 @@ public class BookController {
         apabiBookMetaDataTemp.setPreface(bookMeta.getPreface());
         apabiBookMetaDataTemp.setPaperPrice(bookMeta.getPaperPrice());
         apabiBookMetaDataTemp.setEbookPrice(bookMeta.getEbookPrice());
+        apabiBookMetaDataTemp.setDoubanId(bookMeta.getDoubanId());
+        apabiBookMetaDataTemp.setAmazonId(bookMeta.getAmazonId());
+        apabiBookMetaDataTemp.setNlibraryId(bookMeta.getNlibraryId());
         return apabiBookMetaDataTemp;
     }
 

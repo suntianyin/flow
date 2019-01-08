@@ -15,39 +15,22 @@
     </style>
 
     <script type="text/javascript">
-        <#--$(function () {-->
-            <#--/*if (isNull($('#batchId').val())){-->
-                <#--tipDialog("批次号不能为空，信息异常", 3, -1);-->
-                <#--return;-->
-            <#--}*/-->
-            <#--var batchId = $.trim($('#batchId').val());-->
-            <#--var title = $.trim($("#title").val());-->
-            <#--var publisher = $.trim($("#publisher").val());-->
-            <#--var duplicateFlag = $.trim($("#duplicateFlag").val());-->
-            <#--var bibliothecaState = $.trim($("#bibliothecaState").val());-->
-
-            <#--var pathurl = "index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&duplicateFlag=" + duplicateFlag + "&bibliothecaState=" + bibliothecaState;-->
-            <#--var totalPages = ${pages!1};-->
-            <#--var currentPages = ${pageNum!1};-->
-
-            <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
-            <#--$("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");-->
-
-            <#--jqPaging(pathurl, totalPages, currentPages);-->
-        <#--});-->
-
         function isNull(str) {
             if (str == undefined || str == null || $.trim(str) == '') {
                 return true;
             }
             return false;
         };
-
+        //批量
         function btn_list(btnType) {
-            var books ="";
+            var books = "";
             books = $('input:checkbox:checked');
             var fileInfo = "";
             $.each(books, function () {
+                if(isNull($(this).val())){
+                    tipDialog("请核实数据中出版日期不存在！", 3, -1);
+                    return;
+                }
                 fileInfo += $(this).val() + ";";
             });
             var formData = new FormData();
@@ -73,12 +56,12 @@
                                         if (data.status == 200) {
                                             tipDialog(data.msg, 3, 1);
                                             $.each(books, function () {
-                                            var ui = document.getElementById($(this).val());
-                                            if(ui!=null) {
-                                                ui.style.display = "none";
-                                                $(this).attr("checked",false);
-                                                // ui.disabled="disabled";
-                                            }
+                                                var ui = document.getElementById($(this).val());
+                                                if (ui != null) {
+                                                    ui.style.display = "none";
+                                                    $(this).attr("checked", false);
+                                                    // ui.disabled="disabled";
+                                                }
                                             });
                                         } else {
                                             tipDialog(data.msg, 3, -1);
@@ -101,15 +84,20 @@
                 confirmDialog("温馨提示", note, function (r) {
                     if (r) {
                         $.each(books, function () {
-                        var ui = document.getElementById($(this).val());
-                        ui.style.display = "none";
+                            var ui = document.getElementById($(this).val());
+                            ui.style.display = "none";
                         });
                     }
                 });
             }
         }
+        //单个
         function btn_sureOperation(btnType, list) {
             var fileInfo =list.split(",",1);
+            if(isNull(fileInfo)){
+                tipDialog("请核实数据中出版日期不存在！", 3, -1);
+                return;
+            }
             var formData = new FormData();
             formData.append('fileInfo', fileInfo);
             var note = "";
@@ -176,7 +164,6 @@
             loading();
             $("#form1").submit();
         }
-
     </script>
 </head>
 <body>
@@ -193,7 +180,7 @@
                     <div class="PartialButton">
                         <a onclick="javascript:window.location.href='${ctx}/book/bookMeta'"
                            class="tools_btn"><span><i
-                                class="fa fa-backward"></i>&nbsp返回</span></a>
+                                        class="fa fa-backward"></i>&nbsp返回</span></a>
                         <div class="tools_separator"></div>
                     </div>
                     <div class="PartialButton">
@@ -202,7 +189,7 @@
                     </div>
                     <div class="PartialButton">
                         <button id="batch-import" title="批量导入" class="tools_btn" onclick="batchImport()"><span><i
-                                class="fa fa-plus"></i>&nbsp批量导入模板数据</span></button>
+                                        class="fa fa-plus"></i>&nbsp批量导入模板数据</span></button>
                         <div class="tools_separator"></div>
                     </div>
                 </div>
@@ -224,26 +211,26 @@
                 <table id="table-list"
                        class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                     <thead>
-                    <tr role="row" >
-                        <th><input type="checkbox" id="allCheckedLtYes" onclick="selectAll(this, 'ltYes1')" ></th>
-                        <th>ISBN</th>
-                        <th class="meta-color">ISBN</th>
-                        <th>ISBN10</th>
-                        <th class="meta-color">ISBN10</th>
-                        <th>ISBN13</th>
-                        <th class="meta-color">ISBN13</th>
-                        <th>标题</th>
-                        <th class="meta-color">标题</th>
-                        <th>副标题</th>
-                        <th class="meta-color">副标题</th>
-                        <th>作者</th>
-                        <th class="meta-color">作者</th>
+                    <tr role="row">
+                        <th><input type="checkbox" id="allCheckedLtYes" onclick="selectAll(this, 'ltYes1')"></th>
+                        <th width="100">ISBN</th>
+                        <th width="100" class="meta-color">ISBN</th>
+                        <th width="100">ISBN10</th>
+                        <th width="100" class="meta-color">ISBN10</th>
+                        <th width="100">ISBN13</th>
+                        <th width="100" class="meta-color">ISBN13</th>
+                        <th width="150">标题</th>
+                        <th width="150" class="meta-color">标题</th>
+                        <th width="100">副标题</th>
+                        <th width="100" class="meta-color">副标题</th>
+                        <th width="100">作者</th>
+                        <th width="100" class="meta-color">作者</th>
                         <#--<th>责任关系词</th>-->
                         <#--<th class="meta-color">责任关系词</th>-->
-                        <th>出版社</th>
-                        <th class="meta-color">出版社</th>
-                        <th>出版时间</th>
-                        <th class="meta-color">出版时间</th>
+                            <th width="150">出版社</th>
+                            <th width="150" class="meta-color">出版社</th>
+                            <th width="180">出版时间</th>
+                            <th width="180" class="meta-color">出版时间</th>
                         <#--<th>出版地</th>-->
                         <#--<th class="meta-color">出版地</th>-->
                         <#--<th>丛书关系</th>-->
@@ -266,7 +253,7 @@
                         <#--<th class="meta-color">纸书价格</th>-->
                         <#--<th>电子书价格</th>-->
                         <#--<th class="meta-color">电子书价格</th>-->
-                        <th>操作</th>
+                        <th width="180">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -274,76 +261,58 @@
                         <#list bookMetaFromExcels as list>
                             <#if list.state==1>
                                 <tr class="gradeA odd" role="row" id="${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}" >
-                                    <td><input type="checkbox" name="ltYes1"
-                                               value="${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}"/>
-                                    </td>
-                                    <td>${(list.bookMetaTemp.isbn)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
-                                    <td>${(list.bookMetaTemp.isbn10)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn10)! '' }</td>
-                                    <td>${(list.bookMetaTemp.isbn13)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
-                                    <td>${(list.bookMetaTemp.title)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.title)! '' }</td>
-                                    <td>${(list.bookMetaTemp.subTitle)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.subTitle)! '' }</td>
-                                    <td>${(list.bookMetaTemp.creator)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.creator) !''}</td>
-                                    <#--<td>${(list.bookMetaTemp.creatorWord)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.creatorWord) !''}</td>-->
-                                    <td>${(list.bookMetaTemp.publisher)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
-                                    <td>${(list.bookMetaTemp.issuedDate)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
-                                    <#--<td>${(list.bookMetaTemp.place)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.place)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.relation)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.relation)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.editionOrder)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.editionOrder)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.classCode)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.classCode)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.translator)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.translator)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.creatorid)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.creatorid)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.language)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.language)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.preface)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.preface)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.paperPrice)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.paperPrice)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.ebookPrice)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.ebookPrice)! '' }</td>-->
-                                    <td>
-                                <#--<#if (list.bibliotheca.bibliothecaState)??>-->
-                                    <#--<#if list.bibliotheca.bibliothecaState.desc == "重复">-->
-                                        <#--<span style="color: #7c7c7c;"><i>确认不上传</i></span>-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'make', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认上传</a>-->
-                                    <#--<#elseif list.bibliotheca.bibliothecaState.desc == "不重复">-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认不上传</a>-->
-                                        <#--<span style="color: #7c7c7c;"><i>确认上传</i></span>-->
-                                    <#--<#else >-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认不上传</a>-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'make', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认上传</a>-->
-                                    <#--</#if>-->
-                                <#--<#else >-->
-                                    <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('noImport', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">确认不上传</a>
-                                    <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('import', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">确认上传</a>
-                                <#--</#if>-->
-                                    </td>
-                                </tr>
-                                    </td>
+                                <td><input type="checkbox" name="ltYes1"
+                            value="${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}"/>
+                                </td>
+                                <td>${(list.bookMetaTemp.isbn)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
+                                <td>${(list.bookMetaTemp.isbn10)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn10)! '' }</td>
+                                <td>${(list.bookMetaTemp.isbn13)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
+                                <td>${(list.bookMetaTemp.title)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.title)! '' }</td>
+                                <td>${(list.bookMetaTemp.subTitle)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.subTitle)! '' }</td>
+                                <td>${(list.bookMetaTemp.creator)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.creator) !''}</td>
+                            <#--<td>${(list.bookMetaTemp.creatorWord)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.creatorWord) !''}</td>-->
+                                <td>${(list.bookMetaTemp.publisher)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
+                                <td>${(list.bookMetaTemp.issuedDate)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
+                            <#--<td>${(list.bookMetaTemp.place)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.place)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.relation)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.relation)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.editionOrder)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.editionOrder)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.classCode)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.classCode)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.translator)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.translator)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.creatorid)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.creatorid)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.language)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.language)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.preface)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.preface)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.paperPrice)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.paperPrice)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.ebookPrice)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.ebookPrice)! '' }</td>-->
+                                <td>
+                            <a href="javascript:void(0);"
+                            onclick="btn_sureOperation('noImport', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">
+                                    确认不上传</a>
+                            <a href="javascript:void(0);"
+                            onclick="btn_sureOperation('import', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">确认上传</a>
+                                </td>
                                 </tr>
                             </#if>
                         </#list>
@@ -365,25 +334,25 @@
                        class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                     <thead>
                     <tr role="row">
-                        <th><input type="checkbox" id="allCheckedLtYes" onclick="selectAll(this, 'ltYes2')" ></th>
-                        <th>ISBN</th>
-                        <th class="meta-color">ISBN</th>
-                        <th>ISBN10</th>
-                        <th class="meta-color">ISBN10</th>
-                        <th>ISBN13</th>
-                        <th class="meta-color">ISBN13</th>
-                        <th>标题</th>
-                        <th class="meta-color">标题</th>
-                        <th>副标题</th>
-                        <th class="meta-color">副标题</th>
-                        <th>作者</th>
-                        <th class="meta-color">作者</th>
+                        <th><input type="checkbox" id="allCheckedLtYes" onclick="selectAll(this, 'ltYes2')"></th>
+                        <th width="100">ISBN</th>
+                        <th width="100" class="meta-color">ISBN</th>
+                        <th width="100">ISBN10</th>
+                        <th width="100" class="meta-color">ISBN10</th>
+                        <th width="100">ISBN13</th>
+                        <th width="100" class="meta-color">ISBN13</th>
+                        <th width="150">标题</th>
+                        <th width="150" class="meta-color">标题</th>
+                        <th width="100">副标题</th>
+                        <th width="100" class="meta-color">副标题</th>
+                        <th width="100">作者</th>
+                        <th width="100" class="meta-color">作者</th>
                         <#--<th>责任关系词</th>-->
                         <#--<th class="meta-color">责任关系词</th>-->
-                        <th>出版社</th>
-                        <th class="meta-color">出版社</th>
-                        <th>出版时间</th>
-                        <th class="meta-color">出版时间</th>
+                            <th width="150">出版社</th>
+                            <th width="150" class="meta-color">出版社</th>
+                            <th width="180">出版时间</th>
+                            <th width="180" class="meta-color">出版时间</th>
                         <#--<th>出版地</th>-->
                         <#--<th class="meta-color">出版地</th>-->
                         <#--<th>丛书关系</th>-->
@@ -406,7 +375,7 @@
                         <#--<th class="meta-color">纸书价格</th>-->
                         <#--<th>电子书价格</th>-->
                         <#--<th class="meta-color">电子书价格</th>-->
-                        <th>操作</th>
+                        <th width="180">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -414,75 +383,58 @@
                         <#list bookMetaFromExcels as list>
                             <#if list.state==0>
                                 <tr class="gradeA odd" role="row" id="${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}" >
-                                    <td><input type="checkbox" name="ltYes2"
-                                               value="${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}"/>
-                                    </td>
-                                    <td>${(list.bookMetaTemp.isbn)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
-                                    <td>${(list.bookMetaTemp.isbn10)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn10)! '' }</td>
-                                    <td>${(list.bookMetaTemp.isbn13)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
-                                    <td>${(list.bookMetaTemp.title)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.title)! '' }</td>
-                                    <td>${(list.bookMetaTemp.subTitle)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.subTitle)! '' }</td>
-                                    <td>${(list.bookMetaTemp.creator)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.creator) !''}</td>
-                                    <#--<td>${(list.bookMetaTemp.creatorWord)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.creatorWord) !''}</td>-->
-                                    <td>${(list.bookMetaTemp.publisher)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
-                                    <td>${(list.bookMetaTemp.issuedDate)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
-                                    <#--<td>${(list.bookMetaTemp.place)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.place)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.relation)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.relation)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.editionOrder)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.editionOrder)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.classCode)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.classCode)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.translator)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.translator)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.creatorid)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.creatorid)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.language)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.language)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.preface)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.preface)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.paperPrice)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.paperPrice)! '' }</td>-->
-                                    <#--<td>${(list.bookMetaTemp.ebookPrice)! '' }</td>-->
-                                    <#--<td class="meta-color">${(list.bookMeta.ebookPrice)! '' }</td>-->
-                                    <td>
-                                <#--<#if (list.bibliotheca.bibliothecaState)??>-->
-                                    <#--<#if list.bibliotheca.bibliothecaState.desc == "重复">-->
-                                        <#--<span style="color: #7c7c7c;"><i>确认不上传</i></span>-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'make', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认上传</a>-->
-                                    <#--<#elseif list.bibliotheca.bibliothecaState.desc == "不重复">-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认不上传</a>-->
-                                        <#--<span style="color: #7c7c7c;"><i>确认上传</i></span>-->
-                                    <#--<#else >-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认不上传</a>-->
-                                        <#--<a href="javascript:void(0);"-->
-                                           <#--onclick="btn_sureOperation('ltYes', 'make', '${(list.bookMetaTemp.id)!''},${(list.bookMeta.metaId)!''}')">确认上传</a>-->
-                                    <#--</#if>-->
-                                <#--<#else >-->
-                                    <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('noImport', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">确认不上传</a>
-                                    <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('import', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">确认上传</a>
-                                    </td>
-                                </tr>
-                                    </td>
+                                <td><input type="checkbox" name="ltYes2"
+                            value="${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}"/>
+                                </td>
+                                <td>${(list.bookMetaTemp.isbn)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
+                                <td>${(list.bookMetaTemp.isbn10)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn10)! '' }</td>
+                                <td>${(list.bookMetaTemp.isbn13)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
+                                <td>${(list.bookMetaTemp.title)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.title)! '' }</td>
+                                <td>${(list.bookMetaTemp.subTitle)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.subTitle)! '' }</td>
+                                <td>${(list.bookMetaTemp.creator)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.creator) !''}</td>
+                            <#--<td>${(list.bookMetaTemp.creatorWord)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.creatorWord) !''}</td>-->
+                                <td>${(list.bookMetaTemp.publisher)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
+                                <td>${(list.bookMetaTemp.issuedDate)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
+                            <#--<td>${(list.bookMetaTemp.place)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.place)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.relation)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.relation)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.editionOrder)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.editionOrder)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.classCode)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.classCode)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.translator)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.translator)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.creatorid)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.creatorid)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.originTitle)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.originTitle)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.language)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.language)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.preface)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.preface)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.paperPrice)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.paperPrice)! '' }</td>-->
+                            <#--<td>${(list.bookMetaTemp.ebookPrice)! '' }</td>-->
+                            <#--<td class="meta-color">${(list.bookMeta.ebookPrice)! '' }</td>-->
+                                <td>
+                            <a href="javascript:void(0);"
+                            onclick="btn_sureOperation('noImport', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">
+                                    确认不上传</a>
+                            <a href="javascript:void(0);"
+                            onclick="btn_sureOperation('import', '${(list.bookMetaTemp.metaId+','+list.bookMeta.metaId)!''}')">确认上传</a>
+                                </td>
                                 </tr>
                             </#if>
                         </#list>

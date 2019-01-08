@@ -1729,8 +1729,17 @@ public class BookMetaServiceImpl implements BookMetaService {
         String preface = (String) entry.getValue().get("序言");
         String paperPrice = (String) entry.getValue().get("纸书价格");
         String ebookPrice = (String) entry.getValue().get("电子书价格");
+        String doubanId = (String) entry.getValue().get("doubanId");
+        String amazonId = (String) entry.getValue().get("amazonId");
+        String nlibraryId = (String) entry.getValue().get("nlibraryId");
+
         String metaId = "";
-        if (issuedDate != null) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(issuedDate)) {
+            issuedDate = StringToolUtil.issuedDateFormat(issuedDate);
+            if (issuedDate.contains(" 00:00:00")) {
+                // 获取清洗后的issuedDate的值
+                issuedDate = issuedDate.replace(" 00:00:00", "");
+            }
             metaId = StringToolUtil.metaidFormat(issuedDate);
         }
         BookMeta bookMeta = new BookMeta();
@@ -1755,6 +1764,9 @@ public class BookMetaServiceImpl implements BookMetaService {
         bookMeta.setPreface(preface);
         bookMeta.setPaperPrice(paperPrice);
         bookMeta.setEbookPrice(ebookPrice);
+        bookMeta.setDoubanId(doubanId);
+        bookMeta.setAmazonId(amazonId);
+        bookMeta.setNlibraryId(nlibraryId);
         return bookMeta;
     }
 
