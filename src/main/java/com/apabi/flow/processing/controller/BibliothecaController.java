@@ -186,7 +186,8 @@ public class BibliothecaController {
             }
             model.addAttribute("title", title);
             model.addAttribute("batchId", batchId);
-
+            //资源路径
+            model.addAttribute("resourcePath",batch.getResourcePath());
             model.addAttribute("publisher", publisher);
 //            model.addAttribute("duplicateFlag", duplicateFlag);
             model.addAttribute("bibliothecaState", bibliothecaState);
@@ -818,11 +819,9 @@ public class BibliothecaController {
             return new ResultEntity(500, "资源路径不存在请核实");
         }
     }
-    @RequestMapping({"/pdf"})
+    @RequestMapping({"/pdf"})///processing/PDFViewer/canvas/index.ftl
     public String pdf(@RequestParam(value = "id") String id) throws InterruptedException{
-            return "/processing/pdf";
+//            return "/processing/pdf";
+        return "processing/PDFViewer/canvas/index";
     }
-
-
-
 }
