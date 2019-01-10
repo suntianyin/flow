@@ -1582,12 +1582,14 @@ public class BookMetaServiceImpl implements BookMetaService {
                 String cata = getCebxData(getCataLog + bookMeta.getMetaId());
                 bookMeta.setCebxPage(cebxPage);
                 bookMeta.setFoamatCatalog(cata);
+                bookMeta.setUpdateTime(new Date());
                 bookMetaDao.updateBookMetaById(bookMeta);
                 //更新到temp表
                 ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
                 temp.setMetaId(bookMeta.getMetaId());
                 temp.setCebxPage(bookMeta.getCebxPage());
                 temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
+                temp.setUpdateTime(new Date());
                 bookMetaDataTempDao.update(temp);
                 log.info("获取图书{}页码和目录成功", metaId);
             } catch (Exception e) {

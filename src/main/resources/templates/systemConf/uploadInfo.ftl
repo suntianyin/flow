@@ -15,7 +15,7 @@
                 tipCss($(this), Validatemsg);
                 return false;
             }
-            Loading(true, "正在提交数据...");
+            $("#loading").show();
             window.setTimeout(function () {
                 var fileData = $('#file')[0].files;
                 var uploadPath = $('#uploadPath').val();
@@ -32,6 +32,7 @@
                     processData: false,
                     contentType: false,
                     success: function (data) {
+                        $("#loading").hide();
                         if (data == "success") {
                             tipDialog("上传成功！", 3, 1);
                             top.frames[tabiframeId()].location.reload();
@@ -72,6 +73,8 @@
         </div>
     </div>
 </form>
+<div id="loading"><img src="${ctx}/images/ui-anim_basic_16x16.gif"/>
+    <span style="font-weight: bolder;">请稍候...</span>
+</div>
 </body>
-
 </html>
