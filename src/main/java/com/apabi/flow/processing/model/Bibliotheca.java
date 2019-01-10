@@ -57,6 +57,8 @@ public class Bibliotheca {
 
     private DeleteFlagEnum deleteFlag;
 
+    private Integer convertStatus;
+
     public String getId() {
         return id;
     }
@@ -241,6 +243,14 @@ public class Bibliotheca {
         this.publisherName = publisherName;
     }
 
+    public Integer getConvertStatus() {
+        return convertStatus;
+    }
+
+    public void setConvertStatus(Integer convertStatus) {
+        this.convertStatus = convertStatus;
+    }
+
     @Override
     public String toString() {
         return "Bibliotheca{" +
@@ -267,6 +277,7 @@ public class Bibliotheca {
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", deleteFlag=" + deleteFlag +
+                ", convertStatus=" + convertStatus +
                 '}';
     }
 }

@@ -1,15 +1,12 @@
 package com.apabi.flow.processing.service.impl;
 
-import com.apabi.flow.auth.service.ResourceService;
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.crawlTask.util.IpPoolUtils;
-import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
-import com.apabi.flow.douban.model.ApabiBookMetaTemp;
 import com.apabi.flow.douban.service.DoubanMetaService;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.*;
@@ -22,18 +19,17 @@ import com.apabi.flow.processing.model.BibliothecaExcelModel;
 import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
 import com.apabi.flow.processing.service.MyTask;
-import com.apabi.flow.processing.util.IsbnCheck;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
+import com.apabi.maker.MakerAgent;
+import com.apabi.maker.MakerUtil;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -72,7 +67,11 @@ import java.util.stream.Collectors;
  */
 @Service
 public class BibliothecaServiceImpl implements BibliothecaService {
+
     private static final Logger logger = LoggerFactory.getLogger(BibliothecaServiceImpl.class);
+
+    private static boolean MAKER_INIT = true;
+
     @Autowired
     private BibliothecaMapper bibliothecaMapper;
 
@@ -96,6 +95,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     @Autowired
     private DoubanMetaService doubanMetaService;
 
+    @Autowired
+    ApplicationConfig config;
 
     /**
      * 根据 书目 id 逻辑删除当前批次
@@ -889,8 +890,97 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
         return sb.toString();
     }
-    @Autowired
-    ApplicationConfig config;
+
+
+    /**
+     * 转换pdf文件为cebx
+     * fileMap中的数组：0-文件名，1-出版日期，2-metaId
+     */
+    @Override
+    @Async
+    public void batchConvert2Cebx(String dirPath, String fileInfos) {
+        if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfos)) {
+            Map<String, String[]> fileMap = convertFile2Map(fileInfos);
+            //生成job文件
+            String jobPath = ApplicationConfig.getCebxMaker() + File.separator + "job";
+            Map<String, String> jobMap = MakerUtil.createJobXml(dirPath, config.getUploadCebx(), jobPath, fileMap);
+            if (jobMap != null && jobMap.size() > 0) {
+                //初始化maker
+                synchronized (this) {
+                    if (MAKER_INIT) {
+                        MakerAgent.init();
+                        MAKER_INIT = false;
+                    }
+                }
+                long startS = System.currentTimeMillis();
+                logger.info("路径{}转换cebx已开始", dirPath);
+                for (Map.Entry entry : fileMap.entrySet()) {
+                    String[] fileInfo = (String[]) entry.getValue();
+                    Bibliotheca bibliotheca = new Bibliotheca();
+                    try {
+                        logger.info("文件{}转换cebx已开始", fileInfo[0]);
+                        long start = System.currentTimeMillis();
+                        bibliotheca.setId((String) entry.getKey());
+                        bibliotheca.setConvertStatus(1);
+                        bibliotheca.setUpdateTime(new Date());
+                        bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
+                        String fileJob = jobMap.get(entry.getKey());
+                        if (StringUtils.isNotBlank(fileJob)) {
+                            int res = MakerAgent.DoConvert(fileJob, 1000);
+                            if (res == 0) {
+                                bibliotheca.setConvertStatus(2);
+                                bibliotheca.setUpdateTime(new Date());
+                                bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
+                                long end = System.currentTimeMillis();
+                                logger.info("文件{}转换cebx成功，耗时{}", fileInfo[0], (end - start));
+                            } else {
+                                bibliotheca.setConvertStatus(-1);
+                                bibliotheca.setUpdateTime(new Date());
+                                bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
+                                logger.info("文件{}转换cebx失败", fileInfo[0]);
+                            }
+                        } else {
+                            bibliotheca.setConvertStatus(-1);
+                            bibliotheca.setUpdateTime(new Date());
+                            bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
+                            logger.info("文件{}转换cebx时，job文件未生成", fileInfo[0]);
+                        }
+                    } catch (Exception e) {
+                        bibliotheca.setConvertStatus(-1);
+                        bibliotheca.setUpdateTime(new Date());
+                        bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
+                        logger.warn("文件{}转换cebx时，出现异常{}", fileInfo[0], e.getMessage());
+                    }
+                }
+                long endS = System.currentTimeMillis();
+                logger.info("路径{}转换cebx已结束，耗时{}", dirPath, (endS - startS));
+            }
+        }
+    }
+
+    //将文件信息转换成指定的map格式
+    private Map convertFile2Map(String fileInfos) {
+        if (StringUtils.isNotBlank(fileInfos)) {
+            Map<String, String[]> fileMap = new HashMap<>(16);
+            String[] files = fileInfos.split(";");
+            for (String file : files) {
+                String[] fileAttr = new String[3];
+                String[] fileInfo = file.split(",");
+                fileMap.put(fileInfo[0], null);
+                try {
+                    fileAttr[0] = fileInfo[1];
+                    fileAttr[1] = fileInfo[2].substring(0, 10);
+                    fileAttr[2] = fileInfo[3];
+                    fileMap.put(fileInfo[0], fileAttr);
+                } catch (Exception e) {
+                    logger.warn("生成文件{}的map信息时，出现异常{}", fileInfo[0], e.getMessage());
+                }
+            }
+            return fileMap;
+        }
+        return null;
+    }
+
     //书目解析
     @Async
     @Override
@@ -903,13 +993,13 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     new ArrayBlockingQueue<Runnable>(files.size()));
 
             for (int i = 1; i <= files.size(); i++) {
-                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, doubanMetaService, publisherDao, bibliothecaMapper,config);
+                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, doubanMetaService, publisherDao, bibliothecaMapper, config);
                 executor.execute(myTask);
                 System.out.println("线程池中线程数目：" + executor.getPoolSize() + "，队列中等待执行的任务数目：" +
                         executor.getQueue().size() + "，已执行玩别的任务数目：" + executor.getCompletedTaskCount());
             }
             executor.shutdown();
-            boolean a=true;
+            boolean a = true;
             while (a) {
                 if (executor.isTerminated()) {
                     Batch batch = new Batch();
@@ -919,7 +1009,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     batch.setUpdateTime(new Date());
                     batchMapper.updateStateByPrimaryKey(batch);
                     logger.info("批次扫描完成------");
-                    a=false;
+                    a = false;
                 }
             }
         } catch (Exception e) {
@@ -928,17 +1018,18 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
         }
     }
-        //递归获取里面的文件
-        private ArrayList<File> getFiles (ArrayList < File > fileList, String path){
-            File[] allFiles = new File(path).listFiles();
-            for (int i = 0; i < allFiles.length; i++) {
-                File file = allFiles[i];
-                if (file.isFile()) {
-                    fileList.add(file);
-                } else {
-                    getFiles(fileList, file.getAbsolutePath());
-                }
+
+    //递归获取里面的文件
+    private ArrayList<File> getFiles(ArrayList<File> fileList, String path) {
+        File[] allFiles = new File(path).listFiles();
+        for (int i = 0; i < allFiles.length; i++) {
+            File file = allFiles[i];
+            if (file.isFile()) {
+                fileList.add(file);
+            } else {
+                getFiles(fileList, file.getAbsolutePath());
             }
-            return fileList;
         }
+        return fileList;
     }
+}

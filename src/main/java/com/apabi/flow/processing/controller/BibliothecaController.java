@@ -187,7 +187,7 @@ public class BibliothecaController {
             model.addAttribute("title", title);
             model.addAttribute("batchId", batchId);
             //资源路径
-            model.addAttribute("resourcePath",batch.getResourcePath());
+            model.addAttribute("resourcePath", batch.getResourcePath());
             model.addAttribute("publisher", publisher);
 //            model.addAttribute("duplicateFlag", duplicateFlag);
             model.addAttribute("bibliothecaState", bibliothecaState);
@@ -304,7 +304,7 @@ public class BibliothecaController {
                     || StringUtils.isBlank(bibliotheca.getTitle())
                     || StringUtils.isBlank(bibliotheca.getOriginalFilename())
                     || StringUtils.isBlank(bibliotheca.getBibliothecaState().getDesc())
-            ) {
+                    ) {
                 return new ResultEntity(400, "请检查必填项是否完整！");
             }
             //书目添加
@@ -416,9 +416,9 @@ public class BibliothecaController {
             bibliotheca.setPublisher(bibliotheca.getPublisher().split(",")[0]);
             //书目更新
             int i = bibliothecaService.updateBibliotheca(bibliotheca);
-            if ( i== 1) {
+            if (i == 1) {
                 return new ResultEntity(200, "修改成功");
-            }else if (i==-1){
+            } else if (i == -1) {
                 return new ResultEntity(500, "出版日期有误!");
             }
             return new ResultEntity(500, "修改失败!");
@@ -800,16 +800,17 @@ public class BibliothecaController {
             return new ResultEntity(400, "isbn校验错误！请输入正确的isbn");
         }
     }
+
     //书目解析
-    @RequestMapping(value="/parsing",method = RequestMethod.POST)
+    @RequestMapping(value = "/parsing", method = RequestMethod.POST)
     @ResponseBody
-    public Object parsing(@RequestParam(value = "path") String path,@RequestParam(value = "id") String id,@RequestParam(value = "batchId") String batchId) throws InterruptedException{
+    public Object parsing(@RequestParam(value = "path") String path, @RequestParam(value = "id") String id, @RequestParam(value = "batchId") String batchId) throws InterruptedException {
         File file = new File(path);
         if (file.exists()) {
-            UserDetails userDetails =(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-            bibliothecaService.parsing(path,id,username,batchId);
-            Batch batch=new Batch();
+            bibliothecaService.parsing(path, id, username, batchId);
+            Batch batch = new Batch();
             batch.setId(id);
             batch.setBatchState(BatchStateEnum.BEGIN_SCANNING);
             batch.setUpdateTime(new Date());
@@ -819,9 +820,22 @@ public class BibliothecaController {
             return new ResultEntity(500, "资源路径不存在请核实");
         }
     }
+
     @RequestMapping({"/pdf"})///processing/PDFViewer/canvas/index.ftl
-    public String pdf(@RequestParam(value = "id") String id) throws InterruptedException{
+    public String pdf(@RequestParam(value = "id") String id) throws InterruptedException {
 //            return "/processing/pdf";
         return "processing/PDFViewer/canvas/index";
+    }
+
+    //批量转换pdf成cebx文件
+    @RequestMapping(value = "/batchConvert2Cebx", method = RequestMethod.POST)
+    @ResponseBody
+    public String batchConvert2Cebx(@RequestParam(value = "dirPath") String dirPath,
+                                @RequestParam(value = "fileInfo") String fileInfo) {
+        if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfo)) {
+            bibliothecaService.batchConvert2Cebx(dirPath, fileInfo);
+            return "success";
+        }
+        return "error";
     }
 }

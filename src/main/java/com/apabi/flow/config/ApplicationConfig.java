@@ -1,15 +1,21 @@
 package com.apabi.flow.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
+@ConfigurationProperties
 public class ApplicationConfig {
 
     //cebx命令
     @Value("${cebxHtmlExe}")
     private String cebxHtmlExe;
+
+    //maker的DLL
+    @Value("${cebxMaker}")
+    private static String cebxMaker;
 
     //书目解析
     @Value("${copyRightExtractExe}")
@@ -55,16 +61,20 @@ public class ApplicationConfig {
     @Value("${threadTime}")
     private Integer threadTime;
 
-    public String getTargetCopyRightDir() {
-        return targetCopyRightDir;
-    }
-
-    public void setTargetCopyRightDir(String targetCopyRightDir) {
-        this.targetCopyRightDir = targetCopyRightDir;
-    }
-
     public String getCebxHtmlExe() {
         return cebxHtmlExe;
+    }
+
+    public void setCebxHtmlExe(String cebxHtmlExe) {
+        this.cebxHtmlExe = cebxHtmlExe;
+    }
+
+    public static String getCebxMaker() {
+        return cebxMaker;
+    }
+
+    public void setCebxMaker(String cebxMaker) {
+        this.cebxMaker = cebxMaker;
     }
 
     public String getCopyRightExtractExe() {
@@ -75,8 +85,12 @@ public class ApplicationConfig {
         this.copyRightExtractExe = copyRightExtractExe;
     }
 
-    public void setCebxHtmlExe(String cebxHtmlExe) {
-        this.cebxHtmlExe = cebxHtmlExe;
+    public String getTargetCopyRightDir() {
+        return targetCopyRightDir;
+    }
+
+    public void setTargetCopyRightDir(String targetCopyRightDir) {
+        this.targetCopyRightDir = targetCopyRightDir;
     }
 
     public String getTargetCebxDir() {
@@ -101,6 +115,14 @@ public class ApplicationConfig {
 
     public void setUploadXml(String uploadXml) {
         this.uploadXml = uploadXml;
+    }
+
+    public String getUpAuthFile() {
+        return upAuthFile;
+    }
+
+    public void setUpAuthFile(String upAuthFile) {
+        this.upAuthFile = upAuthFile;
     }
 
     public String getUploadEpub() {
@@ -141,13 +163,5 @@ public class ApplicationConfig {
 
     public void setThreadTime(Integer threadTime) {
         this.threadTime = threadTime;
-    }
-
-    public String getUpAuthFile() {
-        return upAuthFile;
-    }
-
-    public void setUpAuthFile(String upAuthFile) {
-        this.upAuthFile = upAuthFile;
     }
 }

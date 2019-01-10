@@ -16,11 +16,11 @@
             var publisher = $("#publisher").val().trim();
             // var duplicateFlag = $("#duplicateFlag").val();
             var bibliothecaState = $("#bibliothecaState").val();
-            var pathurl = "index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
+            var pathurl = "index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
-            <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
+        <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
             $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
 
             jqPaging(pathurl, totalPages, currentPages);
@@ -45,7 +45,7 @@
             var publisher = $("#publisher").val().trim();
             // var duplicateFlag = $("#duplicateFlag").val().trim();
             var bibliothecaState = $("#bibliothecaState").val();
-            window.location.href = "${ctx}/processing/bibliotheca/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
+            window.location.href = "${ctx}/processing/bibliotheca/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
         }
 
         //编辑书目
@@ -55,6 +55,7 @@
                 top.frames[iframe].AcceptClick();
             });
         }
+
         //书目信息pdf查看
         function pdf(id) {
             var url = "/processing/bibliotheca/pdf?id=" + id;
@@ -62,6 +63,7 @@
                 top.frames[iframe].AcceptClick();
             });
         }
+
         function updateBatchState(id) {
             var url = "/processing/batch/editBatchState/index?id=" + id;
             openDialog(url, "updateBatchState", "编辑批次状态", 350, 100, function (iframe) {
@@ -183,15 +185,16 @@
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
                         try {
-                            window.location.href = "${ctx}/processing/bibliotheca/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
+                            window.location.href = "${ctx}/processing/bibliotheca/exportData?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
                         } catch (e) {
                         }
                     }, 200);
                 }
             });
         }
+
         //授权清单导出
-        function btn_exportData(){
+        function btn_exportData() {
             if (isNull($('#batchId').val())) {
                 tipDialog("批次号不能为空，信息异常", 3, -1);
                 return;
@@ -209,6 +212,51 @@
                 }
             });
         }
+
+        //批量转换成CEBX
+        function batchConvert2Cebx() {
+            //判断文件路径
+            var dirPath = $("#resourcePath").val();
+            if (isNull(dirPath)) {
+                tipDialog("资源路径不能为空", 3, -1);
+                return;
+            }
+            //获取文件具体信息
+            var files = $('input:checkbox:checked');
+            var fileInfo = "";
+            $.each(files, function () {
+                fileInfo += $(this).val();
+            });
+            if (fileInfo == "" || fileInfo == "on,") {
+                tipDialog("请选择数据", 3, -2);
+                return;
+            }
+            var formData = new FormData();
+            formData.append('dirPath', dirPath);
+            formData.append('fileInfo', fileInfo);
+            $.ajax({
+                url: RootPath() + "/processing/bibliotheca/batchConvert2Cebx",
+                type: "POST",
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data == "success") {
+                        $("input[type='checkbox']").prop("disabled", true);
+                        tipDialog("文件已开始转换，请稍后查看！", 3, 1);
+                    } else {
+                        tipDialog("文件转换错误，请联系管理员！", 3, -2);
+                    }
+                },
+                error: function (data) {
+                    Loading(false);
+                    alertDialog(data.responseText, -1);
+                }
+            });
+        }
+
+
     </script>
 </head>
 <body>
@@ -226,9 +274,11 @@
             </div>
             <div class="PartialButton">
                 <#if BatchStateEnum=4||BatchStateEnum=5||BatchStateEnum=6>
-                    <a id="lr-add" class="tools_btn"><span style="color: #7c7c7c;"><i class="fa fa-plus"></i>&nbsp;新增</span></a>
+                    <a id="lr-add" class="tools_btn"><span style="color: #7c7c7c;"><i
+                            class="fa fa-plus"></i>&nbsp;新增</span></a>
                 <#else>
-                    <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;新增</span></a>
+                    <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
+                            class="fa fa-plus"></i>&nbsp;新增</span></a>
                 </#if>
                 <div class="tools_separator"></div>
             </div>
@@ -242,10 +292,20 @@
                     <span><i class="fa fa-outdent"></i>&nbsp;导出排产结果</span></button>
                 <div class="tools_separator"></div>
             </div>
+            <div class="PartialButton">
+                <button id="batch-import" title="批量转换成CEBX" class="tools_btn" onclick="batchConvert2Cebx()">
+                    <span><i class="fa fa-outdent"></i>&nbsp;批量转换成CEBX</span></button>
+                <div class="tools_separator"></div>
+            </div>
         </div>
         <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
             <table border="0" class="form-find" style="height: 45px;">
                 <tr>
+                    <th>资源路径：</th>
+                    <td>
+                        <input id="resourcePath" name="resourcePath" type="text" value="${resourcePath!'' }" class="txt"
+                               readonly style="width: 200px"/>
+                    </td>
                     <th>标题：</th>
                     <td>
                         <input id="batchId" name="batchId" value="${batchId!''}" hidden class="txt"/>
@@ -285,7 +345,8 @@
                     </td>
                 </tr>
             </table>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <label>${total!0}</label> 条书目信息,已分拣<label>${num1!0}</label>条,重复<label>${num2!0}</label>条,制作成功<label>${num3!0}</label>条,制作失败<label>${num4!0}</label>条。
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <label>${total!0}</label>
+            条书目信息,已分拣<label>${num1!0}</label>条,重复<label>${num2!0}</label>条,制作成功<label>${num3!0}</label>条,制作失败<label>${num4!0}</label>条。
         </div>
         <div class="panel-body">
             <div class="row">
@@ -311,6 +372,7 @@
                         <th>备注</th>
                     <#--<th>是否重复</th>-->
                         <th>书目状态</th>
+                        <th>转换状态</th>
                     <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
@@ -321,7 +383,25 @@
                     <#if bibliothecaList??>
                         <#list bibliothecaList as list>
                         <tr class="gradeA odd" role="row">
-                            <td><input type="checkbox" name="bibliotheca" value="${(list.id)!''}"/></td>
+                            <td>
+                                <#if list.metaId?? && list.publishTime?? && list.originalFilename??>
+                                <#if list.convertStatus??>
+                                    <#if list.convertStatus == 2>
+                                        <input type="checkbox" name="bibliotheca" disabled="disabled"
+                                               value="${(list.id)!''}"/>
+                                    <#else >
+                                        <input type="checkbox" name="bibliotheca" checked="true"
+                                           value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
+                                    </#if>
+                                <#else >
+                                    <input type="checkbox" name="bibliotheca" checked="true"
+                                           value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
+                                </#if>
+                                <#else >
+                                    <input type="checkbox" name="bibliotheca" disabled="disabled"
+                                           value="${(list.id)!''}"/>
+                                </#if>
+                            </td>
                             <td>${(list.identifier)!''}</td>
                             <td>${(list.metaId)! '' }</td>
                             <td>${(list.batchId)! '' }</td>
@@ -338,6 +418,21 @@
                             <td>${(list.memo)! '' }</td>
                         <#--<td>${(list.duplicateFlag.getDesc())! '' }</td>-->
                             <td>${(list.bibliothecaState.getDesc())! '' }</td>
+                            <td>
+                                <#if list.convertStatus ??>
+                                    <#if list.convertStatus == 0>
+                                        未转换
+                                    <#elseif list.convertStatus == 1>
+                                        正在转换
+                                    <#elseif list.convertStatus == 2>
+                                        转换成功
+                                    <#elseif list.convertStatus == -1>
+                                        转换失败
+                                    </#if>
+                                <#else>
+                                    未转换
+                                </#if>
+                            </td>
                         <#--<td>${(list.completedFlag.getDesc())! '' }</td>-->
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
@@ -353,7 +448,7 @@
                                 <a href="javascript:void(0);"
                                    onclick="updateBibliothecaExclude('${(list.id)!''}')">分拣</a>
                                 <a href="javascript:void(0);"
-                                onclick="pdf('${(list.id)!''}')">书目信息pdf查看</a>
+                                   onclick="pdf('${(list.id)!''}')">书目信息pdf查看</a>
                             </#if>
                             </td>
                         </tr>
@@ -370,4 +465,14 @@
     </div>
 </div>
 </body>
+<script type="text/javascript">
+    //全选/全取消
+    $("#allChecked").click(function() {
+        if ($("#allChecked").prop("checked")) {
+            $("input[type='checkbox'][name='bibliotheca']").prop("checked", true);//全选
+        } else {
+            $("input[type='checkbox'][name='bibliotheca']").prop("checked", false);  //取消全选
+        }
+    });
+</script>
 </html>
