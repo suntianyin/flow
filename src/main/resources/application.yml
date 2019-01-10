@@ -16,6 +16,7 @@ spring:
       url: jdbc:oracle:thin:@172.18.89.115:1521:orcl
       username: book
       password: book
+      druid:
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
       initialSize: 3
@@ -90,8 +91,13 @@ spring:
 #    static-locations: classpath:/static/*
   servlet:
     multipart:
-      max-file-size: 200MB
-      max-request-size: 300MB
+      max-file-size: 500MB
+      max-request-size: 800MB
+  devtools:
+    restart:
+      enabled: false
+      additional-paths: src/main/java
+      exclude: templates
 
 #mybatis:
 #  type-aliases-package: com.apabi.flow.*.model
