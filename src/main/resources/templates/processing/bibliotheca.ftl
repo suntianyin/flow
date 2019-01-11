@@ -385,18 +385,18 @@
                         <tr class="gradeA odd" role="row">
                             <td>
                                 <#if list.metaId?? && list.publishTime?? && list.originalFilename??>
-                                <#if list.convertStatus??>
-                                    <#if list.convertStatus == 2>
-                                        <input type="checkbox" name="bibliotheca" disabled="disabled"
-                                               value="${(list.id)!''}"/>
+                                    <#if list.convertStatus?? && list.bibliothecaState.getCode()??>
+                                        <#if list.convertStatus != 2 && list.bibliothecaState.getCode() == 5 >
+                                            <input type="checkbox" name="bibliotheca" checked="true"
+                                               value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
+                                        <#else >
+                                            <input type="checkbox" name="bibliotheca" disabled="disabled"
+                                                   value="${(list.id)!''}"/>
+                                        </#if>
                                     <#else >
                                         <input type="checkbox" name="bibliotheca" checked="true"
-                                           value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
+                                               value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
                                     </#if>
-                                <#else >
-                                    <input type="checkbox" name="bibliotheca" checked="true"
-                                           value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
-                                </#if>
                                 <#else >
                                     <input type="checkbox" name="bibliotheca" disabled="disabled"
                                            value="${(list.id)!''}"/>

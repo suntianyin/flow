@@ -14,7 +14,7 @@ import javax.servlet.annotation.WebServlet;
         urlPatterns = {"/druid/*"},
         initParams = {
                 @WebInitParam(name = "loginUsername", value = "admin"),
-                @WebInitParam(name = "loginPassword", value = "admin"),
+                @WebInitParam(name = "loginPassword", value = "tdQ*U@xXhY!9eyHc#OKj&E*JAmYGnoQu"),
                 @WebInitParam(name = "resetEnable", value = "false")
 //      @WebInitParam(name = "allow", value = "127.0.0.1")
         }
