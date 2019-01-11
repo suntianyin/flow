@@ -171,17 +171,17 @@
                                                  <input type="checkbox" name="metaId" checked="true"
                                                         value="${list.metaId!'' },${list.fileName!'' }">
                                                 <#else >
-                                                 <input type="checkbox" disabled="disabled" value="${list.metaId!'' }">
+                                                 <input type="checkbox" disabled="disabled">
                                                 </#if>
                                             <#else>
-                                                <input type="checkbox" disabled="disabled" value="${list.metaId!'' }">
+                                                <input type="checkbox" disabled="disabled">
                                             </#if>
                                         <#else>
                                             <#if list.metaId??>
                                                  <input type="checkbox" name="metaId" checked="true"
                                                         value="${list.metaId!'' },${list.fileName!'' }">
                                             <#else >
-                                                 <input type="checkbox" disabled="disabled" value="${list.metaId!'' }">
+                                                 <input type="checkbox" disabled="disabled">
                                             </#if>
                                         </#if>
                                     </td>

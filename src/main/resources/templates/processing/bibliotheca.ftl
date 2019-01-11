@@ -388,18 +388,15 @@
                                     <#if list.convertStatus?? && list.bibliothecaState.getCode()??>
                                         <#if list.convertStatus != 2 && list.bibliothecaState.getCode() == 5 >
                                             <input type="checkbox" name="bibliotheca" checked="true"
-                                               value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
+                                                   value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
                                         <#else >
-                                            <input type="checkbox" name="bibliotheca" disabled="disabled"
-                                                   value="${(list.id)!''}"/>
+                                            <input type="checkbox" disabled="disabled"/>
                                         </#if>
                                     <#else >
-                                        <input type="checkbox" name="bibliotheca" checked="true"
-                                               value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
+                                        <input type="checkbox" disabled="disabled"/>
                                     </#if>
                                 <#else >
-                                    <input type="checkbox" name="bibliotheca" disabled="disabled"
-                                           value="${(list.id)!''}"/>
+                                    <input type="checkbox" disabled="disabled"/>
                                 </#if>
                             </td>
                             <td>${(list.identifier)!''}</td>
@@ -467,7 +464,7 @@
 </body>
 <script type="text/javascript">
     //全选/全取消
-    $("#allChecked").click(function() {
+    $("#allChecked").click(function () {
         if ($("#allChecked").prop("checked")) {
             $("input[type='checkbox'][name='bibliotheca']").prop("checked", true);//全选
         } else {
