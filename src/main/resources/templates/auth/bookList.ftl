@@ -10,10 +10,7 @@
     <script src="${ctx}/js/select2/select2.min.js"></script>
     <title>授权书单管理</title>
     <script type="text/javascript">
-        //下拉列表 模糊查询
-        $(document).ready(function () {
-            $('.js-example-basic-single').select2();
-        });
+
         $(function(){
             $("#copyrightOwnerId").val("${(copyrightOwnerId)!'' }");
             var copyrightOwnerId =$("#copyrightOwnerId").val();
@@ -29,7 +26,10 @@
             var currentPages = ${pageNum!''};
             jqPaging(pathurl,totalPages,currentPages);
         });
-
+        //下拉列表 模糊查询
+        $(document).ready(function () {
+            $('.js-example-basic-single').select2();
+        });
         //检索
         function btn_Search() {
             var copyrightOwnerId = $("#copyrightOwnerId").val().trim();

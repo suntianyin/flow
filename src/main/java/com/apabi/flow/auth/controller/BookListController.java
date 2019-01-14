@@ -69,7 +69,7 @@ public class BookListController {
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date authEndDate1,
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date submitDate,
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date submitDate1,
-                        @RequestParam(value = "bookListNum", required = false) Integer bookListNum,
+                        @RequestParam(value = "bookListNum", required = false) String bookListNum,
                         @RequestParam(value = "authorizeNum", required = false) Integer authorizeNum,
                         @RequestParam(value = "coopertor", required = false) String coopertor,
                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,
@@ -96,6 +96,7 @@ public class BookListController {
             paramsMap.put("submitDate", submitDate);
             paramsMap.put("bookListNum", bookListNum);
             paramsMap.put("authorizeNum", authorizeNum);
+            paramsMap.put("coopertor",coopertor);
             if (authEndDate1 != null) {
                 paramsMap.put("authEndDate1", new Date(new DateTime(authEndDate1.getTime()).plusDays(1).getMillis()));
             }

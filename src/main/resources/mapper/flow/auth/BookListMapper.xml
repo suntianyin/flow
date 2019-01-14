@@ -288,7 +288,7 @@
     <if test="copyrightOwnerId != null and copyrightOwnerId != ''">
       AND pb.COPYRIGHT_OWNER_ID <![CDATA[=]]> #{copyrightOwnerId}
     </if>
-    <if test="bookListNum != null and bookListNum != ''or bookListNum == '0'.toString() " >
+    <if test="bookListNum != null and bookListNum != ''" >
       AND pb.BOOK_LIST_NUM = #{bookListNum}
     </if>
     <if test="authorizeNum != null and authorizeNum != ''or authorizeNum == '0'.toString() " >
