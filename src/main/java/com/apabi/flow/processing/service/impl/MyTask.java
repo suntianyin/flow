@@ -1,5 +1,7 @@
 package com.apabi.flow.processing.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
@@ -10,8 +12,6 @@ import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.model.TempMetaData;
 import com.apabi.flow.processing.util.IsbnCheck;
 import com.apabi.flow.publisher.dao.PublisherDao;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
@@ -127,9 +127,9 @@ public class MyTask implements Runnable {
 //                    String url="http://localhost:8083/flow/meta/find/"+isbn;
                     HttpEntity httpEntity = HttpUtils.doGetEntity(url);
                     String body = EntityUtils.toString(httpEntity);
-                    JSONObject jsonObject = JSONObject.fromObject(body);
+                    JSONObject jsonObject = JSONObject.parseObject(body);
                     if((Integer)jsonObject.get("status")==200)
-                    doubanMetaList=(List<TempMetaData>) JSONArray.toCollection(JSONArray.fromObject(jsonObject.get("body")), TempMetaData.class);
+                        doubanMetaList = (List<TempMetaData>) JSONArray.parseArray(jsonObject.getString("body"), TempMetaData.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

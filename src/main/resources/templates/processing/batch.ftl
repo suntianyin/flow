@@ -110,7 +110,6 @@
         //书目解析
         function parsing(id,batchId) {
             var path=$("#"+id).val();
-            alert(path)
             if (isNull(path)) {
                 tipDialog("资源路径不能为空", 3, -1);
                 return;
