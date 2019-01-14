@@ -3,7 +3,7 @@ package com.apabi.flow.processing.util;
 public class IsbnCheck {
 
     public static void main(String[] args) {
-        String s="7-5388-0926-0";
+        String s="9787202126660";
         boolean b = IsbnCheck.CheckISBN(s);
         System.out.println(b);
     }

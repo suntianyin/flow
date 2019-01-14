@@ -2,6 +2,8 @@ ctx: http://172.18.89.115:8084/flowadmin
 cebxHtmlExe: /apabi/flow/cebxTool/cebx2Html/Cebx2Html.exe
 cebxMaker: /apabi/flow/cebxTool/MakerSDK
 copyRightExtractExe: /apabi/flow/copyRightTool/Cebx2Html.exe
+CarbonExe: /apabi/flow/copyRightTool/Carbon.exe
+pdfDir: /apabi/
 targetCopyRightDir: /apabi/flow/copyRightDir
 targetCebxDir: /apabi/flow/cebxHtml
 styleUrl: /apabi/flow/file/book

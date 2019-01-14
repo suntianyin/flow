@@ -6,6 +6,7 @@ import com.apabi.flow.auth.service.ResourceService;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.util.ParamsUtils;
+import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.*;
 import com.apabi.flow.processing.dao.BatchMapper;
@@ -79,6 +80,9 @@ public class BibliothecaController {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    ApplicationConfig config;
 
     /**
      * 外协 书目信息 页面
@@ -304,7 +308,7 @@ public class BibliothecaController {
                     || StringUtils.isBlank(bibliotheca.getTitle())
                     || StringUtils.isBlank(bibliotheca.getOriginalFilename())
                     || StringUtils.isBlank(bibliotheca.getBibliothecaState().getDesc())
-                    ) {
+            ) {
                 return new ResultEntity(400, "请检查必填项是否完整！");
             }
             //书目添加
@@ -821,21 +825,55 @@ public class BibliothecaController {
         }
     }
 
-    @RequestMapping({"/pdf"})///processing/PDFViewer/canvas/index.ftl
-    public String pdf(@RequestParam(value = "id") String id) throws InterruptedException {
-//            return "/processing/pdf";
-        return "processing/PDFViewer/canvas/index";
+    @RequestMapping({"/pdf"})
+    public String pdf(@RequestParam(value = "id") String id ,Model model)  {
+        try {
+            if(StringUtils.isNotBlank(id)){
+                Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(id);
+                String originalFilename = bibliotheca.getOriginalFilename();
+                Batch batch = batchService.selectByBatchId(bibliotheca.getBatchId());
+                String resourcePath = batch.getResourcePath();
+                if(StringUtils.isNotBlank(originalFilename)&& StringUtils.isNotBlank(resourcePath)){
+                    String path=resourcePath+"/"+originalFilename;
+                    path=path.split(":")[1];
+                    path = path.replaceAll("\\\\\\\\", "/");
+                    path = path.replaceAll("\\\\", "/");
+                    model.addAttribute("path",path);
+                    return "processing/canvas/index";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "error";
     }
 
     //批量转换pdf成cebx文件
     @RequestMapping(value = "/batchConvert2Cebx", method = RequestMethod.POST)
     @ResponseBody
     public String batchConvert2Cebx(@RequestParam(value = "dirPath") String dirPath,
-                                @RequestParam(value = "fileInfo") String fileInfo) {
+                                    @RequestParam(value = "fileInfo") String fileInfo) {
         if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfo)) {
             bibliothecaService.batchConvert2Cebx(dirPath, fileInfo);
             return "success";
         }
         return "error";
+    }
+
+    //标引
+    @RequestMapping(value = "/indexing")
+    public String indexing(@RequestParam(value = "id") String id) {
+        try {
+            if (StringUtils.isNotBlank(id)) {
+                Bibliotheca bibliotheca = bibliothecaService.getBibliothecaById(id);
+                String path = config.getUploadCebx() + File.separator + bibliotheca.getPublishTime() + File.separator + bibliotheca.getMetaId() + ".CEBX";
+                String cmd = config.getCarbonExe() + " \"" + path +"\"";
+                Runtime runtime = Runtime.getRuntime();
+                Process process = runtime.exec(cmd);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/processing/bibliotheca/outUnit/index";
     }
 }

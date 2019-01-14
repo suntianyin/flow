@@ -8,8 +8,6 @@ import com.apabi.flow.auth.service.CopyrightOwnerService;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.util.ParamsUtils;
 import com.apabi.flow.config.ApplicationConfig;
-import com.apabi.flow.publisher.model.Publisher;
-import com.apabi.flow.publisher.service.PublisherService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +56,7 @@ public class AuthController {
 
     @GetMapping("/index")
     public String index(@RequestParam(value = "copyrightOwnerId", required = false) String copyrightOwnerId,
+                        @RequestParam(value = "agreementType", required = false) Integer agreementType,
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
@@ -92,6 +91,7 @@ public class AuthController {
 
             //搜索保留
             model.addAttribute("copyrightOwnerId", copyrightOwnerId);
+            model.addAttribute("agreementType", agreementType);
             model.addAttribute("startDate", startDate);
             model.addAttribute("startDate1", startDate1);
             model.addAttribute("endDate", endDate);
@@ -103,6 +103,7 @@ public class AuthController {
             Map<String, Object> paramsMap = new HashMap<>();
             ParamsUtils.checkParameterAndPut2Map(paramsMap, "copyrightOwnerId", copyrightOwnerId, "contentManagerName", contentManagerName);
             paramsMap.put("startDate", startDate);
+            paramsMap.put("agreementType", agreementType);
             paramsMap.put("endDate", endDate);
             paramsMap.put("authType", authType);
             if (startDate1 != null) {

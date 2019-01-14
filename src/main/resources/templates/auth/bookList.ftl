@@ -15,7 +15,8 @@
             $('.js-example-basic-single').select2();
         });
         $(function(){
-            var copyrightOwnerId = $("#copyrightOwnerId").val("${(copyrightOwnerId)!'' }");
+            $("#copyrightOwnerId").val("${(copyrightOwnerId)!'' }");
+            var copyrightOwnerId =$("#copyrightOwnerId").val();
             var authEndDate = $("#authEndDate").val().trim();
             var authEndDate1 = $("#authEndDate1").val().trim();
             var submitDate = $("#submitDate").val().trim();

@@ -1,5 +1,6 @@
 package com.apabi.flow.auth.model;
 
+import com.apabi.flow.auth.constant.AgreementTypeEnum;
 import com.apabi.flow.auth.constant.AuthTypeEnum;
 
 import java.util.Date;
@@ -78,6 +79,17 @@ public class CopyrightAgreement {
     private String operator;
 
     private Date operatedate;
+
+    //协议类型
+    private AgreementTypeEnum agreementType;
+
+    public AgreementTypeEnum getAgreementType() {
+        return agreementType;
+    }
+
+    public void setAgreementType(AgreementTypeEnum agreementType) {
+        this.agreementType = agreementType;
+    }
 
     public String getCaid() {
         return caid;

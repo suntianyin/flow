@@ -18,13 +18,14 @@
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
             // var duplicateFlag = $("#duplicateFlag").val();
+            $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
             var bibliothecaState = $("#bibliothecaState").val();
-            var pathurl = "outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher  + "&bibliothecaState=" + bibliothecaState;
+            var pathurl = "outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
             <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
-            $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
+
 
             jqPaging(pathurl, totalPages, currentPages);
 
@@ -48,7 +49,7 @@
             var publisher = $("#publisher").val().trim();
             // var duplicateFlag = $("#duplicateFlag").val().trim();
             var bibliothecaState = $("#bibliothecaState").val();
-            window.location.href = "${ctx}/processing/bibliotheca/outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher +  "&bibliothecaState=" + bibliothecaState;
+            window.location.href = "${ctx}/processing/bibliotheca/outUnit/index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
         }
 
         function updateBibliotheca(id) {
@@ -295,6 +296,15 @@
                 $("input[type='checkbox'][name='bibliotheca']").prop("checked", false);  //取消全选
             }
         }
+        //标引
+        function indexing(id) {
+            window.location.href = "${ctx}/processing/bibliotheca/indexing?id="+id;
+        }
+        //书目信息pdf查看
+        function pdf(id) {
+            var url = "${ctx}/processing/bibliotheca/pdf?id=" + id;
+            window.open(url);
+        }
 
     </script>
 </head>
@@ -308,30 +318,30 @@
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
                 <a onclick="javascript:window.location.href='${ctx}/processing/batch/booklist/index'" class="tools_btn"><span><i
-                        class="fa fa-backward"></i>&nbsp;返回</span></a>
+                                class="fa fa-backward"></i>&nbsp;返回</span></a>
                 <div class="tools_separator"></div>
             </div>
-        <#if (timeState)??>
+            <#if (timeState)??>
                 <div class="PartialButton">
                     <a id="lr-add1" class="tools_btn"><span style="color: #7c7c7c;"><i
-                            class="fa fa-plus"></i>&nbsp;新增</span></a>
+                                    class="fa fa-plus"></i>&nbsp;新增</span></a>
                     <div class="tools_separator"></div>
                 </div>
-        <#else>
-            <div class="PartialButton">
-                <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp;新增</span></a>
-                <div class="tools_separator"></div>
-            </div>
-        </#if>
+            <#else>
+                <div class="PartialButton">
+                    <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
+                                    class="fa fa-plus"></i>&nbsp;新增</span></a>
+                    <div class="tools_separator"></div>
+                </div>
+            </#if>
             <div class="PartialButton">
                 <a id="lr-make" title="制作成功" onclick="btn_makeSuccess()" class="tools_btn"><span><i
-                        class="fa fa-adjust"></i>&nbsp;制作成功</span></a>
+                                class="fa fa-adjust"></i>&nbsp;制作成功</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
                 <a id="lr-make" title="制作失败" onclick="btn_makeFail()" class="tools_btn"><span><i
-                        class="fa fa-adjust"></i>&nbsp;制作失败</span></a>
+                                class="fa fa-adjust"></i>&nbsp;制作失败</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
@@ -368,14 +378,14 @@
                                style="width: 200px"/>
                     </td>
 
-                <#--<th>是否重复：</th>-->
-                <#--<td>-->
-                <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
-                <#--<option value="">--请选择批次状态--</option>-->
-                <#--<option value="0">否</option>-->
-                <#--<option value="1">是</option>-->
-                <#--</select>-->
-                <#--</td>-->
+                    <#--<th>是否重复：</th>-->
+                    <#--<td>-->
+                    <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
+                    <#--<option value="">--请选择批次状态--</option>-->
+                    <#--<option value="0">否</option>-->
+                    <#--<option value="1">是</option>-->
+                    <#--</select>-->
+                    <#--</td>-->
 
                     <th>书目状态：</th>
                     <td>
@@ -394,7 +404,8 @@
                     </td>
                 </tr>
             </table>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <label>${total!0}</label> 条书目信息,已分拣<label>${num1!0}</label>条,重复<label>${num2!0}</label>条,制作成功<label>${num3!0}</label>条,制作失败<label>${num4!0}</label>条。
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <label>${total!0}</label>
+            条书目信息,已分拣<label>${num1!0}</label>条,重复<label>${num2!0}</label>条,制作成功<label>${num3!0}</label>条,制作失败<label>${num4!0}</label>条。
         </div>
         <div class="panel-body">
             <div class="row">
@@ -418,9 +429,9 @@
                         <th>原始文件名</th>
                         <th>文档格式</th>
                         <th>备注</th>
-                    <#--<th>是否重复</th>-->
-                        <th>书目状态</th>
-                    <#--<th>是否制作成功</th>-->
+                        <#--<th>是否重复</th>-->
+                            <th>书目状态</th>
+                        <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
                         <th>操作</th>
@@ -429,9 +440,9 @@
                     <tbody>
                     <#if bibliothecaList??>
                         <#list bibliothecaList as list>
-                        <tr class="gradeA odd" role="row">
+                            <tr class="gradeA odd" role="row">
                             <td><input type="checkbox" name="bibliotheca"
-                                       value="{'id':'${(list.id)!''}', 'bibliothecaState':'${(list.bibliothecaState.code)!''}'}"/>
+                            value="{'id':'${(list.id)!''}', 'bibliothecaState':'${(list.bibliothecaState.code)!''}'}"/>
                             </td>
                             <td>${(list.identifier)!''}</td>
                             <td>${(list.metaId)! '' }</td>
@@ -453,26 +464,34 @@
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
-                                <#if (timeState)??>
-                                    <span style="color: #7c7c7c;">编辑</span>
-                                    <span style="color: #7c7c7c;">删除</span>
-                                <#else>
-                                        <a href="javascript:void(0);"
-                                           onclick="updateBibliotheca('${(list.id)!''}')">编辑</a>
-                                        <a href="javascript:void(0);"
-                                           onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
-                                </#if>
+                            <#if (timeState)??>
+                                <span style="color: #7c7c7c;">编辑</span>
+                                <span style="color: #7c7c7c;">删除</span>
+                            <#else>
+                                <a href="javascript:void(0);"
+                                onclick="updateBibliotheca('${(list.id)!''}')">编辑</a>
+                                <a href="javascript:void(0);"
+                                onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
+                                <a href="javascript:void(0);"
+                                onclick="pdf('${(list.id)!''}')">书目信息pdf查看</a>
+                            </#if>
+                            <#if list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
+                                <a href="javascript:void(0);"
+                                onclick="indexing('${(list.id)!''}')">标引</a>
+                            <#else>
+                                <span style="color: #7c7c7c;">标引</span>
+                            </#if>
                             </td>
-                        </tr>
+                            </tr>
                         </#list>
                     </#if>
                     </tbody>
                 </table>
             </div>
-        <#--<ul class="pagination">
-            <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
-        </ul>
-        <ul class="pagination" style="float:right;" id="pagination"></ul>-->
+            <#--<ul class="pagination">
+                <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
+            </ul>
+            <ul class="pagination" style="float:right;" id="pagination"></ul>-->
         </div>
     </div>
 </div>

@@ -219,14 +219,15 @@
                     <td>
                         <select id="batchState" name="batchState" underline="true" style="height: 24px;">
                             <option value="">--请选择批次状态--</option>
-                            <option value="0">待录入书单</option>
-                            <option value="1">书单录入完成</option>
-                            <option value="2">书单已审核</option>
-                            <option value="3">书单审核失败</option>
-                            <option value="4">已查重</option>
+                            <option value="0">待分配</option>
+                            <option value="1">待书单</option>
+                            <option value="7">正在扫描书目</option>
+                            <option value="8">书目扫描完成</option>
+                            <option value="2">待查重</option>
+                            <option value="3">待排产</option>
+                            <option value="4">已排产</option>
                             <option value="5">制作中</option>
-                            <option value="6">制作完成待审核</option>
-                            <option value="7">生产完成</option>
+                            <option value="6">已完成</option>
                         </select>
                     </td>
 

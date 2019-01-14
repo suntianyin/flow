@@ -1,18 +1,20 @@
-package com.apabi.flow.processing.service;
+package com.apabi.flow.processing.service.impl;
 
+import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
-import com.apabi.flow.crawlTask.util.IpPoolUtils;
-import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
-import com.apabi.flow.douban.model.ApabiBookMetaTemp;
-import com.apabi.flow.douban.service.DoubanMetaService;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.BibliothecaStateEnum;
 import com.apabi.flow.processing.dao.BibliothecaMapper;
 import com.apabi.flow.processing.model.Bibliotheca;
+import com.apabi.flow.processing.model.TempMetaData;
 import com.apabi.flow.processing.util.IsbnCheck;
 import com.apabi.flow.publisher.dao.PublisherDao;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -34,17 +37,15 @@ public class MyTask implements Runnable {
     private File f;
     private String username;
     private String batchId;
-    private DoubanMetaService doubanMetaService;
     private PublisherDao publisherDao;
     private BibliothecaMapper bibliothecaMapper;
     private ApplicationConfig config;
 
-    public MyTask(int i, File f, String username, String batchId, DoubanMetaService doubanMetaService, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper,ApplicationConfig config) {
+    public MyTask(int i, File f, String username, String batchId, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper,ApplicationConfig config) {
         this.i = i;
         this.f = f;
         this.username = username;
         this.batchId = batchId;
-        this.doubanMetaService = doubanMetaService;
         this.publisherDao = publisherDao;
         this.bibliothecaMapper = bibliothecaMapper;
         this.config=config;
@@ -52,9 +53,7 @@ public class MyTask implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("正在执行task " + i);
-        String ip = "";
-        String port = "";
+        logger.info("正在执行task " + i);
         Bibliotheca bibliotheca = new Bibliotheca();
         String isbn = "";
         String edition = "";
@@ -70,13 +69,14 @@ public class MyTask implements Runnable {
             if(!file.exists()){
                 file.mkdirs();
             }
+//            String target =f.getAbsolutePath();
             String target = config.getTargetCopyRightDir() + File.separator +batchId +File.separator+ f.getName().split("[.]")[0]+".xml";
             String cmd = config.getCopyRightExtractExe() +
                     " -i " + "\"" + f.getAbsolutePath() + "\"" +
                     " -o " + "\"" + target + "\"" ;
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
-            Thread.sleep(1000);
+            Thread.sleep(5000);
             SAXReader saxReader = new SAXReader();
             Document doc = saxReader.read(new File(target));
             Element root = doc.getRootElement();
@@ -95,12 +95,13 @@ public class MyTask implements Runnable {
                 author = replaceBlank(split1[0]);
                 String[] split2 = split1[1].split(":", 2)[1].split(",", 2);
                 publisherTitle = replaceBlank(split2[0]);
-                String str=split2[1];
+                String[] split3 = split2[1].split("ISBN", 2);
+                String str=split3[0];
                 int i1 = str.indexOf("(");
-                int i2 = str.lastIndexOf(")");
-                str = str.substring(0,i1)+ str.substring(i2+1);
-                String[] split3 = str.split("ISBN", 2);
-                publishTime = replaceBlank(split3[0]);
+                if(i1>0) {
+                    str = str.substring(0, i1);
+                }
+                publishTime = replaceBlank(str);
                 if (StringUtils.isNotEmpty(publishTime)) {
                     publishTime = StringToolUtil.issuedDateFormat(publishTime);
                     if (publishTime.contains(" 00:00:00")) {
@@ -119,9 +120,21 @@ public class MyTask implements Runnable {
         }finally {
             //通过isbn13进行查询元数据  包含-清洗
             if (StringUtils.isNotBlank(isbn)) {
-                List<ApabiBookMetaTemp> doubanMetaList = doubanMetaService.searchMetaDataTempsByISBNMultiThread(isbn);
+//                List<ApabiBookMetaTemp> doubanMetaList = doubanMetaService.searchMetaDataTempsByISBNMultiThread(isbn);
+                List<TempMetaData> doubanMetaList =new ArrayList<>();
+                try {
+                    String url="http://flow.apabi.com/flow/meta/find/"+isbn;
+//                    String url="http://localhost:8083/flow/meta/find/"+isbn;
+                    HttpEntity httpEntity = HttpUtils.doGetEntity(url);
+                    String body = EntityUtils.toString(httpEntity);
+                    JSONObject jsonObject = JSONObject.fromObject(body);
+                    if((Integer)jsonObject.get("status")==200)
+                    doubanMetaList=(List<TempMetaData>) JSONArray.toCollection(JSONArray.fromObject(jsonObject.get("body")), TempMetaData.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (doubanMetaList.size() > 0) {
-                    ApabiBookMetaTemp apabiBookMetaTemp = doubanMetaList.get(0);
+                    TempMetaData apabiBookMetaTemp = doubanMetaList.get(0);
                     if (StringUtils.isNotBlank(publisherTitle)) {
                         publisher= publisherDao.findIdByTitle(publisherTitle);
                         if (StringUtils.isBlank(publisher)) {
@@ -132,7 +145,7 @@ public class MyTask implements Runnable {
                         title = apabiBookMetaTemp.getTitle();
                     }
                     if(StringUtils.isBlank(publishTime)) {
-                        publishTime = apabiBookMetaTemp.getIssueddate();
+                        publishTime = apabiBookMetaTemp.getIssuedDate();
                     }
                     if(StringUtils.isBlank(author)) {
                         author = apabiBookMetaTemp.getCreator();
@@ -181,7 +194,7 @@ public class MyTask implements Runnable {
             }
             bibliothecaMapper.insertSelective(bibliotheca);
         }
-        System.out.println("task " + i + "执行完毕");
+        logger.info("task " + i + "执行完毕");
     }
     //编号
     public static String putong(int i) {

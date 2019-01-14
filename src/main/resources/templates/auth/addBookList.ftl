@@ -98,7 +98,7 @@
                     },
                     error: function (data) {
                         Loading(false);
-                        alertDialog("输入信息有误，请核实后提交", -1);
+                        alertDialog("输入信息有误，请核实后提交-"+data.responseJSON.message, -1);
                     }
                 });
             }, 200);

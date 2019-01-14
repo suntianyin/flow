@@ -166,16 +166,26 @@
                         <input id="agreementNum" name="agreementNum" type="text" class="txt" style="width: 300px"/>
                         &nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                    <td>协议类型：</td>
+                    <td>
+                        <select id="agreementType" name="agreementType"  underline="true" style="width: 307px; height: 24px;">
+                            <option  value="0">电子书</option>
+                            <option  value="1">年鉴</option>
+                            <option  value="2">工具书</option>
+                            <option  value="3">特色资源</option>
+                            <option  value="4">作者签约协议</option>
+                            <option  value="5">报纸</option>
+                            <option  value="6">图片库</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
                     <td>协议名称:</td>
                     <td>
                         <input id="agreementTitle" name="agreementTitle" type="text" class="txt" style="width: 300px"/>
 
                     </td>
-                </tr>
-                <tr>
 
-                </tr>
-                <tr>
                     <td>版权所有者:</td>
                     <td>
                         <select id="copyrightOwnerId" name="copyrightOwnerId" underline="true" class="js-example-basic-single" style="width: 307px; height: 24px;">
@@ -187,26 +197,28 @@
                             </#if>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>内容合作经理:</td>
                     <td>
                         <input id="contentManagerName" name="contentManagerName" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>协议起始时间：</td>
                     <td>
                         <input id="startDate" name="startDate" type="date" class="txt"
                                style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>协议到期时间：</td>
                     <td>
                         <input id="endDate" name="endDate" type="date" class="txt"
                                style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>授权范围:</td>
                     <td>
                         <select id="authType" name="authType" underline="true" style="width: 300px">
@@ -215,13 +227,14 @@
                             <option  value="2">2B2C</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>分成比例:</td>
                     <td>
                         <input id="assignPercent" name="assignPercent" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>分成规则:</td>
                     <td>
                         <select id="assignRule" name="assignRule" underline="true" style="width: 300px">
@@ -229,6 +242,9 @@
                             <option  value="1">售价分成</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>是否有网路传播权:</td>
                     <td>
                         <select id="isinternetCommunication" name="isinternetCommunication" underline="true" style="width: 300px">
@@ -236,9 +252,7 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>是否有数字化复制权:</td>
                     <td>
                         <select id="isCopy" name="isCopy" underline="true" style="width: 300px">
@@ -246,6 +260,9 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>是否有发行权:</td>
                     <td>
                         <select id="isPublishing" name="isPublishing" underline="true" style="width: 300px">
@@ -253,9 +270,7 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>是否有出租权:</td>
                     <td>
                         <select id="isHireRight" name="isHireRight" underline="true" style="width: 300px">
@@ -263,6 +278,9 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>是否有展览权:</td>
                     <td>
                         <select id="isExhibitionRight" name="isExhibitionRight" underline="true" style="width: 300px">
@@ -270,9 +288,7 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>是否有表演权:</td>
                     <td>
                         <select id="isPerformanceRight" name="isPerformanceRight" underline="true" style="width: 300px">
@@ -280,6 +296,8 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+                <tr>
                     <td>是否有放映权:</td>
                     <td>
                         <select id="isScreeningRight" name="isScreeningRight" underline="true" style="width: 300px">
@@ -287,8 +305,7 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
-                <tr>
+
                     <td>是否有广播权:</td>
                     <td>
                         <select id="isBroadcastingRight" name="isBroadcastingRight" underline="true" style="width: 300px">
@@ -296,6 +313,8 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+                <tr>
                     <td>是否有改编权:</td>
                     <td>
                         <select id="isAdaptationRight" name="isAdaptationRight" underline="true" style="width: 300px">
@@ -303,8 +322,7 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
-                <tr>
+
                     <td>是否有翻译权:</td>
                     <td>
                         <select id="isTranslationRight" name="isTranslationRight" underline="true" style="width: 300px">
@@ -312,6 +330,9 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>是否有汇编权:</td>
                     <td>
                         <select id="isEditRight" name="isEditRight" underline="true" style="width: 300px">
@@ -319,9 +340,7 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>是否有转授权:</td>
                     <td>
                         <select id="isTransfeRright" name="isTransfeRright" underline="true" style="width: 300px">
@@ -329,6 +348,9 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>是否有再制作权:</td>
                     <td>
                         <select id="isContentworkRight" name="isContentworkRight" underline="true" style="width: 300px">
@@ -336,24 +358,23 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>有其他相关著作权:</td>
                     <td>
                         <input id="isOtherRight" name="isOtherRight" type="text" class="txt"
                                style="width: 300px"/>
                     </td>
-                    <td>是否授权代理维权:</td>
+                </tr>
+                <tr>
+                <td>是否授权代理维权:</td>
                     <td>
                         <select id="isAgentmaintainlegalRight" name="isAgentmaintainlegalRight" underline="true" style="width: 300px">
                             <option value="0">否</option>
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
+
                     <td>是否独家授权:</td>
                     <td>
                         <select id="isOnlyOwner" name="isOnlyOwner" underline="true" style="width: 300px">
@@ -361,6 +382,9 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>是否提供作者授权:</td>
                     <td>
                         <select id="isHasAuthorRight" name="isHasAuthorRight" underline="true" style="width: 300px">
@@ -368,9 +392,7 @@
                             <option  value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
-                </tr>
 
-                <tr>
                     <td>是否自动顺延:</td>
                     <td>
                         <select id="isAutoPostpone" name="isAutoPostpone" underline="true" style="width: 300px">
@@ -378,17 +400,21 @@
                             <option selected="selected" value="1">是</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>顺延时间(年):</td>
                     <td>
                         <input id="yearNum" name="yearNum" type="text" class="txt" style="width: 300px"/>
                     </td>
-                </tr>
 
-                <tr>
                     <td>协议签署时间:</td>
                     <td>
                         <input id="signDate" name="signDate" type="date" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
+                </tr>
+
+                <tr>
                     <td>获得授权协议时间：</td>
                     <td>
                         <input id="obtainDate" name="obtainDate" type="date" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>

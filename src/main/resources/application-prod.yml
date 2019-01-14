@@ -2,7 +2,9 @@ ctx: http://flow.apabi.com/flowadmin
 cebxHtmlExe: D:\cebxTool\cebx2Html\Cebx2Html.exe
 cebxMaker: D:\cebxTool\MakerSDK
 copyRightExtractExe: D:\copyRightTool\Cebx2Html.exe
-targetCopyRightDir: D:\copyRightDir
+CarbonExe: D:\Program Files (x86)\Founder\Apabi Carbon 2.2\Carbon.exe
+pdfDir: D:\
+targetCopyRightDir: D:\copyRightTool\target
 targetCebxDir: D:\cebxHtml
 styleUrl: D:\style
 uploadXml: D:\upload\flow\xml

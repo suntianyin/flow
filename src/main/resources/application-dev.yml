@@ -2,6 +2,8 @@ ctx: http://localhost:8084/flowadmin
 cebxHtmlExe: E:\cebxTool\cebx2Html\Cebx2Html.exe
 cebxMaker: E:\cebxTool\MakerSDK
 copyRightExtractExe: C:\java\CopyRightExtract\CopyrightExtract.exe
+CarbonExe: C:\Program Files (x86)\Founder\Apabi Carbon 2.2\Carbon.exe
+pdfDir: C:\
 targetCopyRightDir: C:\java\target
 targetCebxDir: F:\cebxHtml
 styleUrl: F:\style

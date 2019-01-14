@@ -12,14 +12,18 @@
     <script type="text/javascript">
 
         $(function(){
-            var copyrightOwnerId = $("#copyrightOwnerId").val("${(copyrightOwnerId)!'' }");
+            $("#copyrightOwnerId").val("${(copyrightOwnerId)!'' }");
+            var copyrightOwnerId = $("#copyrightOwnerId").val();
+            $("#agreementType").val("${(agreementType)!'' }");
+            var agreementType=$("#agreementType").val();
             var startDate = $("#startDate").val().trim();
             var startDate1 = $("#startDate1").val().trim();
             var endDate = $("#endDate").val().trim();
             var endDate1 = $("#endDate1").val().trim();
-            var authType = $("#authType").val("${(authType)!'' }");
+            $("#authType").val("${(authType)!'' }");
+            var authType = $("#authType").val();
             var contentManagerName = $("#contentManagerName").val().trim();
-            var pathurl = "?copyrightOwnerId=" + copyrightOwnerId + "&startDate=" + startDate+ "&startDate1=" + startDate1+ "&endDate=" + endDate+ "&endDate1=" + endDate1+ "&authType=" + authType+ "&contentManagerName=" + contentManagerName;
+            var pathurl = "?copyrightOwnerId=" + copyrightOwnerId + "&startDate=" + startDate+ "&startDate1=" + startDate1+ "&endDate=" + endDate+ "&endDate1=" + endDate1+ "&authType=" + authType+ "&contentManagerName=" + contentManagerName+ "&agreementType=" + agreementType;
             var totalPages = ${pages!''};
             var currentPages = ${pageNum!''};
             jqPaging(pathurl,totalPages,currentPages);
@@ -31,13 +35,14 @@
         //检索
         function btn_Search() {
             var copyrightOwnerId = $("#copyrightOwnerId").val().trim();
+            var agreementType=$("#agreementType").val().trim();
             var startDate = $("#startDate").val().trim();
             var startDate1 = $("#startDate1").val().trim();
             var endDate = $("#endDate").val().trim();
             var endDate1 = $("#endDate1").val().trim();
             var authType = $("#authType").val().trim();
             var contentManagerName = $("#contentManagerName").val().trim();
-            window.location.href = "index?copyrightOwnerId=" + copyrightOwnerId + "&startDate=" + startDate+ "&startDate1=" + startDate1+ "&endDate=" + endDate+ "&endDate1=" + endDate1+ "&authType=" + authType+ "&contentManagerName=" + contentManagerName;
+            window.location.href = "index?copyrightOwnerId=" + copyrightOwnerId + "&startDate=" + startDate+ "&startDate1=" + startDate1+ "&endDate=" + endDate+ "&endDate1=" + endDate1+ "&authType=" + authType+ "&contentManagerName=" + contentManagerName+ "&agreementType=" + agreementType;
         }
 
         function updateAuth(id) {
@@ -125,7 +130,7 @@
                 <tr>
                     <th>版权所有者：</th>
                     <td>
-                        <select id="copyrightOwnerId" name="copyrightOwnerId" class="js-example-basic-single" underline="true" style="width: 307px; height: 24px;">
+                        <select id="copyrightOwnerId" name="copyrightOwnerId" class="js-example-basic-single" underline="true" style="width: 290px; height: 24px;">
                             <option value="">--请选择版权所有者--</option>
                             <#if copyrightOwners??>
                                 <#list copyrightOwners as list>
@@ -134,7 +139,19 @@
                             </#if>
                         </select>
                     </td>
-
+                    <th>协议类型：</th>
+                    <td>
+                        <select id="agreementType" name="agreementType"  underline="true" style="width: 107px; height: 24px;">
+                            <option  value="">无</option>
+                            <option  value="0">电子书</option>
+                            <option  value="1">年鉴</option>
+                            <option  value="2">工具书</option>
+                            <option  value="3">特色资源</option>
+                            <option  value="4">作者签约协议</option>
+                            <option  value="5">报纸</option>
+                            <option  value="6">图片库</option>
+                        </select>
+                    </td>
                     <th>协议起始时间：</th>
                     <td>
                         <input id="startDate" name="startDate" type="date" value="${(startDate?string("yyyy-MM-dd"))! '' }" class="txt" style="width: 200px"/>至<input id="startDate1" name="startDate1" type="date" value="${(startDate1?string("yyyy-MM-dd"))! '' }" class="txt" style="width: 200px"/>
@@ -146,7 +163,7 @@
                     </td>
                     <th>授权范围：</th>
                     <td>
-                        <select id="authType" name="authType" underline="true" style="width: 150px">
+                        <select id="authType" name="authType" underline="true" style="width: 107px">
                             <option  value="">无</option>
                             <option  value="0">仅2B</option>
                             <option  value="1">2B+云联盟</option>
@@ -155,7 +172,7 @@
                     </td>
                     <th>内容合作经理：</th>
                     <td>
-                        <input id="contentManagerName" name="contentManagerName" type="text" value="${contentManagerName!'' }" class="txt" style="width: 200px"/>
+                        <input id="contentManagerName" name="contentManagerName" type="text" value="${contentManagerName!'' }" class="txt" style="width: 120px"/>
                     </td>
 
                     <td>
@@ -172,6 +189,7 @@
                     <thead>
                     <tr role="row">
                         <th>协议编号</th>
+                        <th>协议类型</th>
                         <th>版权所有者</th>
                         <th>协议起始时间</th>
                         <th>协议到期时间</th>
@@ -193,6 +211,7 @@
                         <#list CopyrightAgreementList as list>
                         <tr class="gradeA odd" role="row">
                             <td align="center">${(list.agreementNum)!''}</td>
+                            <td align="center">${(list.agreementType.getDesc())!''}</td>
                             <td align="center">${(list.copyrightOwner)! '' }</td>
                             <td align="center">${(list.startDate?datetime)! '' }</td>
                             <td align="center">${(list.endDate?datetime)!'' }</td>

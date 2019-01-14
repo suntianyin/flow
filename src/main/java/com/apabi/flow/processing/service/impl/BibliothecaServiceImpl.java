@@ -4,7 +4,6 @@ import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
-import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.service.DoubanMetaService;
@@ -18,7 +17,6 @@ import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.model.BibliothecaExcelModel;
 import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
-import com.apabi.flow.processing.service.MyTask;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
 import com.apabi.maker.MakerAgent;
@@ -28,8 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -993,7 +989,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     new ArrayBlockingQueue<Runnable>(files.size()));
 
             for (int i = 1; i <= files.size(); i++) {
-                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, doubanMetaService, publisherDao, bibliothecaMapper, config);
+                MyTask myTask = new MyTask(i, files.get(i - 1), username, batchId, publisherDao, bibliothecaMapper, config);
                 executor.execute(myTask);
                 System.out.println("线程池中线程数目：" + executor.getPoolSize() + "，队列中等待执行的任务数目：" +
                         executor.getQueue().size() + "，已执行玩别的任务数目：" + executor.getCompletedTaskCount());
@@ -1019,12 +1015,13 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
     }
 
-    //递归获取里面的文件
-    private ArrayList<File> getFiles(ArrayList<File> fileList, String path) {
+    //递归获取里面的文件 排除隐藏文件
+    private static ArrayList<File> getFiles(ArrayList<File> fileList, String path) {
         File[] allFiles = new File(path).listFiles();
         for (int i = 0; i < allFiles.length; i++) {
             File file = allFiles[i];
-            if (file.isFile()) {
+            if (file.isHidden()) {
+            } else if (file.isFile()) {
                 fileList.add(file);
             } else {
                 getFiles(fileList, file.getAbsolutePath());

@@ -9,6 +9,14 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties
 public class ApplicationConfig {
 
+    //pdfDir大目录
+    @Value("${pdfDir}")
+    private String pdfDir;
+
+    //CarbonExe
+    @Value("${CarbonExe}")
+    private String carbonExe;
+
     //cebx命令
     @Value("${cebxHtmlExe}")
     private String cebxHtmlExe;
@@ -60,6 +68,22 @@ public class ApplicationConfig {
     //线程倍数
     @Value("${threadTime}")
     private Integer threadTime;
+
+    public String getPdfDir() {
+        return pdfDir;
+    }
+
+    public void setPdfDir(String pdfDir) {
+        this.pdfDir = pdfDir;
+    }
+
+    public String getCarbonExe() {
+        return carbonExe;
+    }
+
+    public void setCarbonExe(String carbonExe) {
+        this.carbonExe = carbonExe;
+    }
 
     public String getCebxHtmlExe() {
         return cebxHtmlExe;

@@ -14,15 +14,11 @@
             var batchId = $('#batchId').val().trim();
             var title = $("#title").val().trim();
             var publisher = $("#publisher").val().trim();
-            // var duplicateFlag = $("#duplicateFlag").val();
+            $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
             var bibliothecaState = $("#bibliothecaState").val();
             var pathurl = "index?batchId=" + batchId + "&title=" + title + "&publisher=" + publisher + "&bibliothecaState=" + bibliothecaState;
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
-
-        <#--$("#duplicateFlag").val("${(duplicateFlag.getCode())!''}");-->
-            $("#bibliothecaState").val("${(bibliothecaState.getCode())!''}");
-
             jqPaging(pathurl, totalPages, currentPages);
 
         });
@@ -58,10 +54,8 @@
 
         //书目信息pdf查看
         function pdf(id) {
-            var url = "/processing/bibliotheca/pdf?id=" + id;
-            openDialog(url, "pdf", "书目信息pdf查看", 800, 800, function (iframe) {
-                top.frames[iframe].AcceptClick();
-            });
+            var url = "${ctx}/processing/bibliotheca/pdf?id=" + id;
+            window.open(url);
         }
 
         function updateBatchState(id) {
@@ -255,7 +249,10 @@
                 }
             });
         }
-
+        //标引
+        function indexing(id) {
+            window.location.href = "${ctx}/processing/bibliotheca/indexing?id="+id;
+        }
 
     </script>
 </head>
@@ -434,7 +431,7 @@
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
-                            <#if BatchStateEnum=4||BatchStateEnum=5||BatchStateEnum=6>
+                            <#if BatchStateEnum==4||BatchStateEnum==5||BatchStateEnum==6>
                                 <span style="color: #7c7c7c;">编辑</span>
                                 <span style="color: #7c7c7c;">删除</span>
                                 <span style="color: #7c7c7c;">分拣</span>
@@ -446,6 +443,12 @@
                                    onclick="updateBibliothecaExclude('${(list.id)!''}')">分拣</a>
                                 <a href="javascript:void(0);"
                                    onclick="pdf('${(list.id)!''}')">书目信息pdf查看</a>
+                            </#if>
+                            <#if list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
+                                <a href="javascript:void(0);"
+                                onclick="indexing('${(list.id)!''}')">标引</a>
+                            <#else>
+                                <span style="color: #7c7c7c;">标引</span>
                             </#if>
                             </td>
                         </tr>

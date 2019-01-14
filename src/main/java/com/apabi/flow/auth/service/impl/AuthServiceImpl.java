@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public CopyrightAgreement findByCopyrightOwnerId(String copyrightOwnerId) {
         List<CopyrightAgreement> list = copyrightAgreementMapper.findByCopyrightOwnerId(copyrightOwnerId);
-        if(list.size()>1) {
+        if(list.size()>=1) {
             Calendar cal = Calendar.getInstance();
             for (CopyrightAgreement c : list) {
                 cal.setTime(c.getEndDate());

@@ -146,7 +146,7 @@ public class BookListController {
                 bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
                 int add = bookListService.add(bookList);
             }else{
-                throw new BizException("当前版权所有者无版权协议");
+                throw new BizException("当前版权所有者无电子书类版权协议");
             }
         return "redirect:/bookList/index";
     }
@@ -180,7 +180,7 @@ public class BookListController {
             bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
             int add = bookListService.updateByPrimaryKeySelective(bookList);
         }else{
-            throw new BizException("当前版权所有者无版权协议");
+            throw new BizException("当前版权所有者无电子书类版权协议");
         }
         return "redirect:/bookList/index";
     }

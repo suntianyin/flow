@@ -16,9 +16,11 @@
             var title = $("#title").val().trim();
             var creator = $("#creator").val().trim();
             var metaId = $("#metaId").val().trim();
-            var copyrightOwner = $("#copyrightOwner").val("${(copyrightOwner)!'' }");
+            $("#copyrightOwner").val("${(copyrightOwner)!'' }");
+            var copyrightOwner = $("#copyrightOwner").val();
             var isbn = $("#isbn").val().trim();
-            var status = $("#status").val("${(status)!'' }");
+            $("#status").val("${(status)!'' }");
+            var status = $("#status").val();
             var startDate = $("#startDate").val().trim();
             var startDate1 = $("#startDate1").val().trim();
             var endDate = $("#endDate").val().trim();
@@ -38,7 +40,7 @@
             var title = $("#title").val().trim();
             var creator = $("#creator").val().trim();
             var metaId = $("#metaId").val().trim();
-            var copyrightOwner = $("#copyrightOwner").val().trim();
+            var copyrightOwner = $("#copyrightOwner").val();
             var isbn = $("#isbn").val().trim();
             var status = $("#status").val();
             var startDate = $("#startDate").val().trim();

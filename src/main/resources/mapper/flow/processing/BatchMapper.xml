@@ -293,7 +293,7 @@
         #{submitTime,jdbcType=TIMESTAMP},
       </if>
       <if test="productionSchedulingTime != null">
-        #{productionSchedulingTime,jdbcType=TIMESTAMP}
+        #{productionSchedulingTime,jdbcType=TIMESTAMP},
       </if>
       <if test="resourcePath != null">
         #{resourcePath,jdbcType=VARCHAR}
@@ -391,7 +391,7 @@
       DISTRIBUTION_OUT_TIME = #{distributionOutTime,jdbcType=TIMESTAMP},
       SUBMIT_TIME = #{submitTime,jdbcType=TIMESTAMP},
       PRODUCTION_SCHEDULING_TIME = #{productionSchedulingTime,jdbcType=TIMESTAMP},
-      RESOURCE_PATH=#{resourcePath,jdbcType=VARCHAR},
+      RESOURCE_PATH=#{resourcePath,jdbcType=VARCHAR}
     where ID = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateStateByPrimaryKey" parameterType="com.apabi.flow.processing.model.Batch">

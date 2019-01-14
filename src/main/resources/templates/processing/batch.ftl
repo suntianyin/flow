@@ -13,6 +13,7 @@
             var manager = $("#manager").val().trim();
             var copyrightOwner = $("#copyrightOwner").val().trim();
             var outUnit = $("#outUnit").val().trim();
+            $("#batchState").val("${(batchState.getCode())!''}");
             var batchState = $("#batchState").val();
             var beginTime = $("#beginTime").val();
             var endTime = $("#endTime").val();
@@ -21,7 +22,7 @@
             var totalPages = ${pages!1};
             var currentPages = ${pageNum!1};
 
-            $("#batchState").val("${(batchState.getCode())!''}");
+
             jqPaging(pathurl, totalPages, currentPages);
 
 //            $("#batch-import").click(function () {
@@ -107,7 +108,9 @@
             window.location.href = "${ctx}/processing/bibliotheca/index?batchId=" + $.trim(batchId);
         }
         //书目解析
-        function parsing(id,path,batchId) {
+        function parsing(id,batchId) {
+            var path=$("#"+id).val();
+            alert(path)
             if (isNull(path)) {
                 tipDialog("资源路径不能为空", 3, -1);
                 return;
@@ -280,6 +283,8 @@
                             <option value="">--请选择批次状态--</option>
                             <option value="0">待分配</option>
                             <option value="1">待书单</option>
+                            <option value="7">正在扫描书目</option>
+                            <option value="8">书目扫描完成</option>
                             <option value="2">待查重</option>
                             <option value="3">待排产</option>
                             <option value="4">已排产</option>
@@ -315,25 +320,25 @@
                        class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                     <thead>
                     <tr role="row">
-                        <th>内容合作经理</th>
-                        <th>批次号</th>
-                        <th>外协单位</th>
-                        <th>资源类型</th>
-                        <th>版权所有者</th>
-                        <th>文档格式</th>
-                        <th>文档大概数量</th>
-                        <th>批次状态</th>
-                        <th>创建人</th>
-                        <th>资源路径</th>
+                        <th width="80">内容合作经理</th>
+                        <th width="80">批次号</th>
+                        <th width="80">外协单位</th>
+                        <th width="80">资源类型</th>
+                        <th width="80">版权所有者</th>
+                        <th width="80">文档格式</th>
+                        <th width="70">文档大概数量</th>
+                        <th width="80">批次状态</th>
+                        <th width="80">创建人</th>
+                        <th width="150">资源路径</th>
                         <#--<th>书单审核人</th>-->
                         <#--<th>书单查重人</th>-->
-                        <th>备注</th>
-                        <th>创建时间</th>
-                        <th>分配给外协时间</th>
-                        <th>书单提交时间</th>
-                        <th>查重时间</th>
-                        <th>排产时间</th>
-                        <th>操作</th>
+                        <th width="80">备注</th>
+                        <th width="90">创建时间</th>
+                        <th width="90">分配给外协时间</th>
+                        <th width="90">书单提交时间</th>
+                        <th width="90">查重时间</th>
+                        <th width="90">排产时间</th>
+                        <th width="150">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -350,6 +355,7 @@
                             <td>${(list.batchState.getDesc())! '' }</td>
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.resourcePath)! '' }</td>
+                            <input type="hidden" id="${(list.id)!''}" value="${(list.resourcePath)! '' }">
                         <#--<td>${(list.auditor)! '' }</td>-->
                         <#--<td>${(list.checker) !''}</td>-->
                             <td>${(list.memo)! '' }</td>
@@ -363,7 +369,7 @@
                         <#--<a href="javascript:void(0);" ">删除</a>-->
                             <#if (list.batchState.code)??>
                                 <#if list.batchState.code == 1>
-                                    <a href="javascript:void(0);" onclick="parsing('${(list.id)!''}','${(list.resourcePath)!''}','${(list.batchId)!''}')">书目解析</a>
+                                    <a href="javascript:void(0);" onclick="parsing('${(list.id)!''}','${(list.batchId)!''}')">书目解析</a>
                                 <#else>
                                     <span style="color: #7c7c7c;"><i>书目解析</i></span>
                                 </#if>

@@ -121,6 +121,7 @@
       <if test="iscloudCombination != null">
         ISCLOUD_COMBINATION,
       </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -276,6 +277,7 @@
       OPERTE_DATE = #{operteDate,jdbcType=TIMESTAMP},
       REMARK = #{remark,jdbcType=VARCHAR},
       ISCLOUD_COMBINATION = #{iscloudCombination,jdbcType=VARCHAR}
+
     where ID = #{id,jdbcType=VARCHAR}
   </update>
   <select id="listBookList" parameterType="java.util.Map" resultMap="BaseResultMap">
