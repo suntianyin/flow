@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.match_data.dao.ApabiBookMetaNlcMatcherDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.match_data.model.ApabiBookMetaNlcMatcher">
+        <id column="META_ID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="NLC_MARC_ID" jdbcType="VARCHAR" property="nlcMarcId"/>
+        <result column="ISBN13" jdbcType="VARCHAR" property="isbn13"/>
+        <result column="ISBN10" jdbcType="VARCHAR" property="isbn10"/>
+        <result column="APABI_TITLE" jdbcType="VARCHAR" property="apabiTitle"/>
+        <result column="NLC_MARC_TITLE" jdbcType="VARCHAR" property="nlcMarcTitle"/>
+        <result column="APABI_AUTHOR" jdbcType="VARCHAR" property="apabiAuthor"/>
+        <result column="NLC_MARC_AUTHOR" jdbcType="VARCHAR" property="nlcMarcAuthor"/>
+        <result column="APABI_PUBLISHER" jdbcType="VARCHAR" property="apabiPublisher"/>
+        <result column="NLC_MARC_PUBLISHER" jdbcType="VARCHAR" property="nlcMarcPublisher"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        META_ID, NLC_MARC_ID, ISBN13, ISBN10, APABI_TITLE, NLC_MARC_TITLE, APABI_AUTHOR,
+        NLC_MARC_AUTHOR, APABI_PUBLISHER, NLC_MARC_PUBLISHER
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_META_NLC_MATCHER
+    </select>
+
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_META_NLC_MATCHER
+        where META_ID = #{metaId,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from APABI_BOOK_META_NLC_MATCHER
+        where META_ID = #{metaId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaNlcMatcher">
+        insert into APABI_BOOK_META_NLC_MATCHER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="metaId != null">
+                META_ID,
+            </if>
+            <if test="nlcMarcId != null">
+                NLC_MARC_ID,
+            </if>
+            <if test="isbn13 != null">
+                ISBN13,
+            </if>
+            <if test="isbn10 != null">
+                ISBN10,
+            </if>
+            <if test="apabiTitle != null">
+                APABI_TITLE,
+            </if>
+            <if test="nlcMarcTitle != null">
+                NLC_MARC_TITLE,
+            </if>
+            <if test="apabiAuthor != null">
+                APABI_AUTHOR,
+            </if>
+            <if test="nlcMarcAuthor != null">
+                NLC_MARC_AUTHOR,
+            </if>
+            <if test="apabiPublisher != null">
+                APABI_PUBLISHER,
+            </if>
+            <if test="nlcMarcPublisher != null">
+                NLC_MARC_PUBLISHER,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="metaId != null">
+                #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcId != null">
+                #{nlcMarcId,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn13 != null">
+                #{isbn13,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn10 != null">
+                #{isbn10,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiTitle != null">
+                #{apabiTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcTitle != null">
+                #{nlcMarcTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiAuthor != null">
+                #{apabiAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcAuthor != null">
+                #{nlcMarcAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiPublisher != null">
+                #{apabiPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcPublisher != null">
+                #{nlcMarcPublisher,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from APABI_BOOK_META_NLC_MATCHER
+    </select>
+
+    <update id="update" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaNlcMatcher">
+        update APABI_BOOK_META_NLC_MATCHER
+        <set>
+            <if test="nlcMarcId != null">
+                NLC_MARC_ID = #{nlcMarcId,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn13 != null">
+                ISBN13 = #{isbn13,jdbcType=VARCHAR},
+            </if>
+            <if test="isbn10 != null">
+                ISBN10 = #{isbn10,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiTitle != null">
+                APABI_TITLE = #{apabiTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcTitle != null">
+                NLC_MARC_TITLE = #{nlcMarcTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiAuthor != null">
+                APABI_AUTHOR = #{apabiAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcAuthor != null">
+                NLC_MARC_AUTHOR = #{nlcMarcAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiPublisher != null">
+                APABI_PUBLISHER = #{apabiPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcMarcPublisher != null">
+                NLC_MARC_PUBLISHER = #{nlcMarcPublisher,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where META_ID = #{metaId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

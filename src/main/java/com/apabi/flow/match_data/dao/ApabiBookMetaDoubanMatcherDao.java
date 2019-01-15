@@ -15,13 +15,13 @@ import java.util.List;
 public interface ApabiBookMetaDoubanMatcherDao {
     int delete(String metaId);
 
-    int insert(ApabiBookMetaDoubanMatcher record);
+    int insert(ApabiBookMetaDoubanMatcher apabiBookMetaDoubanMatcher);
 
     ApabiBookMetaDoubanMatcher findById(String metaId);
 
     List<ApabiBookMetaDoubanMatcher> findAll();
 
-    int update(ApabiBookMetaDoubanMatcher record);
+    int update(ApabiBookMetaDoubanMatcher apabiBookMetaDoubanMatcher);
 
     int count();
 }

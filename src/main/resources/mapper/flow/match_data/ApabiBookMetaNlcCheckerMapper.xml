@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.match_data.dao.ApabiBookMetaNlcCheckerDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.match_data.model.ApabiBookMetaNlcChecker">
+        <id column="NLIBRARY_ID" jdbcType="VARCHAR" property="nlibraryId"/>
+        <result column="META_ID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="NLC_TITLE" jdbcType="VARCHAR" property="nlcTitle"/>
+        <result column="APABI_META_TITLE" jdbcType="VARCHAR" property="apabiMetaTitle"/>
+        <result column="NLC_AUTHOR" jdbcType="VARCHAR" property="nlcAuthor"/>
+        <result column="APABI_META_AUTHOR" jdbcType="VARCHAR" property="apabiMetaAuthor"/>
+        <result column="NLC_PUBLISHER" jdbcType="VARCHAR" property="nlcPublisher"/>
+        <result column="APABI_META_PUBLISHER" jdbcType="VARCHAR" property="apabiMetaPublisher"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        NLIBRARY_ID, META_ID, NLC_TITLE, APABI_META_TITLE, NLC_AUTHOR, APABI_META_AUTHOR,
+        NLC_PUBLISHER, APABI_META_PUBLISHER
+    </sql>
+
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_META_NLC_CHECKER
+        where NLIBRARY_ID = #{nlibraryId,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from APABI_BOOK_META_NLC_CHECKER
+        where NLIBRARY_ID = #{nlibraryId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaNlcChecker">
+        insert into APABI_BOOK_META_NLC_CHECKER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="nlibraryId != null">
+                NLIBRARY_ID,
+            </if>
+            <if test="metaId != null">
+                META_ID,
+            </if>
+            <if test="nlcTitle != null">
+                NLC_TITLE,
+            </if>
+            <if test="apabiMetaTitle != null">
+                APABI_META_TITLE,
+            </if>
+            <if test="nlcAuthor != null">
+                NLC_AUTHOR,
+            </if>
+            <if test="apabiMetaAuthor != null">
+                APABI_META_AUTHOR,
+            </if>
+            <if test="nlcPublisher != null">
+                NLC_PUBLISHER,
+            </if>
+            <if test="apabiMetaPublisher != null">
+                APABI_META_PUBLISHER,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="nlibraryId != null">
+                #{nlibraryId,jdbcType=VARCHAR},
+            </if>
+            <if test="metaId != null">
+                #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcTitle != null">
+                #{nlcTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaTitle != null">
+                #{apabiMetaTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcAuthor != null">
+                #{nlcAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaAuthor != null">
+                #{apabiMetaAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcPublisher != null">
+                #{nlcPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaPublisher != null">
+                #{apabiMetaPublisher,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="count"  resultType="java.lang.Integer">
+        select count(*) from APABI_BOOK_META_NLC_CHECKER
+    </select>
+
+    <update id="update" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaNlcChecker">
+        update APABI_BOOK_META_NLC_CHECKER
+        <set>
+            <if test="metaId != null">
+                META_ID = #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcTitle != null">
+                NLC_TITLE = #{nlcTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaTitle != null">
+                APABI_META_TITLE = #{apabiMetaTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcAuthor != null">
+                NLC_AUTHOR = #{nlcAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaAuthor != null">
+                APABI_META_AUTHOR = #{apabiMetaAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcPublisher != null">
+                NLC_PUBLISHER = #{nlcPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaPublisher != null">
+                APABI_META_PUBLISHER = #{apabiMetaPublisher,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where NLIBRARY_ID = #{nlibraryId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

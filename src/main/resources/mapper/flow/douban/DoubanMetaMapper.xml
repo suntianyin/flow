@@ -38,12 +38,41 @@
         MEDIUM_COVER, LARGE_COVER
     </sql>
 
+    <!-- 查询需要重新更新douban数据数量 -->
+    <select id="countShouldUpdate" resultType="java.lang.Integer">
+        select
+        count(*)
+        from DOUBAN_METADATA
+        where CREATETIME <![CDATA[<]]> to_date('2018-10-27 13:50:37','yyyy-MM-dd HH24:MI:SS')
+    </select>
+
+    <!-- 查询需要重新更新douban数据 -->
+    <select id="findShouldUpdate" resultType="com.apabi.flow.douban.model.DoubanMeta">
+        select
+        <include refid="Base_Column_List"/>
+        from DOUBAN_METADATA
+        where
+        large_cover is null
+    </select>
+    <!--
+        createtime <![CDATA[<]]> to_date('2018-10-27 13:50:37','yyyy-MM-dd HH24:MI:SS')
+        and updatetime <![CDATA[<]]> to_date('2018-10-27 13:50:37','yyyy-MM-dd HH24:MI:SS')
+    -->
+
     <!-- 根据isbn13查询数据 -->
-    <select id="findByIsbn13" resultType="java.lang.String">
+    <select id="findByIsbn13" resultMap="BaseResultMap">
         select
         *
         from DOUBAN_METADATA
         where ISBN13 = #{isbn13,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据isbn10查询数据 -->
+    <select id="findByIsbn10" resultMap="BaseResultMap">
+        select
+        *
+        from DOUBAN_METADATA
+        where ISBN10 = #{isbn10,jdbcType=VARCHAR}
     </select>
 
     <!-- 统计数据总数 -->

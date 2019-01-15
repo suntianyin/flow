@@ -2,28 +2,23 @@ package com.apabi.flow.publish.service;
 
 import com.alibaba.fastjson.JSON;
 import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.publish.dao.ApabiBookMetaPublishRepository;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.dao.PublishResultDao;
 import com.apabi.flow.publish.model.ApabiBookMetaPublish;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
 import com.apabi.flow.publish.model.PublishResult;
+import com.github.pagehelper.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +27,9 @@ import java.util.Map;
  **/
 @Service
 public class ApabiBookMetaPublishServiceImpl implements ApabiBookMetaPublishService {
+
+    @Autowired
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     @Autowired
     private ApabiBookMetaTempPublishRepository apabiBookMetaTempPublishRepository;
@@ -43,93 +41,8 @@ public class ApabiBookMetaPublishServiceImpl implements ApabiBookMetaPublishServ
     private PublishResultDao publishResultDao;
 
     @Override
-    public Page<ApabiBookMetaTempPublish> queryPage(Map queryMap, int pageNumber, int pageSize) {
-        //查询字段
-        String tmp;
-        //获取图书id
-        if (queryMap.get("metaId") != null) {
-            tmp = queryMap.get("metaId").toString();
-        } else {
-            tmp = "";
-        }
-        final String metaId = tmp;
-        //获取书名
-        if (queryMap.get("title") != null) {
-            tmp = queryMap.get("title").toString();
-        } else {
-            tmp = "";
-        }
-        final String title = tmp;
-        //获取作者
-        if (queryMap.get("creator") != null) {
-            tmp = queryMap.get("creator").toString();
-        } else {
-            tmp = "";
-        }
-        final String creator = tmp;
-        //获取出版社
-        if (queryMap.get("publisher") != null) {
-            tmp = queryMap.get("publisher").toString();
-        } else {
-            tmp = "";
-        }
-        final String publisher = tmp;
-        //获取isbn值
-        if (queryMap.get("isbnVal") != null) {
-            tmp = queryMap.get("isbnVal").toString();
-        } else {
-            tmp = "";
-        }
-        final String isbnVal = tmp;
-        //获取isbn类型
-        if (queryMap.get("isbn") != null) {
-            tmp = queryMap.get("isbn").toString();
-        } else {
-            tmp = "";
-        }
-        final String isbn = tmp;
-        //构造hasPublish
-        if (queryMap.get("hasPublish") != null) {
-            tmp = queryMap.get("hasPublish").toString();
-        } else {
-            tmp = "0";
-        }
-        //构造分页
-        Sort sort = new Sort(Sort.Direction.ASC, "hasPublish");
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
-        Specification<ApabiBookMetaTempPublish> spec = (Specification<ApabiBookMetaTempPublish>) (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            // 设置仅仅展示hasPublish=0的数据
-            if (!StringUtils.isEmpty(metaId)) {
-                predicates.add(criteriaBuilder.equal(root.get("metaId"), metaId));
-            }
-            if (!StringUtils.isEmpty(title)) {
-                predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
-            }
-            if (!StringUtils.isEmpty(creator)) {
-                predicates.add(criteriaBuilder.like(root.get("creator"), "%" + creator + "%"));
-            }
-            if (!StringUtils.isEmpty(publisher)) {
-                predicates.add(criteriaBuilder.like(root.get("publisher"), "%" + publisher + "%"));
-            }
-            if (isbn.equals("isbn")) {
-                if (!StringUtils.isEmpty(isbnVal)) {
-                    predicates.add(criteriaBuilder.equal(root.get("isbn"), isbnVal));
-                }
-            } else if (isbn.equals("isbn10")) {
-                if (!StringUtils.isEmpty(isbnVal)) {
-                    predicates.add(criteriaBuilder.equal(root.get("isbn10"), isbnVal));
-                }
-            } else if (isbn.equals("isbn13")) {
-                if (!StringUtils.isEmpty(isbnVal)) {
-                    predicates.add(criteriaBuilder.equal(root.get("isbn13"), isbnVal));
-                }
-            }
-            Predicate and = criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-            return and;
-        };
-        Page<ApabiBookMetaTempPublish> pages = apabiBookMetaTempPublishRepository.findAll(spec, pageable);
-        return pages;
+    public Page<ApabiBookMetaDataTemp> queryPage(Map<String,Object> queryMap) {
+        return apabiBookMetaDataTempDao.findByPageNotPublished(queryMap);
     }
 
     // 根据metaId查询temp库中的数据

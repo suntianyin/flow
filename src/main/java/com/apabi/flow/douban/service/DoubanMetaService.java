@@ -1,6 +1,6 @@
 package com.apabi.flow.douban.service;
 
-import com.apabi.flow.douban.model.ApabiBookMetaTemp;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.model.DoubanMeta;
 import com.github.pagehelper.Page;
 
@@ -15,12 +15,13 @@ import java.util.Map;
 public interface DoubanMetaService {
     DoubanMeta searchDoubanMetaByISBN(String isbn);
     List<DoubanMeta> searchDoubanMetasByISBN(String isbn13);
-    List<ApabiBookMetaTemp> searchMetaDataTempsByISBN(String isbn13);
+    List<ApabiBookMetaDataTemp> searchMetaDataTempsByISBN(String isbn13);
     // douban查询功能
     DoubanMeta searchDoubanMetaById(String doubanId);
     Page<DoubanMeta> searchDoubanMetaByPage(Map<String,String> params);
     void addDoubanMeta(DoubanMeta doubanMeta);
     void deleteDoubanMeta(String doubanId);
     void updateDoubanMeta(DoubanMeta doubanMeta);
-    List<ApabiBookMetaTemp> searchMetaDataTempsByISBNMultiThread(String isbn13);
+    List<ApabiBookMetaDataTemp> searchMetaDataTempsByISBNMultiThread(String isbn13);
+    void reUpdateDoubanByCrawl();
 }

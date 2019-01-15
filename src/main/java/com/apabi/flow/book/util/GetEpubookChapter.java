@@ -8,20 +8,14 @@ import com.apabi.flow.book.service.BookMetaService;
 import com.apabi.flow.book.service.BookShardService;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
-import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
-import net.sf.jazzlib.ZipEntry;
-import net.sf.jazzlib.ZipException;
-import net.sf.jazzlib.ZipInputStream;
 import net.sf.json.JSONArray;
-import nl.siegmann.epublib.domain.*;
-import nl.siegmann.epublib.epub.EpubReader;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.MediaType;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.service.MediatypeService;
-import nl.siegmann.epublib.util.ResourceUtil;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -37,7 +31,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 /**
  * @author guanpp
@@ -72,9 +65,6 @@ public class GetEpubookChapter {
 
     @Autowired
     BookFileDao bookFileDao;
-
-    @Autowired
-    ApabiBookMetaTempRepository bookMetaTempRepository;
 
     @Autowired
     JdbcTemplate jdbcTemplate;

@@ -16,6 +16,7 @@ import java.util.Map;
 @Repository
 @Mapper
 public interface DoubanMetaDao {
+    int countShouldUpdate();
     int count();
     DoubanMeta findById(String doubanId);
     void update(DoubanMeta doubanMeta);
@@ -24,4 +25,6 @@ public interface DoubanMetaDao {
     Page<DoubanMeta> findByPage(Map<String,String> params);
     Page<DoubanMeta> findByPageOrderByDoubanId();
     List<DoubanMeta> findByIsbn13(String isbn13);
+    List<DoubanMeta> findByIsbn10(String isbn10);
+    Page<DoubanMeta> findShouldUpdate();
 }

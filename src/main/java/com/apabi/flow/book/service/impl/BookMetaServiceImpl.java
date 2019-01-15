@@ -15,7 +15,6 @@ import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.common.model.ZtreeNode;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
-import com.apabi.flow.douban.dao.ApabiBookMetaTempRepository;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
@@ -28,15 +27,11 @@ import com.apabi.shuyuan.book.model.SCmfDigitObject;
 import com.apabi.shuyuan.book.model.SCmfDigitResfileSite;
 import com.apabi.shuyuan.book.model.SCmfMeta;
 import com.github.pagehelper.Page;
-import net.sf.jazzlib.ZipEntry;
-import net.sf.jazzlib.ZipException;
-import net.sf.jazzlib.ZipInputStream;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubReader;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -120,9 +115,6 @@ public class BookMetaServiceImpl implements BookMetaService {
 
     @Autowired
     BookShardDao bookShardDao;
-
-    @Autowired
-    ApabiBookMetaTempRepository bookMetaTempRepository;
 
     @Autowired
     private ApabiBookMetaTempPublishRepository apabiBookMetaTempPublishRepository;

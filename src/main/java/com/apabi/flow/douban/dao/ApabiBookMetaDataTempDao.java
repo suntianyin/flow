@@ -2,10 +2,12 @@ package com.apabi.flow.douban.dao;
 
 
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author pipi
@@ -21,4 +23,5 @@ public interface ApabiBookMetaDataTempDao {
     void delete(String metaId);
     void insert(ApabiBookMetaDataTemp apabiBookMetaDataTemp);
     void update(ApabiBookMetaDataTemp apabiBookMetaDataTemp);
+    Page<ApabiBookMetaDataTemp> findByPageNotPublished(Map<String,Object> params);
 }

@@ -31,6 +31,14 @@
     TITLEPINYIN,SUBTITLE,SUBTITLEPINYIN,AUTHORPINYIN,CONTRIBUTOR,ISSUEDDATE,RELATION,VOLUME,VOLUMETITLE,VOLUMETITLEPINYIN,VOLUMEID
   </sql>
 
+  <select id="findByIsbn" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from NLC_BOOK_MARC
+    where ISBN = #{isbn,jdbcType=VARCHAR}
+  </select>
+
+
   <select id="findByNlcMarcId" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

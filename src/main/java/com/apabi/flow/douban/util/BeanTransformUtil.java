@@ -3,10 +3,7 @@ package com.apabi.flow.douban.util;
  * Created by pipi on 2018/8/8.
  */
 
-import com.apabi.flow.douban.model.AmazonMeta;
-import com.apabi.flow.douban.model.ApabiBookMeta;
-import com.apabi.flow.douban.model.ApabiBookMetaTemp;
-import com.apabi.flow.douban.model.DoubanMeta;
+import com.apabi.flow.douban.model.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
@@ -87,8 +84,8 @@ public class BeanTransformUtil {
         return doubanMeta;
     }
 
-    public static ApabiBookMetaTemp transform2ApabiBookMetaTemp(DoubanMeta doubanMeta) {
-        ApabiBookMetaTemp apabiBookMetaTemp = new ApabiBookMetaTemp();
+    public static ApabiBookMetaDataTemp transform2ApabiBookMetaTemp(DoubanMeta doubanMeta) {
+        ApabiBookMetaDataTemp apabiBookMetaTemp = new ApabiBookMetaDataTemp();
         apabiBookMetaTemp.setDoubanId(doubanMeta.getDoubanId());
         String isbn = "";
         if (StringUtils.isNotEmpty(doubanMeta.getIsbn13())) {
@@ -108,7 +105,7 @@ public class BeanTransformUtil {
         if (issuedDate != null && issuedDate.contains(" 00:00:00")) {
             issuedDate = issuedDate.replaceAll(" 00:00:00", "");
         }
-        apabiBookMetaTemp.setIssueddate(issuedDate);
+        apabiBookMetaTemp.setIssuedDate(issuedDate);
         apabiBookMetaTemp.setBookPages(doubanMeta.getPages());
         apabiBookMetaTemp.setPaperPrice(doubanMeta.getPrice());
         apabiBookMetaTemp.setEbookPrice(doubanMeta.getEbookPrice());
@@ -126,7 +123,7 @@ public class BeanTransformUtil {
         return apabiBookMetaTemp;
     }
 
-    public static ApabiBookMetaTemp mergeApabiBookMetaTempWithAmazon(ApabiBookMetaTemp apabiBookMetaTemp, AmazonMeta amazonMeta) {
+    public static ApabiBookMetaDataTemp mergeApabiBookMetaTempWithAmazon(ApabiBookMetaDataTemp apabiBookMetaTemp, AmazonMeta amazonMeta) {
         if (apabiBookMetaTemp.getAbstract_() == null || "".equalsIgnoreCase(apabiBookMetaTemp.getAbstract_())) {
             apabiBookMetaTemp.setAbstract_(amazonMeta.getAbstract_());
         }

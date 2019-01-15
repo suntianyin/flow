@@ -19,6 +19,10 @@ import java.util.List;
 @Mapper
 public interface PublisherDao {
 
+    List<Publisher> findAmbiguousByTitle(String title);
+
+    List<Publisher> findByTitle(String title);
+
     Page<Publisher> queryPage(@Param("id")String id, @Param("title")String title, @Param("relatePublisherID")String relatePublisherID);
 
     int addPubliser(Publisher publisher);

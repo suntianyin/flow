@@ -18,7 +18,7 @@
         select
         count(*)
         from ISBN_DOUBAN_AMAZON
-        where DOUBAN_STATUS = '0'
+        where STATUS = '0'
     </select>
 
     <!-- 查询在jd中存在，在douban中不存在的isbn -->
@@ -26,7 +26,7 @@
         select
         <include refid="Base_Column_List"/>
         from ISBN_DOUBAN_AMAZON
-        where DOUBAN_STATUS = '0'
+        where STATUS = '0'
     </select>
 
     <!-- 查询需要抓取的isbn数据 -->

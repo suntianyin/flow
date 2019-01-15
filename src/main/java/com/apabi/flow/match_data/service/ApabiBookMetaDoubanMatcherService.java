@@ -27,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Date 2019-1-2 13:49
  **/
 @RestController
-@RequestMapping("apabiDouban")
+@RequestMapping("apabiDoubanMatcher")
 public class ApabiBookMetaDoubanMatcherService {
 
     @Autowired
@@ -56,6 +56,8 @@ public class ApabiBookMetaDoubanMatcherService {
             long start = System.currentTimeMillis();
             PageHelper.startPage(i, pageSize);
             Page<DoubanMeta> doubanMetaList = doubanMetaDao.findByPageOrderByDoubanId();
+            //Page<DoubanMeta> doubanMetaList = new Page<>();
+            //doubanMetaList.add(doubanMetaDao.findById("26992957"));
             int listSize = doubanMetaList.size();
             LinkedBlockingQueue<DoubanMeta> doubanMetaQueue = new LinkedBlockingQueue<>(doubanMetaList);
             CountDownLatch countDownLatch = new CountDownLatch(listSize);
@@ -69,7 +71,7 @@ public class ApabiBookMetaDoubanMatcherService {
                 e.printStackTrace();
             }
             long end = System.currentTimeMillis();
-            System.out.println("处理第" + (i - 1) * 10000 + "条到第" + i * 10000 + "条数据耗时" + (end - start) / 1000 + "s");
+            System.out.println("处理第" + (i - 1) * 100000 + "条到第" + i * 100000 + "条数据耗时" + (end - start) / 1000 + "s");
         }
         return "success";
     }
@@ -179,7 +181,7 @@ public class ApabiBookMetaDoubanMatcherService {
             LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue = new LinkedBlockingQueue<>(isbnList);
             int listSize = isbnList.size();
             CountDownLatch countDownLatch = new CountDownLatch(listSize);
-            CrawlDoubanAmazonNlcConsumerInJdNotInDouban consumer = new CrawlDoubanAmazonNlcConsumerInJdNotInDouban(isbnQueue, countDownLatch, isbnDoubanAmazonDao, doubanMetaDao, amazonMetaDao, nlcBookMarcDao, nlcIpPoolUtils);
+            CrawlDoubanAmazonNlcInJdNotInDoubanConsumer consumer = new CrawlDoubanAmazonNlcInJdNotInDoubanConsumer(isbnQueue, countDownLatch, isbnDoubanAmazonDao, doubanMetaDao, amazonMetaDao, nlcBookMarcDao, nlcIpPoolUtils);
             for (int j = 0; j < listSize; j++) {
                 executorService.execute(consumer);
             }

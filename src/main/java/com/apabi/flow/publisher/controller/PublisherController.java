@@ -417,7 +417,9 @@ public class PublisherController {
 
 
     @RequestMapping("compare")
-    public void compareStandardWithDB(){
+    @ResponseBody
+    public String compareStandardWithDB(){
         publisherService.compareStandardWithDB();
+        return "success";
     }
 }

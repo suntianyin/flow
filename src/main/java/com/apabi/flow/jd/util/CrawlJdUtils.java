@@ -1,7 +1,6 @@
 package com.apabi.flow.jd.util;
 
 import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
-import com.apabi.flow.douban.util.Isbn13ToIsbnUtil;
 import com.apabi.flow.jd.model.JdItemUrl;
 import com.apabi.flow.jd.model.JdMetadata;
 import org.apache.commons.lang.StringUtils;
@@ -373,7 +372,6 @@ public class CrawlJdUtils {
                 if (parameterElement.text().contains("ISBN：")) {
                     isbn13 = parameterElement.text();
                     isbn13 = isbn13.split("：")[1];
-                    isbn13 = Isbn13ToIsbnUtil.transform(isbn13);
                 }
             }
             jdMetadata.setTitle(title);

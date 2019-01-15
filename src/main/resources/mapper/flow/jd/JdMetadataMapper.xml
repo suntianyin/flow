@@ -23,6 +23,15 @@
         LANGUAGE, FORMAT, BRAND, META_ID, CREATE_TIME, UPDATE_TIME
     </sql>
 
+    <!-- 查询需要抓取的京东数据 -->
+    <select id="findShouldCrawl" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from JD_METADATA
+        where META_ID IS NULL
+    </select>
+
+
     <!-- 查询京东数据个数 -->
     <select id="count" resultType="java.lang.Integer">
         select count(*)

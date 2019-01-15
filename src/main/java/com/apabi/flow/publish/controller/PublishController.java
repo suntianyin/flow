@@ -1,18 +1,17 @@
 package com.apabi.flow.publish.controller;
 
-import cn.org.rapid_framework.page.PageRequest;
-import com.apabi.flow.common.PageRequestFactory;
 import com.apabi.flow.common.ResultEntity;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.model.CompareEntity;
 import com.apabi.flow.publish.model.ApabiBookMetaPublish;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
 import com.apabi.flow.publish.service.ApabiBookMetaPublishService;
 import com.apabi.flow.publish.util.TransformFieldNameUtils;
-import org.apache.commons.lang.StringUtils;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author pipi
@@ -45,77 +41,123 @@ public class PublishController {
 
     // 查询数据
     @RequestMapping("/search")
-    public String publishSearch(HttpServletRequest request, Model model) {
+    public String publishSearch(HttpServletRequest request, Model model,@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum) {
         long start = System.currentTimeMillis();
-        PageRequest pageRequest = new PageRequest();
-        PageRequestFactory.bindPageRequest(pageRequest, request);
-        Map<String, Object> params = (Map<String, Object>) pageRequest.getFilters();
-
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        Map<String, Object> params = new HashMap<>();
         String metaId = "";
-        if (params.get("metaId") != null) {
-            metaId = params.get("metaId").toString();
+        if (parameterMap.get("metaId") != null) {
+            metaId = parameterMap.get("metaId")[0].trim();
         }
-        String metaId1 = (String) request.getAttribute("metaId");
-        if (StringUtils.isNotEmpty(metaId1)) {
-            metaId = metaId1;
-        }
+        params.put("metaId", metaId);
         String title = "";
-        if (params.get("title") != null) {
-            title = params.get("title").toString();
+        if (parameterMap.get("title") != null) {
+            title = parameterMap.get("title")[0].trim();
         }
+        params.put("title", title);
+
         String creator = "";
-        if (params.get("creator") != null) {
-            creator = params.get("creator").toString();
+        if (parameterMap.get("creator") != null) {
+            creator = parameterMap.get("creator")[0].trim();
         }
+        params.put("creator", creator);
+
         String publisher = "";
-        if (params.get("publisher") != null) {
-            publisher = params.get("publisher").toString();
+        if (parameterMap.get("publisher") != null) {
+            publisher = parameterMap.get("publisher")[0].trim();
         }
-        String isbn = "";
-        if (params.get("isbn") != null) {
-            isbn = params.get("isbn").toString();
-        }
+        params.put("publisher", publisher);
+
         String isbnVal = "";
-        if (params.get("isbnVal") != null) {
-            isbnVal = params.get("isbnVal").toString();
+        if (parameterMap.get("isbnVal") != null) {
+            isbnVal = parameterMap.get("isbnVal")[0];
         }
-        String issuedDate = "";
-        if (params.get("issuedDate") != null) {
-            issuedDate = params.get("issuedDate").toString();
+        params.put("isbnVal", isbnVal);
+
+        String isbn = "";
+        if (parameterMap.get("isbn") != null) {
+            isbn = parameterMap.get("isbn")[0];
         }
-        String createTime = "";
-        if (params.get("createTime") != null) {
-            createTime = params.get("createTime").toString();
+        if ("isbn".equalsIgnoreCase(isbn)) {
+            params.put("isbn", isbnVal);
         }
-        String updateTime = "";
-        if (params.get("updateTime") != null) {
-            updateTime = params.get("updateTime").toString();
+        if ("isbn10".equalsIgnoreCase(isbn)) {
+            params.put("isbn10", isbnVal);
         }
-        String paperPrice = "";
-        if (params.get("paperPrice") != null) {
-            paperPrice = params.get("paperPrice").toString();
+        if ("isbn13".equalsIgnoreCase(isbn)) {
+            params.put("isbn13", isbnVal);
         }
-        Page<ApabiBookMetaTempPublish> page = null;
-        if (params.size() > 0) {
-            page = apabiBookMetaPublishService.queryPage(params, pageRequest.getPageNumber(), DEFAULT_PAGESIZE);
+
+        String hasCebx = "";
+        if (parameterMap.get("hasCebx") != null) {
+            hasCebx = parameterMap.get("hasCebx")[0].trim();
         }
-        if (page == null) {
-            model.addAttribute("apabiTempList", null);
-            model.addAttribute("page", null);
+        params.put("hasCebx", hasCebx);
+
+        String hasFlow = "";
+        if (parameterMap.get("hasFlow") != null) {
+            hasFlow = parameterMap.get("hasFlow")[0].trim();
+        }
+        params.put("hasFlow", hasFlow);
+
+        String isPublicCopyRight = "";
+        if (parameterMap.get("isPublicCopyRight") != null) {
+            isPublicCopyRight = parameterMap.get("isPublicCopyRight")[0].trim();
+        }
+        params.put("isPublicCopyRight", isPublicCopyRight);
+
+        String saleStatus = "";
+        if (parameterMap.get("saleStatus") != null) {
+            saleStatus = parameterMap.get("saleStatus")[0].trim();
+        }
+        params.put("saleStatus", saleStatus);
+
+        String flowSource = "";
+        if (parameterMap.get("flowSource") != null) {
+            flowSource = parameterMap.get("flowSource")[0].trim();
+        }
+        params.put("flowSource", flowSource);
+
+        if (isbnVal == null || "".equalsIgnoreCase(isbnVal)) {
+            params.put("isbn", "");
+            params.put("isbn10", "");
+            params.put("isbn13", "");
+        }
+
+        long totalCount = 0;
+        long totalPageNum = 1;
+        PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
+        Page<ApabiBookMetaDataTemp> page = null;
+        if (parameterMap.size() > 0) {
+            page = apabiBookMetaPublishService.queryPage(params);
+            totalCount = page.getTotal();
+            totalPageNum = page.getPages();
+        }
+
+        if (page != null && !page.isEmpty()) {
+            model.addAttribute("pageNum", page.getPageNum());
         } else {
-            model.addAttribute("apabiTempList", page.getContent());
-            model.addAttribute("page", page);
+            model.addAttribute("pages", 1);
+            model.addAttribute("pageNum", 1);
         }
+
         model.addAttribute("metaId", metaId);
         model.addAttribute("title", title);
-        model.addAttribute("isbn", isbn);
-        model.addAttribute("isbnVal", isbnVal);
         model.addAttribute("creator", creator);
+        model.addAttribute("flowSource", flowSource);
         model.addAttribute("publisher", publisher);
-        model.addAttribute("issuedDate", issuedDate);
-        model.addAttribute("createTime", createTime);
-        model.addAttribute("updateTime", updateTime);
-        model.addAttribute("paperPrice", paperPrice);
+        model.addAttribute("isbnVal", isbnVal);
+        model.addAttribute("isbn", isbn);
+        model.addAttribute("hasCebx", hasCebx);
+        model.addAttribute("hasFlow", hasFlow);
+        model.addAttribute("isPublicCopyRight", isPublicCopyRight);
+        model.addAttribute("saleStatus", saleStatus);
+        model.addAttribute("page", page);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("totalPage", totalPageNum);
+        model.addAttribute("apabiTempList", page.getResult());
+
+
         long end = System.currentTimeMillis();
         log.info("page的信息：" + page + "具体为：" + metaId + "数据发布列表查询耗时：" + (end - start) + "毫秒");
         return "publish/apabiTempPublish";
@@ -125,10 +167,8 @@ public class PublishController {
     @RequestMapping(value = "/homeIndex")
     public String publishPublishApabiBookTempHomeIndex(HttpServletRequest request, Model model) {
         long start = System.currentTimeMillis();
-        PageRequest pageRequest = new PageRequest();
-        PageRequestFactory.bindPageRequest(pageRequest, request);
-
-        Map<String, Object> params = (Map<String, Object>) pageRequest.getFilters();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        Map<String, Object> params = new HashMap<>();
         String metaId = "";
         if (params.get("metaId") != null) {
             metaId = params.get("metaId").toString();
@@ -177,11 +217,11 @@ public class PublishController {
         if (params.get("paperPrice") != null) {
             paperPrice = params.get("paperPrice").toString();
         }
-        Page<ApabiBookMetaTempPublish> page = null;
-        List<ApabiBookMetaTempPublish> content = null;
+        Page<ApabiBookMetaDataTemp> page = null;
+        List<ApabiBookMetaDataTemp> content = null;
         if (params.size() > 0) {
-            page = apabiBookMetaPublishService.queryPage(params, pageRequest.getPageNumber(), DEFAULT_PAGESIZE);
-            content = page.getContent();
+            page = apabiBookMetaPublishService.queryPage(params);
+            content = page.getResult();
         }
         model.addAttribute("apabiTempList", content);
         model.addAttribute("metaId", metaId);
@@ -197,6 +237,10 @@ public class PublishController {
         model.addAttribute("updateTime", updateTime);
         model.addAttribute("paperPrice", paperPrice);
         model.addAttribute("page", page);
+        if (page != null) {
+            model.addAttribute("totalPage", page.getTotal());
+            model.addAttribute("pageNum", page.getPageNum());
+        }
         long end = System.currentTimeMillis();
         log.info("page的信息：" + page + "具体为：" + metaId + "数据发布列表查询耗时：" + (end - start) + "毫秒");
         return "publish/apabiTempPublish";

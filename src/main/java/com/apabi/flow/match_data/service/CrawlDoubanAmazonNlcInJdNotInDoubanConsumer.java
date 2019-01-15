@@ -25,8 +25,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2019-1-4 14:01
  **/
-public class CrawlDoubanAmazonNlcConsumerInJdNotInDouban implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlDoubanAmazonNlcConsumerInJdNotInDouban.class);
+public class CrawlDoubanAmazonNlcInJdNotInDoubanConsumer implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlDoubanAmazonNlcInJdNotInDoubanConsumer.class);
     private static final String SUCCESS = "1";
     private LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue;
     private CountDownLatch countDownLatch;
@@ -36,7 +36,7 @@ public class CrawlDoubanAmazonNlcConsumerInJdNotInDouban implements Runnable {
     private NlcBookMarcDao nlcBookMarcDao;
     private NlcIpPoolUtils nlcIpPoolUtils;
 
-    public CrawlDoubanAmazonNlcConsumerInJdNotInDouban(LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue, CountDownLatch countDownLatch, IsbnDoubanAmazonDao isbnDoubanAmazonDao, DoubanMetaDao doubanMetaDao, AmazonMetaDao amazonMetaDao, NlcBookMarcDao nlcBookMarcDao, NlcIpPoolUtils nlcIpPoolUtils) {
+    public CrawlDoubanAmazonNlcInJdNotInDoubanConsumer(LinkedBlockingQueue<IsbnDoubanAmazon> isbnQueue, CountDownLatch countDownLatch, IsbnDoubanAmazonDao isbnDoubanAmazonDao, DoubanMetaDao doubanMetaDao, AmazonMetaDao amazonMetaDao, NlcBookMarcDao nlcBookMarcDao, NlcIpPoolUtils nlcIpPoolUtils) {
         this.isbnQueue = isbnQueue;
         this.countDownLatch = countDownLatch;
         this.isbnDoubanAmazonDao = isbnDoubanAmazonDao;

@@ -36,10 +36,11 @@
 
     <!-- 用于select查询公用抽取的列 -->
     <sql id="commonColumns">
-    ID, RELATEPUBLISHERID, ISBN, TITLE, TITLETYPE, STARTDATE, ENDDATE, NATIONALITYCODE, FOUNDERDATE,
-    CLASSCODE, RESOURCETYPE, PUBLISHINGGROUP, PUBLISHINGGROUPID, PRESIDENT, VICEPRESIDENT, QUALITYLEVEL,
-    SUMMARY,PLACE,OPERATOR,CREATETIME,UPDATETIME
+        ID, RELATEPUBLISHERID, ISBN, TITLE, TITLETYPE, STARTDATE, ENDDATE, NATIONALITYCODE, FOUNDERDATE,
+        CLASSCODE, RESOURCETYPE, PUBLISHINGGROUP, PUBLISHINGGROUPID, PRESIDENT, VICEPRESIDENT, QUALITYLEVEL,
+        SUMMARY,PLACE,OPERATOR,CREATETIME,UPDATETIME
     </sql>
+
 
     <insert id="addPubliser" parameterType="com.apabi.flow.publisher.model.Publisher">
         insert into APABI_PUBLISHER_INFO
@@ -184,6 +185,22 @@
 	        from APABI_PUBLISHER_INFO
 	    ]]>
         where id = #{ID}
+    </select>
+
+    <!-- 根据出版社名称进行模糊查询 -->
+    <select id="findAmbiguousByTitle" parameterType="java.lang.String" resultMap="publisherResult">
+        select
+        *
+        from APABI_PUBLISHER_INFO
+        where title like CONCAT(CONCAT('%',#{title,jdbcType=VARCHAR}),'%')
+    </select>
+
+    <!-- 根据出版社名称进行精准查询 -->
+    <select id="findByTitle" parameterType="java.lang.String" resultMap="publisherResult">
+        select
+        *
+        from APABI_PUBLISHER_INFO
+        where title = #{title,jdbcType=VARCHAR}
     </select>
 
     <update id="editPublisher" parameterType="com.apabi.flow.publisher.model.Publisher">

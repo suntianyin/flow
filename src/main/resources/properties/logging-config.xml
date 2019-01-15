@@ -367,6 +367,57 @@
         </encoder>
     </appender>
 
+    <!-- 对于douban数据更新日志配置 -->
+    <appender name="DOUBAN_UPDATE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mapping/douban_update.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- meta表doubanId匹配失败日志配置 -->
+    <appender name="DOUBAN_META_ISBN13_CHECKER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mapping/douban_meta_isbn13_checker.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根据jd表中的isbn生成元数据 -->
+    <appender name="JD_ISBN13_META" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/generate_meta/jd_meta.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- 针对FetchPageAgainConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageAgainConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageAgainConsumer的STDOUT的日志配置 -->
@@ -526,6 +577,31 @@
         <!-- 对于jd中有，douban中没有的isbn抓取douban，amazon和nlc日志文件配置 -->
         <appender-ref ref="ISBN_IN_JD_NOT_IN_DOUBAN_ALL"/>
     </logger>
+
+    <!-- 对于douban数据更新日志配置 -->
+    <logger name="com.apabi.flow.douban.service.impl.ReUpdateDoubanMetaConsumer" level="INFO" additivity="false">
+        <!-- 对于douban数据更新输出日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- 对于douban数据更新日志文件配置 -->
+        <appender-ref ref="DOUBAN_UPDATE"/>
+    </logger>
+
+    <!-- meta表doubanId匹配失败日志配置 -->
+    <logger name="com.apabi.flow.match_data.service.ApabiBookMetaDoubanCheckerService" level="INFO" additivity="false">
+        <!-- meta表doubanId匹配失败输出日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- meta表doubanId匹配失败日志文件配置 -->
+        <appender-ref ref="DOUBAN_META_ISBN13_CHECKER"/>
+    </logger>
+
+    <!-- 根据jd中的isbn生成元数据 -->
+    <logger name="com.apabi.flow.crawlTask.jd.GenerateMetaDataFromJdConsumer" level="INFO" additivity="false">
+        <!-- meta表doubanId匹配失败输出日志配置 -->
+        <appender-ref ref="STDOUT"/>
+        <!-- meta表doubanId匹配失败日志文件配置 -->
+        <appender-ref ref="JD_ISBN13_META"/>
+    </logger>
+
 
     <!--从书苑获取图书数据，新增到流式图书库中-->
     <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">

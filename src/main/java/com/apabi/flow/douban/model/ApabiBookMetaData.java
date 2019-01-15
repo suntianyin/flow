@@ -180,9 +180,9 @@ public class ApabiBookMetaData {
 
     private Integer contentNum;
 
-    private Object foamatCatalog;
+    private String foamatCatalog;
 
-    private Object streamCatalog;
+    private String streamCatalog;
 
     private Integer hasPublish;
 

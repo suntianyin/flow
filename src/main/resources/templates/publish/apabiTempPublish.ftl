@@ -28,14 +28,14 @@
             var publisher = $("#publisher").val();
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
-            var pathurl = "homeIndex?s_metaId=" + metaId
-                    + "&s_title=" + title + "&s_creator=" + creator
-                    + "&s_publisher=" + publisher + "&s_isbn=" + isbn + "&s_isbnVal=" + isbnVal;
+            var pathurl = "search?metaId=" + metaId
+                    + "&title=" + title + "&creator=" + creator
+                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
             var totalPages = 1;
             var currentPages = 1;
             <#if page??>
-                totalPages = ${page.totalPages?c};
-                currentPages = ${page.number?c}+1;
+                totalPages = ${totalPage?c};
+                currentPages = ${pageNum?c};
             </#if>
             jqPaging(pathurl, totalPages, currentPages);
         });
@@ -49,9 +49,9 @@
             var isbn = $("#isbn").val();
             var isbnVal = $("#isbnVal").val();
             loading();
-            window.location.href = "search?pageNumber=1&s_metaId=" + metaId
-                    + "&s_title=" + title + "&s_creator=" + creator
-                    + "&s_publisher=" + publisher + "&s_isbn=" + isbn + "&s_isbnVal=" + isbnVal;
+            window.location.href = "search?pageNumber=1&metaId=" + metaId
+                    + "&title=" + title + "&creator=" + creator
+                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
         }
 
         //对比

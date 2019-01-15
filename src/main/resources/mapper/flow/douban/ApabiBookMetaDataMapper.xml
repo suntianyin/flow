@@ -87,8 +87,8 @@
         <result column="CREATETIME" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="UPDATETIME" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="CONTENTNUM" jdbcType="DECIMAL" property="contentNum"/>
-        <result column="FOAMATCATALOG" jdbcType="OTHER" property="foamatCatalog"/>
-        <result column="STREAMCATALOG" jdbcType="OTHER" property="streamCatalog"/>
+        <result column="FOAMATCATALOG" jdbcType="CLOB" property="foamatCatalog"/>
+        <result column="STREAMCATALOG" jdbcType="CLOB" property="streamCatalog"/>
         <result column="HASPUBLISH" jdbcType="DECIMAL" property="hasPublish"/>
         <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
         <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
@@ -115,6 +115,30 @@
         CONTENTNUM, FOAMATCATALOG, STREAMCATALOG, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,
         AUTHORINTRO, ABSTRACT, PREFACE, STYLEURL, POSTSCRIPT,HASPROCESSINGFILE
     </sql>
+
+    <!-- 统计有doubanId数据的个数 -->
+    <select id="countHasDoubanId" resultType="java.lang.Integer">
+        select
+        count(*)
+        from APABI_BOOK_METADATA
+        where doubanid is not null
+    </select>
+
+    <!-- 统计有nlibraryId数据的个数 -->
+    <select id="countHasNLibraryId" resultType="java.lang.Integer">
+        select
+        count(*)
+        from APABI_BOOK_METADATA
+        where nlibraryId is not null
+    </select>
+
+    <!-- 查询有doubanId的数据 -->
+    <select id="findApabiBookMetaDataWithDoubanId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA
+        where doubanid is not null
+    </select>
 
     <!-- 根据isbn13查询数据 -->
     <select id="findByIsbn13" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -153,8 +177,8 @@
     </select>
 
     <delete id="delete" parameterType="java.lang.String">
-    delete from APABI_BOOK_METADATA
-    where METAID = #{metaId,jdbcType=VARCHAR}
+        delete from APABI_BOOK_METADATA
+        where METAID = #{metaId,jdbcType=VARCHAR}
     </delete>
 
     <insert id="insert" parameterType="com.apabi.flow.douban.model.ApabiBookMetaData">
@@ -706,10 +730,10 @@
                 #{contentNum,jdbcType=DECIMAL},
             </if>
             <if test="foamatCatalog != null">
-                #{foamatCatalog,jdbcType=OTHER},
+                #{foamatCatalog,jdbcType=CLOB},
             </if>
             <if test="streamCatalog != null">
-                #{streamCatalog,jdbcType=OTHER},
+                #{streamCatalog,jdbcType=CLOB},
             </if>
             <if test="hasPublish != null">
                 #{hasPublish,jdbcType=DECIMAL},
@@ -997,10 +1021,10 @@
                 CONTENTNUM = #{contentNum,jdbcType=DECIMAL},
             </if>
             <if test="foamatCatalog != null">
-                FOAMATCATALOG = #{foamatCatalog,jdbcType=OTHER},
+                FOAMATCATALOG = #{foamatCatalog,jdbcType=CLOB},
             </if>
             <if test="streamCatalog != null">
-                STREAMCATALOG = #{streamCatalog,jdbcType=OTHER},
+                STREAMCATALOG = #{streamCatalog,jdbcType=CLOB},
             </if>
             <if test="hasPublish != null">
                 HASPUBLISH = #{hasPublish,jdbcType=DECIMAL},
@@ -1036,5 +1060,27 @@
     <update id="updateNlcMarcId" parameterType="java.lang.String">
         update apabi_book_metadata set NLIBRARYID = #{nlibraryId} where isbn = #{isbn}
     </update>
+
+    <select id="findIsbn13WithoutDoubanId" resultType="java.lang.String">
+        select isbn13 from apabi_book_metadata where isbn13 is not null and doubanid is null
+    </select>
+
+    <select id="findIsbn10WithoutDoubanId" resultType="java.lang.String">
+        select isbn10 from apabi_book_metadata where isbn10 is not null and doubanid is null
+    </select>
+
+    <select id="findIsbn13WithoutNlibraryId" resultType="java.lang.String">
+        select isbn10 from apabi_book_metadata where isbn13 is not null and nlibraryid is null
+    </select>
+
+    <select id="findIsbn10WithoutNlibraryId" resultType="java.lang.String">
+        select isbn10 from apabi_book_metadata where isbn10 is not null and nlibraryid is null
+    </select>
+
+    <select id="findApabiBookMetaDataWithNlibraryId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apabi_book_metadata where nlibraryid is not null
+    </select>
 
 </mapper>

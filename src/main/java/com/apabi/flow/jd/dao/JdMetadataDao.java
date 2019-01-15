@@ -16,6 +16,8 @@ import java.util.List;
 public interface JdMetadataDao {
     int count();
 
+    Page<JdMetadata> findShouldCrawl();
+
     List<JdMetadata> findAll();
 
     int delete(String jdItemId);

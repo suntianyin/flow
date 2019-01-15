@@ -1,7 +1,7 @@
 package com.apabi.flow.douban.controller;
 
 import com.apabi.flow.common.ResultEntity;
-import com.apabi.flow.douban.model.ApabiBookMetaTemp;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.model.DoubanMeta;
 import com.apabi.flow.douban.service.DoubanMetaService;
 import com.apabi.flow.douban.util.TransformDoubanFieldNameUtils;
@@ -51,14 +51,12 @@ public class DoubanController {
         Instant start = Instant.now();
         // 结果List
         List<ResultEntity> resultEntityList = new ArrayList<>();
-
-        System.out.println(isbn13);
         String[] isbn13List = isbn13.split(",");
         for (String i : isbn13List) {
             i = i.trim();
             try {
-                List<ApabiBookMetaTemp> doubanMetaList = doubanMetaService.searchMetaDataTempsByISBN(i);
-                for (ApabiBookMetaTemp doubanMeta : doubanMetaList) {
+                List<ApabiBookMetaDataTemp> apabiBookMetaDataTempList = doubanMetaService.searchMetaDataTempsByISBN(i);
+                for (ApabiBookMetaDataTemp doubanMeta : apabiBookMetaDataTempList) {
                     ResultEntity resultEntity = new ResultEntity();
                     resultEntity.setMsg("success");
                     resultEntity.setStatus(0);
@@ -271,6 +269,13 @@ public class DoubanController {
         }
         doubanMetaService.updateDoubanMeta(doubanMeta);
         return "searchIndex?doubanId=" + doubanId;
+    }
+
+    @RequestMapping("update")
+    @ResponseBody
+    public String reUpdateDoubanMetaData(){
+        doubanMetaService.reUpdateDoubanByCrawl();
+        return "success";
     }
 
     // 根据字段名获取字段值

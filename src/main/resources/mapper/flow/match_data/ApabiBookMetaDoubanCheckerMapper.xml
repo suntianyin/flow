@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.match_data.dao.ApabiBookMetaDoubanCheckerDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.match_data.model.ApabiBookMetaDoubanChecker">
+        <id column="DOUBAN_ID" jdbcType="VARCHAR" property="doubanId"/>
+        <result column="META_ID" jdbcType="VARCHAR" property="metaId"/>
+        <result column="DOUBAN_TITLE" jdbcType="VARCHAR" property="doubanTitle"/>
+        <result column="APABI_META_TITLE" jdbcType="VARCHAR" property="apabiMetaTitle"/>
+        <result column="DOUBAN_AUTHOR" jdbcType="VARCHAR" property="doubanAuthor"/>
+        <result column="APABI_META_AUTHOR" jdbcType="VARCHAR" property="apabiMetaAuthor"/>
+        <result column="DOUBAN_PUBLISHER" jdbcType="VARCHAR" property="doubanPublisher"/>
+        <result column="APABI_META_PUBLISHER" jdbcType="VARCHAR" property="apabiMetaPublisher"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        DOUBAN_ID, META_ID, DOUBAN_TITLE, APABI_META_TITLE, DOUBAN_AUTHOR, APABI_META_AUTHOR, DOUBAN_PUBLISHER,
+        APABI_META_PUBLISHER
+    </sql>
+
+    <!-- 根据主键查询 -->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_META_DOUBAN_CHECKER
+        where DOUBAN_ID = #{doubanId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 删除数据 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from APABI_BOOK_META_DOUBAN_CHECKER
+        where DOUBAN_ID = #{doubanId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 插入数据 -->
+    <insert id="insert" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaDoubanChecker">
+        insert into APABI_BOOK_META_DOUBAN_CHECKER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="doubanId != null">
+                DOUBAN_ID,
+            </if>
+            <if test="metaId != null">
+                META_ID,
+            </if>
+            <if test="doubanTitle != null">
+                DOUBAN_TITLE,
+            </if>
+            <if test="apabiMetaTitle != null">
+                APABI_META_TITLE,
+            </if>
+            <if test="doubanAuthor != null">
+                DOUBAN_AUTHOR,
+            </if>
+            <if test="apabiMetaAuthor != null">
+                APABI_META_AUTHOR,
+            </if>
+            <if test="doubanPublisher != null">
+                DOUBAN_PUBLISHER,
+            </if>
+            <if test="apabiMetaPublisher != null">
+                APABI_META_PUBLISHER,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="doubanId != null">
+                #{doubanId,jdbcType=VARCHAR},
+            </if>
+            <if test="metaId != null">
+                #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanTitle != null">
+                #{doubanTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaTitle != null">
+                #{apabiMetaTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanAuthor != null">
+                #{doubanAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaAuthor != null">
+                #{apabiMetaAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanPublisher != null">
+                #{doubanPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaPublisher != null">
+                #{apabiMetaPublisher,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 统计数据 -->
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from APABI_BOOK_META_DOUBAN_CHECKER
+    </select>
+
+    <!-- 更新数据 -->
+    <update id="update" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaDoubanChecker">
+        update APABI_BOOK_META_DOUBAN_CHECKER
+        <set>
+            <if test="doubanTitle != null">
+                DOUBAN_TITLE = #{doubanTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="metaId != null">
+                META_ID = #{metaId,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaTitle != null">
+                APABI_META_TITLE = #{apabiMetaTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanAuthor != null">
+                DOUBAN_AUTHOR = #{doubanAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaAuthor != null">
+                APABI_META_AUTHOR = #{apabiMetaAuthor,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanPublisher != null">
+                DOUBAN_PUBLISHER = #{doubanPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaPublisher != null">
+                APABI_META_PUBLISHER = #{apabiMetaPublisher,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where DOUBAN_ID = #{doubanId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

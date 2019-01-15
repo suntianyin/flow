@@ -62,7 +62,7 @@ public class PublisherServiceImpl implements PublisherService {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\出版社.txt"));
             String publisher = "";
-            while ((publisher = bufferedReader.readLine())!=null){
+            while ((publisher = bufferedReader.readLine()) != null) {
                 publisherList.add(publisher);
             }
         } catch (FileNotFoundException e) {
@@ -70,16 +70,21 @@ public class PublisherServiceImpl implements PublisherService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        List<Publisher> publisherListInDB = publisherDao.findAll();
-        for (Publisher publisher : publisherListInDB) {
+        for (String publisherInText : publisherList) {
             int flag = 0;
-            for (String s : publisherList) {
-                if(publisher.getTitle().equals(s)){
+            String companyAmbiguousInText = publisherInText.substring(0, 4);
+            List<Publisher> publisherFindList = publisherDao.findAmbiguousByTitle(companyAmbiguousInText);
+            if (publisherFindList != null && publisherFindList.size() > 0) {
+                flag = 1;
+            }
+            if (flag == 0) {
+                List<Publisher> byTitle = publisherDao.findByTitle(publisherInText);
+                if (byTitle != null && byTitle.size() > 0) {
                     flag = 1;
                 }
             }
-            if(flag == 0){
-                System.out.println(publisher);
+            if (flag == 0) {
+                System.out.println(publisherInText);
             }
         }
     }

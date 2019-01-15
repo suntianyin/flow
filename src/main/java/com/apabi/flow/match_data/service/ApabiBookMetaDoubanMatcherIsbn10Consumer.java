@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2019-1-3 9:07
  **/
-public class ApabiBookMetaDoubanMatcherIsbn10Consumer implements Runnable{
+public class ApabiBookMetaDoubanMatcherIsbn10Consumer implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApabiBookMetaDoubanMatcherIsbn10Consumer.class);
     private LinkedBlockingQueue<DoubanMeta> doubanMetaQueue;
     private CountDownLatch countDownLatch;
@@ -48,9 +48,14 @@ public class ApabiBookMetaDoubanMatcherIsbn10Consumer implements Runnable{
                     if (apabiBookMetaDataList.size() == 1) {
                         // 如果douban在meta表中匹配了1项，则直接更新meta表中数据的doubanid字段
                         ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
-                        apabiBookMetaData.setDoubanId(doubanMeta.getDoubanId());
-                        apabiBookMetaDataDao.update(apabiBookMetaData);
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn10 + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的doubanId为：" + apabiBookMetaData.getDoubanId());
+                        if (StringUtils.isEmpty(apabiBookMetaData.getDoubanId())) {
+                            apabiBookMetaData.setDoubanId(doubanMeta.getDoubanId());
+                            try {
+                                apabiBookMetaDataDao.update(apabiBookMetaData);
+                                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn10 + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的doubanId为：" + apabiBookMetaData.getDoubanId());
+                            } catch (Exception e) {
+                            }
+                        }
                     } else if (apabiBookMetaDataList.size() > 1) {
                         // 如果douban在meta表中匹配了多项，则记录到apabi_book_meta_douban_matcher中
                         for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
@@ -74,7 +79,7 @@ public class ApabiBookMetaDoubanMatcherIsbn10Consumer implements Runnable{
             }
         } catch (Exception e) {
         } finally {
-            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  使用" + Thread.currentThread().getName() + "处理douban映射apabi第" + (pageNum - 1) * 10000 + "条到第" + pageNum * 10000 + "条数据，还剩余" + countDownLatch.getCount() + "条");
+            //LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  使用" + Thread.currentThread().getName() + "处理douban映射apabi第" + (pageNum - 1) * 10000 + "条到第" + pageNum * 10000 + "条数据，还剩余" + countDownLatch.getCount() + "条");
             countDownLatch.countDown();
         }
     }
