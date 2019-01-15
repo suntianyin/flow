@@ -473,7 +473,7 @@
                                 <a href="javascript:void(0);"
                                 onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
                                 <a href="javascript:void(0);"
-                                onclick="pdf('${(list.id)!''}')">书目信息pdf查看</a>
+                                onclick="pdf('${(list.id)!''}')">pdf预览</a>
                             </#if>
                             <#if list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
                                 <a href="javascript:void(0);"
