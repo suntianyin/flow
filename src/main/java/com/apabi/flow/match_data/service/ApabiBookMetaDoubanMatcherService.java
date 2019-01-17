@@ -412,7 +412,7 @@ public class ApabiBookMetaDoubanMatcherService {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(""));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2018.txt"));
         Set<String> isbnSet = new HashSet<>();
         int hit = 0;
         String isbn = "";

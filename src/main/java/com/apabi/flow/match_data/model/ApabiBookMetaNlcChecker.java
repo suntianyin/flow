@@ -29,4 +29,6 @@ public class ApabiBookMetaNlcChecker {
     private String apabiMetaPublisher;
 
     private String apabiMetaTitleClean;
+
+    private String nlcAuthorClean;
 }

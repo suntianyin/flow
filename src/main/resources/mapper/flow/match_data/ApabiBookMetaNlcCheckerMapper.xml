@@ -11,11 +11,12 @@
         <result column="NLC_PUBLISHER" jdbcType="VARCHAR" property="nlcPublisher"/>
         <result column="APABI_META_PUBLISHER" jdbcType="VARCHAR" property="apabiMetaPublisher"/>
         <result column="APABI_META_TITLE_CLEAN" jdbcType="VARCHAR" property="apabiMetaTitleClean"/>
+        <result column="NLC_AUTHOR_CLEAN" jdbcType="VARCHAR" property="nlcAuthorClean"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         NLIBRARY_ID, META_ID, NLC_TITLE, APABI_META_TITLE, NLC_AUTHOR, APABI_META_AUTHOR,
-        NLC_PUBLISHER, APABI_META_PUBLISHER,APABI_META_TITLE_CLEAN
+        NLC_PUBLISHER, APABI_META_PUBLISHER,APABI_META_TITLE_CLEAN,NLC_AUTHOR_CLEAN
     </sql>
 
     <select id="findByPage" resultMap="BaseResultMap">
@@ -66,6 +67,9 @@
             <if test="apabiMetaTitleClean != null">
                 APABI_META_TITLE_CLEAN,
             </if>
+            <if test="nlcAuthorClean != null">
+                NLC_AUTHOR_CLEAN,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="nlibraryId != null">
@@ -94,6 +98,9 @@
             </if>
             <if test="apabiMetaTitleClean != null">
                 #{apabiMetaTitleClean,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcAuthorClean != null">
+                #{nlcAuthorClean,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -128,6 +135,9 @@
             </if>
             <if test="apabiMetaTitleClean != null">
                 APABI_META_TITLE_CLEAN = #{apabiMetaTitleClean,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcAuthorClean != null">
+                NLC_AUTHOR_CLEAN = #{nlcAuthorClean,jdbcType=VARCHAR},
             </if>
         </set>
         where NLIBRARY_ID = #{nlibraryId,jdbcType=VARCHAR}
