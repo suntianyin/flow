@@ -43,10 +43,10 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                 isbn = isbn.replaceAll("-", "");
             }
             if (isbn.length() == 10) {
-                amazonMeta = amazonMetaDao.findByIsbn10(isbn);
+                amazonMeta = amazonMetaDao.findByIsbn10(isbn).get(0);
             }
             if (isbn.length() == 13) {
-                amazonMeta = amazonMetaDao.findByIsbn13(isbn);
+                amazonMeta = amazonMetaDao.findByIsbn13(isbn).get(0);
             }
             if (amazonMeta == null) {
                 // 如果在表中查询不到数据，则去爬取

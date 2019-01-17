@@ -103,4 +103,38 @@ public class ApabiBookMetaNlcCheckerService {
         }
         return "success";
     }
+
+    /**
+     * 清洗apabi_book_meta_nlc_checker表中的apabi_book_meta_title字段与nlc_title进行比对算法
+     *
+     * @return
+     */
+    @RequestMapping("cleanApabiTitle")
+    @ResponseBody
+    public String cleanApabiTitle() {
+        int count = apabiBookMetaNlcCheckerDao.count();
+        int pageSize = 10000;
+        int pageNum = (count / pageSize) + 1;
+        for (int i = 1; i <= pageNum; i++) {
+            PageHelper.startPage(i, pageSize);
+            Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
+            for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
+                String apabiTitle = apabiBookMetaNlcChecker.getApabiMetaTitle();
+                String apabiTitleClean = "";
+                if (apabiTitle.contains(":")) {
+                    apabiTitleClean = apabiTitle.substring(0, apabiTitle.indexOf(":")).trim();
+                    if (apabiTitleClean.contains(" ")) {
+                        apabiTitleClean = apabiTitleClean.substring(0, apabiTitleClean.lastIndexOf(" ")).trim();
+                    }
+                } else if (apabiTitle.contains(" ")) {
+                    apabiTitleClean = apabiTitle.substring(0, apabiTitle.lastIndexOf(" ")).trim();
+                }
+                if (StringUtils.isEmpty(apabiTitleClean)) {
+                    apabiTitleClean = apabiTitle;
+                }
+                System.out.println(apabiTitleClean);
+            }
+        }
+        return "success";
+    }
 }

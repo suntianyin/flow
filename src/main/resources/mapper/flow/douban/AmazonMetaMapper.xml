@@ -36,7 +36,7 @@
         <result column="AUTHORINTRODUCTION" jdbcType="CLOB" property="authorIntroduction"/>
         <result column="CATALOG" jdbcType="CLOB" property="catalog"/>
         <result column="PREFACE" jdbcType="CLOB" property="preface"/>
-        <result column="ABSTRACT" jdbcType="CLOB" property="abstract"/>
+        <result column="ABSTRACT" jdbcType="CLOB" property="abstract_"/>
         <result column="SUMMARY" jdbcType="CLOB" property="summary"/>
         <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript"/>
     </resultMap>

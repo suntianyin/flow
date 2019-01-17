@@ -4,6 +4,7 @@ import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
 import com.apabi.flow.douban.dao.AmazonMetaDao;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
+import com.apabi.flow.douban.model.AmazonMeta;
 import com.apabi.flow.douban.model.DoubanMeta;
 import com.apabi.flow.isbn_douban_amazon.dao.IsbnDoubanAmazonDao;
 import com.apabi.flow.isbn_douban_amazon.model.IsbnDoubanAmazon;
@@ -14,9 +15,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -193,5 +199,229 @@ public class ApabiBookMetaDoubanMatcherService {
         }
         executorService.shutdown();
         return "success";
+    }
+
+    @RequestMapping("matchDoubanIn2016IssuedDateInApabiBookMetaData")
+    @ResponseBody
+    public String matchDoubanIn2016IssuedDateInApabiBookMetaData() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2016.txt"));
+        List<String> isbnList = new ArrayList<>();
+        String isbn = "";
+        int hit = 0;
+        while ((isbn = bufferedReader.readLine()) != null) {
+            isbnList.add(isbn);
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\2016-match-douban.txt"));
+        for (String s : isbnList) {
+            String isbnValue = s.replaceAll("-", "");
+            if (isbnValue.length() == 10) {
+                List<DoubanMeta> doubanMetaList = doubanMetaDao.findByIsbn10(isbnValue);
+                if (doubanMetaList != null && doubanMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            } else if (isbnValue.length() == 13) {
+                List<DoubanMeta> doubanMetaList = doubanMetaDao.findByIsbn13(isbnValue);
+                if (doubanMetaList != null && doubanMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            }
+        }
+        System.out.println("2016 in douban hit:" + hit);
+        return "success";
+    }
+
+    @RequestMapping("matchDoubanIn2017IssuedDateInApabiBookMetaData")
+    @ResponseBody
+    public String matchDoubanIn2017IssuedDateInApabiBookMetaData() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2017.txt"));
+        List<String> isbnList = new ArrayList<>();
+        String isbn = "";
+        int hit = 0;
+        while ((isbn = bufferedReader.readLine()) != null) {
+            isbnList.add(isbn);
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\2017-match-douban.txt"));
+        for (String s : isbnList) {
+            String isbnValue = s.replaceAll("-", "");
+            if (isbnValue.length() == 10) {
+                List<DoubanMeta> doubanMetaList = doubanMetaDao.findByIsbn10(isbnValue);
+                if (doubanMetaList != null && doubanMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            } else if (isbnValue.length() == 13) {
+                List<DoubanMeta> doubanMetaList = doubanMetaDao.findByIsbn13(isbnValue);
+                if (doubanMetaList != null && doubanMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            }
+        }
+        System.out.println("2017 in douban hit:" + hit);
+        return "success";
+    }
+
+    @RequestMapping("matchDoubanIn2018IssuedDateInApabiBookMetaData")
+    @ResponseBody
+    public String matchDoubanIn2018IssuedDateInApabiBookMetaData() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2018.txt"));
+        List<String> isbnList = new ArrayList<>();
+        String isbn = "";
+        int hit = 0;
+        while ((isbn = bufferedReader.readLine()) != null) {
+            isbnList.add(isbn);
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\2018-match-douban.txt"));
+        for (String s : isbnList) {
+            String isbnValue = s.replaceAll("-", "");
+            if (isbnValue.length() == 10) {
+                List<DoubanMeta> doubanMetaList = doubanMetaDao.findByIsbn10(isbnValue);
+                if (doubanMetaList != null && doubanMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            } else if (isbnValue.length() == 13) {
+                List<DoubanMeta> doubanMetaList = doubanMetaDao.findByIsbn13(isbnValue);
+                if (doubanMetaList != null && doubanMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            }
+        }
+        System.out.println("2018 in douban hit:" + hit);
+        return "success";
+    }
+
+    @RequestMapping("matchAmazonIn2016IssuedDateInApabiBookMetaData")
+    @ResponseBody
+    public String matchAmazonIn2016IssuedDateInApabiBookMetaData() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2016.txt"));
+        List<String> isbnList = new ArrayList<>();
+        String isbn = "";
+        int hit = 0;
+        while ((isbn = bufferedReader.readLine()) != null) {
+            isbnList.add(isbn);
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\2016-match-amazon.txt"));
+        for (String s : isbnList) {
+            String isbnValue = s.replaceAll("-", "");
+            if (isbnValue.length() == 10) {
+                List<AmazonMeta> amazonMetaList = amazonMetaDao.findByIsbn10(isbnValue);
+                if (amazonMetaList != null && amazonMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            } else if (isbnValue.length() == 13) {
+                List<AmazonMeta> amazonMetaList = amazonMetaDao.findByIsbn13(isbnValue);
+                if (amazonMetaList != null && amazonMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            }
+        }
+        System.out.println("2016 in amazon hit:" + hit);
+        return "success";
+    }
+
+    @RequestMapping("matchAmazonIn2017IssuedDateInApabiBookMetaData")
+    @ResponseBody
+    public String matchAmazonIn2017IssuedDateInApabiBookMetaData() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2017.txt"));
+        List<String> isbnList = new ArrayList<>();
+        String isbn = "";
+        int hit = 0;
+        while ((isbn = bufferedReader.readLine()) != null) {
+            isbnList.add(isbn);
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\2017-match-amazon.txt"));
+        for (String s : isbnList) {
+            String isbnValue = s.replaceAll("-", "");
+            if (isbnValue.length() == 10) {
+                List<AmazonMeta> amazonMetaList = amazonMetaDao.findByIsbn10(isbnValue);
+                if (amazonMetaList != null && amazonMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            } else if (isbnValue.length() == 13) {
+                List<AmazonMeta> amazonMetaList = amazonMetaDao.findByIsbn13(isbnValue);
+                if (amazonMetaList != null && amazonMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            }
+        }
+        System.out.println("2017 in amazon hit:" + hit);
+        return "success";
+    }
+
+    @RequestMapping("matchAmazonIn2018IssuedDateInApabiBookMetaData")
+    @ResponseBody
+    public String matchAmazonIn2018IssuedDateInApabiBookMetaData() throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\pirui\\Desktop\\2018.txt"));
+        List<String> isbnList = new ArrayList<>();
+        String isbn = "";
+        int hit = 0;
+        while ((isbn = bufferedReader.readLine()) != null) {
+            isbnList.add(isbn);
+        }
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\pirui\\Desktop\\2018-match-amazon.txt"));
+        for (String s : isbnList) {
+            String isbnValue = s.replaceAll("-", "");
+            if (isbnValue.length() == 10) {
+                List<AmazonMeta> amazonMetaList = amazonMetaDao.findByIsbn10(isbnValue);
+                if (amazonMetaList != null && amazonMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            } else if (isbnValue.length() == 13) {
+                List<AmazonMeta> amazonMetaList = amazonMetaDao.findByIsbn13(isbnValue);
+                if (amazonMetaList != null && amazonMetaList.size() >= 1) {
+                    bufferedWriter.write(isbnValue);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                    hit++;
+                }
+            }
+        }
+        System.out.println("2018 in amazon hit:" + hit);
+        return "success";
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(""));
+        Set<String> isbnSet = new HashSet<>();
+        int hit = 0;
+        String isbn = "";
+        while ((isbn = bufferedReader.readLine()) != null) {
+            boolean add = isbnSet.add(isbn);
+            if (add == false) {
+                hit++;
+            }
+        }
+        System.out.println("2016 hit:" + hit);
     }
 }

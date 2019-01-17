@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author pipi
@@ -31,4 +32,6 @@ public interface JdMetadataDao {
     void updateHasCrawled(String url);
 
     Page<String> findAllIsbn13ByPage();
+
+    Page<JdMetadata> findByPage(Map<String,String> params);
 }

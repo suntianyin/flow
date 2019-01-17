@@ -8,6 +8,7 @@ import com.apabi.flow.jd.dao.JdMetadataDao;
 import com.apabi.flow.jd.model.JdCrawlPageUrl;
 import com.apabi.flow.jd.model.JdCrawlUrl;
 import com.apabi.flow.jd.model.JdItemUrl;
+import com.apabi.flow.jd.model.JdMetadata;
 import com.apabi.flow.jd.util.CrawlJdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -20,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -176,6 +178,18 @@ public class JdService {
         }
         executorService.shutdown();
         return "success";
+    }
+
+    public void updateJd(JdMetadata jdMetadata){
+        jdMetadataDao.update(jdMetadata);
+    }
+
+    public Page<JdMetadata> findJdMetaByPage(Map<String,String> params){
+        return jdMetadataDao.findByPage(params);
+    }
+
+    public JdMetadata findById(String jdItemId){
+        return jdMetadataDao.findById(jdItemId);
     }
 
 }

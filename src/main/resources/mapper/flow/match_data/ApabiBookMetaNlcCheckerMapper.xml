@@ -10,12 +10,19 @@
         <result column="APABI_META_AUTHOR" jdbcType="VARCHAR" property="apabiMetaAuthor"/>
         <result column="NLC_PUBLISHER" jdbcType="VARCHAR" property="nlcPublisher"/>
         <result column="APABI_META_PUBLISHER" jdbcType="VARCHAR" property="apabiMetaPublisher"/>
+        <result column="APABI_META_TITLE_CLEAN" jdbcType="VARCHAR" property="apabiMetaTitleClean"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         NLIBRARY_ID, META_ID, NLC_TITLE, APABI_META_TITLE, NLC_AUTHOR, APABI_META_AUTHOR,
-        NLC_PUBLISHER, APABI_META_PUBLISHER
+        NLC_PUBLISHER, APABI_META_PUBLISHER,APABI_META_TITLE_CLEAN
     </sql>
+
+    <select id="findByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_META_NLC_CHECKER
+    </select>
 
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
@@ -56,6 +63,9 @@
             <if test="apabiMetaPublisher != null">
                 APABI_META_PUBLISHER,
             </if>
+            <if test="apabiMetaTitleClean != null">
+                APABI_META_TITLE_CLEAN,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="nlibraryId != null">
@@ -81,6 +91,9 @@
             </if>
             <if test="apabiMetaPublisher != null">
                 #{apabiMetaPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaTitleClean != null">
+                #{apabiMetaTitleClean,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -112,6 +125,9 @@
             </if>
             <if test="apabiMetaPublisher != null">
                 APABI_META_PUBLISHER = #{apabiMetaPublisher,jdbcType=VARCHAR},
+            </if>
+            <if test="apabiMetaTitleClean != null">
+                APABI_META_TITLE_CLEAN = #{apabiMetaTitleClean,jdbcType=VARCHAR},
             </if>
         </set>
         where NLIBRARY_ID = #{nlibraryId,jdbcType=VARCHAR}

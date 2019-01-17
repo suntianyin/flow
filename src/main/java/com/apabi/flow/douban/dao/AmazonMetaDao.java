@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,7 +30,7 @@ public interface AmazonMetaDao {
      * @param isbn10
      * @return
      */
-    AmazonMeta findByIsbn10(String isbn10);
+    List<AmazonMeta> findByIsbn10(String isbn10);
 
     /**
      * 根据isbn13查找AmazonMeta
@@ -37,7 +38,7 @@ public interface AmazonMetaDao {
      * @param isbn13
      * @return
      */
-    AmazonMeta findByIsbn13(String isbn13);
+    List<AmazonMeta> findByIsbn13(String isbn13);
 
     /**
      * 添加AmazonMeta
