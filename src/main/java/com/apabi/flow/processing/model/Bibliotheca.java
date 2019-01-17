@@ -57,7 +57,7 @@ public class Bibliotheca {
 
     private DeleteFlagEnum deleteFlag;
 
-    private Integer convertStatus;
+    private Integer convertStatus = 0;
 
     public String getId() {
         return id;
@@ -279,5 +279,11 @@ public class Bibliotheca {
                 ", deleteFlag=" + deleteFlag +
                 ", convertStatus=" + convertStatus +
                 '}';
+    }
+
+    public static void main(String[] args) {
+        Bibliotheca bibliotheca = new Bibliotheca();
+        bibliotheca.setConvertStatus(2);
+        System.out.println(bibliotheca);
     }
 }
