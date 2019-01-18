@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: dev
   data:
       mongodb:
         uri: mongodb://172.18.89.101:40000/books
@@ -91,8 +91,8 @@ spring:
 #    static-locations: classpath:/static/*
   servlet:
     multipart:
-      max-file-size: 500MB
-      max-request-size: 800MB
+      max-file-size: 5000MB
+      max-request-size: 8000MB
   devtools:
     restart:
       enabled: false
