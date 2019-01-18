@@ -215,6 +215,8 @@
                 tipDialog("资源路径不能为空", 3, -1);
                 return;
             }
+            //批次号
+            var batchId = $('#batchId').val().trim()
             //获取文件具体信息
             var files = $('input:checkbox:checked');
             var fileInfo = "";
@@ -227,6 +229,7 @@
             }
             var formData = new FormData();
             formData.append('dirPath', dirPath);
+            formData.append('batchId', batchId);
             formData.append('fileInfo', fileInfo);
             $.ajax({
                 url: RootPath() + "/processing/bibliotheca/batchConvert2Cebx",
