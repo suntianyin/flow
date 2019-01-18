@@ -119,6 +119,13 @@ public class BibliothecaController {
 
             }
             model.addAttribute("bibliothecaList", list);
+            model.addAttribute("batchId", batchId);
+            model.addAttribute("title", title);
+            model.addAttribute("publisher", publisher);
+//            model.addAttribute("duplicateFlag", duplicateFlag);
+            model.addAttribute("bibliothecaState", bibliothecaState);
+            //动态改变前端 书目状态 下拉列表信息展示
+            model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
             if (list != null) {
                 model.addAttribute("total", list.size());
                 long count1 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode() == 3).count();
@@ -130,15 +137,6 @@ public class BibliothecaController {
                 long count4 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode() == 7).count();
                 model.addAttribute("num4", count4);//制作失败
             }
-
-            model.addAttribute("batchId", batchId);
-
-            model.addAttribute("title", title);
-            model.addAttribute("publisher", publisher);
-//            model.addAttribute("duplicateFlag", duplicateFlag);
-            model.addAttribute("bibliothecaState", bibliothecaState);
-            //动态改变前端 书目状态 下拉列表信息展示
-            model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
             logger.info("书目查询耗时： {}", System.currentTimeMillis() - start);
         } catch (Exception e) {
             logger.error("Exception {}", e);
@@ -177,7 +175,17 @@ public class BibliothecaController {
             Batch batch = batchService.selectByBatchId(batchId);
             model.addAttribute("BatchStateEnum", batch.getBatchState().getCode());
             model.addAttribute("bibliothecaList", list);
-            if (list != null) {
+
+            model.addAttribute("title", title);
+            model.addAttribute("batchId", batchId);
+            //资源路径
+            model.addAttribute("resourcePath", batch.getResourcePath());
+            model.addAttribute("publisher", publisher);
+//            model.addAttribute("duplicateFlag", duplicateFlag);
+            model.addAttribute("bibliothecaState", bibliothecaState);
+            //动态改变前端 书目状态 下拉列表信息展示
+            model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
+            if (list != null ) {
                 model.addAttribute("total", list.size());
                 long count1 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode() == 3).count();
                 model.addAttribute("num1", count1);//已分拣
@@ -188,15 +196,6 @@ public class BibliothecaController {
                 long count4 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode() == 7).count();
                 model.addAttribute("num4", count4);//制作失败
             }
-            model.addAttribute("title", title);
-            model.addAttribute("batchId", batchId);
-            //资源路径
-            model.addAttribute("resourcePath", batch.getResourcePath());
-            model.addAttribute("publisher", publisher);
-//            model.addAttribute("duplicateFlag", duplicateFlag);
-            model.addAttribute("bibliothecaState", bibliothecaState);
-            //动态改变前端 书目状态 下拉列表信息展示
-            model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
             logger.info("书目查询耗时： {}", System.currentTimeMillis() - start);
         } catch (Exception e) {
             logger.error("Exception {}", e);

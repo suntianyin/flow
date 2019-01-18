@@ -659,6 +659,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
                 // 书目信息中存储的是 出版社id
                 if (StringUtils.isNotBlank(publisher) && publishers != null) {
+                    bibliotheca.setPublisherName(publisher);
                     List<String> idList =
                             publishers.stream()
                                     .filter(p -> publisher.equals(p.getTitle()))
@@ -666,6 +667,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                                     .collect(Collectors.toCollection(ArrayList::new));
                     if (idList != null && idList.size() == 1) {
                         bibliotheca.setPublisher(idList.get(0));
+
                     }
                 }
                 String isbn = (String) entry.getValue().get("ISBN");
@@ -692,7 +694,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 bibliotheca.setEdition(null2EmptyString(edition));
                 bibliotheca.setPaperPrice(null2EmptyString(paperPrice));
                 bibliotheca.setDocumentFormat(null2EmptyString(documentFormat));
-
+                if(StringUtils.isNotBlank(publisher)&&StringUtils.isNotBlank(author)&&StringUtils.isNotBlank(documentFormat)&&StringUtils.isNotBlank(paperPrice)&&StringUtils.isNotBlank(edition)&&StringUtils.isNotBlank(isbn)&&StringUtils.isNotBlank(publishTime)){
+                    bibliotheca.setBibliothecaState(BibliothecaStateEnum.NEW);
+                }else {
+                    bibliotheca.setBibliothecaState(BibliothecaStateEnum.INFORMATION_NO);
+                }
                 list.add(bibliotheca);
             }
         } catch (Exception e) {
