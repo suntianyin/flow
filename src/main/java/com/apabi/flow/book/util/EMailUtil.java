@@ -4,6 +4,7 @@ import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,13 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.io.File;
 import java.util.List;
 
@@ -135,16 +131,13 @@ public class EMailUtil {
 
     //发送通知邮件
     public void sendNoticeMail(String subject, String to) {
-        MimeMessage message;
         try {
-            message = sender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(SENDER, "北京方正阿帕比技术有限公司");
-            if (StringUtils.isNotBlank(to)) {
-                helper.setTo(to.split(";"));
-            }
-            helper.setSubject(subject);
-            message.saveChanges();
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(SENDER);
+            message.setText(subject);
+            message.setSubject("北京方正阿帕比技术有限公司");
+            message.setTo(to);
+            // 发送邮件
             sender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
