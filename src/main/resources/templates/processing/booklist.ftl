@@ -292,7 +292,7 @@
                             <td>${(list.memo)! '' }</td>
                             <td>${(list.createTime?datetime)! '' }</td>
                             <td>
-                        <a href="javascript:void(0);" onclick="updateBooklist('${(list.batchId)!''}')">编辑书单</a>
+                        <a href="javascript:void(0);" onclick="updateBooklist('${(list.batchId)!''}')">查看书单</a>
                             <#if (list.batchState.code)??>
                                 <#if list.batchState.code == 1>
                                     <a href="javascript:void(0);" onclick="parsing('${(list.id)!''}','${(list.resourcePath)!''}','${(list.batchId)!''}')">书目解析</a>

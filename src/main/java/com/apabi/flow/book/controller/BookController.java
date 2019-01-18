@@ -18,6 +18,7 @@ import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.BizException;
+import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import com.apabi.flow.systemconf.model.SystemConf;
@@ -250,9 +251,15 @@ public class BookController {
             String isbnVal = "";
             if (!StringUtils.isEmpty(params.get("isbnVal"))) {
                 isbnVal = params.get("isbnVal")[0].trim();
-                queryMap.put("isbn", isbnVal);
-                queryMap.put("isbn10", isbnVal);
-                queryMap.put("isbn13", isbnVal);
+                if ("isbn".equalsIgnoreCase(isbn)) {
+                    queryMap.put("isbn", isbnVal);
+                }
+                if ("isbn10".equalsIgnoreCase(isbn)) {
+                    queryMap.put("isbn10", isbnVal);
+                }
+                if ("isbn13".equalsIgnoreCase(isbn)) {
+                    queryMap.put("isbn13", isbnVal);
+                }
             }
             Integer hasCebx = null;
             if (!StringUtils.isEmpty(params.get("hasCebx"))) {

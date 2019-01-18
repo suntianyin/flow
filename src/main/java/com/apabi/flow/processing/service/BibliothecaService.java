@@ -27,6 +27,7 @@ public interface BibliothecaService {
     /**
      * 根据 书目 id 逻辑删除当前批次
      * 暂时不提供逻辑删除的功能
+     *
      * @param id
      * @return
      */
@@ -34,6 +35,7 @@ public interface BibliothecaService {
 
     /**
      * 添加书目，需要做数据校验，比如重复添加等，条件一般为 batchId + isbn，
+     *
      * @param bibliothecaList
      * @return
      */
@@ -41,6 +43,7 @@ public interface BibliothecaService {
 
     /**
      * 根据主键获取书目实体信息
+     *
      * @param id
      * @return
      */
@@ -48,6 +51,7 @@ public interface BibliothecaService {
 
     /**
      * 查询所有特定条件下书目的列表信息
+     *
      * @param map
      * @return
      */
@@ -55,6 +59,7 @@ public interface BibliothecaService {
 
     /**
      * 获取分页书目列表信息
+     *
      * @param map
      * @return
      */
@@ -62,6 +67,7 @@ public interface BibliothecaService {
 
     /**
      * 更新书目信息
+     *
      * @param bibliotheca
      * @return
      */
@@ -69,6 +75,7 @@ public interface BibliothecaService {
 
     /**
      * 对书目信息进行批处理
+     *
      * @param bibliothecaList
      * @return
      */
@@ -76,6 +83,7 @@ public interface BibliothecaService {
 
     /**
      * 获取对比书目重复的列表
+     *
      * @param batchId 批次ID
      * @return
      */
@@ -83,6 +91,7 @@ public interface BibliothecaService {
 
     /**
      * 查重信息批量处理
+     *
      * @param bibliothecaIdList
      * @param metaIdList
      * @param bibliothecaState
@@ -93,6 +102,7 @@ public interface BibliothecaService {
 
     /**
      * 解析文件，得到 书目列表
+     *
      * @param data
      * @param batchId
      * @return
@@ -101,6 +111,7 @@ public interface BibliothecaService {
 
     /**
      * 将 数据写入到 Excel 表中
+     *
      * @param fileName
      * @param excelTitle
      * @param excelModelList
@@ -108,11 +119,11 @@ public interface BibliothecaService {
      * @param
      * @return
      */
-    String writeData2Excel(int type,String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheet1, HttpServletResponse response) throws Exception;
+    String writeData2Excel(int type, String fileName, String[] excelTitle, List<BibliothecaExcelModel> excelModelList, String sheet1, HttpServletResponse response) throws Exception;
 
 
-    void  parsing(String path,String id,String username,String batchId)throws InterruptedException;
+    void parsing(String path, String id, String username, String batchId) throws InterruptedException;
 
     //转换pdf文件为cebx
-    void batchConvert2Cebx(String dirPath, String fileInfos);
+    void batchConvert2Cebx(String dirPath, String batchId, String fileInfos);
 }

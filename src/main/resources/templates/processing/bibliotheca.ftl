@@ -215,6 +215,8 @@
                 tipDialog("资源路径不能为空", 3, -1);
                 return;
             }
+            //批次号
+            var batchId = $('#batchId').val().trim()
             //获取文件具体信息
             var files = $('input:checkbox:checked');
             var fileInfo = "";
@@ -227,6 +229,7 @@
             }
             var formData = new FormData();
             formData.append('dirPath', dirPath);
+            formData.append('batchId', batchId);
             formData.append('fileInfo', fileInfo);
             $.ajax({
                 url: RootPath() + "/processing/bibliotheca/batchConvert2Cebx",
@@ -249,9 +252,10 @@
                 }
             });
         }
+
         //标引
         function indexing(id) {
-            window.location.href = "${ctx}/processing/bibliotheca/indexing?id="+id;
+            window.location.href = "${ctx}/processing/bibliotheca/indexing?id=" + id;
         }
 
     </script>
@@ -266,16 +270,16 @@
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
                 <a onclick="javascript:window.location.href='${ctx}/processing/batch/index'" class="tools_btn"><span><i
-                        class="fa fa-backward"></i>&nbsp返回</span></a>
+                                class="fa fa-backward"></i>&nbsp返回</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
                 <#if BatchStateEnum=4||BatchStateEnum=5||BatchStateEnum=6>
                     <a id="lr-add" class="tools_btn"><span style="color: #7c7c7c;"><i
-                            class="fa fa-plus"></i>&nbsp;新增</span></a>
+                                    class="fa fa-plus"></i>&nbsp;新增</span></a>
                 <#else>
                     <a id="lr-add" title="新增书目" onclick="btn_addBibliotheca()" class="tools_btn"><span><i
-                            class="fa fa-plus"></i>&nbsp;新增</span></a>
+                                    class="fa fa-plus"></i>&nbsp;新增</span></a>
                 </#if>
                 <div class="tools_separator"></div>
             </div>
@@ -316,14 +320,14 @@
                                style="width: 200px"/>
                     </td>
 
-                <#--<th>是否重复：</th>-->
-                <#--<td>-->
-                <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
-                <#--<option value="">--请选择批次状态--</option>-->
-                <#--<option value="0">否</option>-->
-                <#--<option value="1">是</option>-->
-                <#--</select>-->
-                <#--</td>-->
+                    <#--<th>是否重复：</th>-->
+                    <#--<td>-->
+                    <#--<select id="duplicateFlag" name="duplicateFlag" underline="true" style="height: 24px;">-->
+                    <#--<option value="">--请选择批次状态--</option>-->
+                    <#--<option value="0">否</option>-->
+                    <#--<option value="1">是</option>-->
+                    <#--</select>-->
+                    <#--</td>-->
 
                     <th>书目状态：</th>
                     <td>
@@ -367,10 +371,10 @@
                         <th>原始文件名</th>
                         <th>文档格式</th>
                         <th>备注</th>
-                    <#--<th>是否重复</th>-->
-                        <th>书目状态</th>
-                        <th>转换状态</th>
-                    <#--<th>是否制作成功</th>-->
+                        <#--<th>是否重复</th>-->
+                            <th>书目状态</th>
+                            <th>转换状态</th>
+                        <#--<th>是否制作成功</th>-->
                         <th>书目录入人</th>
                         <th>书目录入时间</th>
                         <th width="100">操作</th>
@@ -379,22 +383,22 @@
                     <tbody>
                     <#if bibliothecaList??>
                         <#list bibliothecaList as list>
-                        <tr class="gradeA odd" role="row">
+                            <tr class="gradeA odd" role="row">
                             <td>
-                                <#if list.metaId?? && list.publishTime?? && list.originalFilename??>
-                                    <#if list.convertStatus?? && list.bibliothecaState.getCode()??>
-                                        <#if list.convertStatus != 2 && list.bibliothecaState.getCode() == 5 >
-                                            <input type="checkbox" name="bibliotheca" checked="true"
-                                                   value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
-                                        <#else >
-                                            <input type="checkbox" disabled="disabled"/>
-                                        </#if>
+                            <#if list.metaId?? && list.publishTime?? && list.originalFilename??>
+                                <#if list.convertStatus?? && list.bibliothecaState.getCode()??>
+                                    <#if list.convertStatus != 2 && list.bibliothecaState.getCode() == 5 >
+                                        <input type="checkbox" name="bibliotheca" checked="true"
+                                        value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
                                     <#else >
                                         <input type="checkbox" disabled="disabled"/>
                                     </#if>
                                 <#else >
                                     <input type="checkbox" disabled="disabled"/>
                                 </#if>
+                            <#else >
+                                <input type="checkbox" disabled="disabled"/>
+                            </#if>
                             </td>
                             <td>${(list.identifier)!''}</td>
                             <td>${(list.metaId)! '' }</td>
@@ -413,19 +417,19 @@
                         <#--<td>${(list.duplicateFlag.getDesc())! '' }</td>-->
                             <td>${(list.bibliothecaState.getDesc())! '' }</td>
                             <td>
-                                <#if list.convertStatus ??>
-                                    <#if list.convertStatus == 0>
-                                        未转换
-                                    <#elseif list.convertStatus == 1>
-                                        正在转换
-                                    <#elseif list.convertStatus == 2>
-                                        转换成功
-                                    <#elseif list.convertStatus == -1>
-                                        转换失败
-                                    </#if>
-                                <#else>
+                            <#if list.convertStatus ??>
+                                <#if list.convertStatus == 0>
                                     未转换
+                                <#elseif list.convertStatus == 1>
+                                    正在转换
+                                <#elseif list.convertStatus == 2>
+                                    转换成功
+                                <#elseif list.convertStatus == -1>
+                                    转换失败
                                 </#if>
+                            <#else>
+                                未转换
+                            </#if>
                             </td>
                         <#--<td>${(list.completedFlag.getDesc())! '' }</td>-->
                             <td>${(list.creator)! '' }</td>
@@ -438,29 +442,33 @@
                             <#else>
                                 <a href="javascript:void(0);" onclick="updateBibliotheca('${(list.id)!''}')">编辑</a>
                                 <a href="javascript:void(0);"
-                                   onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
+                                onclick="removeBibliotheca('${(list.id)!''}','${(list.identifier)!''}')">删除</a>
                                 <a href="javascript:void(0);"
-                                   onclick="updateBibliothecaExclude('${(list.id)!''}')">分拣</a>
-                                <a href="javascript:void(0);"
-                                   onclick="pdf('${(list.id)!''}')">pdf预览</a>
+                                onclick="updateBibliothecaExclude('${(list.id)!''}')">分拣</a>
+                                <#if resourcePath?? >
+                                    <a href="javascript:void(0);"
+                                    onclick="pdf('${(list.id)!''}')">pdf预览</a>
+                                <#else>
+                                    <span style="color: #7c7c7c;">pdf预览</span>
+                                </#if>
                             </#if>
-                            <#if list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
+                            <#if list.bibliothecaState??&&  list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
                                 <a href="javascript:void(0);"
                                 onclick="indexing('${(list.id)!''}')">标引</a>
                             <#else>
                                 <span style="color: #7c7c7c;">标引</span>
                             </#if>
                             </td>
-                        </tr>
+                            </tr>
                         </#list>
                     </#if>
                     </tbody>
                 </table>
             </div>
-        <#--<ul class="pagination">
-            <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
-        </ul>
-        <ul class="pagination" style="float:right;" id="pagination"></ul>-->
+            <#--<ul class="pagination">
+                <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
+            </ul>
+            <ul class="pagination" style="float:right;" id="pagination"></ul>-->
         </div>
     </div>
 </div>

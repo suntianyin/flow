@@ -54,6 +54,8 @@ public class Batch {
 
     private String resourcePath;
 
+    private Integer convertStatus = 0;
+
     public String getResourcePath() {
         return resourcePath;
     }
@@ -232,5 +234,13 @@ public class Batch {
 
     public void setDeleteFlag(DeleteFlagEnum deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+
+    public Integer getConvertStatus() {
+        return convertStatus;
+    }
+
+    public void setConvertStatus(Integer convertStatus) {
+        this.convertStatus = convertStatus;
     }
 }

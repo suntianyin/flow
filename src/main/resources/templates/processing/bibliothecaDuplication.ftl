@@ -10,7 +10,7 @@
 
     <style type="text/css">
         .meta-color {
-            color: #ff892a;
+            color: #484891;
         }
     </style>
 
@@ -151,7 +151,7 @@
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
                 <a onclick="javascript:window.location.href='${ctx}/processing/batch/index'" class="tools_btn"><span><i
-                        class="fa fa-backward"></i>&nbsp返回</span></a>
+                                class="fa fa-backward"></i>&nbsp返回</span></a>
                 <div class="tools_separator"></div>
             </div>
         </div>
@@ -161,12 +161,7 @@
                     <span style="float: left;">
                         <label>疑似重复的记录(背景色：重复率>95%绿色，重复率<95%蓝色)如下：</label>
                     </span>
-                    <span style="float: right">
-                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认重复"
-                               onclick="btn_sureOperation('ltYes','duplicate','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认不重复"
-                               onclick="btn_sureOperation('ltYes','make','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
+
                 </div>
                 <table id="table-list"
                        class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
@@ -197,109 +192,115 @@
                         <#list ltRateCheckFlagYesList as list>
                             <#if list.rateFlag==1>
                                 <tr class="gradeA odd" role="row" style="background: #BBFFBB">
-                                    <td><input type="checkbox" name="ltYes"
-                                               value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
-                                    <td>${(list.bibliotheca.isbn)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
-                                    <td>${(list.bibliotheca.title)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.title)! '' }</td>
-                                    <td>${(list.bibliotheca.author)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.creator) !''}</td>
-                                    <td>${(list.bibliotheca.publisher)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
-                                    <td>${(list.bibliotheca.publishTime)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
-                                    <td>${(list.bibliotheca.batchId)! '' }</td>
-                                    <td class="meta-color">${(list.bibliotheca2.batchId)! '' }</td>
-                                    <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
-                                    <td class="meta-color">
+                                <td><input type="checkbox" name="ltYes"
+                                value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
+                                <td>${(list.bibliotheca.isbn)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
+                                <td>${(list.bibliotheca.title)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.title)! '' }</td>
+                                <td>${(list.bibliotheca.author)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.creator) !''}</td>
+                                <td>${(list.bibliotheca.publisher)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
+                                <td>${(list.bibliotheca.publishTime)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
+                                <td>${(list.bibliotheca.batchId)! '' }</td>
+                                <td class="meta-color">${(list.bibliotheca2.batchId)! '' }</td>
+                                <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
+                                <td class="meta-color">
                                 <#if (list.bookMeta.hasCebx??) && list.bookMeta.hasCebx == 1>
                                     <label style="color: #f9500d;">是</label>
                                 <#else>
                                     <label style="color: #aaaaaa;">否</label>
                                 </#if>
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
                                 <#if (list.bibliotheca.bibliothecaState)??>
                                     <#if list.bibliotheca.bibliothecaState.desc == "重复">
                                         <span style="color: #7c7c7c;"><i>确认重复</i></span>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     <#elseif list.bibliotheca.bibliothecaState.desc == "不重复">
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <span style="color: #7c7c7c;"><i>确认不重复</i></span>
                                     <#else >
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     </#if>
                                 <#else >
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                    onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                    onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                 </#if>
-                                    </td>
+                                </td>
                                 </tr>
                             <#else>
                                 <tr class="gradeA odd" role="row" style="background: #84C1FF">
-                                    <td><input type="checkbox" name="ltYes"
-                                               value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
-                                    <td>${(list.bibliotheca.isbn)!''}</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
-                                    <td>${(list.bibliotheca.title)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.title)! '' }</td>
-                                    <td>${(list.bibliotheca.author)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.creator) !''}</td>
-                                    <td>${(list.bibliotheca.publisher)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
-                                    <td>${(list.bibliotheca.publishTime)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
-                                    <td>${(list.bibliotheca.batchId)! '' }</td>
-                                    <td class="meta-color">${(list.bibliotheca2.batchId)! '' }</td>
-                                    <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
-                                    <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
-                                    <td class="meta-color">
+                                <td><input type="checkbox" name="ltYes"
+                                value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
+                                <td>${(list.bibliotheca.isbn)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
+                                <td>${(list.bibliotheca.title)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.title)! '' }</td>
+                                <td>${(list.bibliotheca.author)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.creator) !''}</td>
+                                <td>${(list.bibliotheca.publisher)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
+                                <td>${(list.bibliotheca.publishTime)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
+                                <td>${(list.bibliotheca.batchId)! '' }</td>
+                                <td class="meta-color">${(list.bibliotheca2.batchId)! '' }</td>
+                                <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
+                                <td class="meta-color">
                                 <#if (list.bookMeta.hasCebx??) && list.bookMeta.hasCebx == 1>
                                     <label style="color: #f9500d;">是</label>
                                 <#else>
                                     <label style="color: #aaaaaa;">异常</label>
                                 </#if>
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
                                 <#if (list.bibliotheca.bibliothecaState)??>
                                     <#if list.bibliotheca.bibliothecaState.desc == "重复">
                                         <span style="color: #7c7c7c;"><i>确认重复</i></span>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     <#elseif list.bibliotheca.bibliothecaState.desc == "不重复">
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <span style="color: #7c7c7c;"><i>确认不重复</i></span>
                                     <#else >
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     </#if>
                                 <#else >
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                    onclick="btn_sureOperation('ltYes', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                    onclick="btn_sureOperation('ltYes', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                 </#if>
-                                    </td>
+                                </td>
                                 </tr>
                             </#if>
                         </#list>
                     </#if>
                     </tbody>
                 </table>
+                <span style="float: left">
+                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认重复"
+                               onclick="btn_sureOperation('ltYes','duplicate','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认不重复"
+                               onclick="btn_sureOperation('ltYes','make','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
             </div>
 
 
@@ -308,12 +309,7 @@
                     <span style="float: left;">
                         <label>数据库中有匹配记录(背景色：重复率>95%绿色，重复率<95%蓝色)，需要进行加工制作的记录如下：</label>
                     </span>
-                    <span style="float: right">
-                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认重复"
-                               onclick="btn_sureOperation('ltNo','duplicate','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认不重复"
-                               onclick="btn_sureOperation('ltNo','make','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
+
                 </div>
 
                 <table id="table-list"
@@ -344,59 +340,59 @@
                     <#if ltRateCheckFlagNoList??>
                         <#list ltRateCheckFlagNoList as list>
                             <#if list.rateFlag==1>
-                        <tr class="gradeA odd" role="row" style="background: #BBFFBB" >
-                            <td><input type="checkbox" name="ltNo"
-                                       value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
-                            <td>${(list.bibliotheca.isbn)!''}</td>
-                            <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
-                            <td>${(list.bibliotheca.title)! '' }</td>
-                            <td class="meta-color">${(list.bookMeta.title)! '' }</td>
-                            <td>${(list.bibliotheca.author)! '' }</td>
-                            <td class="meta-color">${(list.bookMeta.creator) !''}</td>
-                            <td>${(list.bibliotheca.publisher)! '' }</td>
-                            <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
-                            <td>${(list.bibliotheca.publishTime)! '' }</td>
-                            <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
-                            <td>${(list.bibliotheca.batchId)! '' }</td>
-                            <td class="meta-color">${(list.bibliotheca2.batchId)! '' }</td>
-                            <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
-                            <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
-                            <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
-                            <td class="meta-color">
+                                <tr class="gradeA odd" role="row" style="background: #BBFFBB" >
+                                <td><input type="checkbox" name="ltNo"
+                                value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
+                                <td>${(list.bibliotheca.isbn)!''}</td>
+                                <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
+                                <td>${(list.bibliotheca.title)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.title)! '' }</td>
+                                <td>${(list.bibliotheca.author)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.creator) !''}</td>
+                                <td>${(list.bibliotheca.publisher)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.publisher)! '' }</td>
+                                <td>${(list.bibliotheca.publishTime)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.issuedDate?date("yyyy-MM-dd"))!'' }</td>
+                                <td>${(list.bibliotheca.batchId)! '' }</td>
+                                <td class="meta-color">${(list.bibliotheca2.batchId)! '' }</td>
+                                <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
+                                <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
+                                <td class="meta-color">
                                 <#if (list.bookMeta.hasCebx??) && list.bookMeta.hasCebx == 0>
                                     <label style="color: #f9500d;">否</label>
                                 <#else>
                                     <label style="color: #aaaaaa;">异常</label>
                                 </#if>
-                            </td>
-                            <td>
+                                </td>
+                                <td>
                                 <#if (list.bibliotheca.bibliothecaState)??>
                                     <#if list.bibliotheca.bibliothecaState.desc == "重复">
                                         <span style="color: #7c7c7c;"><i>确认重复</i></span>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     <#elseif list.bibliotheca.bibliothecaState.desc == "不重复">
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <span style="color: #7c7c7c;"><i>确认不重复</i></span>
                                     <#else >
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     </#if>
                                 <#else >
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                    onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                    onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                 </#if>
-                            </td>
-                        </tr>
+                                </td>
+                                </tr>
                             <#else>
-                            <tr class="gradeA odd" role="row" style="background: #84C1FF">
+                                <tr class="gradeA odd" role="row" style="background: #84C1FF">
                                 <td><input type="checkbox" name="ltNo"
-                                           value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
+                                value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
                                 <td>${(list.bibliotheca.isbn)!''}</td>
                                 <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
                                 <td>${(list.bibliotheca.title)! '' }</td>
@@ -424,30 +420,36 @@
                                     <#if list.bibliotheca.bibliothecaState.desc == "重复">
                                         <span style="color: #7c7c7c;"><i>确认重复</i></span>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     <#elseif list.bibliotheca.bibliothecaState.desc == "不重复">
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <span style="color: #7c7c7c;"><i>确认不重复</i></span>
                                     <#else >
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                         <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                        onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                     </#if>
                                 <#else >
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                    onclick="btn_sureOperation('ltNo', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                    onclick="btn_sureOperation('ltNo', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                 </#if>
                                 </td>
-                            </tr>
+                                </tr>
                             </#if>
                         </#list>
                     </#if>
                     </tbody>
                 </table>
+                <span style="float: left">
+                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认重复"
+                               onclick="btn_sureOperation('ltNo','duplicate','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认不重复"
+                               onclick="btn_sureOperation('ltNo','make','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
             </div>
 
 
@@ -456,12 +458,7 @@
                     <span style="float: left;">
                         <label>数据库中无匹配记录，需要进行加工制作的记录如下：</label>
                     </span>
-                    <span style="float: right">
-                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认重复"
-                               onclick="btn_sureOperation('noMatch','duplicate','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认不重复"
-                               onclick="btn_sureOperation('noMatch','make','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
+
                 </div>
                 <table id="table-list"
                        class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
@@ -490,9 +487,9 @@
                     <tbody>
                     <#if noMetaDataList??>
                         <#list noMetaDataList as list>
-                        <tr class="gradeA odd" role="row">
+                            <tr class="gradeA odd" role="row">
                             <td><input type="checkbox" name="noMatch"
-                                       value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
+                            value="${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}"/></td>
                             <td>${(list.bibliotheca.isbn)!''}</td>
                             <td class="meta-color">${(list.bookMeta.isbn)! '' }</td>
                             <td>${(list.bibliotheca.title)! '' }</td>
@@ -508,37 +505,43 @@
                             <td class="meta-color">${(list.bibliotheca2.bibliothecaState.desc)! '' }</td>
                             <td class="meta-color">${(list.bookMeta.metaId)! '' }</td>
                             <td class="meta-color">${(list.bookMeta.isbn13)! '' }</td>
-                            <td class="meta-color">
-                                    <label>否</label>
-                            </td>
+                        <td class="meta-color">
+                            <label>否</label>
+                        </td>
                             <td>
-                                <#if (list.bibliotheca.bibliothecaState)??>
-                                    <#if list.bibliotheca.bibliothecaState.desc == "重复">
-                                        <span style="color: #7c7c7c;"><i>确认重复</i></span>
-                                        <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('noMatch', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
-                                    <#elseif list.bibliotheca.bibliothecaState.desc == "不重复">
-                                        <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('noMatch', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
-                                        <span style="color: #7c7c7c;"><i>确认不重复</i></span>
-                                    <#else >
-                                        <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('noMatch', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
-                                        <a href="javascript:void(0);"
-                                           onclick="btn_sureOperation('noMatch', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
-                                    </#if>
+                            <#if (list.bibliotheca.bibliothecaState)??>
+                                <#if list.bibliotheca.bibliothecaState.desc == "重复">
+                                    <span style="color: #7c7c7c;"><i>确认重复</i></span>
+                                    <a href="javascript:void(0);"
+                                    onclick="btn_sureOperation('noMatch', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                <#elseif list.bibliotheca.bibliothecaState.desc == "不重复">
+                                    <a href="javascript:void(0);"
+                                    onclick="btn_sureOperation('noMatch', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                    <span style="color: #7c7c7c;"><i>确认不重复</i></span>
                                 <#else >
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('noMatch', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                    onclick="btn_sureOperation('noMatch', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
                                     <a href="javascript:void(0);"
-                                       onclick="btn_sureOperation('noMatch', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                                    onclick="btn_sureOperation('noMatch', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
                                 </#if>
+                            <#else >
+                                <a href="javascript:void(0);"
+                                onclick="btn_sureOperation('noMatch', 'duplicate', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认重复</a>
+                                <a href="javascript:void(0);"
+                                onclick="btn_sureOperation('noMatch', 'make', '${(list.bibliotheca.id)!''},${(list.bookMeta.metaId)!''}')">确认不重复</a>
+                            </#if>
                             </td>
-                        </tr>
+                            </tr>
                         </#list>
                     </#if>
                     </tbody>
                 </table>
+                <span style="float: left">
+                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认重复"
+                               onclick="btn_sureOperation('noMatch','duplicate','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="button" style="padding: 10px;padding-top: 3px; padding-bottom: 3px" value="确认不重复"
+                               onclick="btn_sureOperation('noMatch','make','')"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
             </div>
         </div>
     </div>

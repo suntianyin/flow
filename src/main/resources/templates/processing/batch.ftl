@@ -327,6 +327,7 @@
                         <th width="80">文档格式</th>
                         <th width="70">文档大概数量</th>
                         <th width="80">批次状态</th>
+                        <th width="80">转换状态</th>
                         <th width="80">创建人</th>
                         <th width="150">资源路径</th>
                         <#--<th>书单审核人</th>-->
@@ -352,6 +353,19 @@
                             <td>${(list.documentFormat)! '' }</td>
                             <td>${(list.documentNum)! '' }</td>
                             <td>${(list.batchState.getDesc())! '' }</td>
+                            <td>
+                                <#if list.convertStatus??>
+                                    <#if list.convertStatus == 0>
+                                        待转换
+                                    <#elseif list.convertStatus == 1>
+                                        正在转换
+                                    <#else >
+                                        已转换
+                                    </#if>
+                                <#else >
+                                    待转换
+                                </#if>
+                            </td>
                             <td>${(list.creator)! '' }</td>
                             <td>${(list.resourcePath)! '' }</td>
                             <input type="hidden" id="${(list.id)!''}" value="${(list.resourcePath)! '' }">

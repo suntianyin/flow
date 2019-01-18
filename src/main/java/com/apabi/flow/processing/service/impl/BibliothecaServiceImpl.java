@@ -659,6 +659,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
                 // 书目信息中存储的是 出版社id
                 if (StringUtils.isNotBlank(publisher) && publishers != null) {
+                    bibliotheca.setPublisherName(publisher);
                     List<String> idList =
                             publishers.stream()
                                     .filter(p -> publisher.equals(p.getTitle()))
@@ -666,6 +667,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                                     .collect(Collectors.toCollection(ArrayList::new));
                     if (idList != null && idList.size() == 1) {
                         bibliotheca.setPublisher(idList.get(0));
+
                     }
                 }
                 String isbn = (String) entry.getValue().get("ISBN");
@@ -692,7 +694,11 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 bibliotheca.setEdition(null2EmptyString(edition));
                 bibliotheca.setPaperPrice(null2EmptyString(paperPrice));
                 bibliotheca.setDocumentFormat(null2EmptyString(documentFormat));
-
+                if(StringUtils.isNotBlank(publisher)&&StringUtils.isNotBlank(author)&&StringUtils.isNotBlank(documentFormat)&&StringUtils.isNotBlank(paperPrice)&&StringUtils.isNotBlank(edition)&&StringUtils.isNotBlank(isbn)&&StringUtils.isNotBlank(publishTime)){
+                    bibliotheca.setBibliothecaState(BibliothecaStateEnum.NEW);
+                }else {
+                    bibliotheca.setBibliothecaState(BibliothecaStateEnum.INFORMATION_NO);
+                }
                 list.add(bibliotheca);
             }
         } catch (Exception e) {
@@ -896,8 +902,10 @@ public class BibliothecaServiceImpl implements BibliothecaService {
      */
     @Override
     @Async
-    public void batchConvert2Cebx(String dirPath, String fileInfos) {
-        if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfos)) {
+    public void batchConvert2Cebx(String dirPath, String batchId, String fileInfos) {
+        if (StringUtils.isNotBlank(dirPath)
+                && StringUtils.isNotBlank(batchId)
+                && StringUtils.isNotBlank(fileInfos)) {
             Map<String, String[]> fileMap = convertFile2Map(fileInfos);
             //生成job文件
             String jobPath = ApplicationConfig.getCebxMaker() + File.separator + "job";
@@ -912,6 +920,12 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 }
                 long startS = System.currentTimeMillis();
                 logger.info("路径{}转换cebx已开始", dirPath);
+                //更新转换状态
+                Batch batch = new Batch();
+                batch.setBatchId(batchId);
+                batch.setConvertStatus(1);
+                batch.setUpdateTime(new Date());
+                batchMapper.updateByBatchId(batch);
                 for (Map.Entry entry : fileMap.entrySet()) {
                     String[] fileInfo = (String[]) entry.getValue();
                     Bibliotheca bibliotheca = new Bibliotheca();
@@ -950,6 +964,10 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                         logger.warn("文件{}转换cebx时，出现异常{}", fileInfo[0], e.getMessage());
                     }
                 }
+                //更新转换状态
+                batch.setConvertStatus(2);
+                batch.setUpdateTime(new Date());
+                batchMapper.updateByBatchId(batch);
                 long endS = System.currentTimeMillis();
                 logger.info("路径{}转换cebx已结束，耗时{}", dirPath, (endS - startS));
             }

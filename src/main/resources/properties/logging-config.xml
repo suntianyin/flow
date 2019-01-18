@@ -24,6 +24,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -41,6 +42,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -58,6 +60,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -75,6 +78,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -92,6 +96,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -109,6 +114,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -126,6 +132,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -143,6 +150,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -160,6 +168,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -177,6 +186,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -194,6 +204,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -211,6 +222,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -228,6 +240,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -245,6 +258,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -262,6 +276,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -279,6 +294,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -296,6 +312,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -313,6 +330,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -330,6 +348,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -347,6 +366,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -364,6 +384,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -381,6 +402,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -398,6 +420,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -415,6 +438,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -611,6 +635,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
@@ -627,6 +652,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
     <logger name="com.apabi.flow.book.util.GetEpubookChapter" level="INFO" additivity="false">
@@ -642,6 +668,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
     <logger name="com.apabi.flow.book.util.GetCebxChapter" level="INFO" additivity="false">
