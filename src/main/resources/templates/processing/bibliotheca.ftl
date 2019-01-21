@@ -389,7 +389,7 @@
                                 <td>
                             <#if list.metaId?? && list.publishTime?? && list.originalFilename??>
                                 <#if list.convertStatus?? && list.bibliothecaState.getCode()??>
-                                    <#if list.convertStatus != 2 && list.bibliothecaState.getCode() == 5 >
+                                    <#if list.convertStatus != 2 && list.bibliothecaState.getCode() == 2 >
                                         <input type="checkbox" name="bibliotheca" checked="true"
                                                value="${list.id!''},${list.originalFilename!''},${list.publishTime!''},${list.metaId!''};"/>
                                     <#else >
