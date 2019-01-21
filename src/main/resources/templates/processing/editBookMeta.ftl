@@ -29,8 +29,8 @@
                 <tr>
                     <th class="formTitle">书名：</th>
                     <td class="formValue">
-                        <input id="title" name="title" value="${bookMeta.title!''}" type="text" class="txt"
-                               datacol="yes"/>
+                        <input id="title" name="title" value="${bookMeta.title!''}" type="text" class="txt required"
+                               datacol="yes" checkexpession="NotNull"/>
                     </td>
                 </tr>
                 <tr>
@@ -43,8 +43,8 @@
                 <tr>
                     <th class="formTitle">主要责任者：</th>
                     <td class="formValue">
-                        <input id="creator" name="creator" value="${bookMeta.creator!''}" type="text" class="txt"
-                               datacol="yes"/>
+                        <input id="creator" name="creator" value="${bookMeta.creator!''}" type="text" class="txt required"
+                               datacol="yes" checkexpession="NotNull"/>
                     </td>
                 </tr>
                 <tr>
@@ -128,8 +128,8 @@
                 <tr>
                     <th class="formTitle">出版社：</th>
                     <td class="formValue">
-                        <input id="publisher" name="publisher" value="${bookMeta.publisher!''}" type="text" class="txt"
-                               datacol="yes"/>
+                        <input id="publisher" name="publisher" value="${bookMeta.publisher!''}" type="text" class="txt required"
+                               datacol="yes" checkexpession="NotNull"/>
                     </td>
                 </tr>
                 <tr>
@@ -137,7 +137,7 @@
                     <td class="formValue">
                         <input id="issuedDate" name="issuedDate" value="${bookMeta.issuedDate!''}" type="date"
                                class="txt required"
-                               datacol="yes"/>
+                               datacol="yes" checkexpession="NotNull"/>
                     </td>
                 </tr>
                 <tr>
@@ -188,8 +188,8 @@
                 <tr>
                     <th class="formTitle">ISBN：</th>
                     <td class="formValue">
-                        <input id="isbn" name="isbn" value="${bookMeta.isbn!''}" type="text" class="txt"
-                               datacol="yes"/>
+                        <input id="isbn" name="isbn" value="${bookMeta.isbn!''}" type="text" class="txt required"
+                               datacol="yes" checkexpession="NotNull"/>
                     </td>
                 </tr>
                 <tr>
