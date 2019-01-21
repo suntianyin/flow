@@ -2,6 +2,7 @@ package com.apabi.flow.processing.service.impl;
 
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
+import com.apabi.flow.book.util.BookConstant;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
@@ -42,15 +43,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,6 +69,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     private static final Logger logger = LoggerFactory.getLogger(BibliothecaServiceImpl.class);
 
     private static boolean MAKER_INIT = true;
+
+    private static AtomicInteger makerConcurr = new AtomicInteger(0);
 
     @Autowired
     private BibliothecaMapper bibliothecaMapper;
@@ -694,9 +696,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 bibliotheca.setEdition(null2EmptyString(edition));
                 bibliotheca.setPaperPrice(null2EmptyString(paperPrice));
                 bibliotheca.setDocumentFormat(null2EmptyString(documentFormat));
-                if(StringUtils.isNotBlank(publisher)&&StringUtils.isNotBlank(author)&&StringUtils.isNotBlank(documentFormat)&&StringUtils.isNotBlank(paperPrice)&&StringUtils.isNotBlank(edition)&&StringUtils.isNotBlank(isbn)&&StringUtils.isNotBlank(publishTime)){
+                if (StringUtils.isNotBlank(publisher) && StringUtils.isNotBlank(author) && StringUtils.isNotBlank(documentFormat) && StringUtils.isNotBlank(paperPrice) && StringUtils.isNotBlank(edition) && StringUtils.isNotBlank(isbn) && StringUtils.isNotBlank(publishTime)) {
                     bibliotheca.setBibliothecaState(BibliothecaStateEnum.NEW);
-                }else {
+                } else {
                     bibliotheca.setBibliothecaState(BibliothecaStateEnum.INFORMATION_NO);
                 }
                 list.add(bibliotheca);
@@ -895,18 +897,31 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         return sb.toString();
     }
 
+    //批量转换文件控制
+    @Override
+    public boolean ctlBatchConvert2Cebx(String dirPath, String batchId, String fileInfos) {
+        //获取maker并发总数
+        int sumMakerConcurr = MakerAgent.concurrancyNum;
+        int cnt = makerConcurr.getAndIncrement();
+        if (cnt < sumMakerConcurr || sumMakerConcurr == 0) {
+            new Thread(() -> batchConvert2Cebx(dirPath, batchId, fileInfos)).start();
+            return true;
+        }
+        return false;
+    }
+
 
     /**
-     * 转换pdf文件为cebx
+     * 转换文件为cebx
      * fileMap中的数组：0-文件名，1-出版日期，2-metaId
      */
-    @Override
-    @Async
     public void batchConvert2Cebx(String dirPath, String batchId, String fileInfos) {
         if (StringUtils.isNotBlank(dirPath)
                 && StringUtils.isNotBlank(batchId)
                 && StringUtils.isNotBlank(fileInfos)) {
             Map<String, String[]> fileMap = convertFile2Map(fileInfos);
+            //存储待加密的cebx文件路径
+            List<String> cebxPath = new ArrayList<>();
             //生成job文件
             String jobPath = ApplicationConfig.getCebxMaker() + File.separator + "job";
             Map<String, String> jobMap = MakerUtil.createJobXml(dirPath, config.getUploadCebx(), jobPath, fileMap);
@@ -944,6 +959,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                                 bibliotheca.setUpdateTime(new Date());
                                 bibliothecaMapper.updateByPrimaryKeySelective(bibliotheca);
                                 long end = System.currentTimeMillis();
+                                cebxPath.add(config.getUploadCebx() + File.separator + fileInfo[1] + File.separator + fileInfo[2] + ".CEBX");
                                 logger.info("文件{}转换cebx成功，耗时{}", fileInfo[0], (end - start));
                             } else {
                                 bibliotheca.setConvertStatus(-1);
@@ -969,7 +985,50 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 batch.setUpdateTime(new Date());
                 batchMapper.updateByBatchId(batch);
                 long endS = System.currentTimeMillis();
+                //更新当前并发数
+                makerConcurr.getAndDecrement();
                 logger.info("路径{}转换cebx已结束，耗时{}", dirPath, (endS - startS));
+                //cebx文件加密
+                logger.info("路径{}转换后的cebx，加密开始", dirPath);
+                long start = System.currentTimeMillis();
+                encryptCebx(cebxPath);
+                long end = System.currentTimeMillis();
+                logger.info("路径{}转换后的cebx，已加密完成，耗时{}", dirPath, (end - start));
+            }
+        }
+    }
+
+    //cebx文件加密
+    private void encryptCebx(List<String> cebxPath) {
+        if (cebxPath != null && cebxPath.size() > 0) {
+            //调用cmd
+            Runtime runtime = Runtime.getRuntime();
+            for (String path : cebxPath) {
+                try {
+                    String cmd = config.getCebxCryptExe() +
+                            " -src " + "\"" + path + "\"" +
+                            " -des " + "\"" + path + "M\"" +
+                            " -mode encrypt";
+                    Process process = runtime.exec(cmd);
+                    //int ress = process.exitValue();
+                    int ress = process.waitFor();
+                    if (ress == 0) {
+                        logger.info("加密文件：{}成功", path);
+                        //删除cebx文件
+                        File cebx = new File(path);
+                        if (cebx.exists()) {
+                            cebx.delete();
+                            logger.info("cebx文件{}，删除成功", cebx.getName());
+                        }
+                    } else {
+                        logger.warn("加密文件：{}失败", path);
+                    }
+                } catch (IOException e) {
+                    logger.warn("加密文件：{}，时出现异常{}", path, e.getMessage());
+                } catch (InterruptedException e) {
+                    logger.warn("加密文件：{}，时出现异常{}", path, e.getMessage());
+                }
+
             }
         }
     }

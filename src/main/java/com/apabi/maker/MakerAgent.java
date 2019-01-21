@@ -24,6 +24,8 @@ public class MakerAgent {
 
     private static final Logger logger = LoggerFactory.getLogger(MakerAgent.class);
 
+    public static int concurrancyNum = 0;
+
 //    static {
 //        String dll = ApplicationConfig.getCebxMaker() + "/Runtime/Bin/MakerAgent.dll";
 //        System.load(dll);
@@ -55,6 +57,7 @@ public class MakerAgent {
         String strKey = "Concurrent";
 
         int result1 = MakerAgent.GetConcurrancyNum(strAppID, strSN, true, strKey);
+        concurrancyNum = result1;
         logger.info("并发数 = " + result1);
 
         String result2 = MakerAgent.GetUserInfo(strAppID, strSN, true);
@@ -72,6 +75,7 @@ public class MakerAgent {
         //String fileJob = MakerAgent.class.getClassLoader().getResource("").getPath() + "MakerSDK/job/job.xml";
         String fileJob = "C:\\Users\\guanpp\\Desktop\\test\\job\\20190108102251job.xml";
         //fileJob = fileJob.substring(1, fileJob.length());
+        MakerAgent.init();
         MakerAgent.DoConvert(fileJob, 1000);
     }
 }

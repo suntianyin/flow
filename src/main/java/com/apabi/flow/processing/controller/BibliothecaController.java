@@ -20,6 +20,7 @@ import com.apabi.flow.processing.util.IsbnCheck;
 import com.apabi.flow.processing.util.ReadExcelTextUtils;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
+import com.apabi.maker.MakerAgent;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -190,7 +191,7 @@ public class BibliothecaController {
             model.addAttribute("bibliothecaState", bibliothecaState);
             //动态改变前端 书目状态 下拉列表信息展示
             model.addAttribute("bibliothecaStateList", Arrays.asList(BibliothecaStateEnum.values()));
-            if (list != null ) {
+            if (list != null) {
                 model.addAttribute("total", list.size());
                 long count1 = list.stream().filter(bibliotheca -> bibliotheca.getBibliothecaState().getCode() == 3).count();
                 model.addAttribute("num1", count1);//已分拣
@@ -852,15 +853,19 @@ public class BibliothecaController {
         return "error";
     }
 
-    //批量转换pdf成cebx文件
+    //批量转换文件成cebx文件
     @RequestMapping(value = "/batchConvert2Cebx", method = RequestMethod.POST)
     @ResponseBody
     public String batchConvert2Cebx(@RequestParam(value = "dirPath") String dirPath,
                                     @RequestParam(value = "batchId") String batchId,
                                     @RequestParam(value = "fileInfo") String fileInfo) {
         if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfo)) {
-            bibliothecaService.batchConvert2Cebx(dirPath,batchId, fileInfo);
-            return "success";
+            boolean res = bibliothecaService.ctlBatchConvert2Cebx(dirPath, batchId, fileInfo);
+            if (res == true) {
+                return "success";
+            } else {
+                return "warn";
+            }
         }
         return "error";
     }
@@ -896,7 +901,7 @@ public class BibliothecaController {
     }
 
     //更新图书元数据
-    @RequestMapping(value = "/updateBookMeta",method = RequestMethod.POST)
+    @RequestMapping(value = "/updateBookMeta", method = RequestMethod.POST)
     @ResponseBody
     public String updateBookMeta(@RequestBody BookMeta bookMeta) {
         if (bookMeta != null) {
