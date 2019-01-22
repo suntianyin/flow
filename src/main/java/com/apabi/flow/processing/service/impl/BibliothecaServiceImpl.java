@@ -6,7 +6,9 @@ import com.apabi.flow.book.util.BookConstant;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.dao.DoubanMetaDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
+import com.apabi.flow.douban.model.DoubanMeta;
 import com.apabi.flow.douban.service.DoubanMetaService;
 import com.apabi.flow.douban.util.StringToolUtil;
 import com.apabi.flow.processing.constant.*;
@@ -20,6 +22,7 @@ import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
+import com.apabi.flow.systemconf.util.FileUtil;
 import com.apabi.maker.MakerAgent;
 import com.apabi.maker.MakerUtil;
 import com.github.pagehelper.Page;
@@ -44,6 +47,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -81,6 +86,9 @@ public class BibliothecaServiceImpl implements BibliothecaService {
 
     @Autowired
     private PublisherDao publisherDao;
+
+    @Autowired
+    private DoubanMetaDao doubanMetaDao;
 
     //@Autowired
     //private ApabiBookMetaTempPublishDao apabiBookMetaTempPublishDao;
@@ -983,10 +991,10 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 }
                 //转存源文件到cebx目录下
                 logger.info("路径{}下的文件，转存开始", dirPath);
-                long startc = System.currentTimeMillis();
+                long startC = System.currentTimeMillis();
                 copy2Cebx(dirPath, fileMap);
-                long endc = System.currentTimeMillis();
-                logger.info("路径{}下的文件，已转存到{}，耗时{}", dirPath, config.getUploadCebx(), (endc - startc));
+                long endC = System.currentTimeMillis();
+                logger.info("路径{}下的文件，已转存到{}，耗时{}", dirPath, config.getUploadCebx(), (endC - startC));
                 //cebx文件加密
                 logger.info("路径{}转换后的cebx，加密开始", dirPath);
                 long start = System.currentTimeMillis();
@@ -1001,6 +1009,40 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 batchMapper.updateByBatchId(batch);
                 long endS = System.currentTimeMillis();
                 logger.info("路径{}转换cebx已结束，耗时{}", dirPath, (endS - startS));
+                //下载图书封面
+                logger.info("路径{}下的文件，下载封面开始", dirPath);
+                long startD = System.currentTimeMillis();
+                downloadCover(cebxPath);
+                long endD = System.currentTimeMillis();
+                logger.info("路径{}下的文件，下载封面已结束，耗时{}", dirPath, (endD - startD));
+            }
+        }
+    }
+
+    //下载图书封面
+    private void downloadCover(List<String> cebxPath) {
+        if (cebxPath != null && cebxPath.size() > 0) {
+            for (String cebx : cebxPath) {
+                try {
+                    //获取metaId和路径
+                    String path = cebx.substring(0, cebx.lastIndexOf(File.separator));
+                    String metaId = cebx.replace(path + File.separator, "")
+                            .replaceAll("(?i).cebx", "");
+                    BookMeta bookMeta = bookMetaDao.findBookMetaById(metaId);
+                    DoubanMeta doubanMeta = doubanMetaDao.findById(bookMeta.getDoubanId());
+                    if (doubanMeta != null) {
+                        //下载大图
+                        FileUtil.download4Url(doubanMeta.getLargeCover(), path, metaId + "_L.JPG");
+                        //下载中图
+                        FileUtil.download4Url(doubanMeta.getMediumCover(), path, metaId + "_M.JPG");
+                        //下载小图
+                        FileUtil.download4Url(doubanMeta.getSmallCover(), path, metaId + "_S.JPG");
+                    } else {
+                        logger.warn("文件{}，在豆瓣网上不存在", cebx);
+                    }
+                } catch (Exception e) {
+                    logger.warn("文件{}，在下载封面时出现异常{}", e.getMessage());
+                }
             }
         }
     }
