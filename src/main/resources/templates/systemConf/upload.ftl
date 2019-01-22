@@ -44,7 +44,7 @@
                 formData.append('uploadPath', uploadPath);
                 formData.append('toEmail', toEmail);
                 $('#uploadFile').attr("disabled", true);
-                tipDialog("文件正在上传，请注意查收邮件！", 3, 1);
+                $('#notice').show();
                 $.ajax({
                     url: RootPath() + "/upload/uploadFile",
                     type: "POST",
@@ -53,6 +53,7 @@
                     processData: false,
                     contentType: false
                 });
+                tipDialog("文件正在上传，请注意查收邮件！", 3, 1);
             }, 200);
         }
     </script>
@@ -85,6 +86,7 @@
                         <td>
                             <input id="uploadFile" type="button" class="btnSearch" value="上传文件"
                                    onclick="uploadFile()"/>
+                            <span id="notice" style="display:none;color:red">请勿关闭该窗口，以免上传失败</span>
                         </td>
                     </tr>
                 </table>

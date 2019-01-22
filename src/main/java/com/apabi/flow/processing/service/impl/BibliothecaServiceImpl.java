@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -980,20 +981,54 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                         logger.warn("文件{}转换cebx时，出现异常{}", fileInfo[0], e.getMessage());
                     }
                 }
-                //更新转换状态
-                batch.setConvertStatus(2);
-                batch.setUpdateTime(new Date());
-                batchMapper.updateByBatchId(batch);
-                long endS = System.currentTimeMillis();
-                //更新当前并发数
-                makerConcurr.getAndDecrement();
-                logger.info("路径{}转换cebx已结束，耗时{}", dirPath, (endS - startS));
+                //转存源文件到cebx目录下
+                logger.info("路径{}下的文件，转存开始", dirPath);
+                long startc = System.currentTimeMillis();
+                copy2Cebx(dirPath, fileMap);
+                long endc = System.currentTimeMillis();
+                logger.info("路径{}下的文件，已转存到{}，耗时{}", dirPath, config.getUploadCebx(), (endc - startc));
                 //cebx文件加密
                 logger.info("路径{}转换后的cebx，加密开始", dirPath);
                 long start = System.currentTimeMillis();
                 encryptCebx(cebxPath);
                 long end = System.currentTimeMillis();
                 logger.info("路径{}转换后的cebx，已加密完成，耗时{}", dirPath, (end - start));
+                //更新当前并发数
+                makerConcurr.getAndDecrement();
+                //更新转换状态
+                batch.setConvertStatus(2);
+                batch.setUpdateTime(new Date());
+                batchMapper.updateByBatchId(batch);
+                long endS = System.currentTimeMillis();
+                logger.info("路径{}转换cebx已结束，耗时{}", dirPath, (endS - startS));
+            }
+        }
+    }
+
+    //转存文件到cebx目录下
+    private void copy2Cebx(String dirPath, Map<String, String[]> fileMap) {
+        if (StringUtils.isNotBlank(dirPath)
+                && fileMap != null
+                && fileMap.size() > 0) {
+            for (Map.Entry entry : fileMap.entrySet()) {
+                String[] fileInfo = (String[]) entry.getValue();
+                //源文件路径
+                String filePath = dirPath + File.separator + fileInfo[0];
+                //新文件路径
+                String cebxParentPath = config.getUploadCebx() + File.separator + fileInfo[1];
+                File parent = new File(cebxParentPath);
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                //获取源文件后缀
+                String suffix = fileInfo[0].substring(fileInfo[0].lastIndexOf(".") + 1);
+                String newFilePath = cebxParentPath + File.separator + fileInfo[2] + "." + suffix;
+                //写文件
+                try {
+                    Files.copy(new File(filePath).toPath(), new File(newFilePath).toPath());
+                } catch (IOException e) {
+                    logger.warn("转存文件{}，时出现异常{}", filePath, e.getMessage());
+                }
             }
         }
     }

@@ -59,17 +59,17 @@ public class MakerUtil {
                     jobParameter.setText("CEBX");
                     //获取文件信息
                     String[] fileInfo = (String[]) entry.getValue();
-                    String pdfPath = dirPath + File.separator + fileInfo[0];
+                    String filePath = dirPath + File.separator + fileInfo[0];
                     //判断父文件夹是否存在
                     String cebxParentPath = targetPath + File.separator + fileInfo[1];
                     File parent = new File(cebxParentPath);
-                    if (!parent.exists()){
+                    if (!parent.exists()) {
                         parent.mkdirs();
                     }
                     String cebxPath = cebxParentPath + File.separator + fileInfo[2] + ".CEBX";
                     cebFile.setText(cebxPath);
-                    psFile1.setText(pdfPath);
-                    psFile2.setText(pdfPath);
+                    psFile1.setText(filePath);
+                    psFile2.setText(filePath);
                     //生成xml文件
                     File file = new File(jobPath + File.separator + fileInfo[2] + "job.xml");
                     XMLWriter writer;
@@ -98,24 +98,26 @@ public class MakerUtil {
     }
 
     public static void main(String[] args) {
-        String dirPath = "C:\\Users\\guanpp\\Desktop\\test\\pdf";
-        String targetPath = "C:\\Users\\guanpp\\Desktop\\test\\cebx";
-        String jobPath = "C:\\Users\\guanpp\\Desktop\\test\\job";
-        Map<String, String[]> fileMap = new HashMap<>();
-        String[] fileInfo = new String[3];
-        fileInfo[0] = "index.pdf";
-        fileInfo[1] = "20180205";
-        fileInfo[2] = "m.201244d115dfaf";
-        fileMap.put("18201244d115dfaf", fileInfo);
-        fileInfo[0] = "linkmap.pdf";
-        fileInfo[1] = "20180205";
-        fileInfo[2] = "m.201344d115dfaf";
-        fileMap.put("18201344d115dfaf", fileInfo);
-        fileInfo[0] = "recipes.pdf";
-        fileInfo[1] = "20180203";
-        fileInfo[2] = "m.201444d115dfaf";
-        fileMap.put("18201444d115dfaf", fileInfo);
-        Map jobMap = createJobXml(dirPath, targetPath, jobPath, fileMap);
-        System.out.println(jobMap.toString());
+//        String dirPath = "C:\\Users\\guanpp\\Desktop\\test\\pdf";
+//        String targetPath = "C:\\Users\\guanpp\\Desktop\\test\\cebx";
+//        String jobPath = "C:\\Users\\guanpp\\Desktop\\test\\job";
+//        Map<String, String[]> fileMap = new HashMap<>();
+//        String[] fileInfo = new String[3];
+//        fileInfo[0] = "index.pdf";
+//        fileInfo[1] = "20180205";
+//        fileInfo[2] = "m.201244d115dfaf";
+//        fileMap.put("18201244d115dfaf", fileInfo);
+//        fileInfo[0] = "linkmap.pdf";
+//        fileInfo[1] = "20180205";
+//        fileInfo[2] = "m.201344d115dfaf";
+//        fileMap.put("18201344d115dfaf", fileInfo);
+//        fileInfo[0] = "recipes.pdf";
+//        fileInfo[1] = "20180203";
+//        fileInfo[2] = "m.201444d115dfaf";
+//        fileMap.put("18201444d115dfaf", fileInfo);
+//        Map jobMap = createJobXml(dirPath, targetPath, jobPath, fileMap);
+//        System.out.println(jobMap.toString());
+        String f = "1/ddd.pdf";
+        System.out.println(f.substring(0, f.lastIndexOf("/")));
     }
 }
