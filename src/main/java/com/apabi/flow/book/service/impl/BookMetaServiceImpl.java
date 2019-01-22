@@ -213,6 +213,16 @@ public class BookMetaServiceImpl implements BookMetaService {
     @Override
     public int updateBookMetaById(BookMeta bookMeta) {
         if (bookMeta != null) {
+            //更新ISBN10或ISBN13
+            String isbn = bookMeta.getIsbn();
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(isbn)) {
+                isbn = isbn.replace("-", "");
+                if (isbn.length() == 10) {
+                    bookMeta.setIsbn10(isbn);
+                } else if (isbn.length() == 13) {
+                    bookMeta.setIsbn13(isbn);
+                }
+            }
             bookMetaDao.updateBookMetaById(bookMeta);
             return 1;
         }

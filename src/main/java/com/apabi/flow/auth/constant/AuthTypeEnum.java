@@ -11,7 +11,9 @@ public enum AuthTypeEnum implements BaseEnum<AuthTypeEnum, Integer>,CodeBaseEnum
 
     TOWBYUN(1, "2B+云联盟"),
 
-    TOWB2C(2, "2B2C");
+    TOWB2C(2, "2B2C"),
+
+    UNKNOWN(3, "未知");
 
 
 

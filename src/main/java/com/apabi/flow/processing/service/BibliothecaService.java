@@ -125,5 +125,8 @@ public interface BibliothecaService {
     void parsing(String path, String id, String username, String batchId) throws InterruptedException;
 
     //转换pdf文件为cebx
-    void batchConvert2Cebx(String dirPath, String batchId, String fileInfos);
+    //void batchConvert2Cebx(String dirPath, String batchId, String fileInfos);
+
+    //批量转换文件控制
+    boolean ctlBatchConvert2Cebx(String dirPath, String batchId, String fileInfos);
 }

@@ -267,6 +267,7 @@
                             <option  value="0">仅2B</option>
                             <option  value="1">2B+云联盟</option>
                             <option  value="2">2B2C</option>
+                            <option  value="3">未知</option>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>
                     </td>
                 </tr>

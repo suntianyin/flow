@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface ResourceMapper {
-    int deleteByPrimaryKey(String resrId);
+    int deleteByPrimaryKey(Integer resrId);
 
     int insert(Resource record);
 
     int insertSelective(Resource record);
 
-    Resource selectByPrimaryKey(String resrId);
+    Resource selectByPrimaryKey(Integer resrId);
 
     int updateByPrimaryKeySelective(Resource record);
 

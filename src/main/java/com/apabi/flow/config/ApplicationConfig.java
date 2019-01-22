@@ -21,6 +21,10 @@ public class ApplicationConfig {
     @Value("${cebxHtmlExe}")
     private String cebxHtmlExe;
 
+    //cebx加密/解密工具
+    @Value("${cebxCryptExe}")
+    private String cebxCryptExe;
+
     //maker的DLL
     @Value("${cebxMaker}")
     private static String cebxMaker;
@@ -91,6 +95,14 @@ public class ApplicationConfig {
 
     public void setCebxHtmlExe(String cebxHtmlExe) {
         this.cebxHtmlExe = cebxHtmlExe;
+    }
+
+    public String getCebxCryptExe() {
+        return cebxCryptExe;
+    }
+
+    public void setCebxCryptExe(String cebxCryptExe) {
+        this.cebxCryptExe = cebxCryptExe;
     }
 
     public static String getCebxMaker() {

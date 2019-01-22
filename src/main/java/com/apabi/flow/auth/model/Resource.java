@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class Resource implements Serializable {
-    private String resrId;
+    private Integer resrId;
 
     private String booklistNum;
 
@@ -35,7 +35,7 @@ public class Resource implements Serializable {
 
     private Integer assignRule;
 
-    private Integer assignPercent;
+    private Double assignPercent;
 
     private String copyrightOwner;
 
@@ -47,43 +47,43 @@ public class Resource implements Serializable {
 
     private ResourceStatusEnum status;
 
-    private Date authStartDate;
+    private String authStartDate;
 
-    private Date authEndDate;
+    private String authEndDate;
 
     private String freereadPercent;
 
-    private Integer isCopyNum;
+    private String isCopyNum;
 
-    private Integer isDatabaseSale;
+    private String isDatabaseSale;
 
-    private Integer isChapterSale;
+    private String isChapterSale;
 
-    private Integer isTimeSale;
+    private String isTimeSale;
 
-    private Integer isFreeRead;
+    private String isFreeRead;
 
-    private Integer isPod;
+    private String isPod;
 
-    private Integer isSerialise;
+    private String isSerialise;
 
     private String other;
 
-    private Integer hasOriginaledition;
+    private String hasOriginaledition;
 
-    private Integer hasFlow;
+    private String hasFlow;
 
-    private Integer hasDatabase;
+    private String hasDatabase;
 
-    private Integer hasMultimedia;
+    private String hasMultimedia;
 
-    private Integer hasPod;
+    private String hasPod;
 
     private String hasOther;
 
-    private Date ncStartDate;
+    private String ncStartDate;
 
-    private Date ncEndDate;
+    private String ncEndDate;
 
     private Integer isPublicedition;
 
@@ -99,14 +99,18 @@ public class Resource implements Serializable {
 
     private Date operateDate;
 
+    private String publisherId;
+
+    private String copyrightOwnerId;
+
 
     private static final long serialVersionUID = 1L;
 
-    public String getResrId() {
+    public Integer getResrId() {
         return resrId;
     }
 
-    public void setResrId(String resrId) {
+    public void setResrId(Integer resrId) {
         this.resrId = resrId;
     }
 
@@ -214,11 +218,11 @@ public class Resource implements Serializable {
         this.assignRule = assignRule;
     }
 
-    public Integer getAssignPercent() {
+    public Double getAssignPercent() {
         return assignPercent;
     }
 
-    public void setAssignPercent(Integer assignPercent) {
+    public void setAssignPercent(Double assignPercent) {
         this.assignPercent = assignPercent;
     }
 
@@ -262,19 +266,19 @@ public class Resource implements Serializable {
         this.status = status;
     }
 
-    public Date getAuthStartDate() {
+    public String getAuthStartDate() {
         return authStartDate;
     }
 
-    public void setAuthStartDate(Date authStartDate) {
+    public void setAuthStartDate(String authStartDate) {
         this.authStartDate = authStartDate;
     }
 
-    public Date getAuthEndDate() {
+    public String getAuthEndDate() {
         return authEndDate;
     }
 
-    public void setAuthEndDate(Date authEndDate) {
+    public void setAuthEndDate(String authEndDate) {
         this.authEndDate = authEndDate;
     }
 
@@ -286,59 +290,59 @@ public class Resource implements Serializable {
         this.freereadPercent = freereadPercent;
     }
 
-    public Integer getIsCopyNum() {
+    public String getIsCopyNum() {
         return isCopyNum;
     }
 
-    public void setIsCopyNum(Integer isCopyNum) {
+    public void setIsCopyNum(String isCopyNum) {
         this.isCopyNum = isCopyNum;
     }
 
-    public Integer getIsDatabaseSale() {
+    public String getIsDatabaseSale() {
         return isDatabaseSale;
     }
 
-    public void setIsDatabaseSale(Integer isDatabaseSale) {
+    public void setIsDatabaseSale(String isDatabaseSale) {
         this.isDatabaseSale = isDatabaseSale;
     }
 
-    public Integer getIsChapterSale() {
+    public String getIsChapterSale() {
         return isChapterSale;
     }
 
-    public void setIsChapterSale(Integer isChapterSale) {
+    public void setIsChapterSale(String isChapterSale) {
         this.isChapterSale = isChapterSale;
     }
 
-    public Integer getIsTimeSale() {
+    public String getIsTimeSale() {
         return isTimeSale;
     }
 
-    public void setIsTimeSale(Integer isTimeSale) {
+    public void setIsTimeSale(String isTimeSale) {
         this.isTimeSale = isTimeSale;
     }
 
-    public Integer getIsFreeRead() {
+    public String getIsFreeRead() {
         return isFreeRead;
     }
 
-    public void setIsFreeRead(Integer isFreeRead) {
+    public void setIsFreeRead(String isFreeRead) {
         this.isFreeRead = isFreeRead;
     }
 
-    public Integer getIsPod() {
+    public String getIsPod() {
         return isPod;
     }
 
-    public void setIsPod(Integer isPod) {
+    public void setIsPod(String isPod) {
         this.isPod = isPod;
     }
 
-    public Integer getIsSerialise() {
+    public String getIsSerialise() {
         return isSerialise;
     }
 
-    public void setIsSerialise(Integer isSerialise) {
+    public void setIsSerialise(String isSerialise) {
         this.isSerialise = isSerialise;
     }
 
@@ -350,43 +354,43 @@ public class Resource implements Serializable {
         this.other = other;
     }
 
-    public Integer getHasOriginaledition() {
+    public String getHasOriginaledition() {
         return hasOriginaledition;
     }
 
-    public void setHasOriginaledition(Integer hasOriginaledition) {
+    public void setHasOriginaledition(String hasOriginaledition) {
         this.hasOriginaledition = hasOriginaledition;
     }
 
-    public Integer getHasFlow() {
+    public String getHasFlow() {
         return hasFlow;
     }
 
-    public void setHasFlow(Integer hasFlow) {
+    public void setHasFlow(String hasFlow) {
         this.hasFlow = hasFlow;
     }
 
-    public Integer getHasDatabase() {
+    public String getHasDatabase() {
         return hasDatabase;
     }
 
-    public void setHasDatabase(Integer hasDatabase) {
+    public void setHasDatabase(String hasDatabase) {
         this.hasDatabase = hasDatabase;
     }
 
-    public Integer getHasMultimedia() {
+    public String getHasMultimedia() {
         return hasMultimedia;
     }
 
-    public void setHasMultimedia(Integer hasMultimedia) {
+    public void setHasMultimedia(String hasMultimedia) {
         this.hasMultimedia = hasMultimedia;
     }
 
-    public Integer getHasPod() {
+    public String getHasPod() {
         return hasPod;
     }
 
-    public void setHasPod(Integer hasPod) {
+    public void setHasPod(String hasPod) {
         this.hasPod = hasPod;
     }
 
@@ -398,19 +402,19 @@ public class Resource implements Serializable {
         this.hasOther = hasOther;
     }
 
-    public Date getNcStartDate() {
+    public String getNcStartDate() {
         return ncStartDate;
     }
 
-    public void setNcStartDate(Date ncStartDate) {
+    public void setNcStartDate(String ncStartDate) {
         this.ncStartDate = ncStartDate;
     }
 
-    public Date getNcEndDate() {
+    public String getNcEndDate() {
         return ncEndDate;
     }
 
-    public void setNcEndDate(Date ncEndDate) {
+    public void setNcEndDate(String ncEndDate) {
         this.ncEndDate = ncEndDate;
     }
 
@@ -446,10 +450,6 @@ public class Resource implements Serializable {
         this.batchNum = batchNum;
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
     public String getIdentifier() {
         return identifier;
     }
@@ -472,5 +472,25 @@ public class Resource implements Serializable {
 
     public void setOperateDate(Date operateDate) {
         this.operateDate = operateDate;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getPublisherId() {
+        return publisherId;
+    }
+
+    public void setPublisherId(String publisherId) {
+        this.publisherId = publisherId;
+    }
+
+    public String getCopyrightOwnerId() {
+        return copyrightOwnerId;
+    }
+
+    public void setCopyrightOwnerId(String copyrightOwnerId) {
+        this.copyrightOwnerId = copyrightOwnerId;
     }
 }
