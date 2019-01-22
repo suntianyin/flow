@@ -108,6 +108,14 @@
             window.location.href="${ctx}/bookList/bookListFileDownload?id="+id;
         }
         function bookDetail (bookListNum,batchNum) {
+            if (isNull(bookListNum)){
+                tipDialog("无书单号！", 3, -1);
+                return;
+            }
+            if (isNull(batchNum)){
+                tipDialog("无批次号！", 3, -1);
+                return;
+            }
             window.location.href="${ctx}/bookList/bookDetail?bookListNum="+bookListNum+'&batchNum='+batchNum;
         }
     </script>

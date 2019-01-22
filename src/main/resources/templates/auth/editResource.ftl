@@ -12,7 +12,7 @@
     <script type="text/javascript">
         $(function () {
             $("#status").val("${(resource.status.getCode())!'' }");
-            $("#publisher").val("${(resource.publisher)!'' }");
+            $("#publisher").val("${(resource.publisherId)!'' },${(resource.publisher)!'' }");
             $('#issuedDate').val(time("${(issuedDate)!'' }"));
 
         });
@@ -163,7 +163,7 @@
                             <option value="">--请选择出版社--</option>
                             <#if publishers??>
                                 <#list publishers as list>
-                                    <option value="${(list.id)!''}">${(list.title)!''}</option>
+                                    <option value="${(list.id)!''},${(list.title)!''}">${(list.title)!''}</option>
                                 </#list>
                             </#if>
                         </select>&nbsp;&nbsp;&nbsp;<span style="color:red">*</span>

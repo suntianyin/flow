@@ -96,7 +96,7 @@ public class BookListController {
             paramsMap.put("submitDate", submitDate);
             paramsMap.put("bookListNum", bookListNum);
             paramsMap.put("authorizeNum", authorizeNum);
-            paramsMap.put("coopertor",coopertor);
+            paramsMap.put("coopertor", coopertor);
             if (authEndDate1 != null) {
                 paramsMap.put("authEndDate1", new Date(new DateTime(authEndDate1.getTime()).plusDays(1).getMillis()));
             }
@@ -136,19 +136,22 @@ public class BookListController {
 
     @PostMapping("/add")
     public Object add(@RequestBody BookList bookList) throws BizException {
-            CopyrightAgreement copyrightAgreement = authService.findByCopyrightOwnerId(bookList.getCopyrightOwnerId());
-            if(copyrightAgreement!=null){
-                String s = UUIDCreater.nextId();
-                bookList.setAgreementNum(copyrightAgreement.getAgreementNum());
-                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                bookList.setOpertor(userDetails.getUsername());
-                bookList.setOperteDate(new Date());
-                bookList.setId(s);
-                bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
-                int add = bookListService.add(bookList);
-            }else{
-                throw new BizException("当前版权所有者无电子书类版权协议");
-            }
+        CopyrightAgreement copyrightAgreement = authService.findByCopyrightOwnerId(bookList.getCopyrightOwnerId());
+        if (copyrightAgreement != null) {
+            long start = System.currentTimeMillis();
+            String s = UUIDCreater.nextId();
+            bookList.setAgreementNum(copyrightAgreement.getAgreementNum());
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            bookList.setOpertor(userDetails.getUsername());
+            bookList.setOperteDate(new Date());
+            bookList.setId(s);
+            bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
+            int add = bookListService.add(bookList);
+            long end = System.currentTimeMillis();
+            log.info("书单信息id:{}新增耗时：" + (end - start) + "毫秒",s);
+        } else {
+            throw new BizException("当前版权所有者无电子书类版权协议");
+        }
         return "redirect:/bookList/index";
     }
 
@@ -163,9 +166,12 @@ public class BookListController {
         for (CopyrightOwner p : copyrightOwners) {
             copyrightOwner.put(p.getId(), p.getName());
         }
-        model.addAttribute("submitDate", bookList.getSubmitDate().toString());
-        model.addAttribute("authEndDate", bookList.getAuthEndDate().toString());
-        model.addAttribute("obtainDate", bookList.getObtainDate().toString());
+        if (bookList.getSubmitDate() != null)
+            model.addAttribute("submitDate", bookList.getSubmitDate().toString());
+        if (bookList.getAuthEndDate() != null)
+            model.addAttribute("authEndDate", bookList.getAuthEndDate().toString());
+        if (bookList.getObtainDate() != null)
+            model.addAttribute("obtainDate", bookList.getObtainDate().toString());
         model.addAttribute("bookList", bookList);
         return "/auth/editBookList";
     }
@@ -173,14 +179,17 @@ public class BookListController {
     @PostMapping("/update")
     public String update(@RequestBody BookList bookList) throws BizException {
         CopyrightAgreement copyrightAgreement = authService.findByCopyrightOwnerId(bookList.getCopyrightOwnerId());
-        if(copyrightAgreement!=null) {
+        if (copyrightAgreement != null) {
+            long start = System.currentTimeMillis();
             bookList.setAgreementNum(copyrightAgreement.getAgreementNum());
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             bookList.setOpertor(userDetails.getUsername());
             bookList.setOperteDate(new Date());
             bookList.setCopyrightOwner(copyrightOwner.get(bookList.getCopyrightOwnerId()));
             int add = bookListService.updateByPrimaryKeySelective(bookList);
-        }else{
+            long end = System.currentTimeMillis();
+            log.info("书单信息id:{}修改耗时：" + (end - start) + "毫秒",bookList.getId());
+        } else {
             throw new BizException("当前版权所有者无电子书类版权协议");
         }
         return "redirect:/bookList/index";
@@ -188,32 +197,36 @@ public class BookListController {
 
     @RequestMapping("/deleteById")
     public String deleteById(@RequestParam String id) {
+        long start = System.currentTimeMillis();
         int i = bookListService.deleteByPrimaryKey(id);
+        long end = System.currentTimeMillis();
+        log.info("书单信息id:{}删除耗时：" + (end - start) + "毫秒",id);
         return "redirect:/bookList/index";
     }
 
     @RequestMapping("/bookListFileAdd")
-    public String bookListFileAdd(@RequestParam String id,Model model) {
-        model.addAttribute("id",id);
+    public String bookListFileAdd(@RequestParam String id, Model model) {
+        model.addAttribute("id", id);
         return "/auth/bookListFileAdd";
     }
+
     //上传授权书单文件
     @RequestMapping(value = "/bookListFileInsert", method = RequestMethod.POST)
     @ResponseBody
     public String bookListInsert(@RequestParam(value = "files", required = true) MultipartFile[] files,
-                                @RequestParam(value = "id",required = true)String id) {
-        if (files != null&&StringUtils.isNotBlank(id)) {
+                                 @RequestParam(value = "id", required = true) String id) {
+        if (files != null && StringUtils.isNotBlank(id)) {
             String filePath = "";
             try {
                 BookList bookList = bookListMapper.selectByPrimaryKey(id);
-                if(StringUtils.isNotBlank(bookList.getFileName())||StringUtils.isNotBlank(bookList.getFilePath())){
+                if (StringUtils.isNotBlank(bookList.getFileName()) || StringUtils.isNotBlank(bookList.getFilePath())) {
                     return "exist";
                 }
                 //上传图书到服务端指定目录
                 long start = System.currentTimeMillis();
                 List<String> fileList = new ArrayList<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String dirPath = config.getUpAuthFile() + File.separator +sdf.format(new Date())+File.separator +id;
+                String dirPath = config.getUpAuthFile() + File.separator + sdf.format(new Date()) + File.separator + id;
                 File dir = new File(dirPath);
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -231,7 +244,7 @@ public class BookListController {
                     int res = 0;
                     for (String path : fileList) {
                         filePath = path;
-                        res += bookListService.saveAgreementFileNameAndPath(id,filePath);
+                        res += bookListService.saveAgreementFileNameAndPath(id, filePath);
                     }
                     if (res > 0) {
                         end = System.currentTimeMillis();
@@ -247,29 +260,30 @@ public class BookListController {
         }
         return "error";
     }
-    //上传授权书单文件2
+
+    //上传授权书单文件(覆盖当前授权协议附件)
     @RequestMapping(value = "/bookListFileInsert2", method = RequestMethod.POST)
     @ResponseBody
     public String bookListFileInsert2(@RequestParam(value = "files", required = true) MultipartFile[] files,
-                                @RequestParam(value = "id",required = true)String id) {
-        if (files != null&&StringUtils.isNotBlank(id)) {
+                                      @RequestParam(value = "id", required = true) String id) {
+        if (files != null && StringUtils.isNotBlank(id)) {
             String filePath = "";
             try {
                 BookList bookList = bookListMapper.selectByPrimaryKey(id);
-                if(StringUtils.isNotBlank(bookList.getFileName())||StringUtils.isNotBlank(bookList.getFilePath())){
-                    File file=new File(bookList.getFilePath());
+                if (StringUtils.isNotBlank(bookList.getFileName()) || StringUtils.isNotBlank(bookList.getFilePath())) {
+                    File file = new File(bookList.getFilePath());
                     boolean delete = file.delete();
-                    if(delete){
-                        log.info("删除授权书单id：{}的附件成功",id);
-                    }else{
-                        log.info("删除授权书单id：{}的附件失败",id);
+                    if (delete) {
+                        log.info("删除授权书单id：{}的附件成功", id);
+                    } else {
+                        log.info("删除授权书单id：{}的附件失败", id);
                     }
                 }
                 //上传图书到服务端指定目录
                 long start = System.currentTimeMillis();
                 List<String> fileList = new ArrayList<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String dirPath = config.getUpAuthFile() + File.separator +sdf.format(new Date())+File.separator +id;
+                String dirPath = config.getUpAuthFile() + File.separator + sdf.format(new Date()) + File.separator + id;
                 File dir = new File(dirPath);
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -287,7 +301,7 @@ public class BookListController {
                     int res = 0;
                     for (String path : fileList) {
                         filePath = path;
-                        res += bookListService.saveAgreementFileNameAndPath(id,filePath);
+                        res += bookListService.saveAgreementFileNameAndPath(id, filePath);
                     }
                     if (res > 0) {
                         end = System.currentTimeMillis();
@@ -303,19 +317,21 @@ public class BookListController {
         }
         return "error";
     }
+
     @RequestMapping("/bookListFileDownload")
     @ResponseBody
     public String bookListFileDownload(@RequestParam String id, HttpServletResponse response) throws ParseException {
         try {
+            long start = System.currentTimeMillis();
             BookList bookList = bookListMapper.selectByPrimaryKey(id);
-            if(StringUtils.isBlank(bookList.getFileName())||StringUtils.isBlank(bookList.getFilePath())){
+            if (StringUtils.isBlank(bookList.getFileName()) || StringUtils.isBlank(bookList.getFilePath())) {
                 return "<script type='text/javascript'>alert('当前授权书单无附件！');history.back();</script>";
             }
             // 设置响应头
             response.setContentType("application/binary;charset=UTF-8");
             response.setCharacterEncoding("utf-8");
             response.setContentType("multipart/form-data");
-            String path=bookList.getFilePath();
+            String path = bookList.getFilePath();
             // path是指欲下载的文件的路径。
             File file = new File(path);
             // 取得文件名。
@@ -331,42 +347,47 @@ public class BookListController {
             // 清空response
             response.reset();
             // 设置response的Header
-            response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(),"ISO8859-1"));
+            response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(), "ISO8859-1"));
             response.addHeader("Content-Length", "" + file.length());
             OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
 //            response.setContentType("application/octet-stream");
             toClient.write(buffer);
             toClient.flush();
             toClient.close();
+            long end = System.currentTimeMillis();
+            log.info("授权书单id：{}文件下载！耗时：" + (end - start) + "毫秒",id);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "<script type='text/javascript'>alert('下载成功！');history.back();</script>";
     }
-    private static Map<String ,String> copyrightOwnerMap=new HashMap<>();
-    private static Map<String ,String> publisherMap=new HashMap<>();
+
+    private static Map<String, String> copyrightOwnerMap = new HashMap<>();
+    private static Map<String, String> publisherMap = new HashMap<>();
+
     @RequestMapping("/bookDetail")
-    public String bookDetail(@RequestParam String bookListNum,@RequestParam String batchNum,Model model) {
+    public String bookDetail(@RequestParam String bookListNum, @RequestParam String batchNum, Model model) {
         //根据批次号绑定资源授权书单编号
-        resourceService.updateByBooklistNum(bookListNum,batchNum);
+        resourceService.updateByBooklistNum(bookListNum, batchNum);
         //根据书单编号查资源
-        List<Publisher> publishers = publisherService.findAll();
-        model.addAttribute("publishers", publishers);
-        for (Publisher p:publishers) {
-            publisherMap.put(p.getId(),p.getTitle());
-        }
+//        List<Publisher> publishers = publisherService.findAll();
+//        model.addAttribute("publishers", publishers);
+//        for (Publisher p : publishers) {
+//            publisherMap.put(p.getId(), p.getTitle());
+//        }
         List<CopyrightOwner> all = copyrightOwnerService.findAll();
-        for (CopyrightOwner copyrightOwner1:all){
-            copyrightOwnerMap.put(copyrightOwner1.getId(),copyrightOwner1.getName());
-        }
+//        for (CopyrightOwner copyrightOwner1 : all) {
+//            copyrightOwnerMap.put(copyrightOwner1.getId(), copyrightOwner1.getName());
+//        }
         model.addAttribute("CopyrightOwner", all);
         long start = System.currentTimeMillis();
         PageHelper.startPage(1, 10);
-        Map paramsMap=new HashMap();
-        paramsMap.put("booklistNum",bookListNum);
+        Map paramsMap = new HashMap();
+        paramsMap.put("booklistNum", bookListNum);
+        model.addAttribute("booklistNum",bookListNum);
         Page<Resource> page = resourceService.listResource(paramsMap);
-        page.forEach(r->r.setPublisher(publisherMap.get(r.getPublisher())));
-        page.forEach(r->r.setCopyrightOwner(copyrightOwnerMap.get(r.getCopyrightOwner())));
+//        page.forEach(r -> r.setPublisher(publisherMap.get(r.getPublisher())));
+//        page.forEach(r -> r.setCopyrightOwner(copyrightOwnerMap.get(r.getCopyrightOwner())));
         if (page != null && !page.isEmpty()) {
             model.addAttribute("ResourceList", page.getResult());
             model.addAttribute("pages", page.getPages());

@@ -1,6 +1,8 @@
 package com.apabi.flow.processing.controller;
 
 import com.apabi.flow.auth.constant.ResourceStatusEnum;
+import com.apabi.flow.auth.dao.CopyrightOwnerMapper;
+import com.apabi.flow.auth.model.CopyrightOwner;
 import com.apabi.flow.auth.model.Resource;
 import com.apabi.flow.auth.service.ResourceService;
 import com.apabi.flow.book.model.BookMeta;
@@ -89,6 +91,9 @@ public class BibliothecaController {
 
     @Autowired
     private BookMetaService bookMetaService;
+
+    @Autowired
+    CopyrightOwnerMapper copyrightOwnerMapper;
 
     /**
      * 外协 书目信息 页面
@@ -759,6 +764,12 @@ public class BibliothecaController {
                     "版权期限终止时间", "唯一标识（MetaId）", "批次号"};
             // 将内存中读取到的内容写入到excel
             bibliothecaService.writeData2Excel(2, fileName, excelTitle, excelModelList, "sheet1", response);
+
+            List<CopyrightOwner> all = copyrightOwnerMapper.findAll();
+            Map map1 = new HashMap();
+            for (CopyrightOwner c:all) {
+                map1.put(c.getId(), c.getName());
+            }
             //和授权资源衔接
             for (Bibliotheca bibliotheca : list) {
                 Bibliotheca b = bibliothecaService.getBibliothecaById(bibliotheca.getId());
@@ -771,20 +782,22 @@ public class BibliothecaController {
                     continue;
                 } else {
                     Resource resource = new Resource();
-                    resource.setResrId(UUIDCreater.nextId());
+//                    resource.setResrId(UUIDCreater.nextId());
                     resource.setBatchNum(b.getBatchId());
                     resource.setIdentifier(b.getIdentifier());
                     resource.setMetaId(b.getMetaId());
                     resource.setInsertDate(new Date());
                     resource.setTitle(b.getTitle());
                     resource.setCreator(b.getAuthor());
-                    resource.setPublisher(b.getPublisher());
+                    resource.setPublisher(b.getPublisherName());
+                    resource.setPublisherId(b.getPublisher());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     resource.setIssuedDate(sdf.parse(StringToolUtil.issuedDateFormat(b.getPublishTime())));
                     resource.setIsbn(b.getIsbn());
                     resource.setPaperPrice(Double.valueOf(b.getPaperPrice()));
                     resource.setePrice(Double.valueOf(b.geteBookPrice()));
-                    resource.setCopyrightOwner(batch.getCopyrightOwner());
+                    resource.setCopyrightOwnerId(batch.getCopyrightOwner());
+                    resource.setCopyrightOwner((String) map1.get(batch.getCopyrightOwner()));
                     resource.setStatus(ResourceStatusEnum.AUTHORIZATIONPERIOD);
                     resource.setOperateDate(new Date());
                     UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

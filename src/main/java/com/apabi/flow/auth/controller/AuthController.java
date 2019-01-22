@@ -70,25 +70,25 @@ public class AuthController {
             List<CopyrightAgreement> lists = authService.findAll();
             Calendar cal = Calendar.getInstance();
             for (CopyrightAgreement copyrightAgreement : lists) {
-                cal.setTime(copyrightAgreement.getEndDate());
-                cal.add(Calendar.YEAR, copyrightAgreement.getYearNum());
-                copyrightAgreement.setEndDate(cal.getTime());
-                if (copyrightAgreement.getEndDate().compareTo(new Date()) >= 0) {
-                    if (copyrightAgreement.getStatus() != 1) {
-                        copyrightAgreement.setStatus(1);
-                        authService.updateStatusByPrimaryKeySelective(copyrightAgreement);
-                    }
-                } else {
-                    if (copyrightAgreement.getStatus() != 0) {
-                        copyrightAgreement.setStatus(0);
-                        authService.updateStatusByPrimaryKeySelective(copyrightAgreement);
+                if(copyrightAgreement.getEndDate()!=null){
+                    cal.setTime(copyrightAgreement.getEndDate());
+                    cal.add(Calendar.YEAR, copyrightAgreement.getYearNum());
+                    copyrightAgreement.setEndDate(cal.getTime());
+                    if (copyrightAgreement.getEndDate().compareTo(new Date()) >= 0) {
+                        if (copyrightAgreement.getStatus() != 1) {
+                            copyrightAgreement.setStatus(1);
+                            authService.updateStatusByPrimaryKeySelective(copyrightAgreement);
+                        }
+                    } else {
+                        if (copyrightAgreement.getStatus() != 0) {
+                            copyrightAgreement.setStatus(0);
+                            authService.updateStatusByPrimaryKeySelective(copyrightAgreement);
+                        }
                     }
                 }
             }
-
             List<CopyrightOwner> copyrightOwners = copyrightOwnerService.findAll();
             long start = System.currentTimeMillis();
-
             //搜索保留
             model.addAttribute("copyrightOwnerId", copyrightOwnerId);
             model.addAttribute("agreementType", agreementType);
@@ -145,12 +145,16 @@ public class AuthController {
 
     @RequestMapping("/deleteById")
     public String deleteById(@RequestParam String caid) {
+        long start = System.currentTimeMillis();
         int i = authService.deleteByPrimaryKey(caid);
+        long end = System.currentTimeMillis();
+        log.info("版权协议id：{}删除耗时：" + (end - start) + "毫秒",caid);
         return "/auth/index";
     }
 
     @PostMapping("/add")
     public String add(@RequestBody CopyrightAgreement copyrightAgreement) {
+        long start = System.currentTimeMillis();
         String s = UUIDCreater.nextId();
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         copyrightAgreement.setOperator(userDetails.getUsername());
@@ -167,16 +171,21 @@ public class AuthController {
             copyrightAgreement.setStatus(0);
         }
         int add = authService.add(copyrightAgreement);
+        long end = System.currentTimeMillis();
+        log.info("版权协议id：{}新增耗时：" + (end - start) + "毫秒",s);
         return "redirect:/auth/index";
     }
 
     @PostMapping("/update")
     public String update(@RequestBody CopyrightAgreement copyrightAgreement) {
+        long start = System.currentTimeMillis();
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         copyrightAgreement.setOperator(userDetails.getUsername());
         copyrightAgreement.setOperatedate(new Date());
         copyrightAgreement.setCopyrightOwner(copyrightOwner.get(copyrightAgreement.getCopyrightOwnerId()));
         int add = authService.updateByPrimaryKeySelective(copyrightAgreement);
+        long end = System.currentTimeMillis();
+        log.info("版权协议id：{}修改耗时：" + (end - start) + "毫秒",copyrightAgreement.getCaid());
         return "redirect:/auth/index";
     }
 
@@ -186,9 +195,13 @@ public class AuthController {
         if (StringUtils.isNotBlank(caid)) {
             copyrightAgreement = authService.selectByPrimaryKey(caid);
         }
+        if(copyrightAgreement.getStartDate()!=null)
         model.addAttribute("startDate", copyrightAgreement.getStartDate().toString());
+        if(copyrightAgreement.getEndDate()!=null)
         model.addAttribute("endDate", copyrightAgreement.getEndDate().toString());
+        if(copyrightAgreement.getSignDate()!=null)
         model.addAttribute("signDate", copyrightAgreement.getSignDate().toString());
+        if(copyrightAgreement.getObtainDate()!=null)
         model.addAttribute("obtainDate", copyrightAgreement.getObtainDate().toString());
         model.addAttribute("copyrightAgreement", copyrightAgreement);
         List<CopyrightOwner> copyrightOwners = copyrightOwnerService.findAll();
@@ -256,7 +269,7 @@ public class AuthController {
         return "error";
     }
 
-    //上传版权协议文件2
+    //上传版权协议文件(覆盖当前授权协议附件)
     @RequestMapping(value = "/authFileInsert2", method = RequestMethod.POST)
     @ResponseBody
     public String authInsert2(@RequestParam(value = "files", required = true) MultipartFile[] files,
@@ -317,6 +330,7 @@ public class AuthController {
     @ResponseBody
     public String authFileDownload(@RequestParam String caid, HttpServletResponse response) throws ParseException {
         try {
+            long start = System.currentTimeMillis();
             CopyrightAgreement copyrightAgreement = copyrightAgreementMapper.selectByPrimaryKey(caid);
             if (StringUtils.isBlank(copyrightAgreement.getAgreementFileName()) || StringUtils.isBlank(copyrightAgreement.getAgreementFilePath())) {
                 return "<script type='text/javascript'>alert('当前版权协议无附件！');history.back();</script>";
@@ -332,7 +346,6 @@ public class AuthController {
             String filename = file.getName();
             // 取得文件的后缀名。
 //            String ext = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
-
             // 以流的形式下载文件。
             InputStream fis = new BufferedInputStream(new FileInputStream(path));
             byte[] buffer = new byte[fis.available()];
@@ -348,8 +361,11 @@ public class AuthController {
             toClient.write(buffer);
             toClient.flush();
             toClient.close();
+            long end = System.currentTimeMillis();
+            log.info("版权协议id：{}文件下载！耗时：" + (end - start) + "毫秒",caid);
         } catch (IOException e) {
             e.printStackTrace();
+            return "<script type='text/javascript'>alert('文件未找到！');history.back();</script>";
         }
         return "<script type='text/javascript'>alert('下载成功！');history.back();</script>";
     }

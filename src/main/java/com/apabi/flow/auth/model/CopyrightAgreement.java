@@ -23,11 +23,11 @@ public class CopyrightAgreement {
     private Date startDate;
 
     private Date endDate;
-
+    //0-仅2B 1-2B+云联盟 2-2B2C 3-无
     private AuthTypeEnum authType;
 
     private Double assignPercent;
-
+    //分成比例：0-定价分成，1-售价分成，2-买断，3-无
     private int assignRule;
 
     private int isinternetCommunication;

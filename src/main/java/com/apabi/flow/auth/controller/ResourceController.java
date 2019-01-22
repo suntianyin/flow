@@ -72,10 +72,10 @@ public class ResourceController {
                         @RequestParam(value = "copyrightOwner", required = false) String copyrightOwner,
                         @RequestParam(value = "isbn", required = false) String isbn,
                         @RequestParam(value = "status", required = false) Integer status,
-                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
-                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate1,
+                        @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
+//                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
+                        @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate,
+//                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate1,
                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,
                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                         Model model) {
@@ -101,24 +101,24 @@ public class ResourceController {
             model.addAttribute("isbn", isbn);
             model.addAttribute("status", status);
             model.addAttribute("startDate", startDate);
-            model.addAttribute("startDate1", startDate1);
+//            model.addAttribute("startDate1", startDate1);
             model.addAttribute("endDate", endDate);
-            model.addAttribute("endDate1", endDate1);
+//            model.addAttribute("endDate1", endDate1);
             PageHelper.startPage(pageNum, pageSize);
             Map<String, Object> paramsMap = new HashMap<>();
             ParamsUtils.checkParameterAndPut2Map(paramsMap, "booklistNum", booklistNum, "title", title,"creator",creator,"metaId",metaId,"copyrightOwner",copyrightOwner,"isbn", isbn);
             paramsMap.put("startDate", startDate);
             paramsMap.put("endDate", endDate);
             paramsMap.put("status", status);
-            if (startDate1 != null) {
-                paramsMap.put("startDate1", new Date(new DateTime(startDate1.getTime()).plusDays(1).getMillis()));
-            }
-            if (endDate1 != null) {
-                paramsMap.put("endDate1", new Date(new DateTime(endDate1.getTime()).plusDays(1).getMillis()));
-            }
+//            if (startDate1 != null) {
+//                paramsMap.put("startDate1", new Date(new DateTime(startDate1.getTime()).plusDays(1).getMillis()));
+//            }
+//            if (endDate1 != null) {
+//                paramsMap.put("endDate1", new Date(new DateTime(endDate1.getTime()).plusDays(1).getMillis()));
+//            }
             Page<Resource> page = resourceService.listResource(paramsMap);
-            page.forEach(r->r.setPublisher(publisherMap.get(r.getPublisher())));
-            page.forEach(r->r.setCopyrightOwner(copyrightOwnerMap.get(r.getCopyrightOwner())));
+//            page.forEach(r->r.setPublisher(publisherMap.get(r.getPublisher())));
+//            page.forEach(r->r.setCopyrightOwner(copyrightOwnerMap.get(r.getCopyrightOwner())));
             if (page != null && !page.isEmpty()) {
                 model.addAttribute("ResourceList", page.getResult());
                 model.addAttribute("pages", page.getPages());
@@ -137,21 +137,22 @@ public class ResourceController {
         return "auth/resource";
     }
 
-    @RequestMapping("/add/index")
-    public String addIndex(Model model) {
-        return "/auth/addResource";
-    }
-    @PostMapping("/add")
-    public String add(@RequestBody Resource resource) {
-        String s = UUIDCreater.nextId();
-        resource.setResrId(s);
-        int add = resourceService.insert(resource);
-        return "redirect:/resource/index";
-    }
+//    @RequestMapping("/add/index")
+//    public String addIndex(Model model) {
+//        return "/auth/addResource";
+//    }
+//    @PostMapping("/add")
+//    public String add(@RequestBody Resource resource) {
+//        String s = UUIDCreater.nextId();
+//        resource.setResrId(s);
+//        int add = resourceService.insert(resource);
+//        return "redirect:/resource/index";
+//    }
 
     @RequestMapping("/deleteById")
     public String deleteById(@RequestParam String resrId) {
-        int i = resourceService.deleteByPrimaryKey(resrId);
+        Integer id=Integer.parseInt(resrId.replace(",",""));
+        int i = resourceService.deleteByPrimaryKey(id);
         return "redirect:/resource/index";
     }
 
@@ -161,6 +162,11 @@ public class ResourceController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         resource.setOperator(userDetails.getUsername());
         resource.setOperateDate(new Date());
+        if(StringUtils.isNotBlank(resource.getPublisher())){
+            String[] split = resource.getPublisher().split(",");
+            resource.setPublisher(split[1]);
+            resource.setPublisherId(split[0]);
+        }
         int add = resourceService.updateByPrimaryKeySelective(resource);
         return "redirect:/resource/index";
     }
@@ -168,9 +174,10 @@ public class ResourceController {
     @RequestMapping("/edit/index")
     public String editIndex(@RequestParam String resrId, Model model) throws ParseException {
         Resource resource = null;
-        if (StringUtils.isNotBlank(resrId)) {
-            resource  = resourceService.selectByPrimaryKey(resrId);
-        }
+//        if (StringUtils.isNotBlank(resrId)) {
+        Integer id=Integer.parseInt(resrId.replace(",",""));
+            resource  = resourceService.selectByPrimaryKey(id);
+//        }
         List<Publisher> publishers = publisherService.findAll();
         model.addAttribute("publishers", publishers);
         model.addAttribute("resource", resource);

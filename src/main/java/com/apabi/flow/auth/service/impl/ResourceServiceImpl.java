@@ -41,7 +41,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Override
-    public int deleteByPrimaryKey(String resrId) {
+    public int deleteByPrimaryKey(Integer resrId) {
         return resourceMapper.deleteByPrimaryKey(resrId);
     }
 
@@ -56,7 +56,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Resource selectByPrimaryKey(String resrId) {
+    public Resource selectByPrimaryKey(Integer resrId) {
         return resourceMapper.selectByPrimaryKey(resrId);
     }
 
@@ -188,8 +188,10 @@ public class ResourceServiceImpl implements ResourceService {
                 resource.setMetaId(metaId);
                 resource.setBatchNum(batchNum);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                resource.setAuthStartDate(sdf.parse(authStartDate));
-                resource.setAuthEndDate(sdf.parse(authEndDate));
+//                resource.setAuthStartDate(sdf.parse(authStartDate));
+//                resource.setAuthEndDate(sdf.parse(authEndDate));
+                resource.setAuthStartDate(authStartDate);
+                resource.setAuthEndDate(authEndDate);
                 UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 resource.setOperator(userDetails.getUsername());
                 resource.setOperateDate(new Date());

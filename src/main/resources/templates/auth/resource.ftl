@@ -22,18 +22,19 @@
             $("#status").val("${(status)!'' }");
             var status = $("#status").val();
             var startDate = $("#startDate").val().trim();
-            var startDate1 = $("#startDate1").val().trim();
+            // var startDate1 = $("#startDate1").val().trim();
             var endDate = $("#endDate").val().trim();
-            var endDate1 = $("#endDate1").val().trim();
-            var pathurl = "?booklistNum=" + booklistNum + "&startDate=" + startDate + "&startDate1=" + startDate1 + "&endDate=" + endDate + "&endDate1=" + endDate1 + "&title=" + title + "&creator=" + creator + "&metaId=" + metaId + "&copyrightOwner=" + copyrightOwner + "&isbn=" + isbn + "&status=" + status;
-            var totalPages = ${pages!''};
-            var currentPages = ${pageNum!''};
+            // var endDate1 = $("#endDate1").val().trim();
+            var pathurl = "${ctx}/resource/index?booklistNum=" + booklistNum + "&startDate=" + startDate + "&endDate=" + endDate + "&title=" + title + "&creator=" + creator + "&metaId=" + metaId + "&copyrightOwner=" + copyrightOwner + "&isbn=" + isbn + "&status=" + status;
+            var totalPages = ${pages?c};
+            var currentPages = ${pageNum?c};
             jqPaging(pathurl, totalPages, currentPages);
         });
         //下拉列表 模糊查询
         $(document).ready(function () {
             $('.js-example-basic-single').select2();
         });
+
         //检索
         function btn_Search() {
             var booklistNum = $("#booklistNum").val().trim();
@@ -44,12 +45,11 @@
             var isbn = $("#isbn").val().trim();
             var status = $("#status").val();
             var startDate = $("#startDate").val().trim();
-            var startDate1 = $("#startDate1").val().trim();
+            // var startDate1 = $("#startDate1").val().trim();
             var endDate = $("#endDate").val().trim();
-            var endDate1 = $("#endDate1").val().trim();
-            window.location.href = "${ctx}/resource/index?booklistNum=" + booklistNum + "&startDate=" + startDate + "&startDate1=" + startDate1 + "&endDate=" + endDate + "&endDate1=" + endDate1 + "&title=" + title + "&creator=" + creator + "&metaId=" + metaId + "&copyrightOwner=" + copyrightOwner + "&isbn=" + isbn + "&status=" + status;
+            // var endDate1 = $("#endDate1").val().trim();
+            window.location.href = "${ctx}/resource/index?booklistNum=" + booklistNum + "&startDate=" + startDate + "&endDate=" + endDate + "&title=" + title + "&creator=" + creator + "&metaId=" + metaId + "&copyrightOwner=" + copyrightOwner + "&isbn=" + isbn + "&status=" + status;
         }
-
 
 
         function updateResource(id) {
@@ -107,8 +107,9 @@
                 }
             });
         }
+
         //授权清单导出
-        function btn_exportData(){
+        function btn_exportData() {
             var booklistNum = $("#booklistNum").val().trim();
             var title = $("#title").val().trim();
             var creator = $("#creator").val().trim();
@@ -132,6 +133,7 @@
                 }
             });
         }
+
         //授权清单 批量导入
         function btn_DataImport() {
             // var batchId = $('#batchId').val();
@@ -194,9 +196,9 @@
         <!--工具栏-->
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <#--<div class="PartialButton">-->
-                <#--<a id="lr-add" title="添加协议资源" onclick="btn_addResource()" class="tools_btn">-->
-                    <#--<span><i class="fa fa-plus"></i>&nbsp;添加协议资源</span></a>-->
-                <#--<div class="tools_separator"></div>-->
+            <#--<a id="lr-add" title="添加协议资源" onclick="btn_addResource()" class="tools_btn">-->
+            <#--<span><i class="fa fa-plus"></i>&nbsp;添加协议资源</span></a>-->
+            <#--<div class="tools_separator"></div>-->
             <#--</div>-->
             <div class="PartialButton">
                 <button id="batch-import" title="导出授权资源" class="tools_btn" onclick="btn_exportData()">
@@ -242,8 +244,9 @@
                     </td>
                     <th>版权所有者：</th>
                     <td>
-                        <select id="copyrightOwner" name="copyrightOwner" class="js-example-basic-single" underline="true" style="width: 307px; height: 24px;">
-                            <option value="">--请选择出版社--</option>
+                        <select id="copyrightOwner" name="copyrightOwner" class="js-example-basic-single"
+                                underline="true" style="width: 307px; height: 24px;">
+                            <option value="">--请选择版权所有者--</option>
                             <#if CopyrightOwner??>
                                 <#list CopyrightOwner as list>
                                     <option value="${(list.id)!''}">${(list.name)!''}</option>
@@ -271,20 +274,24 @@
                     </td>
 
                     <th>获取授权时间：</th>
-                    <td>
-                        <input id="startDate" name="startDate" type="date"
-                               value="${(startDate?string("yyyy-MM-dd"))! '' }" class="txt"
-                               style="width: 200px"/>至<input id="startDate1" name="startDate1" type="date"
-                                                             value="${(startDate1?string("yyyy-MM-dd"))! '' }"
-                                                             class="txt" style="width: 200px"/>
-                    </td>
+                    <td><input id="startDate" name="startDate" type="text" value="${startDate!'' }" class="txt"
+                               style="width: 200px"/></td>
+                    <#--<td>-->
+                    <#--<input id="startDate" name="startDate" type="date"-->
+                    <#--value="${(startDate?string("yyyy-MM-dd"))! '' }" class="txt"-->
+                    <#--style="width: 200px"/>至<input id="startDate1" name="startDate1" type="date"-->
+                    <#--value="${(startDate1?string("yyyy-MM-dd"))! '' }"-->
+                    <#--class="txt" style="width: 200px"/>-->
+                    <#--</td>-->
                     <th>版权结束时间：</th>
-                    <td>
-                        <input id="endDate" name="endDate" type="date" value="${(endDate?string("yyyy-MM-dd"))! '' }"
-                               class="txt" style="width: 200px"/>至<input id="endDate1" name="endDate1" type="date"
-                                                                         value="${(endDate1?string("yyyy-MM-dd"))! '' }"
-                                                                         class="txt" style="width: 200px"/>
-                    </td>
+                    <td><input id="endDate" name="endDate" type="text" value="${endDate!'' }" class="txt"
+                               style="width: 200px"/></td>
+                    <#--<td>-->
+                    <#--<input id="endDate" name="endDate" type="date" value="${(endDate?string("yyyy-MM-dd"))! '' }"-->
+                    <#--class="txt" style="width: 200px"/>至<input id="endDate1" name="endDate1" type="date"-->
+                    <#--value="${(endDate1?string("yyyy-MM-dd"))! '' }"-->
+                    <#--class="txt" style="width: 200px"/>-->
+                    <#--</td>-->
                     <td>
                         <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
                     </td>
@@ -328,13 +335,17 @@
                             <td align="center">${(list.title)!'' }</td>
                             <td align="center">${(list.creator)! '' }</td>
                             <td align="center">${(list.publisher)! '' }</td>
-                            <td align="center">${(list.issuedDate)?datetime! '' }</td>
+                            <#if list.issuedDate??>
+                                <td align="center">${(list.issuedDate)?datetime! '' }</td>
+                            <#else>
+                                <td align="center"></td>
+                            </#if>
                             <td align="center">${(list.isbn)! ''}</td>
                             <td align="center">${(list.paperPrice)! ''}</td>
                             <td align="center">${(list.ePrice)! ''}</td>
                             <td align="center">${(list.status.getDesc())! ''}</td>
-                            <td align="center">${(list.authStartDate?datetime)! '' }</td>
-                            <td align="center">${(list.authEndDate?datetime)! '' }</td>
+                            <td align="center">${(list.authStartDate)! '' }</td>
+                            <td align="center">${(list.authEndDate)! '' }</td>
                             <td align="center">${(list.operator)! '' }</td>
                             <td align="center">${(list.operateDate?datetime)! '' }</td>
                             <td align="center">

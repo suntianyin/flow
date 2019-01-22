@@ -116,7 +116,7 @@
                        class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
                     <thead>
                     <tr role="row">
-                        <th>版权所有者ID</th>
+                        <#--<th>版权所有者ID</th>-->
                         <th>版权所有者名称</th>
                         <th>状态</th>
                         <th>版权所有者拼音</th>
@@ -130,7 +130,7 @@
                     <#if CopyrightOwnerList??>
                         <#list CopyrightOwnerList as list>
                         <tr class="gradeA odd" role="row">
-                            <td align="center">${(list.id)!''}</td>
+                            <#--<td align="center">${(list.id)!''}</td>-->
                             <td align="center">${(list.name)! '' }</td>
                             <td align="center">${((list.status==0)?string('启用','禁用')) }</td>
                             <td align="center">${(list.pinyin)! '' }</td>

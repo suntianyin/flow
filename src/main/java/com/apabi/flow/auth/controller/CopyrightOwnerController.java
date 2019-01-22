@@ -36,9 +36,6 @@ public class CopyrightOwnerController {
 
     @Autowired
     private CopyrightOwnerService copyrightOwnerService;
-
-
-
     @GetMapping("/index")
     public String index(@RequestParam(value = "name", required = false) String name,
                         @RequestParam(value = "pinyin", required = false) String pinyin,
