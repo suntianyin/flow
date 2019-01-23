@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -228,6 +229,8 @@ public class GetEpubookChapter {
                                     chapterList,
                                     chapterShardList);
                             if (res == 1) {
+                                //转存epub文件
+                                copy2Epub(path, epubookMeta.getIssueddate(), fileName);
                                 //保存图书和文件的对应关系
                                 saveFile(epubookMeta.getMetaid(), fileName);
                                 //更新metadata_tmp表
@@ -676,5 +679,25 @@ public class GetEpubookChapter {
             return jdbcTemplate.update(sql, objects);
         }
         return 0;
+    }
+
+    //转存文件到epub目录下
+    private void copy2Epub(String filePath, String newParentPath, String newFileName) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(filePath)
+                && org.apache.commons.lang3.StringUtils.isNotBlank(newParentPath)
+                && org.apache.commons.lang3.StringUtils.isNotBlank(newFileName)) {
+            //新文件路径
+            File newFileDir = new File(config.getUploadEpub() + File.separator + newParentPath);
+            if (!newFileDir.exists()) {
+                newFileDir.mkdirs();
+            }
+            //写文件
+            try {
+                Files.copy(new File(filePath).toPath(), new File(newFileDir + File.separator + newFileName).toPath());
+                log.info("文件{}，已转存到{}", filePath, newFileDir);
+            } catch (IOException e) {
+                log.warn("转存文件{}，时出现异常{}", filePath, e.getMessage());
+            }
+        }
     }
 }
