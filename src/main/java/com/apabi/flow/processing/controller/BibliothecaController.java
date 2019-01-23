@@ -767,7 +767,7 @@ public class BibliothecaController {
 
             List<CopyrightOwner> all = copyrightOwnerMapper.findAll();
             Map map1 = new HashMap();
-            for (CopyrightOwner c:all) {
+            for (CopyrightOwner c : all) {
                 map1.put(c.getId(), c.getName());
             }
             //和授权资源衔接
@@ -920,6 +920,104 @@ public class BibliothecaController {
         if (bookMeta != null) {
             bookMetaService.updateBookMetaById(bookMeta);
             return "success";
+        }
+        return "error";
+    }
+
+    //上传CEBXM文件跳转
+    @RequestMapping(value = "/uploadCebxm")
+    public String uploadCebxm(@RequestParam(value = "metaId") String metaId, Model model) {
+        if (StringUtils.isNotBlank(metaId)) {
+            BookMeta bookMeta = bookMetaService.selectBookMetaDetailById(metaId);
+            if (bookMeta == null) {
+                bookMeta = new BookMeta();
+            }
+            model.addAttribute("bookMeta", bookMeta);
+        }
+        return "processing/uploadCebxm";
+    }
+
+    //上传CEBM文件
+    @RequestMapping(value = "/uploadCebxm2Server", method = RequestMethod.POST)
+    @ResponseBody
+    public String uploadCebxm2Server(@RequestParam(value = "file", required = false) MultipartFile file,
+                                     @RequestParam("metaId") String metaId,
+                                     @RequestParam("publishDate") String publishDate) {
+        if (StringUtils.isNotBlank(metaId)) {
+            long res = bookMetaService.countBookMetaById(metaId);
+            if (res == 0) {
+                return "id_0";
+            }
+        } else {
+            return "id_null";
+        }
+        if (file != null) {
+            try {
+                //上传图书到服务端指定目录
+                long start = System.currentTimeMillis();
+                String dirPath = config.getUploadCebx() + File.separator + publishDate.substring(0, 10);
+                File dir = new File(dirPath);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File newFile = new File(dir, metaId + ".CEBXM");
+                file.transferTo(newFile);
+                long end = System.currentTimeMillis();
+                logger.info(file.getOriginalFilename() + "图书上传成功！耗时：" + (end - start) + "毫秒");
+                return "success";
+            } catch (Exception e) {
+                logger.warn("上传图书{}，时出现异常{}", file.getOriginalFilename(), e.getMessage());
+            }
+        }
+        return "error";
+    }
+
+    //上传图片文件跳转
+    @RequestMapping(value = "/uploadImage")
+    public String uploadImage(@RequestParam(value = "metaId") String metaId, Model model) {
+        if (StringUtils.isNotBlank(metaId)) {
+            BookMeta bookMeta = bookMetaService.selectBookMetaDetailById(metaId);
+            if (bookMeta == null) {
+                bookMeta = new BookMeta();
+            }
+            model.addAttribute("bookMeta", bookMeta);
+        }
+        return "processing/uploadImage";
+    }
+
+    //上传CEBM文件
+    @RequestMapping(value = "/uploadImage2Server", method = RequestMethod.POST)
+    @ResponseBody
+    public String uploadImage2Server(@RequestParam(value = "file", required = false) MultipartFile file,
+                                     @RequestParam("metaId") String metaId,
+                                     @RequestParam("publishDate") String publishDate) {
+        if (StringUtils.isNotBlank(metaId)) {
+            long res = bookMetaService.countBookMetaById(metaId);
+            if (res == 0) {
+                return "id_0";
+            }
+        } else {
+            return "id_null";
+        }
+        if (file != null) {
+            try {
+                //上传图书到服务端指定目录
+                long start = System.currentTimeMillis();
+                //获取文件后缀
+                String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+                String dirPath = config.getUploadCebx() + File.separator + publishDate.substring(0, 10);
+                File dir = new File(dirPath);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File newFile = new File(dir, metaId + "_S." + suffix);
+                file.transferTo(newFile);
+                long end = System.currentTimeMillis();
+                logger.info(file.getOriginalFilename() + "图片上传成功！耗时：" + (end - start) + "毫秒");
+                return "success";
+            } catch (Exception e) {
+                logger.warn("上传图片{}，时出现异常{}", file.getOriginalFilename(), e.getMessage());
+            }
         }
         return "error";
     }
