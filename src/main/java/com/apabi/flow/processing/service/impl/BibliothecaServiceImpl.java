@@ -2,7 +2,6 @@ package com.apabi.flow.processing.service.impl;
 
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
-import com.apabi.flow.book.util.BookConstant;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
@@ -20,6 +19,9 @@ import com.apabi.flow.processing.model.Bibliotheca;
 import com.apabi.flow.processing.model.BibliothecaExcelModel;
 import com.apabi.flow.processing.model.DuplicationCheckEntity;
 import com.apabi.flow.processing.service.BibliothecaService;
+import com.apabi.flow.processing.task.MakerCebxTask;
+import com.apabi.flow.processing.task.MakerTask;
+import com.apabi.flow.processing.task.MakerTaskBo;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
 import com.apabi.flow.systemconf.util.FileUtil;
@@ -47,15 +49,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,6 +75,12 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     private static boolean MAKER_INIT = true;
 
     private static AtomicInteger makerConcurr = new AtomicInteger(0);
+
+    private static ThreadPoolExecutor makerExecutor;
+
+    private static Set<String> metaIdSet = ConcurrentHashMap.newKeySet();
+
+    private static LinkedBlockingQueue<MakerTaskBo> makerTaskQueue = new LinkedBlockingQueue<>();
 
     @Autowired
     private BibliothecaMapper bibliothecaMapper;
@@ -906,6 +910,58 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         return sb.toString();
     }
 
+    //初始化maker线程池
+    private void initMakerThreadPool() {
+        //初始化maker
+        synchronized (this) {
+            if (MAKER_INIT) {
+                MakerAgent.init();
+                makerExecutor = new ThreadPoolExecutor(1,
+                        MakerAgent.concurrancyNum,
+                        60,
+                        TimeUnit.SECONDS,
+                        new LinkedBlockingQueue<>());
+                MAKER_INIT = false;
+            }
+        }
+    }
+
+    //批量转换文件控制
+    @Override
+    public boolean ctlBatchConvert(String dirPath, String batchId, String fileInfos) {
+        if (MAKER_INIT) {
+            initMakerThreadPool();
+        }
+        if (StringUtils.isNotBlank(dirPath)
+                && StringUtils.isNotBlank(batchId)
+                && StringUtils.isNotBlank(fileInfos)) {
+            Map<String, String[]> fileMap = convertFileInfo2Map(fileInfos);
+            MakerTaskBo makerTaskBo = new MakerTaskBo();
+            makerTaskBo.setBatchId(batchId);
+            makerTaskBo.setDirPath(dirPath);
+            makerTaskBo.setFileMap(fileMap);
+            try {
+                makerTaskQueue.put(makerTaskBo);
+                //创建任务
+                MakerCebxTask makerTask = new MakerCebxTask(
+                        makerTaskQueue,
+                        config,
+                        batchMapper,
+                        bibliothecaMapper,
+                        bookMetaDao,
+                        doubanMetaDao,
+                        metaIdSet
+                );
+                //启动执行任务
+                makerExecutor.execute(makerTask);
+                return true;
+            } catch (InterruptedException e) {
+                logger.warn("添加批次{}到任务队列时，出现异常{}", batchId, e.getMessage());
+            }
+        }
+        return false;
+    }
+
     //批量转换文件控制
     @Override
     public boolean ctlBatchConvert2Cebx(String dirPath, String batchId, String fileInfos) {
@@ -918,7 +974,6 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
         return false;
     }
-
 
     /**
      * 转换文件为cebx
@@ -1110,7 +1165,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
     }
 
-    //将文件信息转换成指定的map格式
+    //将文件信息转换成指定的map格式 0-文件名，1-出版日期，2-metaId
     private Map convertFile2Map(String fileInfos) {
         if (StringUtils.isNotBlank(fileInfos)) {
             Map<String, String[]> fileMap = new HashMap<>(16);
@@ -1123,6 +1178,36 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                     fileAttr[0] = fileInfo[1];
                     fileAttr[1] = fileInfo[2].substring(0, 10);
                     fileAttr[2] = fileInfo[3];
+                    fileMap.put(fileInfo[0], fileAttr);
+                } catch (Exception e) {
+                    logger.warn("生成文件{}的map信息时，出现异常{}", fileInfo[0], e.getMessage());
+                }
+            }
+            return fileMap;
+        }
+        return null;
+    }
+
+    //将文件信息转换成指定的map格式 0-文件名，1-出版日期，2-metaId，3-是否存在任务中:0不存在，1存在
+    private Map convertFileInfo2Map(String fileInfos) {
+        if (StringUtils.isNotBlank(fileInfos)) {
+            Map<String, String[]> fileMap = new HashMap<>(16);
+            String[] files = fileInfos.split(";");
+            for (String file : files) {
+                String[] fileAttr = new String[4];
+                String[] fileInfo = file.split(",");
+                fileMap.put(fileInfo[0], null);
+                try {
+                    fileAttr[0] = fileInfo[1];
+                    fileAttr[1] = fileInfo[2].substring(0, 10);
+                    fileAttr[2] = fileInfo[3];
+                    //如果新增成功，说明任务需要执行，否则说明任务已在队列中，不需要重复执行
+                    boolean res = metaIdSet.add(fileAttr[2]);
+                    if (res) {
+                        fileAttr[3] = "0";
+                    } else {
+                        fileAttr[3] = "1";
+                    }
                     fileMap.put(fileInfo[0], fileAttr);
                 } catch (Exception e) {
                     logger.warn("生成文件{}的map信息时，出现异常{}", fileInfo[0], e.getMessage());

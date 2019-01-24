@@ -97,7 +97,7 @@ public class FileUtil {
                 }
             }
         } else {
-            logger.warn("无法下载文件{}，请检查URL", fileName);
+            logger.warn("无法下载文件{}，请检查URL、文件路径或文件名称", fileName);
         }
     }
 }

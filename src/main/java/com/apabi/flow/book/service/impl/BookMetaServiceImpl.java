@@ -1321,7 +1321,7 @@ public class BookMetaServiceImpl implements BookMetaService {
     @Async
     public void deleteBookChapterEmail(String conMetaId, String toEmail) {
         if (!StringUtils.isEmpty(conMetaId)) {
-            String[] metaIds = conMetaId.split("\r\n");
+            String[] metaIds = conMetaId.split("\r\n|\n\r|\r|\n");
             if (metaIds != null && metaIds.length > 0) {
                 List<EmailResult> emailResults = new ArrayList<>();
                 //获取日期格式转换
