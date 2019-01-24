@@ -66,6 +66,22 @@
             });
         }
 
+        //上传CEBXM文件
+        function uploadCebxm(metaId) {
+            var url = "/processing/bibliotheca/uploadCebxm?metaId=" + metaId;
+            openDialog(url, "uploadCebxm", "上传文件", 440, 400, function (iframe) {
+                top.frames[iframe].AcceptClick();
+            });
+        }
+
+        //上传图片文件
+        function uploadImage(metaId) {
+            var url = "/processing/bibliotheca/uploadImage?metaId=" + metaId;
+            openDialog(url, "uploadImage", "上传图片文件", 440, 400, function (iframe) {
+                top.frames[iframe].AcceptClick();
+            });
+        }
+
         // 删除书目
         function removeBibliotheca(id, identifier) {
             if (isNull(id)) {
@@ -491,10 +507,14 @@
                                         <span style="color: #7c7c7c;">标引</span>
                                     </#if>
                                    <#if list.metaId??>
-                                    <a href="javascript:void(0);"
-                                       onclick="editBookMeta('${(list.metaId)!''}')">编辑图书元数据</a>
+                                        <a href="javascript:void(0);"
+                                           onclick="editBookMeta('${(list.metaId)!''}')">编辑图书元数据</a>
+                                       <a href="javascript:void(0);"
+                                          onclick="uploadCebxm('${(list.metaId)!''}')">上传CEBXM</a>
+                                       <a href="javascript:void(0);"
+                                          onclick="uploadImage('${(list.metaId)!''}')">上传封面</a>
                                    <#else>
-                                    <span style="color: #7c7c7c;">编辑图书元数据</span>
+                                        <span style="color: #7c7c7c;">编辑图书元数据</span>
                                    </#if>
                                 </td>
                             </tr>

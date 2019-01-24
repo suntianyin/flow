@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -24,7 +27,8 @@ import java.io.IOException;
  */
 @Controller("upload")
 @RequestMapping(value = "/upload")
-public class UploadFileController {
+@EnableAsync
+public class UploadFileController{
 
     private Logger log = LoggerFactory.getLogger(UploadFileController.class);
 
@@ -44,7 +48,7 @@ public class UploadFileController {
         return "systemConf/uploadInfo";
     }
 
-    //解析xml文件
+    //批量上传文件
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
     public void uploadFile(@RequestParam(value = "files") MultipartFile[] files,
@@ -52,20 +56,28 @@ public class UploadFileController {
                            @RequestParam(value = "uploadPath") String uploadPath) {
         if (files != null && StringUtils.isNotBlank(uploadPath)
                 && StringUtils.isNotBlank(toEmail)) {
+            String parentPath = "";
             try {
                 long start = System.currentTimeMillis();
-                log.info("路径：{}下的文件已接收，正在生成。。。", uploadPath);
+                //获取父文件夹
+                if (files != null && files.length > 0) {
+                    String filePath = files[0].getOriginalFilename();
+                    parentPath = uploadPath + File.separator +filePath.substring(0, filePath.lastIndexOf("/"));
+                }else {
+                    parentPath = uploadPath;
+                }
+                log.info("路径：{}下的文件已接收，正在生成。。。", parentPath);
                 //上传文件
                 FileUtil.saveMultiFile(uploadPath, files);
                 //发送邮件
                 EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                 eMailUtil.createSender();
-                eMailUtil.sendNoticeMail("路径：" + uploadPath + "下的文件已上传成功", toEmail);
-                log.info("路径：{}下的文件已上传成功，通知邮件已发出", uploadPath);
+                eMailUtil.sendNoticeMail("路径：" +  parentPath + "下的文件已上传成功", toEmail);
+                log.info("路径：{}下的文件已上传成功，通知邮件已发出", parentPath);
                 long end = System.currentTimeMillis();
                 log.info(files.length + "个文件上传成功！耗时：" + (end - start) + "毫秒");
             } catch (IOException e) {
-                log.warn("上传文件到目录{}时，出现异常{}", uploadPath, e.getMessage());
+                log.warn("上传文件到目录{}时，出现异常{}", parentPath, e.getMessage());
             }
         }
     }
