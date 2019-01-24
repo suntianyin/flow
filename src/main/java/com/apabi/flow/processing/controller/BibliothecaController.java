@@ -873,7 +873,8 @@ public class BibliothecaController {
                                     @RequestParam(value = "batchId") String batchId,
                                     @RequestParam(value = "fileInfo") String fileInfo) {
         if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfo)) {
-            boolean res = bibliothecaService.ctlBatchConvert2Cebx(dirPath, batchId, fileInfo);
+           // boolean res = bibliothecaService.ctlBatchConvert2Cebx(dirPath, batchId, fileInfo);
+            boolean res = bibliothecaService.ctlBatchConvert(dirPath, batchId, fileInfo);
             if (res == true) {
                 return "success";
             } else {
@@ -955,12 +956,14 @@ public class BibliothecaController {
             try {
                 //上传图书到服务端指定目录
                 long start = System.currentTimeMillis();
+                //获取文件后缀
+                String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
                 String dirPath = config.getUploadCebx() + File.separator + publishDate.substring(0, 10);
                 File dir = new File(dirPath);
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
-                File newFile = new File(dir, metaId + ".CEBXM");
+                File newFile = new File(dir, metaId + "." + suffix);
                 file.transferTo(newFile);
                 long end = System.currentTimeMillis();
                 logger.info(file.getOriginalFilename() + "图书上传成功！耗时：" + (end - start) + "毫秒");
@@ -985,7 +988,7 @@ public class BibliothecaController {
         return "processing/uploadImage";
     }
 
-    //上传CEBM文件
+    //上传图片文件
     @RequestMapping(value = "/uploadImage2Server", method = RequestMethod.POST)
     @ResponseBody
     public String uploadImage2Server(@RequestParam(value = "file", required = false) MultipartFile file,
