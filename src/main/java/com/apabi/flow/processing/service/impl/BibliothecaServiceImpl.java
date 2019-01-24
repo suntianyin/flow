@@ -1141,7 +1141,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         try {
             ArrayList<File> fileList = new ArrayList<>();
             ArrayList<File> files = getFiles(fileList, path);
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 20, 200, TimeUnit.MILLISECONDS,
+            int cpuSum = Runtime.getRuntime().availableProcessors();
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(cpuSum*2, cpuSum*2, 200, TimeUnit.MILLISECONDS,
                     new ArrayBlockingQueue<Runnable>(files.size()));
 
             for (int i = 1; i <= files.size(); i++) {
