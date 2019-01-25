@@ -93,6 +93,9 @@
         <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
         <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
         <result column="HASCLEAN" jdbcType="VARCHAR" property="hasClean"/>
+        <result column="ISREADEPUB" jdbcType="INTEGER" property="isReadEpub"/>
+        <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
+        <result column="ISREADCEBXFLOW" jdbcType="INTEGER" property="isReadCebxFlow"/>
         <result column="AUTHORINTRO" jdbcType="CLOB" property="authorIntro"/>
         <result column="ABSTRACT" jdbcType="CLOB" property="abstract_"/>
         <result column="PREFACE" jdbcType="CLOB" property="preface"/>
@@ -114,7 +117,8 @@
         IMGWIDTH, COVOBJID, THUMIMGURL, THUMIMGSIZE, MEDIUMCOVER, HASFLOW, ISOPTIMIZE, DONOR,
         LIBRARYID, BOOKID, STYLECLASS, CHAPTERNUM, BOOKPAGES, TAGS, CREATETIME, UPDATETIME,
         CONTENTNUM, FOAMATCATALOG, STREAMCATALOG, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,
-        AUTHORINTRO, ABSTRACT, PREFACE, STYLEURL, POSTSCRIPT,HASPROCESSINGFILE,HASCLEAN
+        AUTHORINTRO, ABSTRACT, PREFACE, STYLEURL, POSTSCRIPT,HASPROCESSINGFILE,HASCLEAN,ISREADEPUB,
+        FLOWSOURCE,ISREADCEBXFLOW
     </sql>
 
     <!-- 统计有nlibraryid且需要清洗的数据数量 -->
@@ -506,6 +510,15 @@
             <if test="hasClean != null">
                 HASCLEAN,
             </if>
+            <if test="isReadEpub != null">
+                ISREADEPUB,
+            </if>
+            <if test="flowSource != null">
+                FLOWSOURCE,
+            </if>
+            <if test="isReadCebxFlow != null">
+                ISREADCEBXFLOW,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="metaId != null">
@@ -798,6 +811,15 @@
             </if>
             <if test="hasClean != null">
                 #{hasClean,jdbcType=VARCHAR},
+            </if>
+            <if test="isReadEpub != null">
+                #{postScript,jdbcType=INTEGER},
+            </if>
+            <if test="flowSource != null">
+                #{flowSource,jdbcType=VARCHAR},
+            </if>
+            <if test="isReadCebxFlow != null">
+                #{isReadCebxFlow,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -1092,6 +1114,15 @@
             </if>
             <if test="hasClean != null">
                 HASCLEAN = #{hasClean,jdbcType=VARCHAR},
+            </if>
+            <if test="isReadEpub != null">
+                ISREADEPUB = #{isReadEpub,jdbcType=INTEGER},
+            </if>
+            <if test="flowSource != null">
+                FLOWSOURCE = #{flowSource,jdbcType=VARCHAR},
+            </if>
+            <if test="isReadCebxFlow != null">
+                ISREADCEBXFLOW = #{isReadCebxFlow,jdbcType=INTGER},
             </if>
         </set>
         where METAID = #{metaId,jdbcType=VARCHAR}

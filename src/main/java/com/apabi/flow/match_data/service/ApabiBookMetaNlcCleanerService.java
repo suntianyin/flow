@@ -89,8 +89,10 @@ public class ApabiBookMetaNlcCleanerService {
                         apabiBookMetaData.setAlternativeTitle(alternativeTitle);
                     }
                     // 作者信息
+                    // TODO 对于作者的处理需要好好 DEBUG 一下逻辑
                     // 清洗authorType字段
                     apabiBookMetadataAuthorList = cleanAuthorType(apabiBookMetadataAuthorList);
+                    // 如果有1个作者，直接设置为主要责任者
                     if (apabiBookMetadataAuthorList.size() == 1) {
                         ApabiBookMetadataAuthor apabiBookMetadataAuthor = apabiBookMetadataAuthorList.get(0);
                         String creator = apabiBookMetadataAuthor.getName();
@@ -116,20 +118,36 @@ public class ApabiBookMetaNlcCleanerService {
                         if (StringUtils.isNotEmpty(translator)) {
                             apabiBookMetaData.setTranslator(translator);
                         }
-                    } else if (apabiBookMetadataAuthorList.size() == 2) {
+                    }
+                    // 如果有2个作者
+                    else if (apabiBookMetadataAuthorList.size() == 2) {
                         ApabiBookMetadataAuthor apabiBookMetadataAuthor1 = apabiBookMetadataAuthorList.get(0);
                         ApabiBookMetadataAuthor apabiBookMetadataAuthor2 = apabiBookMetadataAuthorList.get(1);
-                        String creator = apabiBookMetadataAuthor1.getName();
-                        String creatorWord = apabiBookMetadataAuthor1.getAuthorType();
-                        String contributor = apabiBookMetadataAuthor2.getName();
-                        String contributorWord = apabiBookMetadataAuthor2.getAuthorType();
+                        String creator = null;
+                        String creatorWord = null;
+                        String contributor = null;
+                        String contributorWord = null;
                         String translator = null;
-                        if (StringUtils.isNotEmpty(creatorWord) && creatorWord.contains(TRANSLATOR_KEY_WORD)) {
-                            translator = creator;
-                        } else if (StringUtils.isNotEmpty(contributorWord) && contributorWord.contains(TRANSLATOR_KEY_WORD)) {
-                            translator = contributor;
-                            contributor = null;
-                            contributorWord = null;
+                        // 如果第一个作者为译者，设置为译者；第二个作者为主要责任者
+                        if (StringUtils.isNotEmpty(apabiBookMetadataAuthor1.getAuthorType()) && apabiBookMetadataAuthor1.getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                            translator = apabiBookMetadataAuthor1.getName();
+                            creator = apabiBookMetadataAuthor2.getName();
+                            creatorWord = apabiBookMetadataAuthor2.getAuthorType();
+                        }
+                        // 如果第一个作者不为译者
+                        else if (StringUtils.isNotEmpty(apabiBookMetadataAuthor1.getAuthorType()) && !apabiBookMetadataAuthor1.getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                            // 第一个作者为主要责任者
+                            creator = apabiBookMetadataAuthor1.getName();
+                            creatorWord = apabiBookMetadataAuthor1.getAuthorType();
+                            // 如果第二个作者为译者，则设置为译者
+                            if (StringUtils.isNotEmpty(apabiBookMetadataAuthor2.getAuthorType()) && apabiBookMetadataAuthor2.getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                                translator = apabiBookMetadataAuthor2.getName();
+                            }
+                            // 如果第二个作者不为译者，则为次要责任者
+                            else if (StringUtils.isNotEmpty(apabiBookMetadataAuthor2.getAuthorType()) && !apabiBookMetadataAuthor2.getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                                contributor = apabiBookMetadataAuthor2.getName();
+                                contributorWord = apabiBookMetadataAuthor2.getAuthorType();
+                            }
                         }
                         if (StringUtils.isNotEmpty(creator)) {
                             apabiBookMetaData.setCreator(creator);
@@ -146,23 +164,34 @@ public class ApabiBookMetaNlcCleanerService {
                         if (StringUtils.isNotEmpty(translator)) {
                             apabiBookMetaData.setTranslator(translator);
                         }
-                    } else {
-                        ApabiBookMetadataAuthor apabiBookMetadataAuthor1 = apabiBookMetadataAuthorList.get(0);
-                        String creator = apabiBookMetadataAuthor1.getName();
-                        String creatorWord = apabiBookMetadataAuthor1.getAuthorType();
+                    }
+                    // 如果有2个以上的作者
+                    else {
                         String translator = null;
+                        String creator = null;
+                        String creatorWord = null;
                         String contributor = null;
                         String contributorWord = null;
-                        for (int i = 1; i < apabiBookMetadataAuthorList.size(); i++) {
-                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
-                                contributor = apabiBookMetadataAuthorList.get(i).getName();
-                                contributorWord = apabiBookMetadataAuthorList.get(i).getAuthorType();
+                        // 设置译者
+                        for (int i = 0; i < apabiBookMetadataAuthorList.size(); i++) {
+                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                                translator = apabiBookMetadataAuthorList.get(i).getName();
                                 break;
                             }
                         }
-                        for (int i = 1; i < apabiBookMetadataAuthorList.size(); i++) {
-                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
-                                translator = apabiBookMetadataAuthorList.get(i).getName();
+                        // 设置主要责任者
+                        for (int i = 0; i < apabiBookMetadataAuthorList.size(); i++) {
+                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                                creator = apabiBookMetadataAuthorList.get(i).getName();
+                                creatorWord = apabiBookMetadataAuthorList.get(i).getAuthorType();
+                                break;
+                            }
+                        }
+                        // 设置次要责任者
+                        for (int i = 0; i < apabiBookMetadataAuthorList.size(); i++) {
+                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD) && !apabiBookMetadataAuthorList.get(i).getName().equals(creator)) {
+                                contributor = apabiBookMetadataAuthorList.get(i).getName();
+                                contributorWord = apabiBookMetadataAuthorList.get(i).getAuthorType();
                                 break;
                             }
                         }

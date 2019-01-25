@@ -45,7 +45,13 @@ public class ApabiBookMetaNlcMatcherService {
             for (int j = 0; j < listSize; j++) {
                 executorService.execute(consumer);
             }
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        executorService.shutdown();
         return "success";
     }
 }

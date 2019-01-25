@@ -46,7 +46,7 @@ public class ApabiBookMetaNlcMatcherIsbnConsumer implements Runnable {
                 List<ApabiBookMetaData> apabiBookMetaDataListByIsbn = apabiBookMetaDataDao.findByIsbn(isbn);
                 // 根据ISBN查询
                 if (apabiBookMetaDataListByIsbn != null && apabiBookMetaDataListByIsbn.size() > 0) {
-                    if (apabiBookMetaDataListByIsbn.size() == 1) {
+                    if (apabiBookMetaDataListByIsbn.size() == 1 && StringUtils.isEmpty(apabiBookMetaDataListByIsbn.get(0).getNlibraryId())) {
                         // 匹配了一个
                         ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataListByIsbn.get(0);
                         if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
@@ -80,7 +80,7 @@ public class ApabiBookMetaNlcMatcherIsbnConsumer implements Runnable {
                     if (isbn.length() == 10) {
                         List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn10(isbn);
                         if (apabiBookMetaDataList != null) {
-                            if (apabiBookMetaDataList.size() == 1) {
+                            if (apabiBookMetaDataList.size() == 1 && StringUtils.isEmpty(apabiBookMetaDataList.get(0).getNlibraryId())) {
                                 // 匹配了一个
                                 ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
                                 if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
@@ -112,7 +112,7 @@ public class ApabiBookMetaNlcMatcherIsbnConsumer implements Runnable {
                     } else if (isbn.length() == 13) {
                         List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn13(isbn);
                         if (apabiBookMetaDataList != null) {
-                            if (apabiBookMetaDataList.size() == 1) {
+                            if (apabiBookMetaDataList.size() == 1 && StringUtils.isEmpty(apabiBookMetaDataList.get(0).getNlibraryId())) {
                                 // 匹配了一个
                                 ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
                                 if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
