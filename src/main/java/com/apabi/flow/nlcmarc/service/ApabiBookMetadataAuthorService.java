@@ -11,4 +11,5 @@ public interface ApabiBookMetadataAuthorService {
     void insert(ApabiBookMetadataAuthor apabiBookMetadataAuthor);
     ApabiBookMetadataAuthor findById(String id);
     List<ApabiBookMetadataAuthor> parseAuthor(String info);
+    List<ApabiBookMetadataAuthor> findByNlcMarcIdentifier(String nlcMarcIdentifier);
 }

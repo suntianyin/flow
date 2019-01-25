@@ -20,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Date 2019-1-7 17:39
  **/
 @Controller
-@RequestMapping("apabiNlc")
+@RequestMapping("apabiNlcMatcher")
 public class ApabiBookMetaNlcMatcherService {
     @Autowired
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
@@ -29,7 +29,7 @@ public class ApabiBookMetaNlcMatcherService {
     @Autowired
     private ApabiBookMetaNlcMatcherDao apabiBookMetaNlcMatcherDao;
 
-    @RequestMapping("matchIsbn")
+    @RequestMapping("match")
     public String matchIsbn() {
         int count = nlcBookMarcDao.getTotalCount();
         int pageSize = 10000;

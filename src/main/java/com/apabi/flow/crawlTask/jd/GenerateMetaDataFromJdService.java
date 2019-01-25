@@ -49,8 +49,6 @@ public class GenerateMetaDataFromJdService implements ApplicationRunner {
         SystemConf listSizeConf = systemConfMapper.selectByConfKey("create_meta_from_jd_data_list_size");
         int create_meta_from_jd_data_thread_pool_size = Integer.parseInt(threadPoolConf.getConfValue());
         int create_meta_from_jd_data_list_size = Integer.parseInt(listSizeConf.getConfValue());
-        /*create_meta_from_jd_data_thread_pool_size = 1;
-        create_meta_from_jd_data_list_size = 100;*/
         CloseableHttpClient httpClient = getCloseableHttpClient();
         PageHelper.startPage(1, create_meta_from_jd_data_list_size);
         Page<JdMetadata> jdMetadataList = jdMetadataDao.findShouldCrawl();

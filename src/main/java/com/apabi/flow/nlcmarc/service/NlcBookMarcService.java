@@ -12,9 +12,15 @@ import java.util.List;
  **/
 public interface NlcBookMarcService {
     NlcBookMarc findNlcBookMarcByNlcBookMarcId(String nlcBookMarcId);
+
     void updateNlcBookMarc(NlcBookMarc nlcBookMarc);
+
     void insertNlcBookMarc(NlcBookMarc nlcBookMarc);
+
     List<NlcBookMarc> parseNlcBookMarc(String filePath, String charset) throws IOException;
+
     Page<NlcBookMarc> findByPage();
+
     int getTotalCount();
+
 }

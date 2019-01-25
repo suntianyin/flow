@@ -62,8 +62,6 @@ public class ApabiBookMetaDoubanMatcherService {
             long start = System.currentTimeMillis();
             PageHelper.startPage(i, pageSize);
             Page<DoubanMeta> doubanMetaList = doubanMetaDao.findByPageOrderByDoubanId();
-            //Page<DoubanMeta> doubanMetaList = new Page<>();
-            //doubanMetaList.add(doubanMetaDao.findById("26992957"));
             int listSize = doubanMetaList.size();
             LinkedBlockingQueue<DoubanMeta> doubanMetaQueue = new LinkedBlockingQueue<>(doubanMetaList);
             CountDownLatch countDownLatch = new CountDownLatch(listSize);

@@ -36,6 +36,15 @@
         RUNNINGTITLE, SPINETITLE, OTHERVARIANTTITLE, OPERATOR, CREATETIME, UPDATETIME,VOLUME,VOLUME200,
         VOLUME200TITLE,VOLUME500,VOLUME500TITLE,UNIFORMTITLE
     </sql>
+
+    <!-- 根据nlcMarcIdentifier进行查询 -->
+    <select id="findByNlcMarcIdentifier" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA_TITLE
+        where NLCMARCIDENTIFIER = #{nlcMarcIdentifier,jdbcType=VARCHAR}
+    </select>
+
     <!-- 根据主键进行查询 -->
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
@@ -43,11 +52,13 @@
         from APABI_BOOK_METADATA_TITLE
         where ID = #{id,jdbcType=VARCHAR}
     </select>
+
     <!-- 根据主键进行删除 -->
     <delete id="delete" parameterType="java.lang.String">
         delete from APABI_BOOK_METADATA_TITLE
         where ID = #{id,jdbcType=VARCHAR}
     </delete>
+
     <!-- 插入数据 -->
     <insert id="insert" parameterType="com.apabi.flow.nlcmarc.model.ApabiBookMetadataTitle">
         insert into APABI_BOOK_METADATA_TITLE
@@ -212,6 +223,7 @@
             </if>
         </trim>
     </insert>
+
     <!-- 更新数据 -->
     <update id="update" parameterType="com.apabi.flow.nlcmarc.model.ApabiBookMetadataTitle">
         update APABI_BOOK_METADATA_TITLE

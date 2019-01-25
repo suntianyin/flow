@@ -41,11 +41,12 @@ public class DoubanConsumer implements Runnable {
             String host = ipPoolUtils.getIp();
             ip = host.split(":")[0];
             port = host.split(":")[1];
-            doubanMeta = CrawlDoubanUtil.crawlDoubanMetaById(id, ip, port);
-            try {
+            DoubanMeta result = doubanMetaDao.findById(id);
+            if (result == null) {
+                doubanMeta = CrawlDoubanUtil.crawlDoubanMetaById(id, ip, port);
                 doubanMetaDao.insert(doubanMeta);
                 LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
-            } catch (Exception e) {
+            } else {
                 LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在douban抓取" + id + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (Exception e) {

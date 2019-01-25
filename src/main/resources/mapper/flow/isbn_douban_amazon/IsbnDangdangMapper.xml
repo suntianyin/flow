@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.isbn_douban_amazon.dao.IsbnDangdangDao">
+    <resultMap id="BaseResultMap" type="com.apabi.flow.isbn_douban_amazon.model.IsbnDangdang">
+        <id column="ISBN" jdbcType="VARCHAR" property="isbn"/>
+        <result column="DOUBAN_STATUS" jdbcType="VARCHAR" property="doubanStatus"/>
+        <result column="AMAZON_STATUS" jdbcType="VARCHAR" property="amazonStatus"/>
+        <result column="NLC_STATUS" jdbcType="VARCHAR" property="nlcStatus"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ISBN, DOUBAN_STATUS, AMAZON_STATUS, NLC_STATUS
+    </sql>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from ISBN_DANGDANG
+    </select>
+
+    <select id="countShouldCrawledInDouban" resultType="java.lang.Integer">
+        select count(*) from ISBN_DANGDANG
+        where douban_status = '0'
+    </select>
+
+    <select id="countShouldCrawledInAmazon" resultType="java.lang.Integer">
+        select count(*) from ISBN_DANGDANG
+        where amazon_status = '0'
+    </select>
+
+    <select id="countShouldCrawledInNlc" resultType="java.lang.Integer">
+        select count(*) from ISBN_DANGDANG
+        where nlc_status = '0'
+    </select>
+
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DANGDANG
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DANGDANG
+    </select>
+
+    <select id="findByPageShouldCrawledInDouban" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DANGDANG
+        where douban_status = '0'
+    </select>
+
+    <select id="findByPageShouldCrawledInAmazon" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DANGDANG
+        where amazon_status = '0'
+    </select>
+
+    <select id="findByPageShouldCrawledInNlc" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ISBN_DANGDANG
+        where nlc_status = '0'
+    </select>
+
+    <insert id="insert" parameterType="com.apabi.flow.isbn_douban_amazon.model.IsbnDangdang">
+        insert into ISBN_DANGDANG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="isbn != null">
+                ISBN,
+            </if>
+            <if test="doubanStatus != null">
+                DOUBAN_STATUS,
+            </if>
+            <if test="amazonStatus != null">
+                AMAZON_STATUS,
+            </if>
+            <if test="nlcStatus != null">
+                NLC_STATUS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="isbn != null">
+                #{isbn,jdbcType=VARCHAR},
+            </if>
+            <if test="doubanStatus != null">
+                #{doubanStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="amazonStatus != null">
+                #{amazonStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcStatus != null">
+                #{nlcStatus,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete from ISBN_DANGDANG
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="update" parameterType="com.apabi.flow.isbn_douban_amazon.model.IsbnDangdang">
+        update ISBN_DANGDANG
+        <set>
+            <if test="doubanStatus != null">
+                DOUBAN_STATUS = #{doubanStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="amazonStatus != null">
+                AMAZON_STATUS = #{amazonStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="nlcStatus != null">
+                NLC_STATUS = #{nlcStatus,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateDoubanHasCrawled" parameterType="java.lang.String">
+        update ISBN_DANGDANG
+        set douban_status = '1'
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateAmazonHasCrawled" parameterType="java.lang.String">
+        update ISBN_DANGDANG
+        set amazon_status = '1'
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateNlcHasCrawled" parameterType="java.lang.String">
+        update ISBN_DANGDANG
+        set nlc_status = '1'
+        where ISBN = #{isbn,jdbcType=VARCHAR}
+    </update>
+</mapper>

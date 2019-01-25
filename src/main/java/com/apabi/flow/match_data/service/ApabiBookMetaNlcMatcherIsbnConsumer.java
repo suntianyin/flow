@@ -43,69 +43,102 @@ public class ApabiBookMetaNlcMatcherIsbnConsumer implements Runnable {
             nlcBookMarc = marcQueue.take();
             isbn = nlcBookMarc.getIsbn();
             if (StringUtils.isNotEmpty(isbn)) {
-                isbn = isbn.replaceAll("-", "");
-                if (isbn.length() == 10) {
-                    List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn10(isbn);
-                    if (apabiBookMetaDataList != null) {
-                        if (apabiBookMetaDataList.size() == 1) {
-                            // 匹配了一个
-                            ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
-                            if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
-                                apabiBookMetaData.setNlibraryId(nlcBookMarc.getNlcMarcId());
-                                try {
-                                    apabiBookMetaDataDao.update(apabiBookMetaData);
-                                    LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的nlibraryId为：" + apabiBookMetaData.getNlibraryId());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else if (apabiBookMetaDataList.size() > 1) {
-                            // 匹配了多个
-                            for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
-                                ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher = new ApabiBookMetaNlcMatcher();
-                                apabiBookMetaNlcMatcher.setIsbn10(isbn);
-                                apabiBookMetaNlcMatcher.setMetaId(apabiBookMetaData.getMetaId());
-                                apabiBookMetaNlcMatcher.setApabiAuthor(apabiBookMetaData.getCreator());
-                                apabiBookMetaNlcMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
-                                apabiBookMetaNlcMatcher.setApabiTitle(apabiBookMetaData.getTitle());
-                                apabiBookMetaNlcMatcher.setNlcMarcId(nlcBookMarc.getNlcMarcId());
-                                apabiBookMetaNlcMatcher.setNlcMarcAuthor(nlcBookMarc.getAuthor());
-                                apabiBookMetaNlcMatcher.setNlcMarcPublisher(nlcBookMarc.getPublisher());
-                                apabiBookMetaNlcMatcher.setNlcMarcTitle(nlcBookMarc.getTitle());
-                                apabiBookMetaNlcMatcherDao.insert(apabiBookMetaNlcMatcher);
+                List<ApabiBookMetaData> apabiBookMetaDataListByIsbn = apabiBookMetaDataDao.findByIsbn(isbn);
+                // 根据ISBN查询
+                if (apabiBookMetaDataListByIsbn != null && apabiBookMetaDataListByIsbn.size() > 0) {
+                    if (apabiBookMetaDataListByIsbn.size() == 1) {
+                        // 匹配了一个
+                        ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataListByIsbn.get(0);
+                        if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
+                            apabiBookMetaData.setNlibraryId(nlcBookMarc.getNlcMarcId());
+                            try {
+                                apabiBookMetaDataDao.update(apabiBookMetaData);
+                                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的nlibraryId为：" + apabiBookMetaData.getNlibraryId());
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
+                    } else {
+                        // 匹配了多个
+                        for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataListByIsbn) {
+                            ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher = new ApabiBookMetaNlcMatcher();
+                            apabiBookMetaNlcMatcher.setIsbn10(isbn);
+                            apabiBookMetaNlcMatcher.setMetaId(apabiBookMetaData.getMetaId());
+                            apabiBookMetaNlcMatcher.setApabiAuthor(apabiBookMetaData.getCreator());
+                            apabiBookMetaNlcMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
+                            apabiBookMetaNlcMatcher.setApabiTitle(apabiBookMetaData.getTitle());
+                            apabiBookMetaNlcMatcher.setNlcMarcId(nlcBookMarc.getNlcMarcId());
+                            apabiBookMetaNlcMatcher.setNlcMarcAuthor(nlcBookMarc.getAuthor());
+                            apabiBookMetaNlcMatcher.setNlcMarcPublisher(nlcBookMarc.getPublisher());
+                            apabiBookMetaNlcMatcher.setNlcMarcTitle(nlcBookMarc.getTitle());
+                            apabiBookMetaNlcMatcherDao.insert(apabiBookMetaNlcMatcher);
+                        }
                     }
-                } else if (isbn.length() == 13) {
-                    List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn13(isbn);
-                    if (apabiBookMetaDataList != null) {
-                        if (apabiBookMetaDataList.size() == 1) {
-                            // 匹配了一个
-                            // 匹配了一个
-                            ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
-                            if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
-                                apabiBookMetaData.setNlibraryId(nlcBookMarc.getNlcMarcId());
-                                try {
-                                    apabiBookMetaDataDao.update(apabiBookMetaData);
-                                    LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的nlibraryId为：" + apabiBookMetaData.getNlibraryId());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                } else {
+                    // 如果根据ISBN查询不到，则按照ISBN10或者ISBN13查询
+                    isbn = isbn.replaceAll("-", "");
+                    if (isbn.length() == 10) {
+                        List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn10(isbn);
+                        if (apabiBookMetaDataList != null) {
+                            if (apabiBookMetaDataList.size() == 1) {
+                                // 匹配了一个
+                                ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
+                                if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
+                                    apabiBookMetaData.setNlibraryId(nlcBookMarc.getNlcMarcId());
+                                    try {
+                                        apabiBookMetaDataDao.update(apabiBookMetaData);
+                                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的nlibraryId为：" + apabiBookMetaData.getNlibraryId());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } else if (apabiBookMetaDataList.size() > 1) {
+                                // 匹配了多个
+                                for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
+                                    ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher = new ApabiBookMetaNlcMatcher();
+                                    apabiBookMetaNlcMatcher.setIsbn10(isbn);
+                                    apabiBookMetaNlcMatcher.setMetaId(apabiBookMetaData.getMetaId());
+                                    apabiBookMetaNlcMatcher.setApabiAuthor(apabiBookMetaData.getCreator());
+                                    apabiBookMetaNlcMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
+                                    apabiBookMetaNlcMatcher.setApabiTitle(apabiBookMetaData.getTitle());
+                                    apabiBookMetaNlcMatcher.setNlcMarcId(nlcBookMarc.getNlcMarcId());
+                                    apabiBookMetaNlcMatcher.setNlcMarcAuthor(nlcBookMarc.getAuthor());
+                                    apabiBookMetaNlcMatcher.setNlcMarcPublisher(nlcBookMarc.getPublisher());
+                                    apabiBookMetaNlcMatcher.setNlcMarcTitle(nlcBookMarc.getTitle());
+                                    apabiBookMetaNlcMatcherDao.insert(apabiBookMetaNlcMatcher);
                                 }
                             }
-                        } else if (apabiBookMetaDataList.size() > 1) {
-                            // 匹配了多个
-                            for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
-                                ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher = new ApabiBookMetaNlcMatcher();
-                                apabiBookMetaNlcMatcher.setIsbn13(isbn);
-                                apabiBookMetaNlcMatcher.setMetaId(apabiBookMetaData.getMetaId());
-                                apabiBookMetaNlcMatcher.setApabiAuthor(apabiBookMetaData.getCreator());
-                                apabiBookMetaNlcMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
-                                apabiBookMetaNlcMatcher.setApabiTitle(apabiBookMetaData.getTitle());
-                                apabiBookMetaNlcMatcher.setNlcMarcId(nlcBookMarc.getNlcMarcId());
-                                apabiBookMetaNlcMatcher.setNlcMarcAuthor(nlcBookMarc.getAuthor());
-                                apabiBookMetaNlcMatcher.setNlcMarcPublisher(nlcBookMarc.getPublisher());
-                                apabiBookMetaNlcMatcher.setNlcMarcTitle(nlcBookMarc.getTitle());
-                                apabiBookMetaNlcMatcherDao.insert(apabiBookMetaNlcMatcher);
+                        }
+                    } else if (isbn.length() == 13) {
+                        List<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findByIsbn13(isbn);
+                        if (apabiBookMetaDataList != null) {
+                            if (apabiBookMetaDataList.size() == 1) {
+                                // 匹配了一个
+                                ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
+                                if (StringUtils.isEmpty(apabiBookMetaData.getNlibraryId())) {
+                                    apabiBookMetaData.setNlibraryId(nlcBookMarc.getNlcMarcId());
+                                    try {
+                                        apabiBookMetaDataDao.update(apabiBookMetaData);
+                                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  根据" + isbn + "更新meta表数据：" + apabiBookMetaData.getMetaId() + "的nlibraryId为：" + apabiBookMetaData.getNlibraryId());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } else if (apabiBookMetaDataList.size() > 1) {
+                                // 匹配了多个
+                                for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
+                                    ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher = new ApabiBookMetaNlcMatcher();
+                                    apabiBookMetaNlcMatcher.setIsbn13(isbn);
+                                    apabiBookMetaNlcMatcher.setMetaId(apabiBookMetaData.getMetaId());
+                                    apabiBookMetaNlcMatcher.setApabiAuthor(apabiBookMetaData.getCreator());
+                                    apabiBookMetaNlcMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
+                                    apabiBookMetaNlcMatcher.setApabiTitle(apabiBookMetaData.getTitle());
+                                    apabiBookMetaNlcMatcher.setNlcMarcId(nlcBookMarc.getNlcMarcId());
+                                    apabiBookMetaNlcMatcher.setNlcMarcAuthor(nlcBookMarc.getAuthor());
+                                    apabiBookMetaNlcMatcher.setNlcMarcPublisher(nlcBookMarc.getPublisher());
+                                    apabiBookMetaNlcMatcher.setNlcMarcTitle(nlcBookMarc.getTitle());
+                                    apabiBookMetaNlcMatcherDao.insert(apabiBookMetaNlcMatcher);
+                                }
                             }
                         }
                     }

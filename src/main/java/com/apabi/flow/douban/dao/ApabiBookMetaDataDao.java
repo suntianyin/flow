@@ -23,14 +23,20 @@ public interface ApabiBookMetaDataDao {
     Page<String> findIsbnByPageWithoutCrawledNlc();
     Page<ApabiBookMetaData> findApabiBookMetaDataWithDoubanId();
     Page<ApabiBookMetaData> findApabiBookMetaDataWithNlibraryId();
+    Page<ApabiBookMetaData> findHasNLibraryIdAndShouldClean();
     int countHasDoubanId();
     int countHasNLibraryId();
     void updateNlcMarcId(@Param("nlibraryId") String nlibraryId,@Param("isbn") String isbn);
     int findIsbnCount();
+    int countHasNLibraryIdAndShouldClean();
     List<ApabiBookMetaData> findByIsbn13(String isbn13);
     List<ApabiBookMetaData> findByIsbn10(String isbn10);
+    List<ApabiBookMetaData> findByIsbn(String isbn);
     List<String> findIsbn13WithoutDoubanId();
     List<String> findIsbn10WithoutDoubanId();
     List<String> findIsbn13WithoutNlibraryId();
     List<String> findIsbn10WithoutNlibraryId();
+    int countWithoutClean();
+    Page<ApabiBookMetaData> findShouldCleanByPage();
+    void updateHasCleaned(String metaId);
 }

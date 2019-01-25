@@ -41,11 +41,12 @@ public class AmazonConsumer implements Runnable {
             ip = host.split(":")[0];
             port = host.split(":")[1];
             id = idQueue.take();
-            amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
-            try {
-                amazonMetaDao.insert(amazonMeta);
+            AmazonMeta result = amazonMetaDao.findById(amazonMeta.getAmazonId());
+            if (result == null) {
+                amazonMeta = CrawlAmazonUtils.crawlAmazonMetaById(id, ip, port);
                 LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
-            } catch (Exception e) {
+                amazonMetaDao.insert(amazonMeta);
+            } else {
                 LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在amazon抓取" + id + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (Exception e) {

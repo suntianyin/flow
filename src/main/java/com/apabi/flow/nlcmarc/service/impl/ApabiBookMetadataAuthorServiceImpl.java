@@ -88,7 +88,6 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     String[] split = fieldContent.split("\\$\\$");
                     nlcMarcIdentifier = split[1];
                 }
-
                 /*// 解析ISBN，并获取metaId
                 if (fieldContent.startsWith("010$$")) {
                     isbn = parseFieldContent(fieldContent, "a").replaceAll("-", "");
@@ -102,7 +101,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     }
                 }*/
 
-                // 当以701开头时，解析作者信息
+                // 当以701开头时，解析主要责任者的作者信息
                 if (fieldContent.startsWith("701$$")) {
                     ApabiBookMetadataAuthor apabiBookMetadataAuthor = new ApabiBookMetadataAuthor();
                     // 设置id
@@ -154,7 +153,7 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthorList.add(apabiBookMetadataAuthor);
                 }
 
-                // 当以702开头时，解析作者信息
+                // 当以702开头时，解析次要责任者的作者信息
                 if (fieldContent.startsWith("702$$")) {
                     ApabiBookMetadataAuthor apabiBookMetadataAuthor = new ApabiBookMetadataAuthor();
                     // 设置id
@@ -205,8 +204,8 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthor.setCreateTime(new Date());
                     apabiBookMetadataAuthorList.add(apabiBookMetadataAuthor);
                 }
-                // 当以710开头时，解析团体信息
-                if (fieldContent.startsWith("710$$")) {
+                // 当以711开头时，解析主要责任者的团体信息
+                if (fieldContent.startsWith("711$$")) {
                     ApabiBookMetadataAuthor apabiBookMetadataAuthor = new ApabiBookMetadataAuthor();
                     // 设置id
                     apabiBookMetadataAuthor.setId(UUIDCreater.nextId());
@@ -245,7 +244,58 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     }
                     apabiBookMetadataAuthor.setPeriod(period);
                     // 设置类型
-                    apabiBookMetadataAuthor.setType("1");
+                    apabiBookMetadataAuthor.setType("2");
+                    // 设置操作人
+                    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    String username = userDetails.getUsername();
+                    apabiBookMetadataAuthor.setOperator(username);
+                    // 设置更新时间
+                    apabiBookMetadataAuthor.setUpdateTime(new Date());
+                    // 设置创建时间
+                    apabiBookMetadataAuthor.setCreateTime(new Date());
+                    apabiBookMetadataAuthorList.add(apabiBookMetadataAuthor);
+                }
+                // 当以712开头时，解析次要责任者的团体信息
+                if (fieldContent.startsWith("712$$")) {
+                    ApabiBookMetadataAuthor apabiBookMetadataAuthor = new ApabiBookMetadataAuthor();
+                    // 设置id
+                    apabiBookMetadataAuthor.setId(UUIDCreater.nextId());
+                    // 设置国图marc信息
+                    apabiBookMetadataAuthor.setNlcMarcIdentifier(nlcMarcIdentifier);
+                    // 设置图书id
+                    apabiBookMetadataAuthor.setMetaId(metaId);
+                    // 优先级+1
+                    priority++;
+                    apabiBookMetadataAuthor.setPriority(String.valueOf(priority));
+                    // 解析责任者类型
+                    String authorType = parseFieldContent(fieldContent, "4");
+                    apabiBookMetadataAuthor.setAuthorType(authorType);
+                    // 解析责任者名称
+                    String name = parseFieldContent(fieldContent, "a");
+                    name = name.replaceAll(",", "").replaceAll("，", "");
+                    apabiBookMetadataAuthor.setName(name);
+                    // 解析责任者名称拼音
+                    String pinyin = parseFieldContent(fieldContent, "9");
+                    apabiBookMetadataAuthor.setPinyin(pinyin);
+                    // 解析责任者原名
+                    String originalName = parseFieldContent(fieldContent, "g");
+                    originalName = originalName.replaceAll("\\(", "").replaceAll("\\)", "").replaceAll("（", "").replaceAll("）", "");
+                    apabiBookMetadataAuthor.setOriginalName(originalName);
+                    // 解析附加信息
+                    String addition = parseFieldContent_701c(fieldContent);
+                    apabiBookMetadataAuthor.setAddition(addition);
+                    // 解析年代
+                    String period = parseFieldContent(fieldContent, "f");
+                    // 清洗年代中的括号
+                    if (period.contains("(")) {
+                        period = period.replaceAll("\\(", "");
+                    }
+                    if (period.contains(")")) {
+                        period = period.replaceAll("\\)", "");
+                    }
+                    apabiBookMetadataAuthor.setPeriod(period);
+                    // 设置类型
+                    apabiBookMetadataAuthor.setType("2");
                     // 设置操作人
                     UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                     String username = userDetails.getUsername();
@@ -257,10 +307,19 @@ public class ApabiBookMetadataAuthorServiceImpl implements ApabiBookMetadataAuth
                     apabiBookMetadataAuthorList.add(apabiBookMetadataAuthor);
                 }
             }
-            log.info(nlcBookContent + "处理作者信息成功...");
+            //log.info(nlcBookContent + "处理作者信息成功...");
         } catch (Exception e) {
             e.printStackTrace();
             log.error(nlcBookContent + "处理作者信息失败...原因为" + e.getMessage());
+        }
+        return apabiBookMetadataAuthorList;
+    }
+
+    @Override
+    public List<ApabiBookMetadataAuthor> findByNlcMarcIdentifier(String nlcMarcIdentifier) {
+        List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorList = null;
+        if(StringUtils.isNotEmpty(nlcMarcIdentifier)){
+            apabiBookMetadataAuthorList = apabiBookMetadataAuthorDao.findByNlcMarcIdentifier(nlcMarcIdentifier);
         }
         return apabiBookMetadataAuthorList;
     }

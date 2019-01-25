@@ -1,6 +1,7 @@
 package com.apabi.flow.dangdang.dao;
 
 import com.apabi.flow.dangdang.model.DangdangMetadata;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,8 @@ public interface DangdangMetadataDao {
     DangdangMetadata findById(String pid);
 
     int update(DangdangMetadata dangdangMetadata);
+
+    Page<DangdangMetadata> findByPage();
+
+    int count();
 }

@@ -4,12 +4,14 @@ import com.apabi.flow.nlcmarc.dao.ApabiBookMetadataTitleDao;
 import com.apabi.flow.nlcmarc.model.ApabiBookMetadataTitle;
 import com.apabi.flow.nlcmarc.service.ApabiBookMetadataTitleService;
 import com.apabi.flow.nlcmarc.util.ParseMarcTitleUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @Author pipi
@@ -37,16 +39,20 @@ public class ApabiBookMetadataTitleServiceImpl implements ApabiBookMetadataTitle
     }
 
     @Override
-    public ApabiBookMetadataTitle parseTitle(String info) {
+    public ApabiBookMetadataTitle parseTitle(String info) throws IOException {
         ApabiBookMetadataTitle apabiBookMetadataTitle = null;
-        try {
+        if (StringUtils.isNotEmpty(info)) {
             apabiBookMetadataTitle = ParseMarcTitleUtil.parseMarcTitle(info);
-            logger.info(apabiBookMetadataTitle + "处理题名信息成功...");
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error(apabiBookMetadataTitle + "处理题名信息失败...原因为：" + e.getMessage());
         }
         return apabiBookMetadataTitle;
     }
 
+    @Override
+    public List<ApabiBookMetadataTitle> findByNlcMarcIdentifier(String nlcMarcIdentifier) {
+        List<ApabiBookMetadataTitle> apabiBookMetadataTitleList = null;
+        if(StringUtils.isNotEmpty(nlcMarcIdentifier)){
+            apabiBookMetadataTitleList = apabiBookMetadataTitleDao.findByNlcMarcIdentifier(nlcMarcIdentifier);
+        }
+        return apabiBookMetadataTitleList;
+    }
 }

@@ -15,6 +15,13 @@
       PID, TITLE, ISBN13, ISBN10, CLASSIFICATION, CREATE_TIME, UPDATE_TIME
     </sql>
 
+    <!-- 分页查询数据 -->
+    <select id="findByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from DANGDANG_METADATA
+    </select>
+
     <!-- 根据id查询数据 -->
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select

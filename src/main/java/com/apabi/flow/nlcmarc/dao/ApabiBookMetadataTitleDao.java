@@ -4,6 +4,8 @@ import com.apabi.flow.nlcmarc.model.ApabiBookMetadataTitle;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by pipi on 2018/10/10.
  */
@@ -14,4 +16,5 @@ public interface ApabiBookMetadataTitleDao {
     void delete(String id);
     void insert(ApabiBookMetadataTitle apabiBookMetadataTitle);
     void update(ApabiBookMetadataTitle apabiBookMetadataTitle);
+    List<ApabiBookMetadataTitle> findByNlcMarcIdentifier(String nlcMarcIdentifier);
 }

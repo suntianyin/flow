@@ -626,6 +626,74 @@
         <appender-ref ref="JD_ISBN13_META"/>
     </logger>
 
+    <!-- 根据dangdang中的isbn抓取douban -->
+    <appender name="ISBN_DANGDANG_DOUBAN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/isbn_dangdang_douban.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根据dangdang中的isbn抓取douban -->
+    <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlDoubanConsumer" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ISBN_DANGDANG_DOUBAN"/>
+    </logger>
+
+    <!-- 根据dangdang中的isbn抓取amazon -->
+    <appender name="ISBN_DANGDANG_AMAZON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/isbn_dangdang_amazon.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根据dangdang中的isbn抓取amazon -->
+    <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlAmazonConsumer" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ISBN_DANGDANG_AMAZON"/>
+    </logger>
+
+    <!-- 根据dangdang中的isbn抓取nlc -->
+    <appender name="ISBN_DANGDANG_NLC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/crawlTask/isbn_dangdang_nlc.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根据dangdang中的isbn抓取nlc -->
+    <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlNlcConsumer" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ISBN_DANGDANG_NLC"/>
+    </logger>
 
     <!--从书苑获取图书数据，新增到流式图书库中-->
     <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">

@@ -92,6 +92,7 @@
         <result column="HASPUBLISH" jdbcType="DECIMAL" property="hasPublish"/>
         <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
         <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
+        <result column="HASCLEAN" jdbcType="VARCHAR" property="hasClean"/>
         <result column="AUTHORINTRO" jdbcType="CLOB" property="authorIntro"/>
         <result column="ABSTRACT" jdbcType="CLOB" property="abstract_"/>
         <result column="PREFACE" jdbcType="CLOB" property="preface"/>
@@ -113,8 +114,30 @@
         IMGWIDTH, COVOBJID, THUMIMGURL, THUMIMGSIZE, MEDIUMCOVER, HASFLOW, ISOPTIMIZE, DONOR,
         LIBRARYID, BOOKID, STYLECLASS, CHAPTERNUM, BOOKPAGES, TAGS, CREATETIME, UPDATETIME,
         CONTENTNUM, FOAMATCATALOG, STREAMCATALOG, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,
-        AUTHORINTRO, ABSTRACT, PREFACE, STYLEURL, POSTSCRIPT,HASPROCESSINGFILE
+        AUTHORINTRO, ABSTRACT, PREFACE, STYLEURL, POSTSCRIPT,HASPROCESSINGFILE,HASCLEAN
     </sql>
+
+    <!-- 统计有nlibraryid且需要清洗的数据数量 -->
+    <select id="countHasNLibraryIdAndShouldClean" resultType="java.lang.Integer">
+        select
+        count(*)
+        from APABI_BOOK_METADATA
+        where nlibraryid is not null
+        and hascebx = '1'
+        and salestatus = '1'
+        and hasClean = '0'
+    </select>
+
+    <!-- 查询有有nlibraryid且需要清洗的数据 -->
+    <select id="findHasNLibraryIdAndShouldClean" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA
+        where nlibraryid is not null
+        and hascebx = '1'
+        and salestatus = '1'
+        and hasClean = '0'
+    </select>
 
     <!-- 统计有doubanId数据的个数 -->
     <select id="countHasDoubanId" resultType="java.lang.Integer">
@@ -154,6 +177,14 @@
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA
         where ISBN10 = #{isbn10,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据isbn查询数据 -->
+    <select id="findByIsbn" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA
+        where ISBN = #{isbn,jdbcType=VARCHAR}
     </select>
 
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -472,6 +503,9 @@
             <if test="hasProcessingFile != null">
                 HASPROCESSINGFILE,
             </if>
+            <if test="hasClean != null">
+                HASCLEAN,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="metaId != null">
@@ -761,6 +795,9 @@
             </if>
             <if test="hasProcessingFile != null">
                 #{hasProcessingFile,jdbcType=INTEGER},
+            </if>
+            <if test="hasClean != null">
+                #{hasClean,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -1053,12 +1090,20 @@
             <if test="hasProcessingFile != null">
                 HASPROCESSINGFILE = #{hasProcessingFile,jdbcType=INTEGER},
             </if>
+            <if test="hasClean != null">
+                HASCLEAN = #{hasClean,jdbcType=VARCHAR},
+            </if>
         </set>
         where METAID = #{metaId,jdbcType=VARCHAR}
     </update>
 
     <update id="updateNlcMarcId" parameterType="java.lang.String">
         update apabi_book_metadata set NLIBRARYID = #{nlibraryId} where isbn = #{isbn}
+    </update>
+
+    <!-- 更新为已清洗 -->
+    <update id="updateHasCleaned" parameterType="java.lang.String">
+        update apabi_book_metadata set hasClean = '1' where metaid = #{metaId}
     </update>
 
     <select id="findIsbn13WithoutDoubanId" resultType="java.lang.String">
@@ -1081,6 +1126,20 @@
         select
         <include refid="Base_Column_List"/>
         from apabi_book_metadata where nlibraryid is not null
+    </select>
+
+    <select id="countWithoutClean" resultType="java.lang.Integer">
+        select
+        count(*)
+        from apabi_book_metadata
+        where hasClean = '0' or hasClean is null
+    </select>
+
+    <select id="findShouldCleanByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from apabi_book_metadata
+        where hasClean = '0' or hasClean is null
     </select>
 
 </mapper>

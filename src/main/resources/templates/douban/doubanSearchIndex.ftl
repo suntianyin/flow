@@ -47,16 +47,15 @@
                     + "&isbnVal=" + isbnVal;
         }
 
+        var index = 250;
         //douban元数据查看
         function btn_detail(doubanId) {
-            loading();
-            window.location.href = "doubanDetail?doubanId=" + doubanId;
+            AddTabMenu2('R' + index, '${ctx}/douban/doubanDetail?doubanId=' + doubanId, doubanId, 'true');
+            index++;
         }
 
         //douban元数据编辑
         // 标记tag标签的id，保证不同tag的id不一样
-        var index = 250;
-
         function btn_edit(doubanId) {
             AddTabMenu2('R' + index, '${ctx}/douban/doubanEdit?doubanId=' + doubanId, doubanId, 'true');
             index++;

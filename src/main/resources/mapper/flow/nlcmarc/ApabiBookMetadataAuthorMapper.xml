@@ -43,6 +43,23 @@
         TRAAUTHORTYPE
     </sql>
 
+    <!-- 根据nlcMarcIdentifier查询,并以priority排序 -->
+    <select id="findByNlcMarcIdentifier" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA_AUTHOR
+        where NLCMARCIDENTIFIER = #{nlcMarcIdentifier,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据nlcMarcIdentifier查询,并以priority排序 -->
+    <select id="findByNlcMarcIdentifierOrderByPriority" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_METADATA_AUTHOR
+        where NLCMARCIDENTIFIER = #{nlcMarcIdentifier,jdbcType=VARCHAR}
+        order by priority asc
+    </select>
+
     <!-- 根据id查询数据 -->
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select

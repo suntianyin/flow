@@ -32,10 +32,19 @@ public class ApabiBookMetadataAuthorController {
         for (int i = 1; i <= pageNum; i++) {
             PageHelper.startPage(i, pageSize);
             Page<NlcBookMarc> page = nlcBookMarcService.findByPage();
-            for(NlcBookMarc nlcBookMarc:page){
-                List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorList = apabiBookMetadataAuthorService.parseAuthor(nlcBookMarc.getIsoContent());
-                for(ApabiBookMetadataAuthor apabiBookMetadataAuthor:apabiBookMetadataAuthorList){
-                    apabiBookMetadataAuthorService.insert(apabiBookMetadataAuthor);
+            for (NlcBookMarc nlcBookMarc : page) {
+                try {
+                    String nlcMarcId = nlcBookMarc.getNlcMarcId();
+                    List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorList = apabiBookMetadataAuthorService.findByNlcMarcIdentifier(nlcMarcId);
+                    if (apabiBookMetadataAuthorList == null || apabiBookMetadataAuthorList.size() == 0) {
+                        List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorResultList = apabiBookMetadataAuthorService.parseAuthor(nlcBookMarc.getIsoContent());
+                        for (ApabiBookMetadataAuthor apabiBookMetadataAuthor : apabiBookMetadataAuthorResultList) {
+                            apabiBookMetadataAuthorService.insert(apabiBookMetadataAuthor);
+                            //System.out.println(apabiBookMetadataAuthor);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }

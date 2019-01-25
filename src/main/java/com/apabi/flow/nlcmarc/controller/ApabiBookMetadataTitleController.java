@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 /**
  * @Author pipi
  * @Date 2018/10/10 13:34
@@ -35,19 +37,18 @@ public class ApabiBookMetadataTitleController {
         int pageNum = (nlcBookMarcTotalCount / pageSize) + 1;
         for (int i = 1; i <= pageNum; i++) {
             PageHelper.startPage(i, pageSize);
-            Page<NlcBookMarc> nlcBookMarcPage = null;
-            try {
-                nlcBookMarcPage = nlcBookMarcService.findByPage();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Page<NlcBookMarc> nlcBookMarcPage = nlcBookMarcService.findByPage();
             for (NlcBookMarc nlcBookMarc : nlcBookMarcPage) {
-                String isoInfo = nlcBookMarc.getIsoContent();
-                ApabiBookMetadataTitle apabiBookMetadataTitle = null;
                 try {
-                    apabiBookMetadataTitle = apabiBookMetadataTitleService.parseTitle(isoInfo);
-                    apabiBookMetadataTitleService.insert(apabiBookMetadataTitle);
-                    logger.info(apabiBookMetadataTitle+"插入成功");
+                    String nlcMarcIdentifier = nlcBookMarc.getNlcMarcId();
+                    List<ApabiBookMetadataTitle> apabiBookMetadataTitleList = apabiBookMetadataTitleService.findByNlcMarcIdentifier(nlcMarcIdentifier);
+                    if (apabiBookMetadataTitleList == null || apabiBookMetadataTitleList.size() == 0) {
+                        ApabiBookMetadataTitle apabiBookMetadataTitle = apabiBookMetadataTitleService.parseTitle(nlcBookMarc.getIsoContent());
+                        /*if (StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolumeTitle()) || StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolume500Title()) || StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolume200Title()) || StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolume200())) {
+                            System.out.println(apabiBookMetadataTitle);
+                        }*/
+                        apabiBookMetadataTitleService.insert(apabiBookMetadataTitle);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
