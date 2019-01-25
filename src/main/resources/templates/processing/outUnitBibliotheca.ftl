@@ -507,8 +507,8 @@
                                         <span style="color: #7c7c7c;">标引</span>
                                     </#if>
                                    <#if list.metaId??>
-                                        <a href="javascript:void(0);"
-                                           onclick="editBookMeta('${(list.metaId)!''}')">编辑图书元数据</a>
+                                       <a href="javascript:void(0);"
+                                          onclick="editBookMeta('${(list.metaId)!''}')">编辑图书元数据</a>
                                        <a href="javascript:void(0);"
                                           onclick="uploadCebxm('${(list.metaId)!''}')">上传CEBXM</a>
                                        <a href="javascript:void(0);"

@@ -14,7 +14,10 @@
         //                }
 
         $(function () {
-            var pathurl = "index?";
+            var id = $("#id").val().trim();
+            var title = $("#title").val().trim();
+            var relatePublisherID = $("#relatePublisherID").val().trim();
+            var pathurl = "index?id=" + id + "&title=" + title + "&relatePublisherID=" + relatePublisherID;
             var totalPages = ${pages?c};
             var currentPages = ${pageNum?c};
             jqPaging(pathurl, totalPages, currentPages);

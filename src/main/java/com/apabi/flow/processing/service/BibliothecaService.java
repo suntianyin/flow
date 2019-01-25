@@ -129,4 +129,10 @@ public interface BibliothecaService {
 
     //批量转换文件控制
     boolean ctlBatchConvert2Cebx(String dirPath, String batchId, String fileInfos);
+
+    //批量转换文件控制
+    boolean ctlBatchConvert(String dirPath, String batchId, String fileInfos);
+
+    //cebx文件解密
+    void decrypt(String dir, String metaId);
 }
