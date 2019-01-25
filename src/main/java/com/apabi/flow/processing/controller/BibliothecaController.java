@@ -40,10 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1025,5 +1023,54 @@ public class BibliothecaController {
             }
         }
         return "error";
+    }
+
+    //标引
+    @RequestMapping(value = "/editCebxmByCarbon")
+    public String editCebxmByCarbon(@RequestParam(value = "metaId") String metaId,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) {
+        if (StringUtils.isNotBlank(metaId)) {
+            try {
+                BookMeta bookMeta = bookMetaService.selectBookMetaDetailById(metaId);
+                if (bookMeta != null
+                        && StringUtils.isNotBlank(bookMeta.getIssuedDate())
+                        && bookMeta.getIssuedDate().length() == 10) {
+                    String issuedDate = bookMeta.getIssuedDate();
+                    String serverFilePath = config.getUploadCebx()
+                            + File.separator + issuedDate
+                            + File.separator + metaId + ".CEBXM";
+                    File serverFile = new File(serverFilePath);
+                    if (serverFile.exists()) {
+                        response.setContentType("text/html;charset=utf-8");
+                        response.setCharacterEncoding("utf-8");
+                        // 设置相应头，控制浏览器下载该文件，这里就是会出现当你点击下载后，出现的下载地址框
+                        response.setHeader("content-disposition",
+                                "attachment;filename=" + URLEncoder.encode(serverFile.getName(), "utf-8"));
+                        // 读取要下载的文件，保存到文件输入流
+                        FileInputStream in = new FileInputStream(serverFilePath);
+                        // 创建输出流
+                        OutputStream out = response.getOutputStream();
+                        // 创建缓冲区
+                        byte buffer[] = new byte[1024];
+                        int len = 0;
+                        // 循环将输入流中的内容读取到缓冲区中
+                        while ((len = in.read(buffer)) > 0) {
+                            // 输出缓冲区内容到浏览器，实现文件下载
+                            out.write(buffer, 0, len);
+                        }
+                        // 关闭文件流
+                        in.close();
+                        // 关闭输出流
+                        out.close();
+                    }
+                } else {
+                    return "processing/error";
+                }
+            } catch (Exception e) {
+                logger.warn("下载文件{}，时出现异常{}", metaId, e.getMessage());
+            }
+        }
+        return null;
     }
 }
