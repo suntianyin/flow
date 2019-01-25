@@ -1271,4 +1271,39 @@ public class BibliothecaServiceImpl implements BibliothecaService {
         }
         return fileList;
     }
+
+    //cebx文件解密
+    @Override
+    public void decrypt(String dir, String metaId) {
+        if (StringUtils.isNotBlank(dir)
+                && StringUtils.isNotBlank(metaId)) {
+            String cebxmPath = dir + File.separator + metaId + ".CEBXM";
+            String cebxPath = dir + File.separator + metaId + ".CEBX";
+            String cmd = config.getCebxCryptExe() +
+                    " -src " + cebxmPath +
+                    " -des " + cebxPath +
+                    " -mode decrypt";
+            new Thread(() -> {
+                //调用cmd
+                Runtime runtime = Runtime.getRuntime();
+                Process process;
+                try {
+                    long start = System.currentTimeMillis();
+                    logger.info("解密文件{}已开始", cebxmPath);
+                    process = runtime.exec(cmd);
+                    int ress = process.waitFor();
+                    if (ress == 0) {
+                        long end = System.currentTimeMillis();
+                        logger.info("解密文件：{}成功，耗时{}", cebxmPath, (end - start));
+                    } else {
+                        logger.warn("解密文件：{}失败", cebxmPath);
+                    }
+                } catch (IOException e) {
+                    logger.warn("解密文件：{}，时出现异常{}", cebxmPath, e.getMessage());
+                } catch (InterruptedException e) {
+                    logger.warn("解密文件：{}，时出现异常{}", cebxmPath, e.getMessage());
+                }
+            }).start();
+        }
+    }
 }

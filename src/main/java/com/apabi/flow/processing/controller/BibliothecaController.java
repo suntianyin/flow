@@ -873,7 +873,7 @@ public class BibliothecaController {
                                     @RequestParam(value = "batchId") String batchId,
                                     @RequestParam(value = "fileInfo") String fileInfo) {
         if (StringUtils.isNotBlank(dirPath) && StringUtils.isNotBlank(fileInfo)) {
-           // boolean res = bibliothecaService.ctlBatchConvert2Cebx(dirPath, batchId, fileInfo);
+            // boolean res = bibliothecaService.ctlBatchConvert2Cebx(dirPath, batchId, fileInfo);
             boolean res = bibliothecaService.ctlBatchConvert(dirPath, batchId, fileInfo);
             if (res == true) {
                 return "success";
@@ -967,6 +967,8 @@ public class BibliothecaController {
                 file.transferTo(newFile);
                 long end = System.currentTimeMillis();
                 logger.info(file.getOriginalFilename() + "图书上传成功！耗时：" + (end - start) + "毫秒");
+                //解密该cebxm文件
+                bibliothecaService.decrypt(dir.getPath(), metaId);
                 return "success";
             } catch (Exception e) {
                 logger.warn("上传图书{}，时出现异常{}", file.getOriginalFilename(), e.getMessage());
