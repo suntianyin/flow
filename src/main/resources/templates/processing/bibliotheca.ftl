@@ -260,6 +260,31 @@
             window.location.href = "${ctx}/processing/bibliotheca/indexing?id=" + id;
         }
 
+        //标引
+        function editCebxmByCarbon(metaId) {
+        window.location.href = "${ctx}/processing/bibliotheca/editCebxmByCarbon?metaId=" + metaId;
+            <#--var url = "${ctx}/processing/bibliotheca/editCebxmByCarbon?metaId=" + metaId;-->
+            <#--$.ajax({-->
+                <#--url: url,-->
+                <#--type: "get",-->
+                <#--dataType: "text",-->
+                <#--async: false,-->
+                <#--success: function (data) {-->
+                    <#--Loading(false);-->
+                    <#--if (data == "success") {-->
+                        <#--tipDialog("下载成功！", 3, 1);-->
+                    <#--} else {-->
+                        <#--tipDialog("下载失败！", 3, -1);-->
+                    <#--}-->
+                    <#--location.reload();-->
+                <#--},-->
+                <#--error: function (data) {-->
+                    <#--Loading(false);-->
+                    <#--alertDialog("下载失败！", -1);-->
+                <#--}-->
+            <#--});-->
+        }
+
     </script>
 </head>
 <body>
@@ -456,7 +481,7 @@
                             </#if>
                             <#if list.bibliothecaState??&&  list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
                                 <a href="javascript:void(0);"
-                                   onclick="indexing('${(list.id)!''}')">标引</a>
+                                   onclick="editCebxmByCarbon('${(list.metaId)!''}')">标引</a>
                             <#else>
                                 <span style="color: #7c7c7c;">标引</span>
                             </#if>
