@@ -1276,9 +1276,9 @@ public class BookController {
     @ResponseBody
     @RequestMapping("/getBookMetaIdsToChapter")
     public Object getBookMetaIdsToChapter(@RequestParam("metaIds") String metaIds) {
+        ResultEntity resultEntity = new ResultEntity();
         try {
             if (metaIds != null && metaIds != "") {
-                ResultEntity resultEntity = new ResultEntity();
                 String[] split = metaIds.split(",");
                 Set<String> hashSet = Arrays.stream(split).collect(Collectors.toSet());
                 int num = 0;
@@ -1295,7 +1295,9 @@ public class BookController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        resultEntity.setMsg("已重复上传失败");
+        resultEntity.setStatus(-1);
+        return resultEntity;
     }
 
     @PostMapping("/batch/import")
