@@ -87,6 +87,7 @@ public class GetBook4ShuyuanTask {
                             BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                             if (bookMeta != null) {
                                 bookMeta.setHasCebx(1);
+                                bookMeta.setSaleStatus(1);
                                 //查询该书在磐石是否存在，因为书苑存在同一个id，不同drid的情况
                                 int contBook = bookMetaDao.countBookMetaVoById(bookMeta.getMetaId());
                                 if (contBook > 0) {
@@ -95,6 +96,7 @@ public class GetBook4ShuyuanTask {
                                     //图书元数据temp表，同样更新
                                     ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                     metaDataTemp.setHasCebx(1);
+                                    metaDataTemp.setSaleStatus(1);
                                     apabiBookMetaDataTempDao.update(metaDataTemp);
                                 } else {
                                     int res = bookMetaDao.insertBookMeta(bookMeta);
@@ -102,6 +104,7 @@ public class GetBook4ShuyuanTask {
                                         ApabiBookMetaDataTemp metaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                         //新增到图书元数据temp表
                                         metaDataTemp.setHasCebx(1);
+                                        metaDataTemp.setSaleStatus(1);
                                         apabiBookMetaDataTempDao.insert(metaDataTemp);
                                         //获取书苑数据，更新到流式图书
                                         boolean ress = insertShuyuanData(sCmfMeta);
