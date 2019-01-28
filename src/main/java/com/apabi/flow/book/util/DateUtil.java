@@ -1,8 +1,11 @@
 package com.apabi.flow.book.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
 
 /**
  * @author guanpp
@@ -16,7 +19,7 @@ public class DateUtil {
     /**
      * 获取指定天数后的日期
      */
-    public static Date getDateAfterDays(Date date, int days){
+    public static Date getDateAfterDays(Date date, int days) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + days);
@@ -33,5 +36,22 @@ public class DateUtil {
         }
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(date);
+    }
+
+    //匹配出版社
+    public static String getPublishDate(String date) {
+        if (StringUtils.isNotBlank(date)) {
+            Matcher matcher = BookConstant.REG_PUBLISH_DATE.matcher(date);
+            if (matcher.find()) {
+                return matcher.group();
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        String date = "2019-01";
+        date = getPublishDate(date);
+        System.out.println("----" + date);
     }
 }

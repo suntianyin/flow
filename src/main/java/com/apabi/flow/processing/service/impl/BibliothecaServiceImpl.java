@@ -2,6 +2,8 @@ package com.apabi.flow.processing.service.impl;
 
 import com.apabi.flow.book.dao.BookMetaDao;
 import com.apabi.flow.book.model.BookMeta;
+import com.apabi.flow.book.model.BookMetaVo;
+import com.apabi.flow.book.util.DateUtil;
 import com.apabi.flow.common.UUIDCreater;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
@@ -1173,9 +1175,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 String[] fileAttr = new String[3];
                 String[] fileInfo = file.split(",");
                 fileMap.put(fileInfo[0], null);
+                String issueDate = DateUtil.getPublishDate(fileInfo[2]);
                 try {
                     fileAttr[0] = fileInfo[1];
-                    fileAttr[1] = fileInfo[2].substring(0, 10);
+                    //fileAttr[1] = fileInfo[2].substring(0, 10);
+                    //如果从CIP获取的出版日期，不符合规则，则从metaData表中获取
+                    if (StringUtils.isNotBlank(issueDate)) {
+                        fileAttr[1] = issueDate;
+                    } else {
+                        BookMetaVo bookMetaVo = bookMetaDao.findBookMetaVoById(fileInfo[3]);
+                        if (bookMetaVo != null) {
+                            fileAttr[1] = bookMetaVo.getPublishDate();
+                        }
+                    }
                     fileAttr[2] = fileInfo[3];
                     fileMap.put(fileInfo[0], fileAttr);
                 } catch (Exception e) {
@@ -1196,9 +1208,19 @@ public class BibliothecaServiceImpl implements BibliothecaService {
                 String[] fileAttr = new String[4];
                 String[] fileInfo = file.split(",");
                 fileMap.put(fileInfo[0], null);
+                String issueDate = DateUtil.getPublishDate(fileInfo[2]);
                 try {
                     fileAttr[0] = fileInfo[1];
-                    fileAttr[1] = fileInfo[2].substring(0, 10);
+                    //fileAttr[1] = fileInfo[2].substring(0, 10);
+                    //如果从CIP获取的出版日期，不符合规则，则从metaData表中获取
+                    if (StringUtils.isNotBlank(issueDate)) {
+                        fileAttr[1] = issueDate;
+                    } else {
+                        BookMetaVo bookMetaVo = bookMetaDao.findBookMetaVoById(fileInfo[3]);
+                        if (bookMetaVo != null) {
+                            fileAttr[1] = bookMetaVo.getPublishDate();
+                        }
+                    }
                     fileAttr[2] = fileInfo[3];
                     //如果新增成功，说明任务需要执行，否则说明任务已在队列中，不需要重复执行
                     boolean res = metaIdSet.add(fileAttr[2]);
@@ -1226,7 +1248,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             ArrayList<File> fileList = new ArrayList<>();
             ArrayList<File> files = getFiles(fileList, path);
             int cpuSum = Runtime.getRuntime().availableProcessors();
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(cpuSum*2, cpuSum*2, 200, TimeUnit.MILLISECONDS,
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(cpuSum * 2, cpuSum * 2, 200, TimeUnit.MILLISECONDS,
                     new ArrayBlockingQueue<Runnable>(files.size()));
 
             for (int i = 1; i <= files.size(); i++) {

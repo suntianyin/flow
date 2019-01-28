@@ -81,4 +81,7 @@ public class BookConstant {
 
     //公众号和qq正则（cebx的图片编码含有‘qq’字样）
     public static final Pattern DETECT_SOURCE = Pattern.compile("([\\s\\S]{0,10}(公众号|微信|微博|博客|网盘)[\\s\\S]{0,10})|([\\s\\S]{0,10}(?i:qq)((:|：| )?)[\\d]{5,11}[\\s\\S]{5,11})");
+
+    //日期格式匹配
+    public static final Pattern REG_PUBLISH_DATE = Pattern.compile("[0-9]{4}[-\\s]?[0-9]{2}[-\\s]?[0-9]{2}");
 }
