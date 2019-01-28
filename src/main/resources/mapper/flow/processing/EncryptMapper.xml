@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.processing.dao.EncryptMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.processing.model.Encrypt">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="TASK_NAME" jdbcType="VARCHAR" property="taskName" />
+    <result column="BATCH" jdbcType="VARCHAR" property="batch" />
+    <result column="ENCRYPT_NUM" jdbcType="DECIMAL" property="encryptNum" />
+    <result column="FINISH_NUM" jdbcType="DECIMAL" property="finishNum" />
+    <result column="TASK_STATE" jdbcType="DECIMAL" property="taskState"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.EncryptStateEnum"/>
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="FINISH_TIME" jdbcType="TIMESTAMP" property="finishTime" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, TASK_NAME, BATCH, ENCRYPT_NUM, FINISH_NUM, TASK_STATE, CREATE_TIME, FINISH_TIME, 
+    OPERATOR
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_ENCRYPT
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="pageFind"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_ENCRYPT
+  </select>
+  <select id="selectByBatch"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_ENCRYPT
+    where BATCH = #{batch,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PRO_ENCRYPT
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.processing.model.Encrypt">
+    insert into APABI_BOOK_PRO_ENCRYPT (ID, TASK_NAME, BATCH, 
+      ENCRYPT_NUM, FINISH_NUM, TASK_STATE, 
+      CREATE_TIME, FINISH_TIME, OPERATOR
+      )
+    values (#{id,jdbcType=VARCHAR}, #{taskName,jdbcType=VARCHAR}, #{batch,jdbcType=VARCHAR}, 
+      #{encryptNum,jdbcType=DECIMAL}, #{finishNum,jdbcType=DECIMAL}, #{taskState.code,jdbcType=DECIMAL},
+      #{createTime,jdbcType=TIMESTAMP}, #{finishTime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.processing.model.Encrypt">
+    insert into APABI_BOOK_PRO_ENCRYPT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="taskName != null">
+        TASK_NAME,
+      </if>
+      <if test="batch != null">
+        BATCH,
+      </if>
+      <if test="encryptNum != null">
+        ENCRYPT_NUM,
+      </if>
+      <if test="finishNum != null">
+        FINISH_NUM,
+      </if>
+      <if test="taskState != null">
+        TASK_STATE,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="finishTime != null">
+        FINISH_TIME,
+      </if>
+      <if test="operator != null">
+        OPERATOR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="taskName != null">
+        #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="batch != null">
+        #{batch,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptNum != null">
+        #{encryptNum,jdbcType=DECIMAL},
+      </if>
+      <if test="finishNum != null">
+        #{finishNum,jdbcType=DECIMAL},
+      </if>
+      <if test="taskState != null">
+        #{taskState,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishTime != null">
+        #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.processing.model.Encrypt">
+    update APABI_BOOK_PRO_ENCRYPT
+    <set>
+      <if test="taskName != null">
+        TASK_NAME = #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="batch != null">
+        BATCH = #{batch,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptNum != null">
+        ENCRYPT_NUM = #{encryptNum,jdbcType=DECIMAL},
+      </if>
+      <if test="finishNum != null">
+        FINISH_NUM = #{finishNum,jdbcType=DECIMAL},
+      </if>
+      <if test="taskState != null">
+        TASK_STATE = #{taskState,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishTime != null">
+        FINISH_TIME = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.processing.model.Encrypt">
+    update APABI_BOOK_PRO_ENCRYPT
+    set TASK_NAME = #{taskName,jdbcType=VARCHAR},
+      BATCH = #{batch,jdbcType=VARCHAR},
+      ENCRYPT_NUM = #{encryptNum,jdbcType=DECIMAL},
+      FINISH_NUM = #{finishNum,jdbcType=DECIMAL},
+      TASK_STATE = #{taskState,jdbcType=DECIMAL},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      FINISH_TIME = #{finishTime,jdbcType=TIMESTAMP},
+      OPERATOR = #{operator,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

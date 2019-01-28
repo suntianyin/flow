@@ -215,7 +215,43 @@
                 }
             });
         }
-
+        //加密
+        function encrypt(id,state,copyrightOwner){
+            if (state !=6) {
+                tipDialog("请确认当前批次已完成！", 3, -1);
+                return;
+            }
+            var note = "注：您确定要创建当前批次加密任务？";
+            var url = "${ctx}/processing/batch/encrypt?id=" + id+"&copyrightOwner="+copyrightOwner;
+            confirmDialog("温馨提示", note, function (r) {
+                if (r) {
+                    Loading(true, "正在提交数据...");
+                    window.setTimeout(function () {
+                        try {
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                contentType: "application/json;charset=utf-8",//缺失会出现URL编码，无法转成json对象
+                                async: false,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        tipDialog(data.msg, 3, 1);
+                                    } else {
+                                        tipDialog(data.msg, 3, -1);
+                                    }
+                                    location.reload();
+                                },
+                                error: function (data) {
+                                    Loading(false);
+                                    tipDialog("服务器异常！", 3, -1);
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    }, 200);
+                }
+            });
+        }
         // function auditBatch(id) {
         //     var url = "/processing/batch/auditBatch/index?id=" + id;
         //     openDialog(url, "auditBatch", "书单审核", 350, 150, function (iframe) {
@@ -391,15 +427,13 @@
                         <#--<a href="javascript:void(0);" onclick="auditBatch('${(list.id)!''}')">书单审核</a>-->
 
                         <#--<#if (list.batchState.getCode())<4 >-->
-                        <a
-                        href="javascript:void(0);" onclick="checkDuplication('${(list.id)!''}','${(list.batchId)!''}')">
+                        <a href="javascript:void(0);" onclick="checkDuplication('${(list.id)!''}','${(list.batchId)!''}')">
                                 查重</a>
                         <#--<#else>-->
                         <#--<span style="color: #7c7c7c;">查重</span>-->
                         <#--</#if>-->
-
-                        <a
-                        href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}','${(list.batchId)!''}')">排产</a>
+                        <a href="javascript:void(0);" onclick="updateBatchState('${(list.id)!''}','${(list.batchId)!''}')">排产</a>
+                        <a href="javascript:void(0);" onclick="encrypt('${(list.batchId)!''}','${(list.batchState.code)!''}','${(list.copyrightOwner)!'' }')">加密</a>
                             </td>
                             </tr>
                         </#list>

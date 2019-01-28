@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.processing.dao.EncryptResourceMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.processing.model.EncryptResource">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="ENCRYPT_ID" jdbcType="VARCHAR" property="encryptId" />
+    <result column="METAID" jdbcType="VARCHAR" property="metaid" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="AUTHOR" jdbcType="VARCHAR" property="author" />
+    <result column="PUBLISHER" jdbcType="VARCHAR" property="publisher" />
+    <result column="ISBN" jdbcType="VARCHAR" property="isbn" />
+    <result column="STATE" jdbcType="DECIMAL" property="state"
+            typeHandler="com.apabi.flow.common.UniversalEnumHandler"
+            javaType="com.apabi.flow.processing.constant.EncryptStateEnum"/>
+    <result column="FINISH_TIME" jdbcType="TIMESTAMP" property="finishTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, ENCRYPT_ID, METAID, TITLE, AUTHOR, PUBLISHER, ISBN, STATE, FINISH_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_EN_RE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByEncryptId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from APABI_BOOK_PRO_EN_RE
+    where ENCRYPT_ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_BOOK_PRO_EN_RE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.processing.model.EncryptResource">
+    insert into APABI_BOOK_PRO_EN_RE (ID, ENCRYPT_ID, METAID, 
+      TITLE, AUTHOR, PUBLISHER, 
+      ISBN, STATE, FINISH_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{encryptId,jdbcType=VARCHAR}, #{metaid,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, #{publisher,jdbcType=VARCHAR},
+      #{isbn,jdbcType=VARCHAR}, #{state.code,jdbcType=DECIMAL}, #{finishTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.processing.model.EncryptResource">
+    insert into APABI_BOOK_PRO_EN_RE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="encryptId != null">
+        ENCRYPT_ID,
+      </if>
+      <if test="metaid != null">
+        METAID,
+      </if>
+      <if test="title != null">
+        TITLE,
+      </if>
+      <if test="author != null">
+        AUTHOR,
+      </if>
+      <if test="publisher != null">
+        PUBLISHER,
+      </if>
+      <if test="isbn != null">
+        ISBN,
+      </if>
+      <if test="state != null">
+        STATE,
+      </if>
+      <if test="finishTime != null">
+        FINISH_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptId != null">
+        #{encryptId,jdbcType=VARCHAR},
+      </if>
+      <if test="metaid != null">
+        #{metaid,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null">
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn != null">
+        #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="finishTime != null">
+        #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.processing.model.EncryptResource">
+    update APABI_BOOK_PRO_EN_RE
+    <set>
+      <if test="encryptId != null">
+        ENCRYPT_ID = #{encryptId,jdbcType=VARCHAR},
+      </if>
+      <if test="metaid != null">
+        METAID = #{metaid,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null">
+        AUTHOR = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="publisher != null">
+        PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      </if>
+      <if test="isbn != null">
+        ISBN = #{isbn,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        STATE = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="finishTime != null">
+        FINISH_TIME = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.processing.model.EncryptResource">
+    update APABI_BOOK_PRO_EN_RE
+    set ENCRYPT_ID = #{encryptId,jdbcType=VARCHAR},
+      METAID = #{metaid,jdbcType=VARCHAR},
+      TITLE = #{title,jdbcType=VARCHAR},
+      AUTHOR = #{author,jdbcType=VARCHAR},
+      PUBLISHER = #{publisher,jdbcType=VARCHAR},
+      ISBN = #{isbn,jdbcType=VARCHAR},
+      STATE = #{state,jdbcType=DECIMAL},
+      FINISH_TIME = #{finishTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

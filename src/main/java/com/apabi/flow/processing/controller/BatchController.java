@@ -8,13 +8,9 @@ import com.apabi.flow.common.util.ParamsUtils;
 import com.apabi.flow.processing.constant.BatchStateEnum;
 import com.apabi.flow.processing.constant.BibliothecaStateEnum;
 import com.apabi.flow.processing.constant.DeleteFlagEnum;
-import com.apabi.flow.processing.dao.BibliothecaMapper;
-import com.apabi.flow.processing.dao.OutUnitMapper;
-import com.apabi.flow.processing.dao.UserUnitMapper;
-import com.apabi.flow.processing.model.Batch;
-import com.apabi.flow.processing.model.Bibliotheca;
-import com.apabi.flow.processing.model.OutUnit;
-import com.apabi.flow.processing.model.UserUnit;
+import com.apabi.flow.processing.constant.EncryptStateEnum;
+import com.apabi.flow.processing.dao.*;
+import com.apabi.flow.processing.model.*;
 import com.apabi.flow.processing.service.BatchService;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
@@ -29,9 +25,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -66,6 +65,12 @@ public class BatchController {
 
     @Autowired
     private CopyrightOwnerMapper copyrightOwnerMapper;
+
+    @Autowired
+    private EncryptMapper encryptMapper;
+
+    @Autowired
+    private EncryptResourceMapper encryptResourceMapper;
 
     /**
      * 批次展示页面
@@ -539,6 +544,59 @@ public class BatchController {
         Integer userId = authUserService.findUserIdByUserName(userDetails.getUsername());
 
         return userUnitMapper.selectByUserId(userId);
+    }
+    /**
+     * 加密
+     *
+     * @return
+     */
+    @GetMapping("/encrypt")
+    @ResponseBody
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public ResultEntity encrypt(@RequestParam("id") String batchId,@RequestParam("copyrightOwner")String copyrightOwner) {
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmm");
+        Map map=new HashMap();
+        map.put("batchId",batchId);
+        map.put("bibliothecaState",BibliothecaStateEnum.MAKESUC);
+        try {
+            Encrypt encrypt1 = encryptMapper.selectByBatch(batchId);
+            if(encrypt1!=null){
+                return new ResultEntity(500, "当前批次已创建加密任务，请核实后创建加密任务！");
+            }
+            List<Bibliotheca> bibliothecas = bibliothecaMapper.listBibliothecaSelective(map);
+            if(bibliothecas.size()<0){
+                logger.error("当前批次id:{}无制作完成书单，请核实后创建加密任务！", batchId);
+                return new ResultEntity(500, "当前批次无制作完成书单，请核实后创建加密任务！");
+            }else {
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                Encrypt encrypt=new Encrypt();
+                encrypt.setId(UUIDCreater.nextId());
+                encrypt.setBatch(batchId);
+                encrypt.setTaskName(copyrightOwner+simpleDateFormat.format(new Date()));
+                encrypt.setCreateTime(new Date());
+                encrypt.setOperator(userDetails.getUsername());
+                encrypt.setFinishNum(0);
+                encrypt.setEncryptNum(bibliothecas.size());
+                encrypt.setTaskState(EncryptStateEnum.UNBEGIN);
+                int insert = encryptMapper.insert(encrypt);
+                for (Bibliotheca b:bibliothecas) {
+                    EncryptResource encryptResource =new EncryptResource();
+                    encryptResource.setId(UUIDCreater.nextId());
+                    encryptResource.setEncryptId(encrypt.getId());
+                    encryptResource.setMetaid(b.getMetaId());
+                    encryptResource.setTitle(b.getTitle());
+                    encryptResource.setAuthor(b.getAuthor());
+                    encryptResource.setPublisher(b.getPublisherName());
+                    encryptResource.setIsbn(b.getIsbn());
+                    encryptResource.setState(EncryptStateEnum.UNBEGIN);
+                    int insert1 = encryptResourceMapper.insert(encryptResource);
+                }
+                return  new ResultEntity(200, "当前批次创建加密任务,任务名称:"+encrypt.getTaskName()+"！");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResultEntity(500, "当前批次有异常请联系管理员！");
+        }
     }
 
 }

@@ -81,17 +81,7 @@ public class MyTask implements Runnable {
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
             process.waitFor();
-//            BufferedReader bufferedReader = new BufferedReader(
-//                    new InputStreamReader(process.getInputStream(), "UTF-8"));
-//            String line;
-//            String res = "";
-//            while ((line = bufferedReader.readLine()) != null) {
-//                res += line;
-//            }
-//            logger.info("正在执行task " + i+"解析出xml:"+res);
-//            Thread.sleep(2000);
             SAXReader saxReader = new SAXReader();
-//            Document doc =saxReader.read(res);
             Document doc = saxReader.read(new File(target));
             Element root = doc.getRootElement();
             //判断exe生成xml是否成功
@@ -108,12 +98,18 @@ public class MyTask implements Runnable {
                 if (split.length != 2) {
                     split = ciptext.split("∕", 2);
                 }
+                if(split.length!=2){
+                    split = ciptext.split("⁄", 2);
+                }
                 title = replaceBlank(split[0]);
                 String[] split1 = split[1].split("[.]", 2);
                 author = replaceBlank(split1[0]);
                 String[] split2 = split1[1].split(":", 2);
                 if (split2.length != 2) {
                     split2 = split1[1].split("〯", 2);
+                }
+                if(split2.length!=2){
+                    split2 = split1[1].split("﹕", 2);
                 }
                 String[] split3 = split2[1].split(",", 2);
                 if (split3.length != 2) {
@@ -141,38 +137,11 @@ public class MyTask implements Runnable {
                 isbn=isbn.replace((char) 108, '1');
                 isbn=isbn.replace((char) 79, '0');
                 isbn=isbn.replace((char)19968,' ');
-                isbn=replaceBlank(isbn);
+                isbn=isbn.replace((char)45,' ');
+                isbn=getNumber(isbn);
                 if (!IsbnCheck.CheckISBN(isbn)) {
                     isbn = "";
                 }
-
-//                int i = textTrim.indexOf("图书在版编目(CIP)数据");
-//                String ciptext = textTrim.substring(i + 13);
-//                String[] split = ciptext.split("/", 2);
-//                title = replaceBlank(split[0]);
-//                String[] split1 = split[1].split("[.]", 2);
-//                author = replaceBlank(split1[0]);
-//                String[] split2 = split1[1].split(":", 2)[1].split(",", 2);
-//                publisherTitle = replaceBlank(split2[0]);
-//                String[] split3 = split2[1].split("ISBN", 2);
-//                String str=split3[0];
-//                int i1 = str.indexOf("(");
-//                if(i1>0) {
-//                    str = str.substring(0, i1);
-//                }
-//                publishTime = replaceBlank(str);
-//                if (StringUtils.isNotEmpty(publishTime)) {
-//                    publishTime = StringToolUtil.issuedDateFormat(publishTime);
-//                    if (publishTime.contains(" 00:00:00")) {
-//                        // 获取清洗后的issuedDate的值
-//                        publishTime = publishTime.replace(" 00:00:00", "");
-//                    }
-//                }
-//                String[] split4 = split3[1].split("[.]", 2);
-//                isbn = replaceBlank(split4[0].substring(0,split4[0].length()-1));
-//                if (!IsbnCheck.CheckISBN(isbn)) {
-//                    isbn = "";
-//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -292,6 +261,13 @@ public class MyTask implements Runnable {
         }
         String returnString = new String(c);
         return returnString;
+    }
+    //保留数字
+    private static String getNumber( String a) {
+        String regEx = "[^0-9]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(a);
+        return m.replaceAll("").trim();
     }
 }
 
