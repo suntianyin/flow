@@ -1647,18 +1647,23 @@ public class BookMetaServiceImpl implements BookMetaService {
                                     flag = true;
                                 }
                                 if (flag) {
-                                    bookMeta.setUpdateTime(new Date());
-                                    bookMetaDao.updateBookMetaById(bookMeta);
-                                    //temp表补充页码和目录
-                                    ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
-                                    temp.setMetaId(bookMeta.getMetaId());
-                                    temp.setCebxPage(bookMeta.getCebxPage());
-                                    temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
-                                    temp.setUpdateTime(new Date());
-                                    bookMetaDataTempDao.update(temp);
-                                    emailResult.setMessage("成功");
-                                    long end = System.currentTimeMillis();
-                                    log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
+                                    if (!StringUtils.isEmpty(bookMeta.getCebxPage())
+                                            &&!StringUtils.isEmpty(bookMeta.getFoamatCatalog())){
+                                        bookMeta.setUpdateTime(new Date());
+                                        bookMetaDao.updateBookMetaById(bookMeta);
+                                        //temp表补充页码和目录
+                                        ApabiBookMetaDataTemp temp = new ApabiBookMetaDataTemp();
+                                        temp.setMetaId(bookMeta.getMetaId());
+                                        temp.setCebxPage(bookMeta.getCebxPage());
+                                        temp.setFoamatCatalog(bookMeta.getFoamatCatalog());
+                                        temp.setUpdateTime(new Date());
+                                        bookMetaDataTempDao.update(temp);
+                                        emailResult.setMessage("成功");
+                                        long end = System.currentTimeMillis();
+                                        log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
+                                    }else {
+                                        emailResult.setMessage("失败");
+                                    }
                                 } else {
                                     emailResult.setMessage("目录和页码已存在");
                                 }
