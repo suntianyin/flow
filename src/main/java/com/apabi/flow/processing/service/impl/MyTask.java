@@ -22,10 +22,7 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,6 +77,49 @@ public class MyTask implements Runnable {
                     " -o " + "\"" + target + "\"";
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
+            // 处理InputStream的线程
+            new Thread() {
+                @Override
+                public void run() {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String line = null;
+
+                    try {
+                        while ((line = in.readLine()) != null) {
+                            //System.out.println("output: " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            in.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
+            new Thread() {
+                @Override
+                public void run() {
+                    BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    String line = null;
+
+                    try {
+                        while ((line = err.readLine()) != null) {
+                            System.out.println("err: " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            err.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
             process.waitFor();
             SAXReader saxReader = new SAXReader();
             Document doc = saxReader.read(new File(target));
