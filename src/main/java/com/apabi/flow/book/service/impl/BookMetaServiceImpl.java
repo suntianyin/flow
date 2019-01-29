@@ -1403,9 +1403,11 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 bookMeta = BookUtil.createBookMeta(sCmfMeta);
                                 //新增到磐石数据库
                                 bookMeta.setHasCebx(1);
+                                bookMeta.setSaleStatus(1);
                                 bookMetaDao.insertBookMeta(bookMeta);
                                 ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                 bookMetaDataTemp.setHasCebx(1);
+                                bookMetaDataTemp.setSaleStatus(1);
                                 bookMetaDataTempDao.insert(bookMetaDataTemp);
                                 //获取书苑数据，更新到流式图书
                                 boolean ress = insertShuyuanData(sCmfMeta);
@@ -1457,9 +1459,11 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 bookMeta = BookUtil.createBookMeta(sCmfMeta);
                                 //新增到磐石数据库
                                 bookMeta.setHasCebx(1);
+                                bookMeta.setSaleStatus(1);
                                 bookMetaDao.insertBookMeta(bookMeta);
                                 ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                 bookMetaDataTemp.setHasCebx(1);
+                                bookMetaDataTemp.setSaleStatus(1);
                                 bookMetaDataTempDao.insert(bookMetaDataTemp);
                                 //获取书苑数据，更新到流式图书
                                 boolean ress = insertShuyuanData(sCmfMeta);
@@ -1528,9 +1532,11 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 BookMeta bookMeta = BookUtil.createBookMeta(sCmfMeta);
                                 //新增到磐石数据库
                                 bookMeta.setHasCebx(1);
+                                bookMeta.setSaleStatus(1);
                                 bookMetaDao.insertBookMeta(bookMeta);
                                 ApabiBookMetaDataTemp bookMetaDataTemp = BookUtil.createBookMetaTemp(sCmfMeta);
                                 bookMetaDataTemp.setHasCebx(1);
+                                bookMetaDataTemp.setSaleStatus(1);
                                 bookMetaDataTempDao.insert(bookMetaDataTemp);
                                 //获取书苑数据，更新到流式图书
                                 boolean ress = insertShuyuanData(sCmfMeta);
@@ -1647,7 +1653,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                 }
                                 if (flag) {
                                     if (!StringUtils.isEmpty(bookMeta.getCebxPage())
-                                            &&!StringUtils.isEmpty(bookMeta.getFoamatCatalog())){
+                                            && !StringUtils.isEmpty(bookMeta.getFoamatCatalog())) {
                                         bookMeta.setUpdateTime(new Date());
                                         bookMetaDao.updateBookMetaById(bookMeta);
                                         //temp表补充页码和目录
@@ -1660,7 +1666,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                                         emailResult.setMessage("成功");
                                         long end = System.currentTimeMillis();
                                         log.info("获取图书{}的页码和目录，耗时{}毫秒", metaId, (end - start));
-                                    }else {
+                                    } else {
                                         emailResult.setMessage("失败");
                                     }
                                 } else {
