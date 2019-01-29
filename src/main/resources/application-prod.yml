@@ -2,7 +2,7 @@ ctx: http://flow.apabi.com/flowadmin
 cebxHtmlExe: D:\cebxTool\cebx2Html\Cebx2Html.exe
 cebxCryptExe: D:\cebxTool\cebxCrypt\CebxCryptConsole.exe
 cebxMaker: D:\cebxTool\MakerSDK
-copyRightExtractExe: D:\CopyRightExtract\1.0.0.3\CopyrightExtract.exe
+copyRightExtractExe: D:\CopyRightExtract\CopyrightExtract.exe
 CarbonExe: D:\Program Files (x86)\Founder\Apabi Carbon 2.2\Carbon.exe
 pdfDir: D:\
 targetCopyRightDir: D:\CopyRightExtract\target
