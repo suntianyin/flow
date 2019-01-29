@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 1) 一轮：当 apabi_book_metadata.creator != nlc_book_marc.author && apabi_book_metadata.title != nlc_book_marc.title 时，认为未匹配，
  * 将未匹配的数据写入到apabi_book_meta_nlc_checker表中。
  * 2) 二轮：对nlc_author和apabi_meta_title字段进行清洗，分别生成nlc_author_clean和apabi_meta_title_clean字段的值，
- * 当nlc_author_clean == apabi_meta_author && nlc_title == apabi_meta_title_clean 匹配成功时，删除数据(注意：由于分页原因，需要删除多次)
+ * 当nlc_author_clean == apabi_meta_author and nlc_title == apabi_meta_title_clean 匹配成功时，删除数据
  * 3) 三轮：将nlc_author_clean和apabi_meta_author中的特殊符号全部替换，并取nlc_author_clean和apabi_meta_author中较长的数据进行contains匹配，
  * 当匹配成功且apabi_meta_title_clean == nlc_title时，删除数据(注意：由于分页原因，需要删除多次)
  * 4) 四轮：apabi_meta_title_clean和nlc_title中的全角字符转换为半角字符，并取apabi_meta_title_clean和nlc_title中较长的数据进行contains匹配，
@@ -140,24 +140,43 @@ public class ApabiBookMetaNlcCheckerService {
      */
     @RequestMapping("thirdCheck")
     public String thirdCheck() {
-        int count = apabiBookMetaNlcCheckerDao.count();
-        int pageSize = 10000;
-        int pageNum = (count / pageSize) + 1;
-        int hitCount = 0;
-        for (int i = 1; i <= pageNum; i++) {
-            PageHelper.startPage(i, pageSize);
-            Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
-            for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
-                if (checkTitleAndContainsAuthor(apabiBookMetaNlcChecker)) {
-                    try {
-                        hitCount++;
-                         apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
-                    } catch (Exception e) {
+        // 删除的轮数
+        int roundCount = 0;
+        // 删除的总数量
+        int totalCount = 0;
+        while (true) {
+            // 轮数+1
+            roundCount++;
+            int count = apabiBookMetaNlcCheckerDao.count();
+            int pageSize = 10000;
+            int pageNum = (count / pageSize) + 1;
+            // 本轮删除的数据量
+            int hitCount = 0;
+            for (int i = 1; i <= pageNum; i++) {
+                PageHelper.startPage(i, pageSize);
+                Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
+                for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
+                    if (checkTitleAndContainsAuthor(apabiBookMetaNlcChecker)) {
+                        try {
+                            hitCount++;
+                            apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
+                        } catch (Exception e) {
+                        }
                     }
                 }
             }
+            // 统计总数
+            totalCount += hitCount;
+            // 如果该轮数据删除了0条，代表全部删除完了
+            if (hitCount == 0) {
+                break;
+            }
+            // 防止死循环，如果超过20轮删除，则跳出循环
+            if (roundCount > 20) {
+                break;
+            }
         }
-        return "第三轮清洗数据共删除了" + hitCount + "条数据";
+        return "第三轮清洗数据共删除了" + roundCount + "轮，共计" + totalCount + "条数据";
     }
 
     /**
@@ -170,29 +189,44 @@ public class ApabiBookMetaNlcCheckerService {
      */
     @RequestMapping("fourthCheck")
     public String fourthCheck() {
-        int count = apabiBookMetaNlcCheckerDao.count();
-        int pageSize = 10000;
-        int pageNum = (count / pageSize) + 1;
-        int hitCount = 0;
-        for (int i = 1; i <= pageNum; i++) {
-            PageHelper.startPage(i, pageSize);
-            Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
-            for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
-                if (containsTitleAndContainsAuthor(apabiBookMetaNlcChecker)) {
-                    try {
-                        hitCount++;
-                         apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
-                    } catch (Exception e) {
+        int totalCount = 0;
+        int roundCount = 0;
+        while (true) {
+            roundCount++;
+            int count = apabiBookMetaNlcCheckerDao.count();
+            int pageSize = 10000;
+            int pageNum = (count / pageSize) + 1;
+            int hitCount = 0;
+            for (int i = 1; i <= pageNum; i++) {
+                PageHelper.startPage(i, pageSize);
+                Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
+                for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
+                    if (containsTitleAndContainsAuthor(apabiBookMetaNlcChecker)) {
+                        try {
+                            hitCount++;
+                            apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
+                        } catch (Exception e) {
+                        }
                     }
                 }
             }
+            // 统计总数
+            totalCount += hitCount;
+            // 如果该轮删除了0条，代表全部删完了
+            if (hitCount == 0) {
+                break;
+            }
+            // 防止死循环，如果超过20轮删除，则跳出循环
+            if (roundCount > 20) {
+                break;
+            }
         }
-        return "第四轮清洗数据共删除了" + hitCount + "条数据";
+        return "第四轮清洗数据共删除了"+roundCount+"轮，共计" + totalCount + "条数据";
     }
 
     /**
      * 第五轮清洗：
-     * 对于经过四轮清洗之后在apabi_book_meta_nlc_checker表中未匹配apabi_book_metadata的数据设置apabi_book_metadata的字段为NULL值。
+     * 对于经过四轮清洗之后在apabi_book_meta_nlc_checker表中未匹配apabi_book_metadata的数据设置nlibraryid的字段为NULL值。
      *
      * @return
      */

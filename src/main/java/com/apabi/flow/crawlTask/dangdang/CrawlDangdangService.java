@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -22,8 +24,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2018-12-10 17:32
  **/
-//@Component
-//@Order(2)
+@Component
+@Order(2)
 public class CrawlDangdangService implements ApplicationRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CrawlDangdangService.class);
