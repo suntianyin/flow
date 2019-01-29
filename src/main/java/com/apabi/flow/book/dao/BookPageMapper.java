@@ -1,9 +1,11 @@
 package com.apabi.flow.book.dao;
 
 import com.apabi.flow.book.model.BookPage;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author supeng
@@ -99,4 +101,7 @@ public interface BookPageMapper {
     void updataOrInsertByMidAndPid(BookPage bookPage);
     int insertList(List<BookPage> list);
     int deleteByMetaId(String metaId);
+
+
+    Page<BookPage> findBookPage(Map map);
 }

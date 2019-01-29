@@ -107,7 +107,7 @@ public class MyTask implements Runnable {
 
                     try {
                         while ((line = err.readLine()) != null) {
-                            System.out.println("err: " + line);
+//                            System.out.println("err: " + line);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

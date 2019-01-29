@@ -37,7 +37,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/fetchPage/fetchPage.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${log.path}/fetchPage/fetchPage.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -55,7 +55,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/fetchPage1/fetchPageAgain.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${log.path}/fetchPage1/fetchPageAgain.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -73,7 +73,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/fetchPage2/fetchPage2.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${log.path}/fetchPage2/fetchPage2.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>

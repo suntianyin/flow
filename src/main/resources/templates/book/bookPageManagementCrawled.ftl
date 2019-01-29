@@ -127,27 +127,6 @@
             });
         }
 
-        function btn_Again() {
-            var url = "/book/autoFetchPageDataAgain2";
-            loading();
-            $.ajax({
-                url: RootPath() + url,
-                type: "get",
-                dataType: "json",
-                cache: false,
-                contentType: false,
-                async: false,
-                success: function (data) {
-                    alertDialog(data.msg, data.status);
-                    window.location.href = "pageCrawled";
-                },
-                error: function (data) {
-                    alertDialog(data.msg, data.status);
-                    $(".load-circle").hide();
-                }
-            });
-        }
-
         function btn_ShutdownNow() {
             var url = "/book/shutdownNow2";
             loading();
@@ -204,23 +183,36 @@
         </div>
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
+                <a  title="返回" onclick="javascript:window.location.href='${ctx}/book/bookPageManagement'" class="tools_btn"><span><i
+                                class="fa fa-backward"></i>&nbsp;返回</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
+                <a  title="刷新" onclick="btn_flush()" class="tools_btn"><span>&nbsp;刷新</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
+                <a  title="采集加密流式内容" onclick="btn_Crawled()" class="tools_btn"><span>&nbsp;采集加密流式内容</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
+                <a  title="停止采集" onclick="btn_ShutdownNow()" class="tools_btn"><span>&nbsp;停止采集</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
                 <input id="importFile" type="file" class="tools_btn" accept=".xlsx" name="file""/>
                 <div class="tools_separator"></div>
             </div>
-
             <div class="PartialButton">
-                <button id="batch-import" title="批量导入" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp批量导入抓取队列</span></button>
+                <a id="batch-import" title="批量导入" class="tools_btn"><span>&nbsp;批量导入抓取队列</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
-                <button id="batch-export" title="批量导出" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp批量导出Excel</span></button>
+                <a id="batch-export" title="批量导出" class="tools_btn"><span>&nbsp;批量导出Excel</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
-                <button id="batch-delete" title="全部删除" class="tools_btn"><span><i
-                        class="fa fa-plus"></i>&nbsp全部删除</span></button>
+                <a id="batch-delete" title="全部删除" class="tools_btn"><span>&nbsp;全部删除</span></a>
                 <div class="tools_separator"></div>
             </div>
         </div>
@@ -237,12 +229,6 @@
                 </tr>
             </table>
         </div>
-        <input id="back" type="button" class="btnSearch" value="返回" onclick="window.history.back();"/>
-        <input id="flush" type="button" class="btnSearch" value="刷新" onclick="btn_flush()"/>
-        <input id="Crawled" type="button" class="btnSearch" value="采集加密流式内容" onclick="btn_Crawled()"/>
-        <input id="again" type="button" class="btnSearch" value="重新采集失败内容" onclick="btn_Again()"/>
-        <input id="Assembly" type="button" class="btnSearch" value="停止采集" onclick="btn_ShutdownNow()"/>
-        <p>重新抽取失败内容条数：${num}</p>
         <div class="panel-body">
             <div class="row">
                 <table id="table-list"

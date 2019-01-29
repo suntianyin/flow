@@ -165,24 +165,42 @@
         </div>
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
             <div class="PartialButton">
+                <a  title="返回" onclick="javascript:window.location.href='${ctx}/book/bookPageManagement'" class="tools_btn"><span><i
+                                class="fa fa-backward"></i>&nbsp;返回</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
+                <a  title="刷新" onclick="btn_flush()" class="tools_btn"><span>&nbsp;刷新</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
+                    <a  title="分页流式内容拼装" onclick="btn_Assembly()" class="tools_btn"><span>&nbsp;分页流式内容拼装</span></a>
+                <div class="tools_separator"></div>
+            </div>
+            <div class="PartialButton">
                 <input id="importFile2" type="file" class="tools_btn" accept=".xlsx" name="file""/>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
-                <button id="batch-import2" title="批量导入" class="tools_btn"><span><i
-                                class="fa fa-plus"></i>&nbsp批量导入抓取队列</span></button>
+                <a id="batch-import2" title="批量导入" class="tools_btn"><span>&nbsp批量导入拼装队列</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
-                <button id="batch-export" title="批量导出" class="tools_btn"><span><i
-                                class="fa fa-plus"></i>&nbsp批量导出Excel</span></button>
+                <a id="batch-export" title="批量导出" class="tools_btn"><span></i>&nbsp批量导出Excel</span></a>
                 <div class="tools_separator"></div>
             </div>
             <div class="PartialButton">
-                <button id="batch-delete" title="全部删除" class="tools_btn"><span><i
-                                class="fa fa-plus"></i>&nbsp全部删除</span></button>
+                <a id="batch-delete" title="全部删除" class="tools_btn"><span>&nbsp全部删除</span></a>
                 <div class="tools_separator"></div>
             </div>
+        </div>
+        <div >
+            <th>是否覆盖流式内容:
+                <select id="isCover" name="isCover" class="txtselect" title="">
+                    <option value="0" selected="selected">否</option>
+                    <option value="1">是</option>
+                </select>
+            </th>
         </div>
         <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
             <table border="0" class="form-find" style="height: 45px;">
@@ -198,16 +216,7 @@
                 </tr>
             </table>
         </div>
-        <input id="back" type="button" class="btnSearch" value="返回" onclick="window.history.back();"/>
-        <input id="Crawled" type="button" class="btnSearch" value="刷新" onclick="btn_flush()"/>
-        <th>是否覆盖流式内容：</th>
-        <td>
-            <select id="isCover" name="isCover" class="txtselect">
-                <option value="0" selected="selected">否</option>
-                <option value="1">是</option>
-            </select>
-            <input id="Assembly" type="button" class="btnSearch" value="分页流式内容拼装" onclick="btn_Assembly()"/>
-        </td>
+
         <div class="panel-body">
             <div class="row">
                 <table id="table-list"
