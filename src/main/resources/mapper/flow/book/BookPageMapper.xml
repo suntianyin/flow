@@ -35,6 +35,18 @@
         where META_ID = #{metaId,jdbcType=VARCHAR}
         ORDER BY PAGE_ID
     </select>
+    <select id="findBookPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_PAGE
+        where 1=1
+        <if test="metaId != null and metaId != ''">
+        AND META_ID = #{metaId,jdbcType=VARCHAR}
+        </if>
+        <if test="pageId != null and pageId != ''">
+        AND  PAGE_ID= #{pageId}
+        </if>
+    </select>
 
     <!-- 查找 metaId 数据集下的 页面信息列表，包括页面内容，按 pageId 排序 -->
     <select id="findAllByMetaIdOrderByPageIdWithContent" parameterType="java.lang.String" resultMap="BaseResultMap">

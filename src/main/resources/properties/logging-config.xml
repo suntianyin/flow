@@ -37,7 +37,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/fetchPage/fetchPage.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${log.path}/fetchPage/fetchPage.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -55,7 +55,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/fetchPage1/fetchPageAgain.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${log.path}/fetchPage1/fetchPageAgain.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -73,7 +73,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/fetchPage2/fetchPage2.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${log.path}/fetchPage2/fetchPage2.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -555,17 +555,33 @@
     </logger>
 
     <!-- 针对dangdang定时任务抓取配置的日志 -->
-    <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="INFO" additivity="false">
+    <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="ERROR" additivity="false">
         <!-- 对于dangdang全局抓取日志配置 -->
         <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
         <appender-ref ref="DANGDANG_CRAWL"/>
     </logger>
 
+    <!-- 针对dangdang定时任务生产者取消抓取配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.dangdang.DangdangProducer" level="ERROR" additivity="false">
+    </logger>
+
+    <!-- 针对dangdang定时任务Service取消抓取配置的日志 -->
+    <logger name="com.apabi.flow.crawlTask.dangdang.CrawlDangdangService" level="ERROR" additivity="false">
+    </logger>
+
+    <!-- 针对dangdang抓取工具类取消抓取配置的日志 -->
+    <logger name="com.apabi.flow.dangdang.util.CrawlDangdangUtils" level="ERROR" additivity="false">
+    </logger>
+
+    <!-- 取消httpclient刷日志 -->
+    <logger name="org.apache.http.impl" level="WARN" />
+    <logger name="httpclient" level="WARN" />
+
     <!-- 针对isbn_douban_amazon抓取配置的日志 -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDoubanAmazonConsumer" level="INFO" additivity="false">
         <!-- 对于isbn_douban_amazon抓取日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于isbn_douban_amazon任务输出至日志文件的日志配置 -->
         <appender-ref ref="ISBN_DANGDANG_AMAZON_CRAWL"/>
     </logger>
@@ -573,7 +589,7 @@
     <!-- 针对amazon根据价格抓取配置的日志 -->
     <logger name="com.apabi.flow.douban.service.impl.AmazonItemUrlConsumer" level="INFO" additivity="false">
         <!-- 对于amazon根据价格抓取日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于amazon根据价格抓取日志配置 -->
         <appender-ref ref="AMAZON_ITEM_URL_CRAWL"/>
     </logger>
@@ -581,7 +597,7 @@
     <!-- 针对douban根据id抓取配置的日志 -->
     <logger name="com.apabi.flow.douban.service.impl.DoubanIdConsumer" level="INFO" additivity="false">
         <!-- 对于douban根据id抓取输出日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于douban根据id抓取日志配置 -->
         <appender-ref ref="DOUBAN_ID_CRAWL"/>
     </logger>
@@ -589,7 +605,7 @@
     <!-- 针对douban与apabi根据isbn13映射配置的日志 -->
     <logger name="com.apabi.flow.match_data.service.ApabiBookMetaDoubanMatcherIsbn13Consumer" level="INFO" additivity="false">
         <!-- 对于douban与apabi根据isbn13映射输出日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于douban与apabi根据isbn13映射日志文件配置 -->
         <appender-ref ref="DOUBAN_APABI_ISBN13"/>
     </logger>
@@ -597,7 +613,7 @@
     <!-- 以jd中有，douban中没有的isbn抓取douban，amazon和nlc -->
     <logger name="com.apabi.flow.match_data.service.CrawlDoubanAmazonNlcConsumerInJdNotInDouban" level="INFO" additivity="false">
         <!-- 对于jd中有，douban中没有的isbn抓取douban，amazon和nlc输出日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于jd中有，douban中没有的isbn抓取douban，amazon和nlc日志文件配置 -->
         <appender-ref ref="ISBN_IN_JD_NOT_IN_DOUBAN_ALL"/>
     </logger>

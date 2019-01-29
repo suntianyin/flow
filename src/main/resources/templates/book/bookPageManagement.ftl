@@ -15,6 +15,15 @@
         function btn_Assembly() {
             window.location.href = "${ctx}/book/pageAssembly";
         }
+        function btn_Log() {
+            window.location.href = "${ctx}/book/bookPageLog";
+        }
+        function btn_failure() {
+            window.location.href = "${ctx}/book/bookFailure";
+        }
+        function btn_bookPages() {
+            window.location.href = "${ctx}/book/bookPages";
+        }
     </script>
 </head>
 <body>
@@ -25,7 +34,10 @@
             <div>流式内容管理<span id="CenterTitle"></span></div>
         </div>
         <input id="Crawled" type="button" class="btnSearch" value="采集加密流式内容" onclick="btn_Crawled()"/>
+        <input id="failure" type="button" class="btnSearch" value="采集失败流式内容" onclick="btn_failure()"/>
         <input id="Assembly" type="button" class="btnSearch" value="分页流式内容拼装" onclick="btn_Assembly()"/>
+        <input id="log" type="button" class="btnSearch" value="采集日志" onclick="btn_Log()"/>
+        <input id="bookPages" type="button" class="btnSearch" value="已采集完成流式内容" onclick="btn_bookPages()"/>
     </div>
 </div>
 </body>

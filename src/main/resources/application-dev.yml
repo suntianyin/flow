@@ -2,7 +2,7 @@ ctx: http://localhost:8084/flowadmin
 cebxHtmlExe: E:\cebxTool\cebx2Html\Cebx2Html.exe
 cebxCryptExe: E:\cebxTool\cebxCrypt\CebxCryptConsole.exe
 cebxMaker: E:\cebxTool\MakerSDK
-copyRightExtractExe: C:\java\CopyRightExtract\CopyrightExtract.exe
+copyRightExtractExe: C:\java\1.0.0.3\CopyrightExtract.exe
 CarbonExe: C:\Program Files (x86)\Founder\Apabi Carbon 2.2\Carbon.exe
 pdfDir: C:\
 targetCopyRightDir: C:\java\target
@@ -12,6 +12,7 @@ uploadXml: F:\upload\flow\xml
 uploadEpub: F:\upload\flow\epub
 uploadCebx: F:\upload\flow\cebx
 upAuthFile: /Users/suntianyin/Downloads/auth
+logPath: /Library/work/java/flowPlatform/log
 email: F:\email
 batchSize: 100
 threadTime: 3

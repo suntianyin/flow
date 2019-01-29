@@ -10,9 +10,11 @@ import com.apabi.flow.book.service.*;
 import com.apabi.flow.book.util.BookUtil;
 import com.apabi.flow.book.util.HttpUtils;
 import com.apabi.flow.book.util.ReadBook;
+import com.apabi.flow.book.util.ReadLog;
 import com.apabi.flow.common.CommEntity;
 import com.apabi.flow.common.ResultEntity;
 import com.apabi.flow.common.UUIDCreater;
+import com.apabi.flow.common.util.ParamsUtils;
 import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
@@ -954,7 +956,7 @@ public class BookController {
         return "book/bookPageContentDetail";
     }
 
-//    /**
+    //    /**
 //     * 处理数据接口，将 图书从 页码信息 拼装成 章节信息
 //     *
 //     * @param metaid
@@ -966,6 +968,23 @@ public class BookController {
 //    public int processBookFromPage2Chapter(@RequestParam("metaid") String metaid) throws Exception {
 //        return bookPageService.processBookFromPage2Chapter(metaid);
 //    }
+    //跳转管理
+    @RequestMapping("/bookPages")
+    public String bookChapter(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,
+                              @RequestParam(value = "metaid", required = false) String metaId,Model model) {
+        PageHelper.startPage(pageNum, 10);
+        Map<String, Object> paramsMap = new HashMap<>();
+        ParamsUtils.checkParameterAndPut2Map(paramsMap, "metaId",metaId);
+        Page<BookPage> bookPage = bookPageMapper.findBookPage(paramsMap);
+        model.addAttribute("num", bookPage.size());
+        model.addAttribute("bookPage", bookPage);
+        model.addAttribute("pages", bookPage.getPages());
+        model.addAttribute("pageNum", bookPage.getPageNum());
+        model.addAttribute("pageSize", 10);
+        model.addAttribute("total", bookPage.getTotal());
+        model.addAttribute("metaId", metaId);
+        return "book/bookPages";
+    }
 
     //跳转首页cebx流式内容管理
     @RequestMapping("/bookPageManagement")
@@ -978,8 +997,8 @@ public class BookController {
     public String pageCrawled(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum, Model model) {
         PageHelper.startPage(pageNum, 10);
         Page<PageCrawledQueue> pageCrawledQueues = pageCrawledQueueMapper.pageAll();
-        List<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.findAll();
-        model.addAttribute("num", pageCrawledTemps.size());
+//        List<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.findAll();
+//        model.addAttribute("num", pageCrawledTemps.size());
         model.addAttribute("pageCrawledQueues", pageCrawledQueues);
         model.addAttribute("pages", pageCrawledQueues.getPages());
         model.addAttribute("pageNum", pageCrawledQueues.getPageNum());
@@ -999,6 +1018,53 @@ public class BookController {
         model.addAttribute("total", pageAssemblyQueues.getTotal());
         model.addAttribute("pageAssemblyQueues", pageAssemblyQueues);
         return "book/bookPageManagementAssemBly";
+    }
+
+    //跳转log页
+    @RequestMapping("/bookPageLog")
+    public String bookPageLog(@RequestParam(value = "time", required = false, defaultValue = "") String time,
+                              @RequestParam(value = "len", required = false, defaultValue = "100") Integer len,
+                              @RequestParam(value = "type", required = false, defaultValue = "0") Integer type,
+                              Model model) {
+        String log1 = "";
+        String log2 = "";
+        String log3 = "";
+        String logPath = config.getLogPath();
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 1) {
+            String filename = logPath + File.separator + "fetchPage" + File.separator + "fetchPage." + time + ".log";
+            log1 = ReadLog.read(filename, "UTF-8", len);
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 2) {
+            String filename = logPath + File.separator + "fetchPage1" + File.separator + "fetchPageAgain." + time + ".log";
+            log2 = ReadLog.read(filename, "UTF-8", len);
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
+            String filename = logPath + File.separator + "fetchPage2" + File.separator + "fetchPage2." + time + ".log";
+            log3 = ReadLog.read(filename, "UTF-8", len);
+        }
+        model.addAttribute("time", time);
+        model.addAttribute("len", len);
+        model.addAttribute("log1", log1);
+        model.addAttribute("log2", log2);
+        model.addAttribute("log3", log3);
+        return "book/bookPageLog";
+    }
+
+    //跳转fail页
+    @RequestMapping("/bookFailure")
+    public String bookFailure(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,
+                              @RequestParam(value = "metaId", required = false) String metaId, Model model) {
+        PageHelper.startPage(pageNum, 10);
+        Map<String, Object> paramsMap = new HashMap<>();
+        ParamsUtils.checkParameterAndPut2Map(paramsMap, "metaId", metaId);
+        Page<PageCrawledTemp> pageCrawledTemps = pageCrawledTempMapper.pageAll(paramsMap);
+        model.addAttribute("pages", pageCrawledTemps.getPages());
+        model.addAttribute("pageNum", pageCrawledTemps.getPageNum());
+        model.addAttribute("pageSize", 10);
+        model.addAttribute("total", pageCrawledTemps.getTotal());
+        model.addAttribute("pageCrawledTemps", pageCrawledTemps);
+        model.addAttribute("metaId", metaId);
+        return "book/bookPageManagementCrawledFial";
     }
 
     //单个删除
@@ -1466,7 +1532,7 @@ public class BookController {
                     while (bookMetaFromExcel.hasNext()) {
                         BookMetaFromExcel bookMetaFromExcel1 = bookMetaFromExcel.next();
                         String metaId = bookMetaFromExcel1.getBookMetaTemp().getMetaId();
-                        if (org.apache.commons.lang3.StringUtils.isNotBlank(metaId)&& metaId.equalsIgnoreCase(split1[0])) {
+                        if (org.apache.commons.lang3.StringUtils.isNotBlank(metaId) && metaId.equalsIgnoreCase(split1[0])) {
                             set.add(bookMetaFromExcel1.getBookMetaTemp());
                             bookMetaFromExcel.remove();
                         }

@@ -101,6 +101,7 @@
         <result column="ISREADCEBXFLOW" jdbcType="DECIMAL" property="isReadCebxFlow"/>
         <result column="ISREADEPUB" jdbcType="DECIMAL" property="isReadEpub"/>
         <result column="HASPROCESSINGFILE" jdbcType="INTEGER" property="hasProcessingFile"/>
+        <result column="HASCLEAN" jdbcType="DECIMAL" property="hasClean"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -117,7 +118,7 @@
         LIBRARYID, BOOKID, STYLECLASS, STYLEURL, CHAPTERNUM, BOOKPAGES, TAGS, CREATETIME,
         UPDATETIME, CONTENTNUM, HASPUBLISH, ISPUBLICCOPYRIGHT, RELATIONTYPE,AUTHORINTRO,
         ABSTRACT, PREFACE, FOAMATCATALOG, STREAMCATALOG, POSTSCRIPT,FLOWSOURCE,ISREADCEBXFLOW,
-        ISREADEPUB,HASPROCESSINGFILE
+        ISREADEPUB,HASPROCESSINGFILE,HASCLEAN
     </sql>
 
     <!-- 根据条件分页查询 -->
@@ -426,6 +427,9 @@
         </if>
         <if test="hasPublish != null and hasPublish != ''">
             AND HASPUBLISH = #{hasPublish,jdbcType=INTEGER}
+        </if>
+        <if test="hasClean != null and hasClean != ''">
+            AND HASCLEAN = #{hasClean,jdbcType=INTEGER}
         </if>
     </select>
 
@@ -760,6 +764,9 @@
             <if test="hasProcessingFile != null">
                 HASPROCESSINGFILE ,
             </if>
+            <if test="hasClean != null">
+                HASCLEAN ,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="metaId != null">
@@ -1058,6 +1065,9 @@
             </if>
             <if test="hasProcessingFile != null">
                 #{hasProcessingFile,jdbcType=INTEGER},
+            </if>
+            <if test="hasClean != null">
+                #{hasClean,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -1359,6 +1369,9 @@
             </if>
             <if test="hasProcessingFile != null">
                 HASPROCESSINGFILE = #{hasProcessingFile,jdbcType=INTEGER},
+            </if>
+            <if test="hasClean != null">
+                HASCLEAN = #{hasClean,jdbcType=INTEGER},
             </if>
         </set>
         where METAID = #{metaId,jdbcType=VARCHAR}

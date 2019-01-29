@@ -33,8 +33,6 @@ public class GenerateMetaDataFromJdService implements ApplicationRunner {
     @Autowired
     private JdMetadataDao jdMetadataDao;
     @Autowired
-    private ApabiBookMetaDataDao apabiBookMetaDataDao;
-    @Autowired
     private SystemConfMapper systemConfMapper;
 
     /**

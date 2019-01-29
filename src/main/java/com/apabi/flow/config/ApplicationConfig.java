@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties
 public class ApplicationConfig {
+    //log共享目录
+    @Value("${logPath}")
+    private String logPath;
 
     //pdfDir大目录
     @Value("${pdfDir}")
@@ -72,6 +75,14 @@ public class ApplicationConfig {
     //线程倍数
     @Value("${threadTime}")
     private Integer threadTime;
+
+    public String getLogPath() {
+        return logPath;
+    }
+
+    public void setLogPath(String logPath) {
+        this.logPath = logPath;
+    }
 
     public String getPdfDir() {
         return pdfDir;
