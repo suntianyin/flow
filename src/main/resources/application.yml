@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: dev
+    active: prod
   data:
       mongodb:
         uri: mongodb://172.18.89.101:40000/books
