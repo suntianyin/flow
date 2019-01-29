@@ -645,7 +645,7 @@
 
     <!-- 根据dangdang中的isbn抓取douban -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlDoubanConsumer" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="ISBN_DANGDANG_DOUBAN"/>
     </logger>
 
@@ -668,7 +668,7 @@
 
     <!-- 根据dangdang中的isbn抓取amazon -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlAmazonConsumer" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="ISBN_DANGDANG_AMAZON"/>
     </logger>
 
@@ -691,7 +691,7 @@
 
     <!-- 根据dangdang中的isbn抓取nlc -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlNlcConsumer" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="ISBN_DANGDANG_NLC"/>
     </logger>
 
