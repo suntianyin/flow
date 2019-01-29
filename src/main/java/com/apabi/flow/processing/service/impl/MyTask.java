@@ -226,6 +226,9 @@ public class MyTask implements Runnable {
                     }
                 } else {
                     a = false;
+                    if (StringUtils.isNotBlank(publisherTitle)) {
+                        publisher = publisherDao.findIdByTitle(publisherTitle);
+                    }
                 }
                 bibliotheca.setIsbn(isbn);
                 if (StringUtils.isNotBlank(publisher)) {

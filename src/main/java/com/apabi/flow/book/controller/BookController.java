@@ -1031,15 +1031,15 @@ public class BookController {
         String log3 = "";
         String logPath = config.getLogPath();
         if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 1) {
-            String filename = logPath + File.separator + "fetchPage" + File.separator + "fetchPage." + time + ".log";
+            String filename = logPath  + "fetchPage" + File.separator + "fetchPage." + time + ".log";
             log1 = ReadLog.read(filename, "UTF-8", len);
         }
         if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 2) {
-            String filename = logPath + File.separator + "fetchPage1" + File.separator + "fetchPageAgain." + time + ".log";
+            String filename = logPath  + "fetchPage1" + File.separator + "fetchPageAgain." + time + ".log";
             log2 = ReadLog.read(filename, "UTF-8", len);
         }
         if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
-            String filename = logPath + File.separator + "fetchPage2" + File.separator + "fetchPage2." + time + ".log";
+            String filename = logPath  + "fetchPage2" + File.separator + "fetchPage2." + time + ".log";
             log3 = ReadLog.read(filename, "UTF-8", len);
         }
         model.addAttribute("time", time);
@@ -1617,7 +1617,7 @@ public class BookController {
                 e.printStackTrace();
             }
         }
-        return null;
+        return "{\"status\":-1,\"msg\":\"连接异常\"}";
     }
 
 }
