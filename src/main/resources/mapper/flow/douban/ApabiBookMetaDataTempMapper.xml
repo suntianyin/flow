@@ -121,7 +121,7 @@
     </sql>
 
     <!-- 根据条件分页查询 -->
-    <select id="findByPageNotPublished" parameterType="Map" resultMap="BaseResultMap">
+    <select id="findByPage" parameterType="Map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA_TEMP
@@ -424,7 +424,9 @@
         <if test="hasProcessingFile != null and hasProcessingFile != ''">
             AND HASPROCESSINGFILE = #{hasProcessingFile,jdbcType=INTEGER}
         </if>
-        AND HASPUBLISH = '1'
+        <if test="hasPublish != null and hasPublish != ''">
+            AND HASPUBLISH = #{hasPublish,jdbcType=INTEGER}
+        </if>
     </select>
 
     <!-- 根据metaId查询数据 -->

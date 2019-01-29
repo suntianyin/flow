@@ -1,14 +1,14 @@
 package com.apabi.flow.publish.controller;
 
 import com.apabi.flow.common.ResultEntity;
+import com.apabi.flow.douban.model.ApabiBookMetaData;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.model.CompareEntity;
-import com.apabi.flow.publish.model.ApabiBookMetaPublish;
-import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
 import com.apabi.flow.publish.service.ApabiBookMetaPublishService;
 import com.apabi.flow.publish.util.TransformFieldNameUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class PublishController {
 
     // 查询数据
     @RequestMapping("/search")
-    public String publishSearch(HttpServletRequest request, Model model,@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum) {
+    public String publishSearch(HttpServletRequest request, Model model, @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum) {
         long start = System.currentTimeMillis();
         Map<String, String[]> parameterMap = request.getParameterMap();
         Map<String, Object> params = new HashMap<>();
@@ -129,6 +129,9 @@ public class PublishController {
         PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
         Page<ApabiBookMetaDataTemp> page = null;
         if (parameterMap.size() > 0) {
+            if (StringUtils.isEmpty(metaId) && StringUtils.isEmpty(title)) {
+                params.put("hasPublish", "0");
+            }
             page = apabiBookMetaPublishService.queryPage(params);
             totalCount = page.getTotal();
             totalPageNum = page.getPages();
@@ -167,7 +170,6 @@ public class PublishController {
     @RequestMapping(value = "/homeIndex")
     public String publishPublishApabiBookTempHomeIndex(HttpServletRequest request, Model model) {
         long start = System.currentTimeMillis();
-        Map<String, String[]> parameterMap = request.getParameterMap();
         Map<String, Object> params = new HashMap<>();
         String metaId = "";
         if (params.get("metaId") != null) {
@@ -220,6 +222,9 @@ public class PublishController {
         Page<ApabiBookMetaDataTemp> page = null;
         List<ApabiBookMetaDataTemp> content = null;
         if (params.size() > 0) {
+            if (StringUtils.isEmpty(metaId) && StringUtils.isEmpty(title)) {
+                params.put("hasPublish", "0");
+            }
             page = apabiBookMetaPublishService.queryPage(params);
             content = page.getResult();
         }
@@ -250,15 +255,15 @@ public class PublishController {
     @RequestMapping("/compareTempAndStandard")
     public String publishCompareTempAndStandard(@RequestParam("metaId") String metaId, Model model) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         // 利用反射获取ApabiBookMetaTempPublish.class对象
-        Class<?> apabiBookMetaTempPublishClass = Class.forName("com.apabi.flow.publish.model.ApabiBookMetaTempPublish");
+        Class<?> apabiBookMetaTempPublishClass = Class.forName("com.apabi.flow.douban.model.ApabiBookMetaDataTemp");
         // 利用反射获取所有字段
         Field[] apabiBookMetaTempPublishClassFields = apabiBookMetaTempPublishClass.getDeclaredFields();
         // 查询数据库根据metaId获取ApabiBookMetaTempPublish和ApabiBookMetaPublish对应的值
-        ApabiBookMetaTempPublish apabiBookMetaTempPublish = apabiBookMetaPublishService.findApabiBookMetaTempPublish(metaId);
-        ApabiBookMetaPublish apabiBookMetaPublish = apabiBookMetaPublishService.findApabiBookMetaPublish(metaId);
+        ApabiBookMetaDataTemp apabiBookMetaTempPublish = apabiBookMetaPublishService.findApabiBookMetaTempPublish(metaId);
+        ApabiBookMetaData apabiBookMetaPublish = apabiBookMetaPublishService.findApabiBookMetaPublish(metaId);
         // 如果数据库中没有apabiBookMetaPublish则创建一个空对象
         if (apabiBookMetaPublish == null) {
-            apabiBookMetaPublish = new ApabiBookMetaPublish();
+            apabiBookMetaPublish = new ApabiBookMetaData();
         }
         List<CompareEntity> compareEntityList = new ArrayList<>();
         for (Field field : apabiBookMetaTempPublishClassFields) {
@@ -361,15 +366,15 @@ public class PublishController {
     @RequestMapping(value = "/edit")
     public String publishEdit(@RequestParam("metaId") String metaId, Model model) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         // 利用反射获取ApabiBookMetaTempPublish.class对象
-        Class<?> apabiBookMetaTempPublishClass = Class.forName("com.apabi.flow.publish.model.ApabiBookMetaTempPublish");
+        Class<?> apabiBookMetaTempPublishClass = Class.forName("com.apabi.flow.douban.model.ApabiBookMetaDataTemp");
         // 利用反射获取所有字段
         Field[] apabiBookMetaTempPublishClassFields = apabiBookMetaTempPublishClass.getDeclaredFields();
         // 查询数据库根据metaId获取ApabiBookMetaTempPublish和ApabiBookMetaPublish对应的值
-        ApabiBookMetaTempPublish apabiBookMetaTempPublish = apabiBookMetaPublishService.findApabiBookMetaTempPublish(metaId);
-        ApabiBookMetaPublish apabiBookMetaPublish = apabiBookMetaPublishService.findApabiBookMetaPublish(metaId);
+        ApabiBookMetaDataTemp apabiBookMetaTempPublish = apabiBookMetaPublishService.findApabiBookMetaTempPublish(metaId);
+        ApabiBookMetaData apabiBookMetaPublish = apabiBookMetaPublishService.findApabiBookMetaPublish(metaId);
         // 如果数据库中没有apabiBookMetaPublish则创建一个空对象
         if (apabiBookMetaPublish == null) {
-            apabiBookMetaPublish = new ApabiBookMetaPublish();
+            apabiBookMetaPublish = new ApabiBookMetaData();
         }
         List<CompareEntity> compareEntityList = new ArrayList<>();
         for (Field field : apabiBookMetaTempPublishClassFields) {
@@ -435,8 +440,8 @@ public class PublishController {
         String metaId = parameterMap.get("阿帕比图书metaid")[0];
         request.setAttribute("metaId", metaId);
         System.out.println(metaId);
-        ApabiBookMetaTempPublish apabiBookMetaTempPublish = new ApabiBookMetaTempPublish();
-        Class<?> clazz = Class.forName("com.apabi.flow.publish.model.ApabiBookMetaTempPublish");
+        ApabiBookMetaDataTemp apabiBookMetaTempPublish = new ApabiBookMetaDataTemp();
+        Class<?> clazz = Class.forName("com.apabi.flow.douban.model.ApabiBookMetaDataTemp");
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
@@ -457,7 +462,7 @@ public class PublishController {
                         } else {
                             Date date = null;
                             if (!"".equalsIgnoreCase(fieldValue)) {
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy",Locale.ENGLISH);
                                 date = simpleDateFormat.parse(fieldValue);
                             }
                             field.set(apabiBookMetaTempPublish, date);
@@ -478,13 +483,15 @@ public class PublishController {
         }
         System.out.println(apabiBookMetaTempPublish);
         apabiBookMetaPublishService.updateApabiBookMetaTemp(apabiBookMetaTempPublish);
-        return "/publish/search?pageNumber=1&s_metaId=" + metaId + "&s_title=&s_creator=&s_publisher=&s_isbn=isbn&s_isbnVal=";
+        return "/publish/compareTempAndStandard?metaId=" + metaId;
     }
 
-    // 根据字段名获取字段值
+    /**
+     * 根据字段名获取字段值
+     */
     private String getFieldValueByFieldName(String key, Object obj) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = obj.getClass();
-        if (("hasPublish".equalsIgnoreCase(key)) && (obj instanceof ApabiBookMetaPublish)) {
+        if (("hasPublish".equalsIgnoreCase(key)) && (obj instanceof ApabiBookMetaData)) {
             return null;
         }
         Field field = clazz.getDeclaredField(key);

@@ -17,7 +17,6 @@ import com.apabi.flow.config.ApplicationConfig;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.douban.util.StringToolUtil;
-import com.apabi.flow.publish.dao.ApabiBookMetaTempPublishRepository;
 import com.apabi.flow.publish.model.ApabiBookMetaTempPublish;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import com.apabi.shuyuan.book.dao.SCmfDigitObjectDao;
@@ -117,7 +116,7 @@ public class BookMetaServiceImpl implements BookMetaService {
     BookShardDao bookShardDao;
 
     @Autowired
-    private ApabiBookMetaTempPublishRepository apabiBookMetaTempPublishRepository;
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     @Autowired
     BookFileDao bookFileDao;
@@ -491,10 +490,10 @@ public class BookMetaServiceImpl implements BookMetaService {
                     //bookMetaRepository.save(bookMeta);
                     bookMetaDao.insertBookMeta(bookMeta);
                     //保存图书元数据到tmp
-                    ApabiBookMetaTempPublish bookMetaTemp = new ApabiBookMetaTempPublish();
+                    ApabiBookMetaDataTemp bookMetaTemp = new ApabiBookMetaDataTemp();
                     BeanUtils.copyProperties(bookMeta, bookMetaTemp);
                     if (bookMetaTemp != null) {
-                        apabiBookMetaTempPublishRepository.save(bookMetaTemp);
+                        apabiBookMetaDataTempDao.insert(bookMetaTemp);
                     }
                     return 1;
                 } else if (count > 0) {

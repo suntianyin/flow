@@ -23,5 +23,5 @@ public interface ApabiBookMetaDataTempDao {
     void delete(String metaId);
     void insert(ApabiBookMetaDataTemp apabiBookMetaDataTemp);
     void update(ApabiBookMetaDataTemp apabiBookMetaDataTemp);
-    Page<ApabiBookMetaDataTemp> findByPageNotPublished(Map<String,Object> params);
+    Page<ApabiBookMetaDataTemp> findByPage(Map<String,Object> params);
 }
