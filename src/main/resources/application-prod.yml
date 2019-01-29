@@ -12,7 +12,7 @@ uploadXml: D:\upload\flow\xml
 uploadEpub: D:\upload\flow\epub
 uploadCebx: D:\upload\flow\cebx
 upAuthFile: D:\upload\flow\auth
-logPath: Z:\
+logPath: Z:
 email: D:\email
 batchSize: 1000
 threadTime: 1
