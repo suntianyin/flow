@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/nlcTitle")
 public class ApabiBookMetadataTitleController {
     private static Logger logger = LoggerFactory.getLogger(ApabiBookMetadataTitleController.class);
-    private static int pageSize = 10000;
+    private static int pageSize = 20000;
 
     @Autowired
     private ApabiBookMetadataTitleService apabiBookMetadataTitleService;
@@ -44,16 +44,14 @@ public class ApabiBookMetadataTitleController {
                     List<ApabiBookMetadataTitle> apabiBookMetadataTitleList = apabiBookMetadataTitleService.findByNlcMarcIdentifier(nlcMarcIdentifier);
                     if (apabiBookMetadataTitleList == null || apabiBookMetadataTitleList.size() == 0) {
                         ApabiBookMetadataTitle apabiBookMetadataTitle = apabiBookMetadataTitleService.parseTitle(nlcBookMarc.getIsoContent());
-                        /*if (StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolumeTitle()) || StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolume500Title()) || StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolume200Title()) || StringUtils.isNotEmpty(apabiBookMetadataTitle.getVolume200())) {
-                            System.out.println(apabiBookMetadataTitle);
-                        }*/
                         apabiBookMetadataTitleService.insert(apabiBookMetadataTitle);
+                        System.out.println("正在解析：" + apabiBookMetadataTitle);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        return "";
+        return "nlc解析题名结束";
     }
 }

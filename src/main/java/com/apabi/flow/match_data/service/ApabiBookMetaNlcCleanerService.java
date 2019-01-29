@@ -51,8 +51,8 @@ public class ApabiBookMetaNlcCleanerService {
                 // 利用国图的数据更新apabiBookMetaData的数据
                 apabiBookMetaData = updateApabiBookMetadataByNlc(apabiBookMetaData, apabiBookMetadataTitleList, apabiBookMetadataAuthorList, nlcBookMarc);
                 apabiBookMetaData.setUpdateTime(new Date());
+                apabiBookMetaDataDao.updateHasCleaned("1");
                 apabiBookMetaDataDao.update(apabiBookMetaData);
-                apabiBookMetaDataDao.updateHasCleaned(apabiBookMetaData.getMetaId());
             }
         }
     }

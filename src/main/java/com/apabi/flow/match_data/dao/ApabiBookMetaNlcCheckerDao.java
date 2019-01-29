@@ -24,4 +24,6 @@ public interface ApabiBookMetaNlcCheckerDao {
     int update(ApabiBookMetaNlcChecker apabiBookMetaNlcChecker);
 
     Page<ApabiBookMetaNlcChecker> findByPage();
+
+    int deleteHasSameAuthorAndTitle();
 }

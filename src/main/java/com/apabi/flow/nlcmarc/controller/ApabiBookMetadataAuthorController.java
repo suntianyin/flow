@@ -23,7 +23,7 @@ public class ApabiBookMetadataAuthorController {
     private ApabiBookMetadataAuthorService apabiBookMetadataAuthorService;
     @Autowired
     private NlcBookMarcService nlcBookMarcService;
-    private static int pageSize = 10000;
+    private static int pageSize = 20000;
 
     @RequestMapping("/parse")
     public String insert() {
@@ -40,7 +40,7 @@ public class ApabiBookMetadataAuthorController {
                         List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorResultList = apabiBookMetadataAuthorService.parseAuthor(nlcBookMarc.getIsoContent());
                         for (ApabiBookMetadataAuthor apabiBookMetadataAuthor : apabiBookMetadataAuthorResultList) {
                             apabiBookMetadataAuthorService.insert(apabiBookMetadataAuthor);
-                            //System.out.println(apabiBookMetadataAuthor);
+                            System.out.println("正在解析："+apabiBookMetadataAuthor);
                         }
                     }
                 } catch (Exception e) {
@@ -48,6 +48,6 @@ public class ApabiBookMetadataAuthorController {
                 }
             }
         }
-        return "";
+        return "nlc解析作者结束";
     }
 }

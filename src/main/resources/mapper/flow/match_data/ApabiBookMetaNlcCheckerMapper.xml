@@ -37,6 +37,13 @@
         where NLIBRARY_ID = #{nlibraryId,jdbcType=VARCHAR}
     </delete>
 
+    <!-- 删除拥有相同作者和标题的数据 -->
+    <delete id="deleteHasSameAuthorAndTitle">
+        delete from APABI_BOOK_META_NLC_CHECKER
+        where apabi_meta_title_clean = nlc_title and apabi_meta_author = nlc_author_clean
+    </delete>
+
+
     <insert id="insert" parameterType="com.apabi.flow.match_data.model.ApabiBookMetaNlcChecker">
         insert into APABI_BOOK_META_NLC_CHECKER
         <trim prefix="(" suffix=")" suffixOverrides=",">

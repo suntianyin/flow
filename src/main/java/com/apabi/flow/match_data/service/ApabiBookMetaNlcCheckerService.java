@@ -45,8 +45,7 @@ public class ApabiBookMetaNlcCheckerService {
 
     /**
      * 第一轮入库：
-     * 如果作者和出版社都不一样，则认为nlc_book_marc和apabi_book_meta数据不是同一本书
-     * 并对apabi_book_meta_title字段与nlc_author字段进行清洗生成apabi_book_meta_title_clean字段和nlc_author_clean字段的值
+     * 对apabi_book_meta_title字段与nlc_author字段进行清洗生成apabi_book_meta_title_clean字段和nlc_author_clean字段的值
      * 把数据写入到apabi_book_meta_nlc_checker表中
      *
      * @return
@@ -57,12 +56,12 @@ public class ApabiBookMetaNlcCheckerService {
         int processCount = 0;
         int pageSize = 10000;
         int pageNum = (count / pageSize) + 1;
-        for (int i = 1; i <= pageNum; i++) {
+        for (int i = 82; i <= pageNum; i++) {
             PageHelper.startPage(i, pageSize);
             Page<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findApabiBookMetaDataWithNlibraryId();
             for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
                 processCount++;
-                System.out.println("共" + count + "个，正在处理第" + processCount + "个");
+                System.out.println("共" + count + "个，正在处理第" + (i * pageSize + processCount) + "个");
                 try {
                     NlcBookMarc nlcBookMarc = nlcBookMarcDao.findByNlcMarcId(apabiBookMetaData.getNlibraryId());
                     String nlcBookMarcTitle = nlcBookMarc.getTitle();
@@ -82,7 +81,7 @@ public class ApabiBookMetaNlcCheckerService {
                         apabiBookMetaDataCreator = apabiBookMetaDataCreator.trim();
                     }
 
-                    if (nlcBookMarcTitle == null || nlcBookMarcAuthor == null || (!nlcBookMarcTitle.equals(apabiBookMetaDataTitle) && !nlcBookMarcAuthor.equals(apabiBookMetaDataCreator))) {
+                    if (StringUtils.isEmpty(nlcBookMarcTitle) || StringUtils.isEmpty(nlcBookMarcAuthor) || (!nlcBookMarcTitle.equals(apabiBookMetaDataTitle) && !nlcBookMarcAuthor.equals(apabiBookMetaDataCreator))) {
                         ApabiBookMetaNlcChecker apabiBookMetaNlcChecker = new ApabiBookMetaNlcChecker();
                         // metaId和nLibraryId肯定不为null
                         apabiBookMetaNlcChecker.setNlibraryId(nlcBookMarc.getNlcMarcId().trim());
@@ -98,8 +97,7 @@ public class ApabiBookMetaNlcCheckerService {
                         String apabiTitleClean = cleanTitle(apabiBookMetaDataTitle);
                         apabiTitleClean = apabiTitleClean == null ? null : apabiTitleClean.trim();
                         apabiBookMetaNlcChecker.setApabiMetaTitleClean(apabiTitleClean);
-                        String nlcAuthor = apabiBookMetaNlcChecker.getNlcAuthor() == null ? null : apabiBookMetaNlcChecker.getNlcAuthor().trim();
-                        String nlcAuthorClean = cleanAuthor(nlcAuthor);
+                        String nlcAuthorClean = cleanAuthor(nlcBookMarcAuthor);
                         nlcAuthorClean = nlcAuthorClean == null ? null : nlcAuthorClean.trim();
                         apabiBookMetaNlcChecker.setNlcAuthorClean(nlcAuthorClean);
                         // TODO 插入数据
@@ -120,38 +118,15 @@ public class ApabiBookMetaNlcCheckerService {
     /**
      * 第二轮清洗：
      * 删除符合以下条件的数据：
-     * nlc_author_clean.equals(apabi_book_meta_author) && nlc_title.equals(apabi_book_meta_title_clean)
-     * (注意：由于分页原因，需要删除多次)
+     * nlc_author_clean = apabi_book_meta_author and nlc_title = apabi_book_meta_title_clean
      *
      * @return
      */
     @RequestMapping("secondCheck")
     @ResponseBody
     public String secondCheck() {
-        int count = apabiBookMetaNlcCheckerDao.count();
-        int pageSize = 10000;
-        int pageNum = (count / pageSize) + 1;
-        int countHit = 0;
-        for (int i = 1; i <= pageNum; i++) {
-            PageHelper.startPage(i, pageSize);
-            Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
-            for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
-                try {
-                    // 对于匹配上的数据直接删除
-                    if (apabiBookMetaNlcChecker.getNlcAuthorClean().equals(apabiBookMetaNlcChecker.getApabiMetaAuthor()) && apabiBookMetaNlcChecker.getNlcTitle().equals(apabiBookMetaNlcChecker.getApabiMetaTitleClean())) {
-                        countHit++;
-                        // TODO 删除数据
-                        // apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
-                        System.out.println(apabiBookMetaNlcChecker);
-                    }
-                } catch (Exception e) {
-                    System.out.println("出异常的数据为：" + apabiBookMetaNlcChecker);
-                    e.printStackTrace();
-                }
-            }
-        }
-        System.out.println("命中的数量：" + countHit);
-        return "success";
+        int count = apabiBookMetaNlcCheckerDao.deleteHasSameAuthorAndTitle();
+        return "第二轮清洗数据共删除了" + count + "条数据";
     }
 
     /**
@@ -176,16 +151,13 @@ public class ApabiBookMetaNlcCheckerService {
                 if (checkTitleAndContainsAuthor(apabiBookMetaNlcChecker)) {
                     try {
                         hitCount++;
-                        // TODO 删除数据
-                        // apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
-                        System.out.println(apabiBookMetaNlcChecker);
+                         apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
                     } catch (Exception e) {
                     }
                 }
             }
         }
-        System.out.println("命中的数量：" + hitCount);
-        return "success";
+        return "第三轮清洗数据共删除了" + hitCount + "条数据";
     }
 
     /**
@@ -209,16 +181,41 @@ public class ApabiBookMetaNlcCheckerService {
                 if (containsTitleAndContainsAuthor(apabiBookMetaNlcChecker)) {
                     try {
                         hitCount++;
-                        // TODO 删除数据
-                        // apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
-                        System.out.println(apabiBookMetaNlcChecker);
+                         apabiBookMetaNlcCheckerDao.delete(apabiBookMetaNlcChecker.getNlibraryId());
                     } catch (Exception e) {
                     }
                 }
             }
         }
-        System.out.println("命中的数量：" + hitCount);
-        return "success";
+        return "第四轮清洗数据共删除了" + hitCount + "条数据";
+    }
+
+    /**
+     * 第五轮清洗：
+     * 对于经过四轮清洗之后在apabi_book_meta_nlc_checker表中未匹配apabi_book_metadata的数据设置apabi_book_metadata的字段为NULL值。
+     *
+     * @return
+     */
+    @RequestMapping("fifthCheck")
+    public String fifthCheck() {
+        int hitCount = 0;
+        int count = apabiBookMetaNlcCheckerDao.count();
+        int pageSize = 10000;
+        int pageNum = (count / pageSize) + 1;
+        for (int i = 1; i <= pageNum; i++) {
+            PageHelper.startPage(i, pageSize);
+            Page<ApabiBookMetaNlcChecker> apabiBookMetaNlcCheckerList = apabiBookMetaNlcCheckerDao.findByPage();
+            for (ApabiBookMetaNlcChecker apabiBookMetaNlcChecker : apabiBookMetaNlcCheckerList) {
+                String metaId = apabiBookMetaNlcChecker.getMetaId();
+                ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataDao.findById(metaId);
+                if (apabiBookMetaData != null) {
+                    apabiBookMetaData.setNlibraryId(null);
+                    apabiBookMetaDataDao.update(apabiBookMetaData);
+                    hitCount++;
+                }
+            }
+        }
+        return "第五轮清洗更新了apabi_book_metadata表中nlibraryid的数据" + hitCount + "条";
     }
 
     /**
@@ -567,6 +564,9 @@ public class ApabiBookMetaNlcCheckerService {
                 while (nlcAuthorClean.contains("[")) {
                     int start = nlcAuthorClean.indexOf("[");
                     int end = nlcAuthorClean.indexOf("]");
+                    if (end == -1) {
+                        break;
+                    }
                     String replace = nlcAuthorClean.substring(start, end + 1);
                     nlcAuthorClean = nlcAuthorClean.replace(replace, "");
                 }
