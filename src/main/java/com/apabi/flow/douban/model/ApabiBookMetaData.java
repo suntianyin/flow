@@ -211,5 +211,5 @@ public class ApabiBookMetaData {
 
     private Integer hasProcessingFile;
 
-    private String hasClean;
+    private Integer hasClean;
 }

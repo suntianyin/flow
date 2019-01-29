@@ -92,7 +92,6 @@
         <result column="HASPUBLISH" jdbcType="DECIMAL" property="hasPublish"/>
         <result column="ISPUBLICCOPYRIGHT" jdbcType="DECIMAL" property="isPublicCopyRight"/>
         <result column="RELATIONTYPE" jdbcType="VARCHAR" property="relationType"/>
-        <result column="HASCLEAN" jdbcType="VARCHAR" property="hasClean"/>
         <result column="ISREADEPUB" jdbcType="INTEGER" property="isReadEpub"/>
         <result column="FLOWSOURCE" jdbcType="VARCHAR" property="flowSource"/>
         <result column="ISREADCEBXFLOW" jdbcType="INTEGER" property="isReadCebxFlow"/>
@@ -102,6 +101,7 @@
         <result column="STYLEURL" jdbcType="CLOB" property="styleUrl"/>
         <result column="POSTSCRIPT" jdbcType="CLOB" property="postScript"/>
         <result column="HASPROCESSINGFILE" jdbcType="INTEGER" property="hasProcessingFile"/>
+        <result column="HASCLEAN" jdbcType="DECIMAL" property="hasClean"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -129,7 +129,7 @@
         where nlibraryid is not null
         and hascebx = '1'
         and salestatus = '1'
-        and hasClean = '0'
+        and hasClean = 0
     </select>
 
     <!-- 查询有有nlibraryid且需要清洗的数据 -->
@@ -140,7 +140,7 @@
         where nlibraryid is not null
         and hascebx = '1'
         and salestatus = '1'
-        and hasClean = '0'
+        and hasClean = 0
     </select>
 
     <!-- 统计有doubanId数据的个数 -->
@@ -810,7 +810,7 @@
                 #{hasProcessingFile,jdbcType=INTEGER},
             </if>
             <if test="hasClean != null">
-                #{hasClean,jdbcType=VARCHAR},
+                #{hasClean,jdbcType=DECIMAL},
             </if>
             <if test="isReadEpub != null">
                 #{postScript,jdbcType=INTEGER},
@@ -1113,7 +1113,7 @@
                 HASPROCESSINGFILE = #{hasProcessingFile,jdbcType=INTEGER},
             </if>
             <if test="hasClean != null">
-                HASCLEAN = #{hasClean,jdbcType=VARCHAR},
+                HASCLEAN = #{hasClean,jdbcType=DECIMAL},
             </if>
             <if test="isReadEpub != null">
                 ISREADEPUB = #{isReadEpub,jdbcType=INTEGER},
@@ -1134,7 +1134,7 @@
 
     <!-- 更新为已清洗 -->
     <update id="updateHasCleaned" parameterType="java.lang.String">
-        update apabi_book_metadata set hasClean = '1' where metaid = #{metaId}
+        update apabi_book_metadata set hasClean = 1 where metaid = #{metaId}
     </update>
 
     <select id="findIsbn13WithoutDoubanId" resultType="java.lang.String">
@@ -1163,14 +1163,14 @@
         select
         count(*)
         from apabi_book_metadata
-        where hasClean = '0' or hasClean is null
+        where hasClean = 0 or hasClean is null
     </select>
 
     <select id="findShouldCleanByPage" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from apabi_book_metadata
-        where hasClean = '0' or hasClean is null
+        where hasClean = 0 or hasClean is null
     </select>
 
 </mapper>

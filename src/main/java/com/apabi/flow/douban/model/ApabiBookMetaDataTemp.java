@@ -217,4 +217,6 @@ public class ApabiBookMetaDataTemp {
     private Integer isReadCebxFlow;
 
     private Integer hasProcessingFile;
+
+    private Integer hasClean;
 }
