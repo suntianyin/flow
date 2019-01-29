@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: dev
   data:
       mongodb:
         uri: mongodb://172.18.89.101:40000/books
@@ -65,6 +65,9 @@ spring:
       #关闭abanded连接时输出错误日志
       logAbandoned: true
       filters: mergeStat
+      #关闭自动重连
+      connectionErrorRetryAttempts: 0
+      breakAfterAcquireFailure: true
 
 ##    driver-class-name: com.mysql.jdbc.Driver
 ##    url: jdbc:mysql://127.0.0.1:3306/nr2k?useUnicode=true&characterEncoding=utf-8
