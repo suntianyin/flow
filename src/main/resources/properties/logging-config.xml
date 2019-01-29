@@ -485,7 +485,7 @@
     <!-- 针对douban定时爬虫任务配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.douban.DoubanConsumer" level="INFO" additivity="false">
         <!-- 对于douban定时爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于DoubanConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="DOUBAN_CRAWL"/>
     </logger>
@@ -493,7 +493,7 @@
     <!-- 针对amazon定时爬虫任务配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.amazon.AmazonConsumer" level="INFO" additivity="false">
         <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于AmazonConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="AMAZON_CRAWL"/>
     </logger>
@@ -501,7 +501,7 @@
     <!-- 针对nlc定时爬虫任务配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.nlc.NlcMarcConsumer" level="INFO" additivity="false">
         <!-- 对于nlc定时爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于NlcMarcConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="NLC_CRAWL"/>
     </logger>
@@ -509,7 +509,7 @@
     <!-- 针对nlc分类爬虫任务配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.nlc_category.category.NlcBookMarcCategoryConsumer" level="INFO" additivity="false">
         <!-- 对于nlc分类爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于NlcBookMarcCategoryConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="NLC_CATEGORY_CRAWL"/>
     </logger>
@@ -517,7 +517,7 @@
     <!-- 针对douban定时爬虫任务执行时间配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.douban.CrawlDoubanService" level="INFO" additivity="false">
         <!-- 对于douban定时爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
         <appender-ref ref="DOUBAN_CRAWL_STATUS"/>
     </logger>
@@ -525,7 +525,7 @@
     <!-- 针对amazon定时爬虫任务执行时间配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.amazon.AmazonIdProducer" level="INFO" additivity="false">
         <!-- 对于amazon定时爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于CleanDataController的输出至日志文件的日志配置 -->
         <appender-ref ref="AMAZON_CRAWL_STATUS"/>
     </logger>
@@ -533,7 +533,7 @@
     <!-- 针对nlc爬虫任务执行时间配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.nlc.CrawlNlcMarcService" level="INFO" additivity="false">
         <!-- 对于nlc定时爬虫任务的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于nlc的输出至日志文件的日志配置 -->
         <appender-ref ref="NLC_CRAWL_STATUS"/>
     </logger>
@@ -541,7 +541,7 @@
     <!-- 针对jd定时抓取配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.jd.JdConsumer" level="INFO" additivity="false">
         <!-- 打印至控制台 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于Jd定时任务输出至日志文件的日志配置 -->
         <appender-ref ref="JD_CRAWL"/>
     </logger>
@@ -549,7 +549,7 @@
     <!-- 针对jd全局抓取配置的日志 -->
     <logger name="com.apabi.flow.jd.service.JdMetadataConsumer" level="INFO" additivity="false">
         <!-- 打印至控制台 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于Jd全局抓取输出至日志文件的日志配置 -->
         <appender-ref ref="JD_CRAWL_ALL"/>
     </logger>
@@ -557,7 +557,7 @@
     <!-- 针对dangdang定时任务抓取配置的日志 -->
     <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="INFO" additivity="false">
         <!-- 对于dangdang全局抓取日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->
         <appender-ref ref="DANGDANG_CRAWL"/>
     </logger>
@@ -645,7 +645,7 @@
 
     <!-- 根据dangdang中的isbn抓取douban -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlDoubanConsumer" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="ISBN_DANGDANG_DOUBAN"/>
     </logger>
 
@@ -668,7 +668,7 @@
 
     <!-- 根据dangdang中的isbn抓取amazon -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlAmazonConsumer" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="ISBN_DANGDANG_AMAZON"/>
     </logger>
 
@@ -691,7 +691,7 @@
 
     <!-- 根据dangdang中的isbn抓取nlc -->
     <logger name="com.apabi.flow.isbn_douban_amazon.service.impl.IsbnDangdangCrawlNlcConsumer" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <appender-ref ref="ISBN_DANGDANG_NLC"/>
     </logger>
 
