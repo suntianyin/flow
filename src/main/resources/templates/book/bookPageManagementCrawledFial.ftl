@@ -49,7 +49,7 @@
                 async: false,
                 success: function (data) {
                     alertDialog(data.msg, data.status);
-                    window.location.href = "pageCrawled";
+                    window.location.href = "bookFailure";
                 },
                 error: function (data) {
                     alertDialog(data.msg, data.status);
