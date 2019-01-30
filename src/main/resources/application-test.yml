@@ -15,4 +15,4 @@ upAuthFile: /upload/flow/auth
 email: /apabi/flow/file/email
 batchSize: 1000
 threadTime: 1
-logPath: /Library/work/java/flowPlatform/log/
+logPath: /apabi/flow/
