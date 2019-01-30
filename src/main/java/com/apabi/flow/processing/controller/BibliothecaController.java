@@ -1028,7 +1028,6 @@ public class BibliothecaController {
     //标引
     @RequestMapping(value = "/editCebxmByCarbon")
     public String editCebxmByCarbon(@RequestParam(value = "metaId") String metaId,
-                                  HttpServletRequest request,
                                   HttpServletResponse response) {
         if (StringUtils.isNotBlank(metaId)) {
             try {
@@ -1063,12 +1062,15 @@ public class BibliothecaController {
                         in.close();
                         // 关闭输出流
                         out.close();
+                    }else {
+                        return "processing/error";
                     }
                 } else {
                     return "processing/error";
                 }
             } catch (Exception e) {
                 logger.warn("下载文件{}，时出现异常{}", metaId, e.getMessage());
+                return "processing/error";
             }
         }
         return null;

@@ -262,27 +262,7 @@
 
         //标引
         function editCebxmByCarbon(metaId) {
-        window.location.href = "${ctx}/processing/bibliotheca/editCebxmByCarbon?metaId=" + metaId;
-            <#--var url = "${ctx}/processing/bibliotheca/editCebxmByCarbon?metaId=" + metaId;-->
-            <#--$.ajax({-->
-                <#--url: url,-->
-                <#--type: "get",-->
-                <#--dataType: "text",-->
-                <#--async: false,-->
-                <#--success: function (data) {-->
-                    <#--Loading(false);-->
-                    <#--if (data == "success") {-->
-                        <#--tipDialog("下载成功！", 3, 1);-->
-                    <#--} else {-->
-                        <#--tipDialog("下载失败！", 3, -1);-->
-                    <#--}-->
-                    <#--location.reload();-->
-                <#--},-->
-                <#--error: function (data) {-->
-                    <#--Loading(false);-->
-                    <#--alertDialog("下载失败！", -1);-->
-                <#--}-->
-            <#--});-->
+            window.location.href = "${ctx}/processing/bibliotheca/editCebxmByCarbon?metaId=" + metaId;
         }
 
     </script>
