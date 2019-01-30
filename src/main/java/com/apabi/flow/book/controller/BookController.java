@@ -1149,7 +1149,7 @@ public class BookController {
     @RequestMapping("/autoFetchPageDataAgain2")
     public Object autoFetchPageDataAgain2() {
         String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
-//        String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
+//        String cebxData = getCebxData("http://localhost:8083/flow/book/autoFetchPageDataAgain");
         return cebxData;
     }
 
@@ -1227,9 +1227,9 @@ public class BookController {
     @ResponseBody
     @RequestMapping("/getBookMetaIds")
     public Object getBookMetaIds(@RequestParam("metaIds") String metaIds) {
+        ResultEntity resultEntity = new ResultEntity();
         try {
             if (metaIds != null && metaIds != "") {
-                ResultEntity resultEntity = new ResultEntity();
                 String[] split = metaIds.split(",");
                 Set<String> hashSet = Arrays.stream(split).collect(Collectors.toSet());
                 int num = 0;
@@ -1246,7 +1246,9 @@ public class BookController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        resultEntity.setMsg("数据过多上传失败");
+        resultEntity.setStatus(-1);
+        return resultEntity;
     }
 
     /**
