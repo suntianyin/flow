@@ -325,6 +325,11 @@
             window.location.href = "${ctx}/processing/bibliotheca/indexing?id=" + id;
         }
 
+        //标引
+        function editCebxmByCarbon(metaId) {
+            window.location.href = "${ctx}/processing/bibliotheca/editCebxmByCarbon?metaId=" + metaId;
+        }
+
         //书目信息pdf查看
         function pdf(id) {
             var url = "${ctx}/processing/bibliotheca/pdf?id=" + id;
@@ -502,7 +507,7 @@
                                     </#if>
                                     <#if list.bibliothecaState.getCode()== 5 && list.convertStatus?? && list.convertStatus==2>
                                         <a href="javascript:void(0);"
-                                           onclick="indexing('${(list.id)!''}')">标引</a>
+                                           onclick="editCebxmByCarbon('${(list.metaId)!''}')">标引</a>
                                     <#else>
                                         <span style="color: #7c7c7c;">标引</span>
                                     </#if>
