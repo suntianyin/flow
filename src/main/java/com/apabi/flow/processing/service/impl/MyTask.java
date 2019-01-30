@@ -78,27 +78,27 @@ public class MyTask implements Runnable {
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
             // 处理InputStream的线程
-            new Thread() {
-                @Override
-                public void run() {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    String line = null;
-
-                    try {
-                        while ((line = in.readLine()) != null) {
-                            //System.out.println("output: " + line);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            in.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }.start();
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//                    String line = null;
+//
+//                    try {
+//                        while ((line = in.readLine()) != null) {
+//                            //System.out.println("output: " + line);
+//                        }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } finally {
+//                        try {
+//                            in.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }.start();
             new Thread() {
                 @Override
                 public void run() {
