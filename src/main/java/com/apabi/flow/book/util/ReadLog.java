@@ -114,7 +114,8 @@ public class ReadLog {
             stringBuffer2 = new StringBuffer();
             // 建立smb文件输入流
             while ((in.read(buffer)) != -1) {
-                String str= new String (buffer);
+                String str= new String (buffer,"UTF-8");
+//                str=new String(str.getBytes("ISO-8859-1"),"UTF-8");
                 log.info(str);
                 stringBuffer.append(str).append("@");
             }
