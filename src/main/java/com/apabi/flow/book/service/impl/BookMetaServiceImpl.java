@@ -1641,12 +1641,14 @@ public class BookMetaServiceImpl implements BookMetaService {
                             //补充页码和目录
                             if (bookMeta != null) {
                                 boolean flag = false;
-                                if (StringUtils.isEmpty(bookMeta.getCebxPage())) {
+                                if (StringUtils.isEmpty(bookMeta.getCebxPage())
+                                        ||bookMeta.getCebxPage().toLowerCase().equals("null")) {
                                     String cebxPage = getCebxData(getCebxPage + bookMeta.getMetaId());
                                     bookMeta.setCebxPage(cebxPage);
                                     flag = true;
                                 }
-                                if (StringUtils.isEmpty(bookMeta.getFoamatCatalog())) {
+                                if (StringUtils.isEmpty(bookMeta.getFoamatCatalog())
+                                        ||bookMeta.getFoamatCatalog().toLowerCase().equals("null")) {
                                     String cata = getCebxData(getCataLog + bookMeta.getMetaId());
                                     bookMeta.setFoamatCatalog(cata);
                                     flag = true;
