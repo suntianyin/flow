@@ -1030,18 +1030,20 @@ public class BookController {
         String log2 = "";
         String log3 = "";
         String logPath = config.getLogPath();
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 1) {
-            String filename = logPath  + "fetchPage" + File.separator + "fetchPage." + time + ".log";
-            log1 = ReadLog.read(filename, "UTF-8", len);
-        }
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 2) {
-            String filename = logPath  + "fetchPage1" + File.separator + "fetchPageAgain." + time + ".log";
-            log2 = ReadLog.read(filename, "UTF-8", len);
-        }
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
-            String filename = logPath  + "fetchPage2" + File.separator + "fetchPage2." + time + ".log";
-            log3 = ReadLog.read(filename, "UTF-8", len);
-        }
+        String remoteUrl="smb://admin:Founder123@192.168.20.21/k8s";
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 1) {
+                String filename = logPath  + "/fetchPage/fetchPage." + time + ".log";
+                log.info(filename);
+                log1 = ReadLog.smbGet1(filename, len);
+            }
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 2) {
+                String filename = logPath  + "/fetchPage1/fetchPageAgain." + time + ".log";
+                log2 = ReadLog.smbGet1(filename, len);
+            }
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
+                String filename = logPath  + "/fetchPage2/fetchPage2." + time + ".log";
+                log3 = ReadLog.smbGet1(filename, len);
+            }
         model.addAttribute("time", time);
         model.addAttribute("len", len);
         model.addAttribute("log1", log1);
@@ -1099,6 +1101,7 @@ public class BookController {
     @RequestMapping("/autoFetchPageData2")
     public Object autoFetchPageData2() {
         String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageData");
+//        String cebxData = getCebxData("http://localhost:8083/flow/book/autoFetchPageData");
         return cebxData;
     }
 
@@ -1146,6 +1149,7 @@ public class BookController {
     @RequestMapping("/autoFetchPageDataAgain2")
     public Object autoFetchPageDataAgain2() {
         String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
+//        String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
         return cebxData;
     }
 
@@ -1210,7 +1214,7 @@ public class BookController {
             resultEntity.setMsg("流式内容拼装失败！请联系管理员");
             resultEntity.setStatus(-1);
         }
-//        resultEntity.setBody()
+//        resultEntity.setBody()`
         model.addAttribute("isCover", isCover);
         return resultEntity;
     }
@@ -1434,6 +1438,7 @@ public class BookController {
     @RequestMapping("/shutdownNow2")
     public Object shutdownNow2() {
         String cebxData = getCebxData("http://flow.apabi.com/flow/book/shutdownNow");
+//        String cebxData = getCebxData("http://localhost:8083/flow/book/shutdownNow");
         return cebxData;
     }
 

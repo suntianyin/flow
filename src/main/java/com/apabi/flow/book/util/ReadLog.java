@@ -2,12 +2,15 @@ package com.apabi.flow.book.util;
 
 
 import com.apabi.flow.book.controller.BookController;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileInputStream;
+import jcifs.smb.SmbFileOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.net.MalformedURLException;
 
 /**
  * 从最后一行开始读取
@@ -74,9 +77,62 @@ public class ReadLog {
         return null;
     }
 
-    public static void main(String args[]) {
-        String read = read("/Users/suntianyin/Downloads/1log-2019-01-29.log", "UTF-8",100);
-        System.out.println(read);
-        int a=1;
-    }  
+    public static void main(String args[])throws IOException {
+//        String read = read("/Users/suntianyin/Downloads/1log-2019-01-29.log", "UTF-8",100);
+//        String s=ReadLog.smbGet1("a");
+        String read ="";
+        String s="2019-01-30 09:02:01.644 logback [pool-8-thread-19] INFO  c.a.f.b.f.FetchPageAgainConsumer - 新增或修改metaid：m.20181212-SHSH-ZCKM-0023，页码：120的数据成功,请求接口耗时：2030ms,插入数据库耗时：53ms\n@" +
+                "2019-01-30 09:02:01.652 logback [pool-8-thread-14] INFO  c.a.f.b.f.FetchPageAgainConsumer - 新增或修改metaid：m.20181212-SHSH-ZCKM-0023，页码：7的数据成功,请求接口耗时：2045ms,插入数据库耗时：48ms\n@" +
+                "2019-01-30 09:02:01.652 logback [pool-8-thread-21] INFO  c.a.f.b.f.FetchPageAgainConsumer - 新增或修改metaid：m.20181212-SHSH-ZCKM-0023，页码：111的数据成功,请求接口耗时：2037ms,插入数据库耗时：54ms\n@" +
+                "2019-01-30 09:02:01.668 logback [pool-8-thread-19] INFO  c.a.f.b.f.FetchPageAgainConsumer - 删除pageCrawledTemp的id:m.20181212-SHSH-ZCKM-0023,page:120成功\n@" +
+                "2019-01-30 09:02:01.677 logback [pool-8-thread-14] INFO  c.a.f.b.f.FetchPageAgainConsumer - 删除pageCrawledTemp的id:m.20181212-SHSH-ZCKM-0023,page:7成功\n@" +
+                "2019-01-30 09:02:01.677 logback [pool-8-thread-16] INFO  c.a.f.b.f.FetchPageAgainConsumer - 新增或修改metaid：m.20181212-SHSH-ZCKM-0023，页码：187的数据成功,请求接口耗时：2099ms,插入数据库耗时：18ms\n@" +
+                "2019-01-30 09:02:01.677 logback [pool-8-thread-21] INFO  c.a.f.b.f.FetchPageAgainConsumer - 删除pageCrawledTemp的id:m.20181212-SHSH-ZCKM-0023,page:111成功\n@";
+        String[] split = s.split("@");
+            if(split.length<100) {
+                for (int i = split.length-1; i >=0 ; i--) {
+                read = split[i] ;
+                    System.out.print(read);
+                }
+            }else {
+                for (int i = 99; i >=0 ; i--) {
+                    read = split[i] ;
+                    System.out.println(read);
+                }
+            }
+
+    }
+    public static String smbGet1(String remoteUrl,Integer len)  {
+        StringBuffer stringBuffer2= null;
+        try {
+            SmbFile smbFile = new SmbFile(remoteUrl);
+            int length = smbFile.getContentLength();// 得到文件的大小
+            byte buffer[] = new byte[length];
+            SmbFileInputStream in = new SmbFileInputStream(smbFile);
+            StringBuffer stringBuffer=new StringBuffer();
+            stringBuffer2 = new StringBuffer();
+            // 建立smb文件输入流
+            while ((in.read(buffer)) != -1) {
+                stringBuffer.append(buffer).append("@");
+            }
+            in.close();
+            String s = stringBuffer.toString();
+            String[] split = s.split("@");
+            if(split.length<len) {
+                for (int i = split.length-1; i >=0 ; i--) {
+                    stringBuffer2.append(split[i]);
+                }
+            }else {
+                for (int i = len-1; i >=0 ; i--) {
+                    stringBuffer2.append(split[i]);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+            return "";
+        }
+
+        return stringBuffer2.toString();
+    }
 }  
