@@ -107,7 +107,6 @@ public class ReadLog {
         try {
             SmbFile smbFile = new SmbFile(remoteUrl);
             int length = smbFile.getContentLength();// 得到文件的大小
-            log.info(String.valueOf(length));
             byte buffer[] = new byte[length];
             SmbFileInputStream in = new SmbFileInputStream(smbFile);
             StringBuffer stringBuffer=new StringBuffer();
@@ -115,20 +114,17 @@ public class ReadLog {
             // 建立smb文件输入流
             while ((in.read(buffer)) != -1) {
                 String str= new String (buffer,"UTF-8");
-//                str=new String(str.getBytes("ISO-8859-1"),"UTF-8");
-                log.info(str);
-                stringBuffer.append(str).append("@");
+                stringBuffer.append(str);
             }
             in.close();
             String s = stringBuffer.toString();
-            log.info(s);
-            String[] split = s.split("@");
+            String[] split = s.split("/n");
             if(split.length<len) {
                 for (int i = split.length-1; i >=0 ; i--) {
                     stringBuffer2.append(split[i]);
                 }
             }else {
-                for (int i = len-1; i >=0 ; i--) {
+                for (int i = split.length-1; i >=split.length-len; i--) {
                     stringBuffer2.append(split[i]);
                 }
             }
