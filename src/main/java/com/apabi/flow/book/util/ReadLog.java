@@ -107,16 +107,20 @@ public class ReadLog {
         try {
             SmbFile smbFile = new SmbFile(remoteUrl);
             int length = smbFile.getContentLength();// 得到文件的大小
+            log.info(String.valueOf(length));
             byte buffer[] = new byte[length];
             SmbFileInputStream in = new SmbFileInputStream(smbFile);
             StringBuffer stringBuffer=new StringBuffer();
             stringBuffer2 = new StringBuffer();
             // 建立smb文件输入流
             while ((in.read(buffer)) != -1) {
-                stringBuffer.append(buffer).append("@");
+                String str= new String (buffer);
+                log.info(str);
+                stringBuffer.append(str).append("@");
             }
             in.close();
             String s = stringBuffer.toString();
+            log.info(s);
             String[] split = s.split("@");
             if(split.length<len) {
                 for (int i = split.length-1; i >=0 ; i--) {
