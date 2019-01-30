@@ -1,6 +1,10 @@
 package com.apabi.flow.book.util;
 
 
+import com.apabi.flow.book.controller.BookController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -9,7 +13,8 @@ import java.io.RandomAccessFile;
  * 从最后一行开始读取
  */
 public class ReadLog {
-  
+
+    private static Logger log = LoggerFactory.getLogger(ReadLog.class);
     /** 
      *  
      * @param filename 目标文件 
@@ -53,9 +58,11 @@ public class ReadLog {
                 }  
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();  
+            e.printStackTrace();
+            log.info(e.toString());
         } catch (IOException e) {
-            e.printStackTrace();  
+            e.printStackTrace();
+            log.info(e.toString());
         } finally {  
             try {  
                 if (rf != null)  
@@ -68,7 +75,8 @@ public class ReadLog {
     }
 
     public static void main(String args[]) {
-        String read = read("/Users/suntianyin/Downloads/log-2019-01-28.log", "UTF-8",100);
+        String read = read("/Users/suntianyin/Downloads/1log-2019-01-29.log", "UTF-8",100);
+        System.out.println(read);
         int a=1;
     }  
 }  
