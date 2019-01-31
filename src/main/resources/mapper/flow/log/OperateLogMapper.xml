@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.apabi.flow.log.dao.OperateLogMapper">
+  <resultMap id="BaseResultMap" type="com.apabi.flow.log.model.OperateLog">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="OPERATE_TYPE" jdbcType="VARCHAR" property="operateType" />
+    <result column="DATA_TYPE" jdbcType="VARCHAR" property="dataType" />
+    <result column="DATA_ID" jdbcType="VARCHAR" property="dataId" />
+    <result column="BEFORE_OPERATE" jdbcType="CLOB" property="beforeOperate" />
+    <result column="AFTER_OPERATE" jdbcType="CLOB" property="afterOperate" />
+    <result column="OPERATE_TIME" jdbcType="TIMESTAMP" property="operateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, USER_ID, OPERATE_TYPE, DATA_TYPE, DATA_ID, OPERATE_TIME
+  </sql>
+  <sql id="Blob_Column_List">
+    BEFORE_OPERATE, AFTER_OPERATE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from APABI_OPERATE_LOG
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from APABI_OPERATE_LOG
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.apabi.flow.log.model.OperateLog">
+    insert into APABI_OPERATE_LOG (ID, USER_ID, OPERATE_TYPE, 
+      DATA_TYPE, DATA_ID, OPERATE_TIME, 
+      BEFORE_OPERATE, AFTER_OPERATE)
+    values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{operateType,jdbcType=VARCHAR}, 
+      #{dataType,jdbcType=VARCHAR}, #{dataId,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, 
+      #{beforeOperate,jdbcType=CLOB}, #{afterOperate,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apabi.flow.log.model.OperateLog">
+    insert into APABI_OPERATE_LOG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="userId != null">
+        USER_ID,
+      </if>
+      <if test="operateType != null">
+        OPERATE_TYPE,
+      </if>
+      <if test="dataType != null">
+        DATA_TYPE,
+      </if>
+      <if test="dataId != null">
+        DATA_ID,
+      </if>
+      <if test="operateTime != null">
+        OPERATE_TIME,
+      </if>
+      <if test="beforeOperate != null">
+        BEFORE_OPERATE,
+      </if>
+      <if test="afterOperate != null">
+        AFTER_OPERATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="operateType != null">
+        #{operateType,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null">
+        #{dataType,jdbcType=VARCHAR},
+      </if>
+      <if test="dataId != null">
+        #{dataId,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null">
+        #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beforeOperate != null">
+        #{beforeOperate,jdbcType=CLOB},
+      </if>
+      <if test="afterOperate != null">
+        #{afterOperate,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apabi.flow.log.model.OperateLog">
+    update APABI_OPERATE_LOG
+    <set>
+      <if test="userId != null">
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="operateType != null">
+        OPERATE_TYPE = #{operateType,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null">
+        DATA_TYPE = #{dataType,jdbcType=VARCHAR},
+      </if>
+      <if test="dataId != null">
+        DATA_ID = #{dataId,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null">
+        OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beforeOperate != null">
+        BEFORE_OPERATE = #{beforeOperate,jdbcType=CLOB},
+      </if>
+      <if test="afterOperate != null">
+        AFTER_OPERATE = #{afterOperate,jdbcType=CLOB},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.apabi.flow.log.model.OperateLog">
+    update APABI_OPERATE_LOG
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      OPERATE_TYPE = #{operateType,jdbcType=VARCHAR},
+      DATA_TYPE = #{dataType,jdbcType=VARCHAR},
+      DATA_ID = #{dataId,jdbcType=VARCHAR},
+      OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP},
+      BEFORE_OPERATE = #{beforeOperate,jdbcType=CLOB},
+      AFTER_OPERATE = #{afterOperate,jdbcType=CLOB}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apabi.flow.log.model.OperateLog">
+    update APABI_OPERATE_LOG
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+      OPERATE_TYPE = #{operateType,jdbcType=VARCHAR},
+      DATA_TYPE = #{dataType,jdbcType=VARCHAR},
+      DATA_ID = #{dataId,jdbcType=VARCHAR},
+      OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
