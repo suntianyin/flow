@@ -25,6 +25,8 @@ import com.apabi.flow.processing.task.MakerCebxTask;
 import com.apabi.flow.processing.task.MakerTaskBo;
 import com.apabi.flow.publisher.dao.PublisherDao;
 import com.apabi.flow.publisher.model.Publisher;
+import com.apabi.flow.systemconf.dao.SystemConfMapper;
+import com.apabi.flow.systemconf.model.SystemConf;
 import com.apabi.flow.systemconf.util.FileUtil;
 import com.apabi.maker.MakerAgent;
 import com.apabi.maker.MakerUtil;
@@ -82,6 +84,8 @@ public class BibliothecaServiceImpl implements BibliothecaService {
     private static Set<String> metaIdSet = ConcurrentHashMap.newKeySet();
 
     private static LinkedBlockingQueue<MakerTaskBo> makerTaskQueue = new LinkedBlockingQueue<>();
+    @Autowired
+    SystemConfMapper systemConfMapper;
 
     @Autowired
     private BibliothecaMapper bibliothecaMapper;
@@ -1248,7 +1252,15 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             ArrayList<File> fileList = new ArrayList<>();
             ArrayList<File> files = getFiles(fileList, path);
 //            int cpuSum = Runtime.getRuntime().availableProcessors();
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 200, TimeUnit.MILLISECONDS,
+            SystemConf systemConf = systemConfMapper.selectByConfKey("parsing_threadNum");
+            int threadNum=1;
+            if (systemConf == null) {
+                logger.info("获取系统参数信息出错，无法查询书目解析启动线程池线程数默认为1");
+            }else {
+                String confvalue = systemConf.getConfValue();
+                threadNum =Integer.parseInt(confvalue);
+            }
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(threadNum, threadNum, 200, TimeUnit.MILLISECONDS,
                     new ArrayBlockingQueue<Runnable>(files.size()));
 
             for (int i = 1; i <= files.size(); i++) {
