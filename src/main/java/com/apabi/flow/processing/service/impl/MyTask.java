@@ -77,43 +77,45 @@ public class MyTask implements Runnable {
                     " -o " + "\"" + target + "\"";
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
-            // 处理InputStream的线程
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//                    String line = null;
-//
-//                    try {
-//                        while ((line = in.readLine()) != null) {
-//                            //System.out.println("output: " + line);
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    } finally {
-//                        try {
-//                            in.close();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }.start();
+
+            final InputStream is2 = process.getErrorStream();
             new Thread() {
                 @Override
                 public void run() {
-                    BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    BufferedReader err = new BufferedReader(new InputStreamReader(is2));
                     String line = null;
 
                     try {
                         while ((line = err.readLine()) != null) {
-//                            System.out.println("err: " + line);
+                            logger.info("err: " + line);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
                         try {
                             err.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
+            // 处理InputStream的线程
+            new Thread() {
+                @Override
+                public void run() {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String line = null;
+
+                    try {
+                        while ((line = in.readLine()) != null) {
+                            logger.info("output: " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            in.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
