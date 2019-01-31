@@ -88,4 +88,7 @@ public interface BookMetaService {
 
     //Excel批量导入图书元数据
     List<BookMetaFromExcel> importBookMetaFromExcel(Map<Integer, Map<Object, Object>> data);
+
+    //批量资源上下架
+    void saleUpOrDown(String conMetaId, Integer saleStatus, String toEmail, String userId);
 }

@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -1627,4 +1629,23 @@ public class BookController {
         return "{\"status\":-1,\"msg\":\"连接异常\"}";
     }
 
+    //资源上下架页面跳转
+    @RequestMapping("/saleUpOrDown")
+    public String saleUpOrDown() {
+        return "book/saleUpOrDown";
+    }
+
+    //资源上下架
+    @RequestMapping(value = "/saleUpOrDown", method = RequestMethod.POST)
+    @ResponseBody
+    public String saleUpOrDown(@RequestParam("metaIds") String metaIds,
+                               @RequestParam("saleStatus") Integer saleStatus,
+                               @RequestParam("toEmail") String toEmail) {
+        if (!StringUtils.isEmpty(metaIds) && !StringUtils.isEmpty(toEmail)) {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            bookMetaService.saleUpOrDown(metaIds, saleStatus, toEmail, userDetails.getUsername());
+            return "success";
+        }
+        return "error";
+    }
 }
