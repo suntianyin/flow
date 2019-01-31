@@ -445,7 +445,7 @@
     <!-- 针对FetchPageAgainConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageAgainConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageAgainConsumer的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于FetchPageAgainConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="PAGEAGAIN"/>
     </logger>
@@ -453,7 +453,7 @@
     <!-- 针对FetchPageConsumer接口配置的日志 -->
     <logger name="com.apabi.flow.book.fetchPage.FetchPageConsumer" level="INFO" additivity="false">
         <!-- 对于FetchPageConsumer的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于FetchPageConsumer的输出至日志文件的日志配置 -->
         <appender-ref ref="PAGE"/>
     </logger>
@@ -462,7 +462,7 @@
     <!-- 针对BookPageServiceImpl接口配置的日志 -->
     <logger name="com.apabi.flow.book.service.impl.BookPageServiceImpl" level="INFO" additivity="false">
         <!-- 对于BookPageServiceImpl的STDOUT的日志配置 -->
-        <appender-ref ref="STDOUT"/>
+        <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于BookPageServiceImpl的输出至日志文件的日志配置 -->
         <appender-ref ref="PAGE2"/>
     </logger>
