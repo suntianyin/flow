@@ -37,7 +37,7 @@
             var pathUrl = "bookMeta?metaId=" + metaId
                     + "&title=" + title + "&creator=" + creator
                     + "&publisher=" + publisher + "&isbn=" + isbn
-                    + "&isbnVal=" + isbnVal  + "&hasCebx=" + hasCebx
+                    + "&isbnVal=" + isbnVal + "&hasCebx=" + hasCebx
                     + "&hasFlow=" + hasFlow + "&isPublicCopyRight=" + isPublicCopyRight
                     + "&saleStatus=" + saleStatus + "&flowSource=" + flowSource
                     + "&drid=" + drid;
@@ -99,9 +99,15 @@
                 top.frames[iframe].AcceptClick()
             });
         }
+
         //模板数据导入
         function bookExcelAdd() {
             window.location.href = "${ctx}/book/bookExcelAdd";
+        }
+
+        //资源上下架
+        function saleUpOrDown() {
+            window.location.href = "${ctx}/book/saleUpOrDown";
         }
 
         //解析epub文件
@@ -241,6 +247,11 @@
             <div class="PartialButton">
                 <a id="lr-xmlAdd" href="javascript:;" title="解析xml文件" onclick="bookExcelAdd()"
                    class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;模板数据导入</span></a>
+            </div>
+            <div class="tools_separator"></div>
+            <div class="PartialButton">
+                <a id="lr-saleUpOrDown" href="javascript:void(0);" title="资源上下架" onclick="saleUpOrDown()"
+                   class="tools_btn"><span><i class="fa fa-plus"></i>&nbsp;资源上下架</span></a>
             </div>
         </div>
         <!--列表-->
