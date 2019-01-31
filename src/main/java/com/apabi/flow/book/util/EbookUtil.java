@@ -67,7 +67,7 @@ public class EbookUtil {
         } else if (serviceType.equals(SERVICE_TYPE_HTML)) {
             url = makePageUrl + "/" + baseUrlType + "?" + "ServiceType=" + serviceType + "&objID=" + URLEncoder.encode(objId, "UTF-8") + "&metaId=" + URLEncoder.encode(metaid, "UTF-8") + "&OrgId=" + shuyuanOrgId + "&width=" + width + "&height=" + height + "&pageid=" + pageid + "&username=" + URLEncoder.encode(userName, "UTF-8") + "&rights=" + rights + "&time=" + signMap.get("time") + "&sign=" + signMap.get("sign");
         }
-        log.info("makeHtmlUrl[" + url + "]");
+//        log.info("makeHtmlUrl[" + url + "]");
         return url;
     }
     //获取书总页数
