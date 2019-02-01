@@ -1263,7 +1263,7 @@ public class BibliothecaServiceImpl implements BibliothecaService {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(threadNum, threadNum, 200, TimeUnit.MILLISECONDS,
                     new ArrayBlockingQueue<Runnable>(files.size()));
             for (int i = 1; i <= files.size(); i++) {
-                MyTask myTask = new MyTask(i,files.get(i), username, batchId, publisherDao, bibliothecaMapper, config);
+                MyTask myTask = new MyTask(i,files.get(i-1), username, batchId, publisherDao, bibliothecaMapper, config);
                 executor.execute(myTask);
                 logger.info("线程池中线程数目：" + executor.getPoolSize() + "，队列中等待执行的任务数目：" +
                         executor.getQueue().size() + "，已执行玩别的任务数目：" + executor.getCompletedTaskCount());
