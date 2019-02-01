@@ -44,7 +44,7 @@
                             window.location.href = "pageCrawled";
                             return;
                         } else {
-                            tipDialog("批量导入失败", 3, -1);
+                            tipDialog(result, 3, -1);
                             window.location.href = "pageCrawled";
                             return;
                         }

@@ -48,10 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -973,10 +970,10 @@ public class BookController {
     //跳转管理
     @RequestMapping("/bookPages")
     public String bookChapter(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum,
-                              @RequestParam(value = "metaid", required = false) String metaId,Model model) {
+                              @RequestParam(value = "metaid", required = false) String metaId, Model model) {
         PageHelper.startPage(pageNum, 10);
         Map<String, Object> paramsMap = new HashMap<>();
-        ParamsUtils.checkParameterAndPut2Map(paramsMap, "metaId",metaId);
+        ParamsUtils.checkParameterAndPut2Map(paramsMap, "metaId", metaId);
         Page<BookPage> bookPage = bookPageMapper.findBookPage(paramsMap);
         model.addAttribute("num", bookPage.size());
         model.addAttribute("bookPage", bookPage);
@@ -1027,25 +1024,30 @@ public class BookController {
     public String bookPageLog(@RequestParam(value = "time", required = false, defaultValue = "") String time,
                               @RequestParam(value = "len", required = false, defaultValue = "100") Integer len,
                               @RequestParam(value = "type", required = false, defaultValue = "0") Integer type,
-                              Model model) {
+                              Model model) throws IOException {
+
         String log1 = "";
         String log2 = "";
         String log3 = "";
         String logPath = config.getLogPath();
-        String remoteUrl="smb://admin:Founder123@192.168.20.21/k8s";
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 1) {
-                String filename = logPath  + "/fetchPage/fetchPage." + time + ".log";
-                log.info(filename);
-                log1 = ReadLog.smbGet1(filename, len);
-            }
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 2) {
-                String filename = logPath  + "/fetchPage1/fetchPageAgain." + time + ".log";
-                log2 = ReadLog.smbGet1(filename, len);
-            }
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
-                String filename = logPath  + "/fetchPage2/fetchPage2." + time + ".log";
-                log3 = ReadLog.smbGet1(filename, len);
-            }
+        String remoteUrl = "smb://admin:Founder123@192.168.20.21/k8s";
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 1) {
+            String filename = logPath + "/fetchPage/fetchPage." + time + ".log";
+            log.info(filename);
+            log1 = ReadLog.smbGet1(filename, len);
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 2) {
+            String filename = logPath + "/fetchPage1/fetchPageAgain." + time + ".log";
+            log2 = ReadLog.smbGet1(filename, len);
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
+            String filename = logPath + "/fetchPage2/fetchPage2." + time + ".log";
+            log3 = ReadLog.smbGet1(filename, len);
+        }
+        if (org.apache.commons.lang3.StringUtils.isBlank(time)) {
+            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd_HH");
+            time = simpleDateFormat.format(new Date());
+        }
         model.addAttribute("time", time);
         model.addAttribute("len", len);
         model.addAttribute("log1", log1);
@@ -1402,6 +1404,7 @@ public class BookController {
             addedNum = bookPageService.batchAddCrawFromFile(data);
         } catch (Exception e) {
             log.error("异常信息： {}", e);
+            return e.getMessage();
         }
         return addedNum > 0 ? "成功" : "失败";
     }
@@ -1434,6 +1437,7 @@ public class BookController {
             addedNum = bookPageService.batchAddAssemblyFromFile(data);
         } catch (Exception e) {
             log.error("异常信息： {}", e);
+            return e.getMessage();
         }
         return addedNum > 0 ? "成功" : "失败";
     }

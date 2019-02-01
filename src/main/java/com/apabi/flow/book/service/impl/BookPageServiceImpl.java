@@ -386,7 +386,7 @@ public class BookPageServiceImpl implements BookPageService {
             for (Map.Entry<Integer, Map<Object, Object>> entry : data.entrySet()) {
                 String id = (String) entry.getValue().get("ID");
                 if (StringUtils.isBlank(id)) {
-                    throw new BizException("编号不能为空，请检查数据重新导入！");
+                    throw new BizException("请确认以ID为起始行，请检查数据重新导入！");
                 } else {
                     set.add(id);
                 }
@@ -400,7 +400,7 @@ public class BookPageServiceImpl implements BookPageService {
             if (e instanceof BizException) {
                 throw new Exception(e.getMessage());
             } else {
-                throw new Exception("数据解析异常，请检查文件合适是否正确或联系管理员！");
+                throw new Exception("数据解析异常，请检查文件格式是否正确或联系管理员！");
             }
         }
         return i;
@@ -414,7 +414,7 @@ public class BookPageServiceImpl implements BookPageService {
             for (Map.Entry<Integer, Map<Object, Object>> entry : data.entrySet()) {
                 String id = (String) entry.getValue().get("ID");
                 if (StringUtils.isBlank(id)) {
-                    throw new BizException("编号不能为空，请检查数据重新导入！");
+                    throw new BizException("请确认以ID为起始行，请检查数据重新导入！");
                 } else {
                     set.add(id);
                 }
@@ -428,7 +428,7 @@ public class BookPageServiceImpl implements BookPageService {
             if (e instanceof BizException) {
                 throw new Exception(e.getMessage());
             } else {
-                throw new Exception("数据解析异常，请检查文件合适是否正确或联系管理员！");
+                throw new Exception("数据解析异常，请检查文件格式是否正确或联系管理员！");
             }
         }
         return i;
