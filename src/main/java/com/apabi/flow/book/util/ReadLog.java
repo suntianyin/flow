@@ -118,7 +118,8 @@ public class ReadLog {
             }
             in.close();
             String s = stringBuffer.toString();
-            String[] split = s.split("/n");
+            String[] split = s.split("\n");
+            log.info(String.valueOf(split.length));
             if(split.length<len) {
                 for (int i = split.length-1; i >=0 ; i--) {
                     stringBuffer2.append(split[i]);
