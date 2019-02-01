@@ -74,7 +74,7 @@ public class FetchPageConsumer implements Runnable {
         try {
             metaId = idQueue.take();
             BookMeta meta = bookMetaDao.findBookMetaById(metaId);
-            if (meta != null && meta.getCebxPage() != null) {
+            if (meta != null && meta.getCebxPage() != null && meta.getCebxPage() != "null") {
                 cebxPage = Integer.parseInt(meta.getCebxPage());
             }
             if (cebxPage == 0) {
