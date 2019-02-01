@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,16 +36,16 @@ public class MyTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MyTask.class);
 
     private int i;
-    private File f;
+    private ArrayBlockingQueue<File> idQueue;
     private String username;
     private String batchId;
     private PublisherDao publisherDao;
     private BibliothecaMapper bibliothecaMapper;
     private ApplicationConfig config;
 
-    public MyTask(int i, File f, String username, String batchId, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper, ApplicationConfig config) {
+    public MyTask(int i, ArrayBlockingQueue idQueue, String username, String batchId, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper, ApplicationConfig config) {
         this.i = i;
-        this.f = f;
+        this.idQueue = idQueue;
         this.username = username;
         this.batchId = batchId;
         this.publisherDao = publisherDao;
@@ -65,7 +66,9 @@ public class MyTask implements Runnable {
         String publishTime = "";
         String paperPrice = "";
         boolean a = true;
+        File f= null;
         try {
+            f = idQueue.take();
             File file = new File(config.getTargetCopyRightDir() + File.separator + batchId);
             if (!file.exists()) {
                 file.mkdirs();
