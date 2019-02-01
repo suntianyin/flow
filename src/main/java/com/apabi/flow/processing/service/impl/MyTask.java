@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 public class MyTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MyTask.class);
 
-    private int i;
+//    private int i;
     private ArrayBlockingQueue<File> idQueue;
     private String username;
     private String batchId;
@@ -43,8 +43,8 @@ public class MyTask implements Runnable {
     private BibliothecaMapper bibliothecaMapper;
     private ApplicationConfig config;
 
-    public MyTask(int i, ArrayBlockingQueue idQueue, String username, String batchId, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper, ApplicationConfig config) {
-        this.i = i;
+    public MyTask( ArrayBlockingQueue idQueue, String username, String batchId, PublisherDao publisherDao, BibliothecaMapper bibliothecaMapper, ApplicationConfig config) {
+//        this.i = i;
         this.idQueue = idQueue;
         this.username = username;
         this.batchId = batchId;
@@ -55,7 +55,7 @@ public class MyTask implements Runnable {
 
     @Override
     public void run() {
-        logger.info("正在执行task " + i);
+//        logger.info("正在执行task " + i);
         Bibliotheca bibliotheca = new Bibliotheca();
         String isbn = "";
         String edition = "";
@@ -257,7 +257,7 @@ public class MyTask implements Runnable {
             Date date = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
             String d = simpleDateFormat.format(date);
-            bibliotheca.setIdentifier(d + batchId + putong(i++));
+            bibliotheca.setIdentifier(d + batchId + f.getName());//putong(i++)
             bibliotheca.setDocumentFormat("pdf");
             bibliotheca.setBatchId(batchId);
             bibliotheca.setEdition(edition);
@@ -270,7 +270,7 @@ public class MyTask implements Runnable {
             }
             bibliothecaMapper.insertSelective(bibliotheca);
         }
-        logger.info("task " + i + "执行完毕");
+//        logger.info("task " + i + "执行完毕");
     }
 
     //编号
