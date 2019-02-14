@@ -122,11 +122,11 @@ public class ReadLog {
             log.info(String.valueOf(split.length));
             if(split.length<len) {
                 for (int i = split.length-1; i >=0 ; i--) {
-                    stringBuffer2.append(split[i]).append("\n");
+                    stringBuffer2.append(split[i]).append(System.getProperty("line.separator"));
                 }
             }else {
                 for (int i = split.length-1; i >=split.length-len; i--) {
-                    stringBuffer2.append(split[i]).append("\n");
+                    stringBuffer2.append(split[i]).append(System.getProperty("line.separator"));
                 }
             }
         } catch (Exception e) {
@@ -137,4 +137,4 @@ public class ReadLog {
 
         return stringBuffer2.toString();
     }
-}  
+}
