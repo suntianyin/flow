@@ -1041,8 +1041,9 @@ public class BookController {
             log2 = ReadLog.smbGet1(filename, len);
         }
         if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
-            String filename = logPath + "/fetchPage2/fetchPage2." + time + ".log";
-            log3 = ReadLog.smbGet1(filename, len);
+            logPath=System.getProperty("user.dir")+File.separator+"log";
+            String filename = logPath +File.separator+ "fetchPage2"+File.separator+"fetchPage2." + time + ".log";
+            log3 = ReadLog.read(filename,"utf-8", len);
         }
         if (org.apache.commons.lang3.StringUtils.isBlank(time)) {
             SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd_HH");
@@ -1353,18 +1354,29 @@ public class BookController {
     @RequestMapping("/getBookMetaIdsToChapter")
     public Object getBookMetaIdsToChapter(@RequestParam("metaIds") String metaIds) {
         ResultEntity resultEntity = new ResultEntity();
+        int sucNum = 0;
+        int failNum = 0;
+        int i=0;
         try {
             if (metaIds != null && metaIds != "") {
                 String[] split = metaIds.split(",");
                 Set<String> hashSet = Arrays.stream(split).collect(Collectors.toSet());
-                int num = 0;
                 for (String b : hashSet) {
                     PageAssemblyQueue pageAssemblyQueue = new PageAssemblyQueue();
                     pageAssemblyQueue.setId(b);
-                    int i = pageAssemblyQueueMapper.insert(pageAssemblyQueue);
-                    num += i;
+                    try {
+                    i = pageAssemblyQueueMapper.insert(pageAssemblyQueue);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        failNum++;
+                    }
+                    sucNum += i;
                 }
-                resultEntity.setMsg("上传数据成功" + num + "条");
+                if(failNum==0){
+                    resultEntity.setMsg("上传数据成功" + sucNum + "条");
+                }else {
+                    resultEntity.setMsg("上传数据成功" + sucNum + "条,有重复数据"+failNum+"条");
+                }
                 resultEntity.setStatus(1);
                 return resultEntity;
             }
