@@ -127,6 +127,8 @@
         count(*)
         from APABI_BOOK_METADATA
         where nlibraryid is not null
+        and hascebx = '1'
+        and salestatus = '1'
         and hasClean = 0
     </select>
 
@@ -135,8 +137,9 @@
         select
         <include refid="Base_Column_List"/>
         from APABI_BOOK_METADATA
-        where
-        nlibraryid is not null
+        where nlibraryid is not null
+        and hascebx = '1'
+        and salestatus = '1'
         and hasClean = 0
     </select>
 
@@ -1119,305 +1122,7 @@
                 FLOWSOURCE = #{flowSource,jdbcType=VARCHAR},
             </if>
             <if test="isReadCebxFlow != null">
-                ISREADCEBXFLOW = #{isReadCebxFlow,jdbcType=INTEGER},
-            </if>
-        </set>
-        where METAID = #{metaId,jdbcType=VARCHAR}
-    </update>
-
-    <update id="updateByNlc" parameterType="com.apabi.flow.douban.model.ApabiBookMetaData">
-        update APABI_BOOK_METADATA
-        <set>
-            <if test="idType != null">
-                IDTYPE = #{idType,jdbcType=VARCHAR},
-            </if>
-            <if test="saleStatus != null">
-                SALESTATUS = #{saleStatus,jdbcType=DECIMAL},
-            </if>
-            <if test="language != null">
-                LANGUAGE = #{language,jdbcType=VARCHAR},
-            </if>
-            <if test="title != null">
-                TITLE = #{title,jdbcType=VARCHAR},
-            </if>
-            <if test="subTitle != null">
-                SUBTITLE = #{subTitle,jdbcType=VARCHAR},
-            </if>
-            <if test="creator != null">
-                CREATOR = #{creator,jdbcType=VARCHAR},
-            </if>
-            <if test="creatorWord != null">
-                CREATORWORD = #{creatorWord,jdbcType=VARCHAR},
-            </if>
-            <if test="creatorId != null">
-                CREATORID = #{creatorId,jdbcType=VARCHAR},
-            </if>
-                CONTRIBUTOR = #{contributor,jdbcType=VARCHAR},
-                CONTRIBUTORWORD = #{contributorWord,jdbcType=VARCHAR},
-            <if test="contributorId != null">
-                CONTRIBUTORID = #{contributorId,jdbcType=VARCHAR},
-            </if>
-                TRANSLATOR = #{translator,jdbcType=VARCHAR},
-            <if test="translatorId != null">
-                TRANSLATORID = #{translatorId,jdbcType=VARCHAR},
-            </if>
-            <if test="originTitle != null">
-                ORIGINTITLE = #{originTitle,jdbcType=VARCHAR},
-            </if>
-            <if test="alternativeTitle != null">
-                ALTERNATIVETITLE = #{alternativeTitle,jdbcType=VARCHAR},
-            </if>
-            <if test="editionOrder != null">
-                EDITIONORDER = #{editionOrder,jdbcType=VARCHAR},
-            </if>
-            <if test="editionNote != null">
-                EDITIONNOTE = #{editionNote,jdbcType=VARCHAR},
-            </if>
-            <if test="place != null">
-                PLACE = #{place,jdbcType=VARCHAR},
-            </if>
-            <if test="publisher != null">
-                PUBLISHER = #{publisher,jdbcType=VARCHAR},
-            </if>
-            <if test="publisherId != null">
-                PUBLISHERID = #{publisherId,jdbcType=VARCHAR},
-            </if>
-            <if test="issuedDate != null">
-                ISSUEDDATE = #{issuedDate,jdbcType=VARCHAR},
-            </if>
-            <if test="endIssuedDate != null">
-                ENDISSUEDDATE = #{endIssuedDate,jdbcType=VARCHAR},
-            </if>
-            <if test="issuedDateDesc != null">
-                ISSUEDDATEDESC = #{issuedDateDesc,jdbcType=VARCHAR},
-            </if>
-            <if test="subject != null">
-                SUBJECT = #{subject,jdbcType=VARCHAR},
-            </if>
-            <if test="reader != null">
-                READER = #{reader,jdbcType=VARCHAR},
-            </if>
-            <if test="classCode != null">
-                CLASSCODE = #{classCode,jdbcType=VARCHAR},
-            </if>
-            <if test="apabiClass != null">
-                APABICLASS = #{apabiClass,jdbcType=VARCHAR},
-            </if>
-            <if test="type != null">
-                TYPE = #{type,jdbcType=VARCHAR},
-            </if>
-            <if test="isbn != null">
-                ISBN = #{isbn,jdbcType=VARCHAR},
-            </if>
-            <if test="isbn10 != null">
-                ISBN10 = #{isbn10,jdbcType=VARCHAR},
-            </if>
-            <if test="isbn13 != null">
-                ISBN13 = #{isbn13,jdbcType=VARCHAR},
-            </if>
-            <if test="paperPrice != null">
-                PAPERPRICE = #{paperPrice,jdbcType=VARCHAR},
-            </if>
-            <if test="ebookPrice != null">
-                EBOOKPRICE = #{ebookPrice,jdbcType=VARCHAR},
-            </if>
-            <if test="foreignPrice != null">
-                FOREIGNPRICE = #{foreignPrice,jdbcType=VARCHAR},
-            </if>
-            <if test="foreignPriceType != null">
-                FOREIGNPRICETYPE = #{foreignPriceType,jdbcType=VARCHAR},
-            </if>
-            <if test="paperPriceDesc != null">
-                PAPERPRICEDESC = #{paperPriceDesc,jdbcType=VARCHAR},
-            </if>
-            <if test="binding != null">
-                BINDING = #{binding,jdbcType=VARCHAR},
-            </if>
-            <if test="illustration != null">
-                ILLUSTRATION = #{illustration,jdbcType=VARCHAR},
-            </if>
-            <if test="pressOrder != null">
-                PRESSORDER = #{pressOrder,jdbcType=VARCHAR},
-            </if>
-            <if test="editor != null">
-                EDITOR = #{editor,jdbcType=VARCHAR},
-            </if>
-            <if test="relation != null">
-                RELATION = #{relation,jdbcType=VARCHAR},
-            </if>
-            <if test="relationId != null">
-                RELATIONID = #{relationId,jdbcType=VARCHAR},
-            </if>
-            <if test="volume != null">
-                VOLUME = #{volume,jdbcType=VARCHAR},
-            </if>
-            <if test="isSeries != null">
-                ISSERIES = #{isSeries,jdbcType=DECIMAL},
-            </if>
-            <if test="volumesCount != null">
-                VOLUMESCOUNT = #{volumesCount,jdbcType=VARCHAR},
-            </if>
-            <if test="isAllublished != null">
-                ISALLUBLISHED = #{isAllublished,jdbcType=VARCHAR},
-            </if>
-            <if test="notes != null">
-                NOTES = #{notes,jdbcType=VARCHAR},
-            </if>
-            <if test="podPrice != null">
-                PODPRICE = #{podPrice,jdbcType=VARCHAR},
-            </if>
-            <if test="podPriceType != null">
-                PODPRICETYPE = #{podPriceType,jdbcType=VARCHAR},
-            </if>
-            <if test="podPricePageUnit != null">
-                PODPRICEPAGEUNIT = #{podPricePageUnit,jdbcType=VARCHAR},
-            </if>
-            <if test="drId != null">
-                DRID = #{drId,jdbcType=INTEGER},
-            </if>
-            <if test="doubanId != null">
-                DOUBANID = #{doubanId,jdbcType=VARCHAR},
-            </if>
-            <if test="amazonId != null">
-                AMAZONID = #{amazonId,jdbcType=VARCHAR},
-            </if>
-            <if test="calisId != null">
-                CALISID = #{calisId,jdbcType=VARCHAR},
-            </if>
-            <if test="nlibraryId != null">
-                NLIBRARYID = #{nlibraryId,jdbcType=VARCHAR},
-            </if>
-            <if test="dataSource != null">
-                DATASOURCE = #{dataSource,jdbcType=VARCHAR},
-            </if>
-            <if test="qualityRating != null">
-                QUALITYRATING = #{qualityRating,jdbcType=VARCHAR},
-            </if>
-            <if test="qrType != null">
-                QRTYPE = #{qrType,jdbcType=VARCHAR},
-            </if>
-            <if test="cebxObjId != null">
-                CEBXOBJID = #{cebxObjId,jdbcType=VARCHAR},
-            </if>
-            <if test="cebxFileSize != null">
-                CEBXFILESIZE = #{cebxFileSize,jdbcType=VARCHAR},
-            </if>
-            <if test="hasCebx != null">
-                HASCEBX = #{hasCebx,jdbcType=DECIMAL},
-            </if>
-            <if test="cebxPage != null">
-                CEBXPAGE = #{cebxPage,jdbcType=VARCHAR},
-            </if>
-            <if test="complexOid != null">
-                COMPLEXOID = #{complexOid,jdbcType=VARCHAR},
-            </if>
-            <if test="reditor != null">
-                REDITOR = #{reditor,jdbcType=VARCHAR},
-            </if>
-            <if test="departmentId != null">
-                DEPARTMENTID = #{departmentId,jdbcType=VARCHAR},
-            </if>
-            <if test="coverUrl != null">
-                COVERURL = #{coverUrl,jdbcType=VARCHAR},
-            </if>
-            <if test="imgHeigth != null">
-                IMGHEIGTH = #{imgHeigth,jdbcType=VARCHAR},
-            </if>
-            <if test="imgWidth != null">
-                IMGWIDTH = #{imgWidth,jdbcType=VARCHAR},
-            </if>
-            <if test="covObjId != null">
-                COVOBJID = #{covObjId,jdbcType=VARCHAR},
-            </if>
-            <if test="thumImgUrl != null">
-                THUMIMGURL = #{thumImgUrl,jdbcType=VARCHAR},
-            </if>
-            <if test="thumImgSize != null">
-                THUMIMGSIZE = #{thumImgSize,jdbcType=VARCHAR},
-            </if>
-            <if test="mediumCover != null">
-                MEDIUMCOVER = #{mediumCover,jdbcType=VARCHAR},
-            </if>
-            <if test="hasFlow != null">
-                HASFLOW = #{hasFlow,jdbcType=DECIMAL},
-            </if>
-            <if test="isOptimize != null">
-                ISOPTIMIZE = #{isOptimize,jdbcType=DECIMAL},
-            </if>
-            <if test="donor != null">
-                DONOR = #{donor,jdbcType=VARCHAR},
-            </if>
-            <if test="libraryId != null">
-                LIBRARYID = #{libraryId,jdbcType=VARCHAR},
-            </if>
-            <if test="bookId != null">
-                BOOKID = #{bookId,jdbcType=VARCHAR},
-            </if>
-            <if test="styleClass != null">
-                STYLECLASS = #{styleClass,jdbcType=VARCHAR},
-            </if>
-            <if test="chapterNum != null">
-                CHAPTERNUM = #{chapterNum,jdbcType=DECIMAL},
-            </if>
-            <if test="bookPages != null">
-                BOOKPAGES = #{bookPages,jdbcType=VARCHAR},
-            </if>
-            <if test="tags != null">
-                TAGS = #{tags,jdbcType=VARCHAR},
-            </if>
-            <if test="createTime != null">
-                CREATETIME = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updateTime != null">
-                UPDATETIME = #{updateTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="contentNum != null">
-                CONTENTNUM = #{contentNum,jdbcType=DECIMAL},
-            </if>
-            <if test="foamatCatalog != null">
-                FOAMATCATALOG = #{foamatCatalog,jdbcType=CLOB},
-            </if>
-            <if test="streamCatalog != null">
-                STREAMCATALOG = #{streamCatalog,jdbcType=CLOB},
-            </if>
-            <if test="hasPublish != null">
-                HASPUBLISH = #{hasPublish,jdbcType=DECIMAL},
-            </if>
-            <if test="isPublicCopyRight != null">
-                ISPUBLICCOPYRIGHT = #{isPublicCopyRight,jdbcType=DECIMAL},
-            </if>
-            <if test="relationType != null">
-                RELATIONTYPE = #{relationType,jdbcType=VARCHAR},
-            </if>
-            <if test="authorIntro != null">
-                AUTHORINTRO = #{authorIntro,jdbcType=CLOB},
-            </if>
-            <if test="abstract_ != null">
-                ABSTRACT = #{abstract_,jdbcType=CLOB},
-            </if>
-            <if test="preface != null">
-                PREFACE = #{preface,jdbcType=CLOB},
-            </if>
-            <if test="styleUrl != null">
-                STYLEURL = #{styleUrl,jdbcType=CLOB},
-            </if>
-            <if test="postScript != null">
-                POSTSCRIPT = #{postScript,jdbcType=CLOB},
-            </if>
-            <if test="hasProcessingFile != null">
-                HASPROCESSINGFILE = #{hasProcessingFile,jdbcType=INTEGER},
-            </if>
-            <if test="hasClean != null">
-                HASCLEAN = #{hasClean,jdbcType=DECIMAL},
-            </if>
-            <if test="isReadEpub != null">
-                ISREADEPUB = #{isReadEpub,jdbcType=INTEGER},
-            </if>
-            <if test="flowSource != null">
-                FLOWSOURCE = #{flowSource,jdbcType=VARCHAR},
-            </if>
-            <if test="isReadCebxFlow != null">
-                ISREADCEBXFLOW = #{isReadCebxFlow,jdbcType=INTEGER},
+                ISREADCEBXFLOW = #{isReadCebxFlow,jdbcType=INTGER},
             </if>
         </set>
         where METAID = #{metaId,jdbcType=VARCHAR}
@@ -1430,11 +1135,6 @@
     <!-- 更新为已清洗 -->
     <update id="updateHasCleaned" parameterType="java.lang.String">
         update apabi_book_metadata set hasClean = 1 where metaid = #{metaId}
-    </update>
-
-    <!-- 更新为没有匹配上国图，设置nlibraryid为null -->
-    <update id="updateNotMatchNlc" parameterType="java.lang.String">
-        update apabi_book_metadata set nlibraryid = null where metaid = #{metaId}
     </update>
 
     <select id="findIsbn13WithoutDoubanId" resultType="java.lang.String">
