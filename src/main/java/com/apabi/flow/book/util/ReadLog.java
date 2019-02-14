@@ -127,6 +127,7 @@ public class ReadLog {
             }else {
                 for (int i = split.length-1; i >=split.length-len; i--) {
                     stringBuffer2.append(split[i]).append(System.getProperty("line.separator"));
+
                 }
             }
         } catch (Exception e) {
