@@ -567,12 +567,10 @@
     </logger>
 
     <!-- 针对dangdang定时任务Service取消抓取配置的日志 -->
-    <logger name="com.apabi.flow.crawlTask.dangdang.CrawlDangdangService" level="ERROR" additivity="false">
-    </logger>
+    <logger name="com.apabi.flow.crawlTask.dangdang.CrawlDangdangService" level="ERROR" additivity="false"/>
 
     <!-- 针对dangdang抓取工具类取消抓取配置的日志 -->
-    <logger name="com.apabi.flow.dangdang.util.CrawlDangdangUtils" level="ERROR" additivity="false">
-    </logger>
+    <logger name="com.apabi.flow.dangdang.util.CrawlDangdangUtils" level="ERROR" additivity="false"/>
 
     <!-- 取消httpclient刷日志 -->
     <logger name="org.apache.http.impl" level="WARN" />
@@ -711,6 +709,30 @@
         <appender-ref ref="ISBN_DANGDANG_NLC"/>
     </logger>
 
+
+
+    <!-- 根据dangdang中的isbn抓取nlc -->
+    <appender name="CLEAN_APABI_METADATA_BY_NLC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- onMatch=ACCEPT,onMismatch=DENY:只有ERROR级别的日志才会被添加到日志中 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/cleanData/clean_apabi_metadata_by_nlc.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根据dangdang中的isbn抓取nlc -->
+    <logger name="com.apabi.flow.match_data.service.ApabiBookMetaNlcCleanerService" level="INFO" additivity="false">
+        <appender-ref ref="CLEAN_APABI_METADATA_BY_NLC"/>
+    </logger>
+
     <!--从书苑获取图书数据，新增到流式图书库中-->
     <appender name="GET_BOOK_SHUYUAN" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -739,6 +761,7 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
+
     <logger name="com.apabi.flow.book.util.GetEpubookChapter" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="GET_EPUB"/>

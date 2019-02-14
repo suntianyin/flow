@@ -27,8 +27,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2019-1-14 14:27
  **/
-@Order(6)
-@Component
+//@Order(6)
+//@Component
 public class GenerateMetaDataFromJdService implements ApplicationRunner {
     @Autowired
     private JdMetadataDao jdMetadataDao;

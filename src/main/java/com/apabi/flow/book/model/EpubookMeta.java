@@ -2,10 +2,6 @@ package com.apabi.flow.book.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -13,75 +9,51 @@ import java.util.Date;
  * @date 2018/8/1 15:24
  * @description
  */
-@Table(name = "APABI_BOOK_METADATA")
-@Entity
 public class EpubookMeta {
-    @Id
-    @Column(name = "METAID")
     private String metaid;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
-    @Column(name = "CREATETIME")
     private Date createtime;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
-    @Column(name = "UPDATETIME")
     private Date updatetime;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
-    @Column(name = "ISSUEDDATE")
     private String issueddate;
 
-    @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "CREATOR")
     private String creator;
 
-    @Column(name = "ABSTRACT")
     private String summary;
 
-    @Column(name = "PUBLISHER")
     private String publisher;
 
-    @Column(name = "ISBN")
     private String isbn;
 
-    @Column(name = "CONTENTNUM")
     private Integer contentNum;
 
-    @Column(name = "TYPE")
     private String type;
 
-    @Column(name = "ISOPTIMIZE")
     //private String isoptimize;
     private Integer isoptimize;
 
-    @Column(name = "LANGUAGE")
     private String language;
 
-    @Column(name = "STREAMCATALOG")
     private String streamCatalog;
 
-    @Column(name = "COVERURL")
     private String coverUrl;
 
-    @Column(name = "CHAPTERNUM")
     private Integer chapterNum;
 
-    @Column(name = "STYLEURL")
     private String styleUrl;
 
-    @Column(name = "THUMIMGURL")
     private String thumimgUrl;
 
-    @Column(name = "STYLECLASS")
     private String styleClass;
 
-    @Column(name = "HASFLOW")
     private Integer hasflow;
 
-    @Column(name = "FLOWSOURCE")
     private String flowSource;
 
     /*@Column(name = "FILENAME")

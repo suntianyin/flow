@@ -20,6 +20,7 @@ public interface ApabiBookMetaDataDao {
     void delete(String metaId);
     void insert(ApabiBookMetaData apabiBookMetaData);
     void update(ApabiBookMetaData apabiBookMetaData);
+    void updateByNlc(ApabiBookMetaData apabiBookMetaData);
     Page<String> findIsbnByPageWithoutCrawledNlc();
     Page<ApabiBookMetaData> findApabiBookMetaDataWithDoubanId();
     Page<ApabiBookMetaData> findApabiBookMetaDataWithNlibraryId();
@@ -39,4 +40,5 @@ public interface ApabiBookMetaDataDao {
     int countWithoutClean();
     Page<ApabiBookMetaData> findShouldCleanByPage();
     void updateHasCleaned(String metaId);
+    void updateNotMatchNlc(String metaId);
 }

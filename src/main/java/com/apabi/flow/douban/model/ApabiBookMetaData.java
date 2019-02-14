@@ -113,7 +113,7 @@ public class ApabiBookMetaData {
 
     private String podPricePageUnit;
 
-    private String drId;
+    private Integer drId;
 
     private String doubanId;
 

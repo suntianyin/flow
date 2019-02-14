@@ -1,9 +1,5 @@
 package com.apabi.flow.book.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -11,32 +7,21 @@ import java.util.Date;
  * @date 2018/8/1 14:06
  * @description
  */
-@Table(name="APABI_BOOK_SHARD")
-@Entity
 public class BookShard {
-    @Id
-    @Column(name = "COMID")
     private String comId;
 
-    @Column(name = "CHAPTERNUM")
     private Integer chapterNum;
 
-    @Column(name = "INDEX1")
     private Integer index;
 
-    @Column(name = "WORDSUM")
     private Integer wordSum;
 
-    @Column(name = "BODYCLASS")
     private String bodyClass;
 
-    @Column(name = "CONTENT")
     private String content;
 
-    @Column(name = "CREATETIME")
     private Date createTime;
 
-    @Column(name = "UPDATETIME")
     private Date updateTime;
 
     public String getComId() {

@@ -243,8 +243,7 @@ public class ApabiBookMetaNlcCheckerService {
                 String metaId = apabiBookMetaNlcChecker.getMetaId();
                 ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataDao.findById(metaId);
                 if (apabiBookMetaData != null) {
-                    apabiBookMetaData.setNlibraryId(null);
-                    apabiBookMetaDataDao.update(apabiBookMetaData);
+                    apabiBookMetaDataDao.updateNotMatchNlc(apabiBookMetaData.getMetaId());
                     hitCount++;
                 }
             }

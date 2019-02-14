@@ -1,6 +1,7 @@
 package com.apabi.flow.match_data.service;
 
 import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaData;
 import com.apabi.flow.nlcmarc.dao.ApabiBookMetadataAuthorDao;
 import com.apabi.flow.nlcmarc.dao.ApabiBookMetadataTitleDao;
@@ -8,9 +9,9 @@ import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
 import com.apabi.flow.nlcmarc.model.ApabiBookMetadataAuthor;
 import com.apabi.flow.nlcmarc.model.ApabiBookMetadataTitle;
 import com.apabi.flow.nlcmarc.model.NlcBookMarc;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +25,12 @@ import java.util.*;
 @RestController
 @RequestMapping("apabiNlcCleaner")
 public class ApabiBookMetaNlcCleanerService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApabiBookMetaNlcCleanerService.class);
     private static final String TRANSLATOR_KEY_WORD = "译";
     @Autowired
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
+    @Autowired
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
     @Autowired
     private ApabiBookMetadataTitleDao apabiBookMetadataTitleDao;
     @Autowired
@@ -36,7 +40,7 @@ public class ApabiBookMetaNlcCleanerService {
 
     @RequestMapping("updateApabiBookMetaData")
     public void updateApabiBookMetaData() {
-        int count = apabiBookMetaDataDao.countHasNLibraryIdAndShouldClean();
+        /*int count = apabiBookMetaDataDao.countHasNLibraryIdAndShouldClean();
         int pageSize = 10000;
         int pageNum = (count / pageSize) + 1;
         for (int i = 1; i <= pageNum; i++) {
@@ -45,15 +49,47 @@ public class ApabiBookMetaNlcCleanerService {
             for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
                 String nlibraryId = apabiBookMetaData.getNlibraryId();
                 List<ApabiBookMetadataTitle> apabiBookMetadataTitleList = apabiBookMetadataTitleDao.findByNlcMarcIdentifier(nlibraryId);
-                System.out.println(apabiBookMetadataTitleList);
                 List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorList = apabiBookMetadataAuthorDao.findByNlcMarcIdentifierOrderByPriority(nlibraryId);
                 NlcBookMarc nlcBookMarc = nlcBookMarcDao.findByNlcMarcId(nlibraryId);
                 // 利用国图的数据更新apabiBookMetaData的数据
                 apabiBookMetaData = updateApabiBookMetadataByNlc(apabiBookMetaData, apabiBookMetadataTitleList, apabiBookMetadataAuthorList, nlcBookMarc);
                 apabiBookMetaData.setUpdateTime(new Date());
-                apabiBookMetaDataDao.updateHasCleaned("1");
-                apabiBookMetaDataDao.update(apabiBookMetaData);
-            }
+                apabiBookMetaData.setHasClean(1);
+                try {
+                    apabiBookMetaDataDao.updateByNlc(apabiBookMetaData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LOGGER.error("更新" + apabiBookMetaData.getMetaId() + "失败，错误原因为：" + e.getMessage());
+                }*/
+
+                /*// TODO 检查meta与temp数据匹配情况
+                ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();
+                BeanUtils.copyProperties(apabiBookMetaData, apabiBookMetaDataTemp);
+                try {
+                    apabiBookMetaDataTempDao.update(apabiBookMetaDataTemp);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LOGGER.error("更新"+apabiBookMetaDataTemp.getMetaId()+"失败");
+                }*/
+      /*      }
+        }*/
+
+
+        ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataDao.findById("m.20070723-m030-w014-022");
+        String nlibraryId = apabiBookMetaData.getNlibraryId();
+        List<ApabiBookMetadataTitle> apabiBookMetadataTitleList = apabiBookMetadataTitleDao.findByNlcMarcIdentifier(nlibraryId);
+        List<ApabiBookMetadataAuthor> apabiBookMetadataAuthorList = apabiBookMetadataAuthorDao.findByNlcMarcIdentifierOrderByPriority(nlibraryId);
+        NlcBookMarc nlcBookMarc = nlcBookMarcDao.findByNlcMarcId(nlibraryId);
+        // 利用国图的数据更新apabiBookMetaData的数据
+        apabiBookMetaData = updateApabiBookMetadataByNlc(apabiBookMetaData, apabiBookMetadataTitleList, apabiBookMetadataAuthorList, nlcBookMarc);
+        apabiBookMetaData.setUpdateTime(new Date());
+        apabiBookMetaData.setHasClean(1);
+        try {
+            //apabiBookMetaDataDao.updateByNlc(apabiBookMetaData);
+            System.out.println(apabiBookMetaData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("更新" + apabiBookMetaData.getMetaId() + "失败，错误原因为：" + e.getMessage());
         }
     }
 
@@ -109,15 +145,12 @@ public class ApabiBookMetaNlcCleanerService {
                         if (StringUtils.isNotEmpty(creatorWord)) {
                             apabiBookMetaData.setCreatorWord(creatorWord);
                         }
-                        if (StringUtils.isNotEmpty(contributor)) {
-                            apabiBookMetaData.setContributor(contributor);
-                        }
-                        if (StringUtils.isNotEmpty(contributorWord)) {
-                            apabiBookMetaData.setContributorWord(contributorWord);
-                        }
-                        if (StringUtils.isNotEmpty(translator)) {
-                            apabiBookMetaData.setTranslator(translator);
-                        }
+                        // 次要责任者以国图数据为准
+                        apabiBookMetaData.setContributor(contributor);
+                        // 次要责任者以国图数据为准
+                        apabiBookMetaData.setContributorWord(contributorWord);
+                        // 翻译以国图数据为准
+                        apabiBookMetaData.setTranslator(translator);
                     }
                     // 如果有2个作者
                     else if (apabiBookMetadataAuthorList.size() == 2) {
@@ -155,15 +188,12 @@ public class ApabiBookMetaNlcCleanerService {
                         if (StringUtils.isNotEmpty(creatorWord)) {
                             apabiBookMetaData.setCreatorWord(creatorWord);
                         }
-                        if (StringUtils.isNotEmpty(contributor)) {
-                            apabiBookMetaData.setContributor(contributor);
-                        }
-                        if (StringUtils.isNotEmpty(contributorWord)) {
-                            apabiBookMetaData.setContributorWord(contributorWord);
-                        }
-                        if (StringUtils.isNotEmpty(translator)) {
-                            apabiBookMetaData.setTranslator(translator);
-                        }
+                        // 次要责任者以国图数据为准
+                        apabiBookMetaData.setContributor(contributor);
+                        // 次要责任者以国图数据为准
+                        apabiBookMetaData.setContributorWord(contributorWord);
+                        // 翻译以国图数据为准
+                        apabiBookMetaData.setTranslator(translator);
                     }
                     // 如果有2个以上的作者
                     else {
@@ -181,7 +211,7 @@ public class ApabiBookMetaNlcCleanerService {
                         }
                         // 设置主要责任者
                         for (int i = 0; i < apabiBookMetadataAuthorList.size(); i++) {
-                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
+                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && apabiBookMetadataAuthorList.get(i).getName() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD)) {
                                 creator = apabiBookMetadataAuthorList.get(i).getName();
                                 creatorWord = apabiBookMetadataAuthorList.get(i).getAuthorType();
                                 break;
@@ -189,10 +219,12 @@ public class ApabiBookMetaNlcCleanerService {
                         }
                         // 设置次要责任者
                         for (int i = 0; i < apabiBookMetadataAuthorList.size(); i++) {
-                            if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD) && !apabiBookMetadataAuthorList.get(i).getName().equals(creator)) {
-                                contributor = apabiBookMetadataAuthorList.get(i).getName();
-                                contributorWord = apabiBookMetadataAuthorList.get(i).getAuthorType();
-                                break;
+                            if (apabiBookMetadataAuthorList.get(i) != null) {
+                                if (apabiBookMetadataAuthorList.get(i).getAuthorType() != null && apabiBookMetadataAuthorList.get(i).getName() != null && !apabiBookMetadataAuthorList.get(i).getAuthorType().contains(TRANSLATOR_KEY_WORD) && !apabiBookMetadataAuthorList.get(i).getName().equals(creator)) {
+                                    contributor = apabiBookMetadataAuthorList.get(i).getName();
+                                    contributorWord = apabiBookMetadataAuthorList.get(i).getAuthorType();
+                                    break;
+                                }
                             }
                         }
                         if (StringUtils.isNotEmpty(creator)) {
@@ -201,17 +233,15 @@ public class ApabiBookMetaNlcCleanerService {
                         if (StringUtils.isNotEmpty(creatorWord)) {
                             apabiBookMetaData.setCreatorWord(creatorWord);
                         }
-                        if (StringUtils.isNotEmpty(contributor)) {
-                            apabiBookMetaData.setContributor(contributor);
-                        }
-                        if (StringUtils.isNotEmpty(contributorWord)) {
-                            apabiBookMetaData.setContributorWord(contributorWord);
-                        }
-                        if (StringUtils.isNotEmpty(translator)) {
-                            apabiBookMetaData.setTranslator(translator);
-                        }
+                        // 次要责任者以国图数据为准
+                        apabiBookMetaData.setContributor(contributor);
+                        // 次要责任者以国图数据为准
+                        apabiBookMetaData.setContributorWord(contributorWord);
+                        // 翻译以国图数据为准
+                        apabiBookMetaData.setTranslator(translator);
                     }
                     // nlcMarc信息
+                    String publisher = nlcBookMarc.getPublisher();
                     String reader = mappingNlcClassToReader(nlcBookMarc.getClass_());
                     String isbn = nlcBookMarc.getIsbn();
                     String isbn13 = null;
@@ -253,6 +283,9 @@ public class ApabiBookMetaNlcCleanerService {
                     }
                     if (StringUtils.isNotEmpty(volume)) {
                         apabiBookMetaData.setVolume(volume);
+                    }
+                    if (StringUtils.isNotEmpty(publisher)) {
+                        apabiBookMetaData.setPublisher(publisher);
                     }
                     apabiBookMetaData.setIsSeries(isSeries);
                 }
@@ -339,5 +372,9 @@ public class ApabiBookMetaNlcCleanerService {
             }
         }
         return out;
+    }
+
+    public static void main(String[] args) {
+        ApabiBookMetaNlcCleanerService apabiBookMetaNlcCleanerService = new ApabiBookMetaNlcCleanerService();
     }
 }
