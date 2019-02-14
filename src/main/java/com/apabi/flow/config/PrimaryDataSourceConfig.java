@@ -73,7 +73,7 @@ public class PrimaryDataSourceConfig {
 
 
     /**
-     * JPA事务管理器加入IOC容器
+     * 事务管理器加入IOC容器
      * @return
      */
     @Bean(name = "transactionManager")
