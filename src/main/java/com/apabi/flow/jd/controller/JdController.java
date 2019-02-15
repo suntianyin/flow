@@ -36,7 +36,6 @@ public class JdController {
     public String index(Model model, HttpServletRequest request, @RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNum) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         Map<String, String> params = new HashMap<>();
-
         String jdItemId = "";
         if (parameterMap.get("jdItemId") != null) {
             jdItemId = parameterMap.get("jdItemId")[0].trim();
@@ -80,7 +79,7 @@ public class JdController {
         model.addAttribute("publisher", publisher);
         model.addAttribute("isbn13", isbn13);
         model.addAttribute("page", page);
-        return "amazon/amazonSearchIndex";
+        return "jd/jdSearchIndex";
     }
 
     @RequestMapping("/jdDetail")

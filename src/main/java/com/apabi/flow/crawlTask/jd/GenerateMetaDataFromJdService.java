@@ -1,6 +1,5 @@
 package com.apabi.flow.crawlTask.jd;
 
-import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
 import com.apabi.flow.jd.dao.JdMetadataDao;
 import com.apabi.flow.jd.model.JdMetadata;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
@@ -14,9 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -27,8 +24,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2019-1-14 14:27
  **/
-@Order(6)
-@Component
+//@Order(6)
+//@Component
 public class GenerateMetaDataFromJdService implements ApplicationRunner {
     @Autowired
     private JdMetadataDao jdMetadataDao;

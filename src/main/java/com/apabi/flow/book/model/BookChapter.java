@@ -1,6 +1,5 @@
 package com.apabi.flow.book.model;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -8,33 +7,22 @@ import java.util.Date;
  * @date 2018/7/31 13:28
  * @description
  */
-@Table(name="APABI_BOOK_CHAPTER")
-@Entity
 public class BookChapter {
 
-    @Id
-    @Column(name = "COMID")
     private String comId;
 
-    @Column(name = "CHAPTERNUM")
     private Integer chapterNum;
 
-    @Column(name = "SHARDSUM")
     private Integer shardSum;
 
-    @Column(name = "WORDSUM")
     private Integer wordSum;
 
-    @Column(name = "BODYCLASS")
     private String bodyClass;
 
-    @Column(name = "CONTENT")
     private String content;
 
-    @Column(name = "CREATETIME")
     private Date createTime;
 
-    @Column(name = "UPDATETIME")
     private Date updateTime;
 
     public String getComId() {

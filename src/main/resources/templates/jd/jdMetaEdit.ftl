@@ -20,14 +20,14 @@
 
         // 返回按钮
         function btn_back() {
-            window.location.href = "${ctx}/amazon/searchIndex?amazonId=${amazonMetaMap['亚马逊Id']! ''}";
+            history.go(-1);
         }
 
     </script>
 </head>
 <body>
 <div class='load-circle' style="display: none;"></div>
-<form id="dataForm" action="updateAmazonMeta" method="post">
+<form id="dataForm" action="updateJdMeta" method="post">
     <table id="table-list"
            class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline gridBody">
         <thead>
@@ -51,30 +51,25 @@
         </tr>
         </thead>
         <tbody>
-        <#list amazonMetaMap?keys as key>
+        <#list jdMetaMap?keys as key>
             <tr class="gradeA odd" role="row">
-            <#if key == '亚马逊Id'|| key == '创建时间' || key == '更新时间'>
+            <#if key == '京东Id'|| key == '创建时间' || key == '更新时间' || key == 'metaId'>
                 <#if key == '创建时间' || key == '更新时间'>
                     <td>${key}</td>
                     <td>
-                        <input hidden="hidden" type="text" name="${key}" value="${amazonMetaMap[key]! ''}">
-                        ${amazonMetaMap[key]! ''}
+                        <input hidden="hidden" type="text" name="${key}" value="${jdMetaMap[key]! ''}">
+                        ${jdMetaMap[key]! ''}
                     </td>
                 <#else>
                     <td>${key}</td>
                     <td>
-                        <input hidden="hidden" type="text" name="${key}" value="${amazonMetaMap[key]! ''}">
-                        ${amazonMetaMap[key]! ''}
+                        <input hidden="hidden" type="text" name="${key}" value="${jdMetaMap[key]! ''}">
+                        ${jdMetaMap[key]! ''}
                     </td>
                 </#if>
-            <#elseif key == '后记' || key == '后记内容简介' || key == '文摘' || key == '序言' || key == '目录' || key == '作者简介' || key == '媒体推荐' || key == '名人推荐' || key == '编辑推荐'>
-                <td>${key}</td>
-                <td>
-                    <textarea rows="10" cols="80" name="${key}">${amazonMetaMap[key]! ''}</textarea>
-                </td>
             <#else >
                 <td>${key}</td>
-                <td><input type="text" name="${key}" value="${amazonMetaMap[key]! ''}"></td>
+                <td><input type="text" name="${key}" value="${jdMetaMap[key]! ''}"></td>
             </#if>
             </tr>
         </#list>

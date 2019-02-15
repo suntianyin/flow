@@ -53,7 +53,7 @@
                                         "<td align='center'>" + data[i].body.title + "</td>" +
                                         "<td align='center'>" + data[i].body.creator + "</td>" +
                                         "<td align='center'>" + data[i].body.publisher + "</td>" +
-                                        "<td align='center'>" + data[i].body.issueddate + "</td>" +
+                                        "<td align='center'>" + data[i].body.issuedDate + "</td>" +
                                         "<td align='center'>" + data[i].body.updateTime + "</td>" +
                                         "<td align='center'>" + hasFlow + "</td>" +
                                         "<td align='center'>" + hasCebx + "</td>" +
@@ -83,7 +83,7 @@
                                         "<td align='center'>" + data[i].body.title + "</td>" +
                                         "<td align='center'>" + data[i].body.creator + "</td>" +
                                         "<td align='center'>" + data[i].body.publisher + "</td>" +
-                                        "<td align='center'>" + data[i].body.issueddate + "</td>" +
+                                        "<td align='center'>" + data[i].body.issuedDate + "</td>" +
                                         "<td align='center'>" + data[i].body.updateTime + "</td>" +
                                         "<td align='center'>" + hasFlow + "</td>" +
                                         "<td align='center'>" + hasCebx + "</td>" +

@@ -10,7 +10,6 @@
     <title>图书元数据</title>
     <script type="text/javascript">
         function btn_back() {
-            //window.location.href="${ctx}/amazon/searchIndex?amazonId=${amazonMetaMap['亚马逊Id']! ''}";
             history.go(-1);
         }
     </script>
@@ -33,10 +32,10 @@
     </tr>
     </thead>
     <tbody>
-    <#list amazonMetaMap?keys as key>
+    <#list jdMetaMap?keys as key>
         <tr class="gradeA odd" role="row">
             <td>${key! ''}</td>
-            <td>${amazonMetaMap[key]! ''}</td>
+            <td>${jdMetaMap[key]! ''}</td>
         </tr>
     </#list>
     <tr class="gradeA odd" role="row">

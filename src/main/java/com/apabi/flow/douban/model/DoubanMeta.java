@@ -11,98 +11,66 @@ import java.util.Date;
  * @date 2018/8/8 15:12
  * @description
  */
-@Table(name = "DOUBAN_METADATA")
-@Entity
 public class DoubanMeta implements Serializable {
-    @Id
-    @Column(name = "DOUBANID")
     private String doubanId;
 
-    @Column(name = "ISBN13")
     private String isbn13;
 
-    @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "AUTHOR")
     private String author;
 
-    @Column(name = "PUBLISHER")
     private String publisher;
 
-    @Column(name = "ALT_TITLE")
     private String altTitle;
 
-    @Column(name = "TRANSLATOR")
     private String translator;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "ISSUEDDATE")
     private String issueddate;
 
-    @Column(name = "PAGES")
     private String pages;
 
-    @Column(name = "PRICE")
     private String price;
 
-    @Column(name = "BINDING")
     private String binding;
 
-    @Column(name = "SERIES")
     private String series;
 
-    @Column(name = "AVERAGE")
     private String average;
 
-    @Column(name = "SUMMARY")
     private String summary;
 
-    @Column(name = "AUTHOR_INTRO")
     private String authorIntro;
 
-    @Column(name = "CATALOG")
     private String catalog;
 
-    @Column(name = "TAGS")
     private String tags;
 
-    @Column(name = "HASCRAWLED")
     private String hasCrawled;
 
-    @Column(name = "SUBTITLE")
     private String subTitle;
 
-    @Column(name = "ORIGIN_TITLE")
     private String originTitle;
 
-    @Column(name = "EBOOK_PRICE")
     private String ebookPrice;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Column(name = "CREATETIME")
     private Date createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Column(name = "UPDATETIME")
     private Date updateTime;
 
-    @Column(name = "SMALL_COVER")
     private String smallCover;
 
-    @Column(name = "MEDIUM_COVER")
     private String mediumCover;
 
-    @Column(name = "LARGE_COVER")
     private String largeCover;
 
-    @Column(name = "ISBN10")
     private String isbn10;
 
-    @Transient
     private Integer hasPublish;
 
-    @Transient
     private String metaId;
 
     public String getIsbn13() {

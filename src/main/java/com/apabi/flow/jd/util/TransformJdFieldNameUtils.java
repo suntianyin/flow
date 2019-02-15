@@ -6,7 +6,7 @@ package com.apabi.flow.jd.util;
  **/
 public class TransformJdFieldNameUtils {
     private static String[] fields = {
-            "jdItemId,豆瓣Id",
+            "jdItemId,京东Id",
             "title,书名",
             "isbn13,ISBN13",
             "publisher,出版社",

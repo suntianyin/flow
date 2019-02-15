@@ -1,11 +1,6 @@
 package com.apabi.flow.processing.model;
 
 import com.apabi.flow.book.model.BookMeta;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import java.util.Date;
 
 /**
  * 功能描述： <br>
@@ -84,7 +79,7 @@ public class DuplicationCheckEntity {
     /**
      * 是否重复标识
      */
-    public interface CheckFlag{
+    public interface CheckFlag {
         /**
          * 1 = 重复，有 cebx
          */
@@ -104,7 +99,7 @@ public class DuplicationCheckEntity {
     /**
      * 重复率标识
      */
-    public interface RateFlag{
+    public interface RateFlag {
         /**
          * 重复率 大于等于 标识
          */

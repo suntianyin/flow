@@ -47,17 +47,17 @@
                     + "&isbnVal=" + isbnVal;
         }
 
-        //amazon元数据查看
-        function btn_detail(amazonId) {
+        //jd元数据查看
+        function btn_detail(jdItem) {
             loading();
-            window.location.href = "amazonDetail?amazonId=" + amazonId;
+            window.location.href = "jdDetail?jdItemId=" + jdItem;
         }
 
-        //amazon元数据编辑
+        //jd元数据编辑
         // 标记tag标签的id，保证不同tag的id不一样
-        var index = 250;
-        function btn_edit(amazonId) {
-            AddTabMenu2('R' + index, '${ctx}/amazon/amazonEdit?amazonId='+amazonId, amazonId, 'true');
+        var index = 260;
+        function btn_edit(jdItemId) {
+            AddTabMenu2('R' + index, '${ctx}/jd/jdEdit?jdItemId='+jdItemId, jdItemId, 'true');
             index++;
         }
     </script>
@@ -129,28 +129,26 @@
                             <th>书名</th>
                             <th>出版社</th>
                             <th>出版日期</th>
-                            <th>ISBN10</th>
                             <th>ISBN13</th>
                             <th>更新时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <#if amazonMetaModelList?? >
-                            <#list amazonMetaModelList as list>
+                        <#if jdMetaModelList?? >
+                            <#list jdMetaModelList as list>
                                 <tr class="gradeA odd" role="row">
-                                    <td align="center">${list.amazonId! '' }</td>
+                                    <td align="center">${list.jdItemId! '' }</td>
                                     <td align="center">${list.author! '' }</td>
                                     <td align="center">${list.title! '' }</td>
                                     <td align="center">${list.publisher! '' }</td>
                                     <td align="center">${list.issuedDate! '' }</td>
-                                    <td align="center">${list.isbn10! '' }</td>
                                     <td align="center">${list.isbn13! '' }</td>
                                     <td align="center">${list.updateTime?string("yyyy-MM-dd HH:mm:ss")! '' }</td>
                                     <td align="center">
-                                        <a style="cursor:pointer;" onclick="btn_detail('${list.amazonId! "" }');">查看&nbsp;</a>
+                                        <a style="cursor:pointer;" onclick="btn_detail('${list.jdItemId! "" }');">查看&nbsp;</a>
                                         <a style="cursor:pointer;"
-                                           onclick="btn_edit('${list.amazonId! "" }');">编辑&nbsp;</a>
+                                           onclick="btn_edit('${list.jdItemId! "" }');">编辑&nbsp;</a>
                                     </td>
                                 </tr>
                             </#list>
