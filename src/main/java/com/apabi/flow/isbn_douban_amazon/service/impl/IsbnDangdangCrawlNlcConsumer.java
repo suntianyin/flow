@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -48,14 +49,17 @@ public class IsbnDangdangCrawlNlcConsumer implements Runnable {
             isbnDangdang = isbnDangdangQueue.take();
             isbn = isbnDangdang.getIsbn();
             try {
-                NlcBookMarc nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(CrawlNlcMarcUtil.crawlNlcMarc(isbn, ip, port));
-                if (nlcBookMarc != null) {
-                    isbnDangdangDao.updateNlcHasCrawled(isbn);
-                    try {
-                        nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在nlc抓取" + isbn + "并插入数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
-                    } catch (Exception e) {
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在nlc抓取" + isbn + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                List<String> marcList = CrawlNlcMarcUtil.crawlNlcMarc(isbn, ip, port);
+                for (String marc : marcList) {
+                    NlcBookMarc nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(marc);
+                    if (nlcBookMarc != null) {
+                        isbnDangdangDao.updateNlcHasCrawled(isbn);
+                        try {
+                            nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在nlc抓取" + isbn + "并插入数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                        } catch (Exception e) {
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在nlc抓取" + isbn + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                        }
                     }
                 }
             } catch (Exception e) {

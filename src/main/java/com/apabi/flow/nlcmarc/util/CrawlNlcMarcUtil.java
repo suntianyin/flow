@@ -23,6 +23,8 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -76,6 +78,218 @@ public class CrawlNlcMarcUtil {
         return client;
     }
 
+
+//    public static String crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException, NoSuchIsbnException {
+//        // 实例化CloseableHttpClient对象
+//        CloseableHttpClient client = getCloseableHttpClient(ip, port);
+//        // 访问国图首页
+//        HttpGet httpGet1 = new HttpGet("http://opac.nlc.cn/F/");
+//        httpGet1.setHeader("User-Agent", UserAgentUtils.getUserAgent());
+//        httpGet1.setHeader("Connection", "keep-alive");
+//        httpGet1.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+//        httpGet1.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+//        httpGet1.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+//        httpGet1.setHeader("Host", "opac.nlc.cn");
+//        httpGet1.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+//        httpGet1.setHeader("Upgrade-Insecure-Requests", "1");
+//        CloseableHttpResponse response1 = null;
+//        // 访问国图首页，获取标识码
+//        try {
+//            response1 = client.execute(httpGet1);
+//            Thread.sleep(300);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            httpGet1.setHeader("Connection", "close");
+//            httpGet1.releaseConnection();
+//            httpGet1.abort();
+//            client.close();
+//            throw new IOException(e);
+//        }
+//        // 防封IP
+//        Thread.sleep(random.nextInt(300) + 200);
+//        // 获取response1的实体类
+//        HttpEntity entity1 = response1.getEntity();
+//        String html = null;
+//        try {
+//            html = EntityUtils.toString(entity1, "GBK");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            client.close();
+//            throw new IOException(e);
+//        } finally {
+//            EntityUtils.consumeQuietly(entity1);
+//            // 关闭response1
+//            try {
+//                EntityUtils.consume(entity1);
+//                response1.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        // 利用Jsoup解析html
+//        Document document = Jsoup.parse(html);
+//        String string = document.select("form[name='form1']").attr("action");
+//        String first = "http://opac.nlc.cn/F/";
+//        // 从页面中解析出标识码
+//        String tokenCode = string.substring(string.lastIndexOf("/") + 1, string.length());
+//        String third = "?func=find-b&find_code=ISB&request=" + ISBN + "&local_base=NLC01&filter_code_1=WLN&filter_request_1=&filter_code_2=WYR&filter_request_2=&filter_code_3=WYR&filter_request_3=&filter_code_4=WFM&filter_request_4=&filter_code_5=WSL&filter_request_5=";
+//        // 通过ISBN查询
+//        String firstURL = first + tokenCode + third;
+//        httpGet1.releaseConnection();
+//        HttpGet httpGet2 = new HttpGet(firstURL);
+//        httpGet2.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//        httpGet2.setHeader("Connection", "keep-alive");
+//        httpGet2.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+//        httpGet2.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+//        httpGet2.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+//        httpGet2.setHeader("Host", "opac.nlc.cn");
+//        httpGet2.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+//        httpGet2.setHeader("Upgrade-Insecure-Requests", "1");
+//        // 防封IP
+//        Thread.sleep(random.nextInt(300) + 350);
+//        CloseableHttpResponse response2 = null;
+//        try {
+//            response2 = client.execute(httpGet2);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            httpGet2.setHeader("Connection", "close");
+//            httpGet2.releaseConnection();
+//            httpGet2.abort();
+//            client.close();
+//            throw new IOException(e);
+//        }
+//        HttpEntity entity2 = response2.getEntity();
+//        String html2 = null;
+//        try {
+//            html2 = EntityUtils.toString(entity2, "UTF-8");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            client.close();
+//            throw new IOException(e);
+//        } finally {
+//            EntityUtils.consumeQuietly(entity2);
+//            EntityUtils.consume(entity2);
+//            // 关闭response2
+//            try {
+//                response2.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        Document document2 = Jsoup.parse(html2);
+//        List<String> docNumberList = new ArrayList<>();
+//
+//        if (html2 != null && html2.contains("下一条记录")) {
+//
+//            String text = document2.select("td[class='text3']").text();
+//            String countStr = text.substring(text.indexOf("共") + 1, text.lastIndexOf("条")).trim();
+//            int count = Integer.parseInt(countStr);
+//            for (int i = 1; i <= count; i++) {
+//            }
+//            System.out.println("该isbn有" + count + "条记录...");
+//        }
+//
+//        String href = document2.select("a[title='保存/邮寄']").attr("href");
+//        String doc_number = "";
+//        try {
+//            // 获取doc_number确定下载哪本书
+//            doc_number = href.substring(href.indexOf("doc_number=") + 11, href.indexOf("doc_number=") + 20);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            client.close();
+//            throw new NoSuchIsbnException("国图数据库中没有该ISBN:" + ISBN);
+//        }
+//        String first1 = first;
+//        String second1 = tokenCode;
+//        String third1 = "?func=full-mail&doc_library=NLC01&doc_number=" + doc_number + "&option_type=&format=997&encoding=NONE&SUBJECT=&NAME=&EMAIL=&text=&x=90&y=9";
+//        String finalURL2 = first1 + second1 + third1;
+//        httpGet2.releaseConnection();
+//        HttpGet httpGet3 = new HttpGet(finalURL2);
+//        httpGet3.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//        httpGet3.setHeader("Connection", "keep-alive");
+//        httpGet3.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+//        httpGet3.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+//        httpGet3.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+//        httpGet3.setHeader("Host", "opac.nlc.cn");
+//        httpGet3.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+//        httpGet3.setHeader("Upgrade-Insecure-Requests", "1");
+//        // 防封IP
+//        Thread.sleep(random.nextInt(500) + 350);
+//        CloseableHttpResponse response3 = null;
+//        try {
+//            response3 = client.execute(httpGet3);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            httpGet3.setHeader("Connection", "close");
+//            httpGet3.releaseConnection();
+//            httpGet3.abort();
+//            //client.close();
+//            throw new IOException(e);
+//        }
+//        HttpEntity entity3 = response3.getEntity();
+//        String html3 = null;
+//        try {
+//            html3 = EntityUtils.toString(entity3, "UTF-8");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            EntityUtils.consumeQuietly(entity3);
+//            EntityUtils.consume(entity3);
+//            //client.close();
+//            throw new IOException(e);
+//        } finally {
+//            // 关闭response3
+//            try {
+//                response3.close();
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
+//        }
+//        String href1 = Jsoup.parse(html3).select("p[class='text3'] a").attr("href");
+//        httpGet3.releaseConnection();
+//        HttpGet httpGet4 = new HttpGet(href1);
+//        httpGet4.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+//        httpGet4.setHeader("Connection", "keep-alive");
+//        httpGet4.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+//        httpGet4.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+//        httpGet4.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+//        httpGet4.setHeader("Host", "opac.nlc.cn");
+//        httpGet4.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+//        httpGet4.setHeader("Upgrade-Insecure-Requests", "1");
+//        Thread.sleep(350);
+//        CloseableHttpResponse response4 = null;
+//        try {
+//            response4 = client.execute(httpGet4);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            httpGet4.setHeader("Connection", "close");
+//            httpGet4.releaseConnection();
+//            httpGet4.abort();
+//            client.close();
+//            throw new IOException(e);
+//        }
+//        HttpEntity entity4 = response4.getEntity();
+//        String iso = null;
+//        try {
+//            iso = EntityUtils.toString(entity4, "UTF-8");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            client.close();
+//            throw new IOException(e);
+//        } finally {
+//            EntityUtils.consumeQuietly(entity4);
+//            EntityUtils.consume(entity4);
+//            // 关闭response4
+//            try {
+//                response4.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                throw new IOException(e);
+//            }
+//        }
+//        client.close();
+//        return iso;
+//    }
+
     /**
      * 从国图根据isbn或者isbn13获取marc数据内容
      *
@@ -87,7 +301,7 @@ public class CrawlNlcMarcUtil {
      * @throws InterruptedException
      * @throws NoSuchIsbnException
      */
-    public static String crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException, NoSuchIsbnException {
+    public static List<String> crawlNlcMarc(String ISBN, String ip, String port) throws IOException, InterruptedException, NoSuchIsbnException {
         // 实例化CloseableHttpClient对象
         CloseableHttpClient client = getCloseableHttpClient(ip, port);
         // 访问国图首页
@@ -185,109 +399,152 @@ public class CrawlNlcMarcUtil {
             }
         }
         Document document2 = Jsoup.parse(html2);
+        List<String> docNumberList = new ArrayList<>();
         String href = document2.select("a[title='保存/邮寄']").attr("href");
         String doc_number = "";
         try {
             // 获取doc_number确定下载哪本书
             doc_number = href.substring(href.indexOf("doc_number=") + 11, href.indexOf("doc_number=") + 20);
+            docNumberList.add(doc_number);
         } catch (Exception e) {
             e.printStackTrace();
             client.close();
             throw new NoSuchIsbnException("国图数据库中没有该ISBN:" + ISBN);
         }
-        String first1 = first;
-        String second1 = tokenCode;
-        String third1 = "?func=full-mail&doc_library=NLC01&doc_number=" + doc_number + "&option_type=&format=997&encoding=NONE&SUBJECT=&NAME=&EMAIL=&text=&x=90&y=9";
-        String finalURL2 = first1 + second1 + third1;
-        httpGet2.releaseConnection();
-        HttpGet httpGet3 = new HttpGet(finalURL2);
-        httpGet3.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-        httpGet3.setHeader("Connection", "keep-alive");
-        httpGet3.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpGet3.setHeader("Accept-Encoding", "gzip, deflate, sdch");
-        httpGet3.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-        httpGet3.setHeader("Host", "opac.nlc.cn");
-        httpGet3.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
-        httpGet3.setHeader("Upgrade-Insecure-Requests", "1");
-        // 防封IP
-        Thread.sleep(random.nextInt(500) + 350);
-        CloseableHttpResponse response3 = null;
-        try {
-            response3 = client.execute(httpGet3);
-        } catch (IOException e) {
-            e.printStackTrace();
-            httpGet3.setHeader("Connection", "close");
-            httpGet3.releaseConnection();
-            httpGet3.abort();
-            //client.close();
-            throw new IOException(e);
-        }
-        HttpEntity entity3 = response3.getEntity();
-        String html3 = null;
-        try {
-            html3 = EntityUtils.toString(entity3, "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-            EntityUtils.consumeQuietly(entity3);
-            EntityUtils.consume(entity3);
-            //client.close();
-            throw new IOException(e);
-        } finally {
-            // 关闭response3
-            try {
-                response3.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+
+        if (html2 != null && html2.contains("下一条记录")) {
+            String set_number = document2.select("input[id='set_number']").val();
+            String text = document2.select("td[class='text3']").text();
+            String countStr = text.substring(text.indexOf("共") + 1, text.lastIndexOf("条")).trim();
+            int count = Integer.parseInt(countStr);
+            for (int i = 2; i <= count; i++) {
+                String set_entry = "00000" + i;
+                if (set_entry.length() > 6) {
+                    set_entry = set_entry.substring(set_entry.length() - 6, set_entry.length());
+                }
+                String url = first + tokenCode + "?func=full-set-set&set_number=" + set_number + "&set_entry=" + set_entry + "&format=001";
+                HttpGet httpGet = new HttpGet(url);
+                httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+                httpGet.setHeader("Connection", "keep-alive");
+                httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                httpGet.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+                httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+                httpGet.setHeader("Host", "opac.nlc.cn");
+                httpGet.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+                httpGet.setHeader("Upgrade-Insecure-Requests", "1");
+                try {
+                    CloseableHttpResponse response = client.execute(httpGet);
+                    String htmlContent = EntityUtils.toString(response.getEntity());
+                    Document parse = Jsoup.parse(htmlContent);
+                    // 获取doc_number确定下载哪本书
+                    String docNumberContent = parse.select("input[id='docnum']").val();
+                    docNumberList.add(docNumberContent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
-        String href1 = Jsoup.parse(html3).select("p[class='text3'] a").attr("href");
-        httpGet3.releaseConnection();
-        HttpGet httpGet4 = new HttpGet(href1);
-        httpGet4.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-        httpGet4.setHeader("Connection", "keep-alive");
-        httpGet4.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-        httpGet4.setHeader("Accept-Encoding", "gzip, deflate, sdch");
-        httpGet4.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
-        httpGet4.setHeader("Host", "opac.nlc.cn");
-        httpGet4.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
-        httpGet4.setHeader("Upgrade-Insecure-Requests", "1");
-        Thread.sleep(350);
-        CloseableHttpResponse response4 = null;
-        try {
-            response4 = client.execute(httpGet4);
-        } catch (IOException e) {
-            e.printStackTrace();
-            httpGet4.setHeader("Connection", "close");
-            httpGet4.releaseConnection();
-            httpGet4.abort();
-            client.close();
-            throw new IOException(e);
-        }
-        HttpEntity entity4 = response4.getEntity();
-        String iso = null;
-        try {
-            iso = EntityUtils.toString(entity4, "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-            client.close();
-            throw new IOException(e);
-        } finally {
-            EntityUtils.consumeQuietly(entity4);
-            EntityUtils.consume(entity4);
-            // 关闭response4
+
+        //----------------遍历doc_num-----------------
+        List<String> isoList = new ArrayList<>();
+        for (String docNumber : docNumberList) {
+            String first1 = first;
+            String second1 = tokenCode;
+            String third1 = "?func=full-mail&doc_library=NLC01&doc_number=" + docNumber + "&option_type=&format=997&encoding=NONE&SUBJECT=&NAME=&EMAIL=&text=&x=90&y=9";
+            String finalURL2 = first1 + second1 + third1;
+            httpGet2.releaseConnection();
+            HttpGet httpGet3 = new HttpGet(finalURL2);
+            httpGet3.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+            httpGet3.setHeader("Connection", "keep-alive");
+            httpGet3.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpGet3.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+            httpGet3.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+            httpGet3.setHeader("Host", "opac.nlc.cn");
+            httpGet3.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+            httpGet3.setHeader("Upgrade-Insecure-Requests", "1");
+            // 防封IP
+            Thread.sleep(random.nextInt(500) + 350);
+            CloseableHttpResponse response3 = null;
             try {
-                response4.close();
+                response3 = client.execute(httpGet3);
             } catch (IOException e) {
                 e.printStackTrace();
+                httpGet3.setHeader("Connection", "close");
+                httpGet3.releaseConnection();
+                httpGet3.abort();
+                //client.close();
                 throw new IOException(e);
+            }
+            HttpEntity entity3 = response3.getEntity();
+            String html3 = null;
+            try {
+                html3 = EntityUtils.toString(entity3, "UTF-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+                EntityUtils.consumeQuietly(entity3);
+                EntityUtils.consume(entity3);
+                //client.close();
+                throw new IOException(e);
+            } finally {
+                // 关闭response3
+                try {
+                    response3.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            String href1 = Jsoup.parse(html3).select("p[class='text3'] a").attr("href");
+            httpGet3.releaseConnection();
+            HttpGet httpGet4 = new HttpGet(href1);
+            httpGet4.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
+            httpGet4.setHeader("Connection", "keep-alive");
+            httpGet4.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpGet4.setHeader("Accept-Encoding", "gzip, deflate, sdch");
+            httpGet4.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+            httpGet4.setHeader("Host", "opac.nlc.cn");
+            httpGet4.setHeader("Cookie", "Hm_lvt_2cb70313e397e478740d394884fb0b8a=1540534556,1540776061,1540781688,1540781732");
+            httpGet4.setHeader("Upgrade-Insecure-Requests", "1");
+            Thread.sleep(350);
+            CloseableHttpResponse response4 = null;
+            try {
+                response4 = client.execute(httpGet4);
+            } catch (IOException e) {
+                e.printStackTrace();
+                httpGet4.setHeader("Connection", "close");
+                httpGet4.releaseConnection();
+                httpGet4.abort();
+                client.close();
+                throw new IOException(e);
+            }
+            HttpEntity entity4 = response4.getEntity();
+            String iso = null;
+            try {
+                iso = EntityUtils.toString(entity4, "UTF-8");
+                isoList.add(iso);
+            } catch (IOException e) {
+                e.printStackTrace();
+                client.close();
+                throw new IOException(e);
+            } finally {
+                EntityUtils.consumeQuietly(entity4);
+                EntityUtils.consume(entity4);
+                // 关闭response4
+                try {
+                    response4.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new IOException(e);
+                }
             }
         }
         client.close();
-        return iso;
+        return isoList;
     }
 
     public static void main(String[] args) throws IOException, InterruptedException, NoSuchIsbnException {
-        String iso = CrawlNlcMarcUtil.crawlNlcMarc("7-5407-2053-0", "212.111.2.220", "53281");
-        System.out.println(iso);
+        List<String> isoList = CrawlNlcMarcUtil.crawlNlcMarc("7-80675-037-1", "109.110.76.3", "46900");
+        for (String iso : isoList) {
+            System.out.println(iso);
+        }
     }
 }

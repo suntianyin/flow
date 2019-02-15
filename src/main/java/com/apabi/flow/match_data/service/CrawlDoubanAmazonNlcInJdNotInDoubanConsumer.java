@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -102,16 +104,18 @@ public class CrawlDoubanAmazonNlcInJdNotInDoubanConsumer implements Runnable {
             }
             // nlc抓取
             NlcBookMarc nlcBookMarc = null;
-            String nlcBookMarcValue = null;
+            List<String> isoList = new ArrayList<>();
             try {
-                nlcBookMarcValue = CrawlNlcMarcUtil.crawlNlcMarc(isbnValue, ip, port);
-                nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(nlcBookMarcValue);
-                if (nlcBookMarc != null) {
-                    try {
-                        nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
-                    } catch (Exception e) {
-                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                isoList = CrawlNlcMarcUtil.crawlNlcMarc(isbnValue, ip, port);
+                for (String nlcBookMarcValue : isoList) {
+                    nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(nlcBookMarcValue);
+                    if (nlcBookMarc != null) {
+                        try {
+                            nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                        } catch (Exception e) {
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbnValue + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                        }
                     }
                 }
             } catch (Exception e) {

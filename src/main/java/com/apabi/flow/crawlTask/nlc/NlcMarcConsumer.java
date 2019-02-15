@@ -7,13 +7,14 @@ import com.apabi.flow.nlcmarc.dao.NlcCrawlIsbnDao;
 import com.apabi.flow.nlcmarc.model.NlcBookMarc;
 import com.apabi.flow.nlcmarc.util.CrawlNlcMarcUtil;
 import com.apabi.flow.nlcmarc.util.ParseMarcUtil;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -42,7 +43,7 @@ public class NlcMarcConsumer implements Runnable {
         String isbn = "";
         String ip = "";
         String port = "";
-        String isoContent = "";
+        List<String> isoList = new ArrayList<>();
         NlcBookMarc nlcBookMarc = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -53,18 +54,20 @@ public class NlcMarcConsumer implements Runnable {
             ip = host.split(":")[0];
             port = host.split(":")[1];
             // 从国图抓取iso内容
-            isoContent = CrawlNlcMarcUtil.crawlNlcMarc(isbn, ip, port);
-            if (StringUtils.isNotEmpty(isoContent)) {
-                // 解析marc数据
-                nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(isoContent);
-                if (nlcBookMarc != null && nlcBookMarc.getNlcMarcId() != null) {
-                    // 将解析好的NlcBookMarc数据插入到数据库
-                    nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
-                    // 在nlc_crawl_isbn中把该isbn标记为hasCrawled = 1
-                    nlcCrawlIsbnDao.updateHasCrawled(isbn);
-                    Date date = new Date();
-                    String time = simpleDateFormat.format(date);
-                    LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            isoList = CrawlNlcMarcUtil.crawlNlcMarc(isbn, ip, port);
+            if (isoList != null && isoList.size() > 0) {
+                for (String isoContent : isoList) {
+                    // 解析marc数据
+                    nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(isoContent);
+                    if (nlcBookMarc != null && nlcBookMarc.getNlcMarcId() != null) {
+                        // 将解析好的NlcBookMarc数据插入到数据库
+                        nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
+                        // 在nlc_crawl_isbn中把该isbn标记为hasCrawled = 1
+                        nlcCrawlIsbnDao.updateHasCrawled(isbn);
+                        Date date = new Date();
+                        String time = simpleDateFormat.format(date);
+                        LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                    }
                 }
             }
         } catch (InterruptedException e) {
