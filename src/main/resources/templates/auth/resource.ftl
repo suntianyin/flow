@@ -54,14 +54,14 @@
 
         function updateResource(id) {
             var url = "/resource/edit/index?resrId=" + id;
-            openDialog(url, "updateAuthor", "编辑协议资源信息", 500, 270, function (iframe) {
+            openDialog(url, "updateAuthor", "编辑授权资源信息", 500, 270, function (iframe) {
                 top.frames[iframe].AcceptClick()
             });
         }
 
         function btn_addResource() {
             var url = "/resource/add/index"
-            openDialog(url, "addAuthor", "添加协议资源信息", 500, 230, function (iframe) {
+            openDialog(url, "addAuthor", "添加授权资源信息", 500, 230, function (iframe) {
                 top.frames[iframe].AcceptClick()
             });
         }
@@ -118,9 +118,9 @@
             var isbn = $("#isbn").val().trim();
             var status = $("#status").val();
             var startDate = $("#startDate").val().trim();
-            var startDate1 = $("#startDate1").val().trim();
+            // var startDate1 = $("#startDate1").val().trim();
             var endDate = $("#endDate").val().trim();
-            var endDate1 = $("#endDate1").val().trim();
+            // var endDate1 = $("#endDate1").val().trim();
             confirmDialog("温馨提示", "注：您确定要对当前查询结果导出到Excel文件？", function (r) {
                 if (r) {
                     Loading(true, "正在提交数据...");
@@ -195,11 +195,17 @@
         </div>
         <!--工具栏-->
         <div class="tools_bar" style="border-top: none; margin-bottom: 0px;">
-            <#--<div class="PartialButton">-->
-            <#--<a id="lr-add" title="添加协议资源" onclick="btn_addResource()" class="tools_btn">-->
-            <#--<span><i class="fa fa-plus"></i>&nbsp;添加协议资源</span></a>-->
-            <#--<div class="tools_separator"></div>-->
-            <#--</div>-->
+        <#--<div class="PartialButton">-->
+        <#--<a id="lr-add" title="添加协议资源" onclick="btn_addResource()" class="tools_btn">-->
+        <#--<span><i class="fa fa-plus"></i>&nbsp;添加协议资源</span></a>-->
+        <#--<div class="tools_separator"></div>-->
+        <#--</div>-->
+            <div class="PartialButton">
+                <#--<input type="button" onclick="window.history.back();" value="返回">-->
+                    <button id="batch-back" title="返回" class="tools_btn" onclick="window.history.back();">
+                        <span><i class="fa"></i>&nbsp;返回</span></button>
+                    <div class="tools_separator"></div>
+            </div>
             <div class="PartialButton">
                 <button id="batch-import" title="导出授权资源" class="tools_btn" onclick="btn_exportData()">
                     <span><i class="fa fa-outdent"></i>&nbsp;导出授权资源</span></button>
@@ -276,22 +282,22 @@
                     <th>获取授权时间：</th>
                     <td><input id="startDate" name="startDate" type="text" value="${startDate!'' }" class="txt"
                                style="width: 200px"/></td>
-                    <#--<td>-->
-                    <#--<input id="startDate" name="startDate" type="date"-->
-                    <#--value="${(startDate?string("yyyy-MM-dd"))! '' }" class="txt"-->
-                    <#--style="width: 200px"/>至<input id="startDate1" name="startDate1" type="date"-->
-                    <#--value="${(startDate1?string("yyyy-MM-dd"))! '' }"-->
-                    <#--class="txt" style="width: 200px"/>-->
-                    <#--</td>-->
+                <#--<td>-->
+                <#--<input id="startDate" name="startDate" type="date"-->
+                <#--value="${(startDate?string("yyyy-MM-dd"))! '' }" class="txt"-->
+                <#--style="width: 200px"/>至<input id="startDate1" name="startDate1" type="date"-->
+                <#--value="${(startDate1?string("yyyy-MM-dd"))! '' }"-->
+                <#--class="txt" style="width: 200px"/>-->
+                <#--</td>-->
                     <th>版权结束时间：</th>
                     <td><input id="endDate" name="endDate" type="text" value="${endDate!'' }" class="txt"
                                style="width: 200px"/></td>
-                    <#--<td>-->
-                    <#--<input id="endDate" name="endDate" type="date" value="${(endDate?string("yyyy-MM-dd"))! '' }"-->
-                    <#--class="txt" style="width: 200px"/>至<input id="endDate1" name="endDate1" type="date"-->
-                    <#--value="${(endDate1?string("yyyy-MM-dd"))! '' }"-->
-                    <#--class="txt" style="width: 200px"/>-->
-                    <#--</td>-->
+                <#--<td>-->
+                <#--<input id="endDate" name="endDate" type="date" value="${(endDate?string("yyyy-MM-dd"))! '' }"-->
+                <#--class="txt" style="width: 200px"/>至<input id="endDate1" name="endDate1" type="date"-->
+                <#--value="${(endDate1?string("yyyy-MM-dd"))! '' }"-->
+                <#--class="txt" style="width: 200px"/>-->
+                <#--</td>-->
                     <td>
                         <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
                     </td>
@@ -328,36 +334,40 @@
                     <#if ResourceList??>
                         <#list ResourceList as list>
                             <tr class="gradeA odd" role="row">
-                            <td align="center">${(list.booklistNum)!''}</td>
-                            <td align="center">${(list.copyrightOwner)!''}</td>
-                            <td align="center">${(list.batchNum)! '' }</td>
-                            <td align="center">${(list.metaId)! '' }</td>
-                            <td align="center">${(list.title)!'' }</td>
-                            <td align="center">${(list.creator)! '' }</td>
-                            <td align="center">${(list.publisher)! '' }</td>
+                                <td align="center">${(list.booklistNum)!''}</td>
+                                <td align="center">${(list.copyrightOwner)!''}</td>
+                                <td align="center">${(list.batchNum)! '' }</td>
+                                <td align="center">${(list.metaId)! '' }</td>
+                                <td align="center">${(list.title)!'' }</td>
+                                <td align="center">${(list.creator)! '' }</td>
+                                <td align="center">${(list.publisher)! '' }</td>
                             <#if list.issuedDate??>
                                 <td align="center">${(list.issuedDate)?datetime! '' }</td>
                             <#else>
                                 <td align="center"></td>
                             </#if>
-                            <td align="center">${(list.isbn)! ''}</td>
-                            <td align="center">${(list.paperPrice)! ''}</td>
-                            <td align="center">${(list.ePrice)! ''}</td>
-                            <td align="center">${(list.status.getDesc())! ''}</td>
-                            <td align="center">${(list.authStartDate)! '' }</td>
-                            <td align="center">${(list.authEndDate)! '' }</td>
-                            <td align="center">${(list.operator)! '' }</td>
-                            <td align="center">${(list.operateDate?datetime)! '' }</td>
-                            <td align="center">
-                        <a style="cursor:pointer;" onclick="updateResource('${list.resrId! "" }');">编辑&nbsp;</a>
-                        <a style="cursor:pointer;" onclick="deleteById('${list.resrId! "" }');">删除&nbsp;</a>
-                            </td>
+                                <td align="center">${(list.isbn)! ''}</td>
+                                <td align="center">${(list.paperPrice)! ''}</td>
+                                <td align="center">${(list.ePrice)! ''}</td>
+                                <td align="center">${(list.status.getDesc())! ''}</td>
+                                <td align="center">${(list.authStartDate)! '' }</td>
+                                <td align="center">${(list.authEndDate)! '' }</td>
+                                <td align="center">${(list.operator)! '' }</td>
+                                <td align="center">${(list.operateDate?datetime)! '' }</td>
+                                <td align="center">
+                                    <a style="cursor:pointer;"
+                                       onclick="updateResource('${list.resrId! "" }');">编辑&nbsp;</a>
+                                    <a style="cursor:pointer;" onclick="deleteById('${list.resrId! "" }');">删除&nbsp;</a>
+                                </td>
                             </tr>
                         </#list>
                     </#if>
                     </tbody>
                 </table>
             </div>
+            <ul class="pagination">
+                <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
+            </ul>
             <ul class="pagination" style="float:right;" id="pagination"></ul>
         </div>
     </div>

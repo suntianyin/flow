@@ -8,7 +8,7 @@
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
     <link href="${ctx}/css/select2/select2.min.css" rel="stylesheet"/>
     <script src="${ctx}/js/select2/select2.min.js"></script>
-    <title>修改协议资源信息</title>
+    <title>修改授权资源信息</title>
     <script type="text/javascript">
         $(function () {
             $("#status").val("${(resource.status.getCode())!'' }");
@@ -126,7 +126,7 @@
 <div id="grid_List">
     <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
         <div class="btnbartitle">
-        <div>修改协议资源信息<span id="CenterTitle"></span></div>
+        <div>修改授权资源信息<span id="CenterTitle"></span></div>
            </div>
         <form id="form1">
         <#--<form id="form1" enctype="multipart/form-data" action="${ctx}/publisher/doedit" method="post" >-->
@@ -137,7 +137,7 @@
                 <tr>
                     <td>唯一标识(MetaId):</td>
                     <td>
-                        <input id="resrId" name="resrId" value="${resource.resrId!''}" type="hidden" class="txt" style="width: 300px"/>
+                        <input id="resrId" name="resrId" value="${resource.resrId?c}" type="hidden" class="txt" style="width: 300px"/>
                         <input id="metaId" name="metaId" value="${resource.metaId!''}" type="text" class="txt" style="width: 300px"/>&nbsp;&nbsp;&nbsp;<span
                                 style="color:red">*</span>
                     </td>

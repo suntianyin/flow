@@ -6,7 +6,7 @@
     <script src="${ctx}/js/jsPage.js"></script>
     <script src="${ctx}/js/datepicker/WdatePicker.js"></script>
     <meta charset="UTF-8">
-    <title>添加协议资源信息</title>
+    <title>添加授权资源信息</title>
     <script type="text/javascript">
         function isNull(str) {
             if (str == undefined || str == null || $.trim(str) == '') {

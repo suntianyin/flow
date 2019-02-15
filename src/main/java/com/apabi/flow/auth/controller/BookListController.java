@@ -392,6 +392,8 @@ public class BookListController {
             model.addAttribute("ResourceList", page.getResult());
             model.addAttribute("pages", page.getPages());
             model.addAttribute("pageNum", page.getPageNum());
+            model.addAttribute("pageSize", page.getPageSize());
+            model.addAttribute("total", page.getTotal());
         } else {
             model.addAttribute("ResourceList", Collections.emptyList());
             model.addAttribute("pages", 1);
