@@ -129,7 +129,7 @@ public class PublishController {
         PageHelper.startPage(pageNum, DEFAULT_PAGESIZE);
         Page<ApabiBookMetaDataTemp> page = null;
         if (parameterMap.size() > 0) {
-            if (StringUtils.isEmpty(metaId) && StringUtils.isEmpty(title) && StringUtils.isEmpty(creator) && StringUtils.isEmpty(publisher) && StringUtils.isEmpty(isbn) && StringUtils.isEmpty(isbnVal)) {
+            if (StringUtils.isEmpty(metaId) && StringUtils.isEmpty(title)) {
                 params.put("hasPublish", "0");
             }
             page = apabiBookMetaPublishService.queryPage(params);
@@ -491,9 +491,9 @@ public class PublishController {
      */
     private String getFieldValueByFieldName(String key, Object obj) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = obj.getClass();
-        /*if (("hasPublish".equalsIgnoreCase(key)) && (obj instanceof ApabiBookMetaData)) {
+        if (("hasPublish".equalsIgnoreCase(key)) && (obj instanceof ApabiBookMetaData)) {
             return null;
-        }*/
+        }
         Field field = clazz.getDeclaredField(key);
         field.setAccessible(true);
         Object o = field.get(obj);

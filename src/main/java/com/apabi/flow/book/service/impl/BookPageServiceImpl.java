@@ -422,7 +422,11 @@ public class BookPageServiceImpl implements BookPageService {
             for (String id : set) {
                 PageAssemblyQueue pageAssemblyQueue = new PageAssemblyQueue();
                 pageAssemblyQueue.setId(id);
+                try {
                 i += pageAssemblyQueueMapper.insert(pageAssemblyQueue);
+                } catch (Exception e) {
+
+                }
             }
         } catch (Exception e) {
             if (e instanceof BizException) {

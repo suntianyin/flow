@@ -1,7 +1,10 @@
 package com.apabi.flow.book.util;
 
+import com.apabi.flow.book.task.GetBook4ShuyuanTask;
 import com.apabi.flow.systemconf.dao.SystemConfMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -24,6 +27,8 @@ import java.util.List;
  * @description
  */
 public class EMailUtil {
+
+    private Logger logger = LoggerFactory.getLogger(EMailUtil.class);
 
     // SMTP邮件服务器
     private String SERVER;
@@ -65,7 +70,7 @@ public class EMailUtil {
             sender.setPassword(PASSWORD);
             sender.testConnection();
         } catch (MessagingException e) {
-            e.printStackTrace();
+            logger.warn("创建邮箱时，出现异常{}", e.getMessage());
         }
     }
 
@@ -95,7 +100,7 @@ public class EMailUtil {
             message.saveChanges();
             sender.send(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("发送邮件时，出现异常{}", e.getMessage());
         }
     }
 
@@ -125,7 +130,7 @@ public class EMailUtil {
             message.saveChanges();
             sender.send(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("发送邮件时，出现异常{}", e.getMessage());
         }
     }
 
@@ -140,7 +145,7 @@ public class EMailUtil {
             // 发送邮件
             sender.send(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("发送邮件时，出现异常{}", e.getMessage());
         }
     }
 }

@@ -1,17 +1,29 @@
 package com.apabi.flow.book.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * @author guanpp
  * @date 2018/8/8 15:45
  * @description
  */
+@Table(name="APABI_BOOK_CHAPTER")
+@Entity
 public class BookChapterSum {
+    @Id
+    @Column(name = "COMID")
     private String comId;
 
+    @Column(name = "CHAPTERNUM")
     private int chapterNum;
 
+    @Column(name = "SHARDSUM")
     private int shardSum;
 
+    @Column(name = "WORDSUM")
     private int wordSum;
 
     public String getComId() {

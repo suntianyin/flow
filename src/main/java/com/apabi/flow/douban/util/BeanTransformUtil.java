@@ -15,8 +15,8 @@ import java.util.Date;
  */
 public class BeanTransformUtil {
 
-    public static ApabiBookMetaData transform2ApabiBookMeta(DoubanMeta doubanMeta) {
-        ApabiBookMetaData apabiBookMeta = new ApabiBookMetaData();
+    public static ApabiBookMeta transform2ApabiBookMeta(DoubanMeta doubanMeta) {
+        ApabiBookMeta apabiBookMeta = new ApabiBookMeta();
         apabiBookMeta.setDoubanId(doubanMeta.getDoubanId());
         apabiBookMeta.setIsbn13(doubanMeta.getIsbn13());
         apabiBookMeta.setIsbn10(doubanMeta.getIsbn10());
@@ -31,7 +31,7 @@ public class BeanTransformUtil {
         if (issuedDate != null && issuedDate.contains(" 00:00:00")) {
             issuedDate = issuedDate.replaceAll(" 00:00:00", "");
         }
-        apabiBookMeta.setIssuedDate(issuedDate);
+        apabiBookMeta.setIssueddate(issuedDate);
         apabiBookMeta.setBookPages(doubanMeta.getPages());
         apabiBookMeta.setPaperPrice(doubanMeta.getPrice());
         apabiBookMeta.setEbookPrice(doubanMeta.getEbookPrice());
@@ -49,7 +49,7 @@ public class BeanTransformUtil {
         return apabiBookMeta;
     }
 
-    public static DoubanMeta transform2DoubanMeta(ApabiBookMetaData apabiBookMeta) {
+    public static DoubanMeta transform2DoubanMeta(ApabiBookMeta apabiBookMeta) {
         DoubanMeta doubanMeta = new DoubanMeta();
         doubanMeta.setDoubanId(apabiBookMeta.getDoubanId());
         doubanMeta.setIsbn13(apabiBookMeta.getIsbn13());
@@ -61,7 +61,7 @@ public class BeanTransformUtil {
         doubanMeta.setSubtitle(apabiBookMeta.getSubTitle());
         doubanMeta.setOriginTitle(apabiBookMeta.getOriginTitle());
         doubanMeta.setTranslator(apabiBookMeta.getTranslator());
-        doubanMeta.setIssueddate(apabiBookMeta.getIssuedDate());
+        doubanMeta.setIssueddate(apabiBookMeta.getIssueddate());
         doubanMeta.setPages(apabiBookMeta.getBookPages());
         doubanMeta.setPrice(apabiBookMeta.getPaperPrice());
         doubanMeta.setEbookPrice(apabiBookMeta.getEbookPrice());
@@ -200,68 +200,66 @@ public class BeanTransformUtil {
     }
 
     public static DoubanMeta mergeDoubanWithAmazon(DoubanMeta doubanMeta, AmazonMeta amazonMeta) {
-        if (amazonMeta != null) {
-            if (doubanMeta.getIsbn13() == null || "".equalsIgnoreCase(doubanMeta.getIsbn13())) {
-                doubanMeta.setIsbn13(amazonMeta.getIsbn13());
-            }
-            if (doubanMeta.getTitle() == null || "".equalsIgnoreCase(doubanMeta.getTitle())) {
-                doubanMeta.setTitle(amazonMeta.getTitle());
-            }
-            if (doubanMeta.getAuthor() == null || "".equalsIgnoreCase(doubanMeta.getAuthor())) {
-                doubanMeta.setAuthor(amazonMeta.getAuthor());
-            }
-            if (doubanMeta.getPublisher() == null || "".equalsIgnoreCase(doubanMeta.getPublisher())) {
-                doubanMeta.setPublisher(amazonMeta.getPublisher());
-            }
-            if (doubanMeta.getTranslator() == null || "".equalsIgnoreCase(doubanMeta.getTranslator())) {
-                doubanMeta.setTranslator(amazonMeta.getTranslator());
-            }
-            if (doubanMeta.getIssueddate() == null || "".equalsIgnoreCase(doubanMeta.getIssueddate())) {
-                String issuedDate = "";
-                if (amazonMeta.getIssuedDate() != null) {
-                    issuedDate = StringToolUtil.issuedDateFormat(amazonMeta.getIssuedDate());
-                    if (issuedDate.contains(" 00:00:00")) {
-                        issuedDate = amazonMeta.getIssuedDate().replaceAll(" 00:00:00", "");
-                    }
-                    if (issuedDate.length() == 4) {
-                        issuedDate += "-01-01";
-                    }
-                    if (issuedDate.length() == 7) {
-                        issuedDate += "-01";
-                    }
+        if (doubanMeta.getIsbn13() == null || "".equalsIgnoreCase(doubanMeta.getIsbn13())) {
+            doubanMeta.setIsbn13(amazonMeta.getIsbn13());
+        }
+        if (doubanMeta.getTitle() == null || "".equalsIgnoreCase(doubanMeta.getTitle())) {
+            doubanMeta.setTitle(amazonMeta.getTitle());
+        }
+        if (doubanMeta.getAuthor() == null || "".equalsIgnoreCase(doubanMeta.getAuthor())) {
+            doubanMeta.setAuthor(amazonMeta.getAuthor());
+        }
+        if (doubanMeta.getPublisher() == null || "".equalsIgnoreCase(doubanMeta.getPublisher())) {
+            doubanMeta.setPublisher(amazonMeta.getPublisher());
+        }
+        if (doubanMeta.getTranslator() == null || "".equalsIgnoreCase(doubanMeta.getTranslator())) {
+            doubanMeta.setTranslator(amazonMeta.getTranslator());
+        }
+        if (doubanMeta.getIssueddate() == null || "".equalsIgnoreCase(doubanMeta.getIssueddate())) {
+            String issuedDate = "";
+            if (amazonMeta.getIssuedDate() != null) {
+                issuedDate = StringToolUtil.issuedDateFormat(amazonMeta.getIssuedDate());
+                if (issuedDate.contains(" 00:00:00")) {
+                    issuedDate = amazonMeta.getIssuedDate().replaceAll(" 00:00:00", "");
                 }
-                doubanMeta.setIssueddate(issuedDate);
+                if (issuedDate.length() == 4) {
+                    issuedDate += "-01-01";
+                }
+                if (issuedDate.length() == 7) {
+                    issuedDate += "-01";
+                }
             }
-            if (doubanMeta.getPages() == null || "".equalsIgnoreCase(doubanMeta.getPages())) {
-                doubanMeta.setPages(amazonMeta.getPages());
-            }
-            if (doubanMeta.getPrice() == null || "".equalsIgnoreCase(doubanMeta.getPrice())) {
-                doubanMeta.setPrice(amazonMeta.getPaperPrice());
-            }
-            if (doubanMeta.getBinding() == null || "".equalsIgnoreCase(doubanMeta.getBinding())) {
-                doubanMeta.setBinding(amazonMeta.getBinding());
-            }
-            if (doubanMeta.getSeries() == null || "".equalsIgnoreCase(doubanMeta.getSeries())) {
-                doubanMeta.setSeries(amazonMeta.getSeries());
-            }
-            if (doubanMeta.getSummary() == null || "".equalsIgnoreCase(doubanMeta.getSummary())) {
-                doubanMeta.setSummary(amazonMeta.getSummary());
-            }
-            if (doubanMeta.getAuthorIntro() == null || "".equalsIgnoreCase(doubanMeta.getAuthorIntro())) {
-                doubanMeta.setAuthorIntro(amazonMeta.getAuthorIntroduction());
-            }
-            if (doubanMeta.getCatalog() == null || "".equalsIgnoreCase(doubanMeta.getCatalog())) {
-                doubanMeta.setCatalog(amazonMeta.getCatalog());
-            }
-            if (doubanMeta.getIsbn10() == null || "".equalsIgnoreCase(doubanMeta.getIsbn10())) {
-                doubanMeta.setIsbn10(amazonMeta.getIsbn10());
-            }
-            if (doubanMeta.getOriginTitle() == null || "".equalsIgnoreCase(doubanMeta.getOriginTitle())) {
-                doubanMeta.setOriginTitle(amazonMeta.getOriginTitle());
-            }
-            if (doubanMeta.getEbookPrice() == null || "".equalsIgnoreCase(doubanMeta.getEbookPrice())) {
-                doubanMeta.setEbookPrice(amazonMeta.getKindlePrice());
-            }
+            doubanMeta.setIssueddate(issuedDate);
+        }
+        if (doubanMeta.getPages() == null || "".equalsIgnoreCase(doubanMeta.getPages())) {
+            doubanMeta.setPages(amazonMeta.getPages());
+        }
+        if (doubanMeta.getPrice() == null || "".equalsIgnoreCase(doubanMeta.getPrice())) {
+            doubanMeta.setPrice(amazonMeta.getPaperPrice());
+        }
+        if (doubanMeta.getBinding() == null || "".equalsIgnoreCase(doubanMeta.getBinding())) {
+            doubanMeta.setBinding(amazonMeta.getBinding());
+        }
+        if (doubanMeta.getSeries() == null || "".equalsIgnoreCase(doubanMeta.getSeries())) {
+            doubanMeta.setSeries(amazonMeta.getSeries());
+        }
+        if (doubanMeta.getSummary() == null || "".equalsIgnoreCase(doubanMeta.getSummary())) {
+            doubanMeta.setSummary(amazonMeta.getSummary());
+        }
+        if (doubanMeta.getAuthorIntro() == null || "".equalsIgnoreCase(doubanMeta.getAuthorIntro())) {
+            doubanMeta.setAuthorIntro(amazonMeta.getAuthorIntroduction());
+        }
+        if (doubanMeta.getCatalog() == null || "".equalsIgnoreCase(doubanMeta.getCatalog())) {
+            doubanMeta.setCatalog(amazonMeta.getCatalog());
+        }
+        if (doubanMeta.getIsbn10() == null || "".equalsIgnoreCase(doubanMeta.getIsbn10())) {
+            doubanMeta.setIsbn10(amazonMeta.getIsbn10());
+        }
+        if (doubanMeta.getOriginTitle() == null || "".equalsIgnoreCase(doubanMeta.getOriginTitle())) {
+            doubanMeta.setOriginTitle(amazonMeta.getOriginTitle());
+        }
+        if (doubanMeta.getEbookPrice() == null || "".equalsIgnoreCase(doubanMeta.getEbookPrice())) {
+            doubanMeta.setEbookPrice(amazonMeta.getKindlePrice());
         }
         return doubanMeta;
     }

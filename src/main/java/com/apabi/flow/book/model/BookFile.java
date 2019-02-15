@@ -1,5 +1,9 @@
 package com.apabi.flow.book.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -7,18 +11,27 @@ import java.util.Date;
  * @date 2018/8/20 9:37
  * @description
  */
+@Table(name = "APABI_BOOK_FILE")
+@Entity
 public class BookFile {
 
+    @Id
+    @Column(name = "ID")
     private String id;
 
+    @Column(name = "METAID")
     private String metaid;
 
+    @Column(name = "FILENAME")
     private String fileName;
 
+    @Column(name = "FILETYPE")
     private String fileType;
 
+    @Column(name = "CREATETIME")
     private Date createTime;
 
+    @Column(name = "UPDATETIME")
     private Date updateTime;
 
     public String getId() {

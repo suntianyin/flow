@@ -2,207 +2,311 @@ package com.apabi.flow.publish.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * @Author pipi
  * @Date 2018/8/15 15:56
  **/
+@Entity
+@Table(name = "APABI_BOOK_METADATA_TEMP")
 public class ApabiBookMetaTempPublish {
+    @Id
+    @Column(name = "METAID")
     private String metaId;
 
+    @Column(name = "IDTYPE")
     private String idType;
 
+    @Column(name = "SALESTATUS")
     private Integer saleStatus;
 
+    @Column(name = "LANGUAGE")
     private String language;
 
+    @Column(name = "TITLE")
     private String title;
 
+    @Column(name = "SUBTITLE")
     private String subtitle;
 
+    @Column(name = "CREATOR")
     private String creator;
 
+    @Column(name = "AUTHORINTRO")
     private String authorIntro;
 
+    @Column(name = "CREATORWORD")
     private String creatorWord;
 
+    @Column(name = "CREATORID")
     private String creatorId;
 
+    @Column(name = "CONTRIBUTOR")
     private String contributor;
 
+    @Column(name = "CONTRIBUTORWORD")
     private String contributorWord;
 
+    @Column(name = "CONTRIBUTORID")
     private String contributorId;
 
+    @Column(name = "TRANSLATOR")
     private String translator;
 
+    @Column(name = "TRANSLATORID")
     private String translatorId;
 
+    @Column(name = "ORIGINTITLE")
     private String originTitle;
 
+    @Column(name = "ALTERNATIVETITLE")
     private String alternativeTitle;
 
+    @Column(name = "EDITIONORDER")
     private String editionOrder;
 
+    @Column(name = "EDITIONNOTE")
     private String editionNote;
 
+    @Column(name = "PLACE")
     private String place;
 
+    @Column(name = "PUBLISHER")
     private String publisher;
 
+    @Column(name = "PUBLISHERID")
     private String publisherId;
 
+    @Column(name = "ISSUEDDATE")
     private String issuedDate;
 
+    @Column(name = "ENDISSUEDDATE")
     private String endIssuedDate;
 
+    @Column(name = "ISSUEDDATEDESC")
     private String issuedDateDesc;
 
+    @Column(name = "ABSTRACT")
     private String abstract_;
 
+    @Column(name = "SUBJECT")
     private String subject;
 
+    @Column(name = "PREFACE")
     private String preface;
 
+    @Column(name = "READER")
     private String reader;
 
+    @Column(name = "CLASSCODE")
     private String classCode;
 
+    @Column(name = "APABICLASS")
     private String apabiClass;
 
+    @Column(name = "TYPE")
     private String type;
 
+    @Column(name = "ISBN")
     private String isbn;
 
+    @Column(name = "ISBN10")
     private String isbn10;
 
+    @Column(name = "ISBN13")
     private String isbn13;
 
+    @Column(name = "PAPERPRICE")
     private String paperPrice;
 
+    @Column(name = "EBOOKPRICE")
     private String ebookPrice;
 
+    @Column(name = "FOREIGNPRICE")
     private String foreignPrice;
 
+    @Column(name = "FOREIGNPRICETYPE")
     private String foreignPriceType;
 
+    @Column(name = "PAPERPRICEDESC")
     private String paperPriceDesc;
 
+    @Column(name = "BINDING")
     private String binding;
 
+    @Column(name = "ILLUSTRATION")
     private String illustration;
 
+    @Column(name = "PRESSORDER")
     private String pressOrder;
 
+    @Column(name = "EDITOR")
     private String editor;
 
+    @Column(name = "RELATION")
     private String relation;
 
+    @Column(name = "RELATIONID")
     private String relationId;
 
+    @Column(name = "VOLUME")
     private String volume;
 
+    @Column(name = "ISSERIES")
     private Integer isSeries;
 
+    @Column(name = "VOLUMESCOUNT")
     private String volumesCount;
 
+    @Column(name = "ISALLUBLISHED")
     private String isAllublished;
 
+    @Column(name = "NOTES")
     private String notes;
 
+    @Column(name = "PODPRICE")
     private String podPrice;
 
+    @Column(name = "PODPRICETYPE")
     private String podPriceType;
 
+    @Column(name = "PODPRICEPAGEUNIT")
     private String podPricePageUnit;
 
+    @Column(name = "DRID")
     private String drId;
 
+    @Column(name = "DOUBANID")
     private String doubanId;
 
+    @Column(name = "AMAZONID")
     private String amazonId;
 
+    @Column(name = "CALISID")
     private String calisId;
 
+    @Column(name = "NLIBRARYID")
     private String nlibraryId;
 
+    @Column(name = "DATASOURCE")
     private String dataSource;
 
+    @Column(name = "QUALITYRATING")
     private String qualityRating;
 
+    @Column(name = "QRTYPE")
     private String qrType;
 
+    @Column(name = "CEBXOBJID")
     private String cebxObjId;
 
+    @Column(name = "CEBXFILESIZE")
     private String cebxFileSize;
 
+    @Column(name = "HASCEBX")
     private Integer hasCebx;
 
+    @Column(name = "CEBXPAGE")
     private String cebxPage;
 
+    @Column(name = "COMPLEXOID")
     private String complexOid;
 
+    @Column(name = "REDITOR")
     private String reditor;
 
+    @Column(name = "DEPARTMENTID")
     private String departmentId;
 
+    @Column(name = "COVERURL")
     private String coverUrl;
 
+    @Column(name = "IMGHEIGTH")
     private String imgHeigth;
 
+    @Column(name = "IMGWIDTH")
     private String imgWidth;
 
+    @Column(name = "COVOBJID")
     private String covObjId;
 
+    @Column(name = "THUMIMGURL")
     private String thumImgUrl;
 
+    @Column(name = "THUMIMGSIZE")
     private String thumImgSize;
 
+    @Column(name = "MEDIUMCOVER")
     private String mediumCover;
 
+    @Column(name = "FOAMATCATALOG")
     private String foamatCatalog;
 
+    @Column(name = "STREAMCATALOG")
     private String streamCatalog;
 
+    @Column(name = "POSTSCRIPT")
     private String postScript;
 
+    @Column(name = "HASFLOW")
     private Integer hasFlow;
 
+    @Column(name = "ISOPTIMIZE")
     private Integer isOptimize;
 
+    @Column(name = "DONOR")
     private String donor;
 
+    @Column(name = "LIBRARYID")
     private String libraryId;
 
+    @Column(name = "BOOKID")
     private String bookId;
 
+    @Column(name = "STYLECLASS")
     private String styleClass;
 
+    @Column(name = "STYLEURL")
     private String styleUrl;
 
+    @Column(name = "CHAPTERNUM")
     private Integer chapterNum;
 
+    @Column(name = "BOOKPAGES")
     private String bookPages;
 
+    @Column(name = "TAGS")
     private String tags;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
+    @Column(name = "CREATETIME")
     private Date createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
+    @Column(name = "UPDATETIME")
     private Date updateTime;
 
+    @Column(name = "CONTENTNUM")
     private Integer contentNum;
 
+    @Column(name = "HASPUBLISH")
     private Integer hasPublish;
 
+    @Column(name = "ISPUBLICCOPYRIGHT")
     private Integer isPublicCopyRight;
 
+    @Column(name = "ISREADEPUB")
     private Integer isReadEpub;
 
+    @Column(name = "FLOWSOURCE")
     private String flowSource;
 
+    @Column(name = "ISREADCEBXFLOW")
     private Integer isReadCebxFlow;
 
     public Integer getIsReadEpub() {

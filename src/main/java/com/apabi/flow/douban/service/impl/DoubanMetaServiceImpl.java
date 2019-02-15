@@ -2,13 +2,10 @@ package com.apabi.flow.douban.service.impl;
 
 import com.apabi.flow.crawlTask.util.IpPoolUtils;
 import com.apabi.flow.crawlTask.util.NlcIpPoolUtils;
-import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
 import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
+import com.apabi.flow.douban.dao.ApabiBookMetaRepository;
 import com.apabi.flow.douban.dao.DoubanMetaDao;
-import com.apabi.flow.douban.model.AmazonMeta;
-import com.apabi.flow.douban.model.ApabiBookMetaData;
-import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
-import com.apabi.flow.douban.model.DoubanMeta;
+import com.apabi.flow.douban.model.*;
 import com.apabi.flow.douban.service.AmazonMetaService;
 import com.apabi.flow.douban.service.DoubanMetaService;
 import com.apabi.flow.douban.util.BeanTransformUtil;
@@ -46,10 +43,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DoubanMetaServiceImpl implements DoubanMetaService {
     private org.slf4j.Logger log = LoggerFactory.getLogger(DoubanMetaServiceImpl.class);
     @Autowired
-    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
+    private ApabiBookMetaRepository apabiBookMetaRepository;
 
     @Autowired
-    private ApabiBookMetaDataDao apabiBookMetaDataDao;
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     @Autowired
     private AmazonMetaService amazonMetaService;
@@ -72,7 +69,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                 isbn13 = isbn13.replace("-", "");
             }
             // 查询meta_data库中是否有该数据
-            List<ApabiBookMetaData> apabiBookMetaList = apabiBookMetaDataDao.findByIsbn13(isbn13);
+            List<ApabiBookMeta> apabiBookMetaList = apabiBookMetaRepository.findApabiBookMetasByIsbn13Is(isbn13);
             List<String> metaIdList = new ArrayList<>();
             // 查看temp库中是否有该数据
             List<ApabiBookMetaDataTemp> apabiBookMetaTempList = apabiBookMetaDataTempDao.findByIsbn13(isbn13);
@@ -87,7 +84,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
             if (apabiBookMetaList != null && apabiBookMetaList.size() != 0) {
                 // 遍历apabiBookMetaList，将doubanMetaList返回
                 for (int i = 0; i < apabiBookMetaList.size(); i++) {
-                    ApabiBookMetaData apabiBookMeta = apabiBookMetaList.get(i);
+                    ApabiBookMeta apabiBookMeta = apabiBookMetaList.get(i);
                     if (apabiBookMeta != null) {
                         DoubanMeta doubanMeta = BeanTransformUtil.transform2DoubanMeta(apabiBookMeta);
                         if (apabiBookMeta.getCreateTime() == null) {
@@ -365,7 +362,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                 metaId = apabiBookMetaTempList.get(0).getMetaId();
             }
             // 查询meta_data表中是否有该数据
-            List<ApabiBookMetaData> apabiBookMetaList = apabiBookMetaDataDao.findByIsbn13(isbn13);
+            List<ApabiBookMeta> apabiBookMetaList = apabiBookMetaRepository.findApabiBookMetasByIsbn13Is(isbn13);
             // 首先查出meta_data表中hasFlow和hasCebx字段的值
             Integer hasFlow = 0;
             Integer hasCebx = 0;
@@ -381,7 +378,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
             if (apabiBookMetaList != null && apabiBookMetaList.size() != 0) {
                 // 遍历apabiBookMetaList
                 for (int i = 0; i < apabiBookMetaList.size(); i++) {
-                    ApabiBookMetaData apabiBookMeta = apabiBookMetaList.get(i);
+                    ApabiBookMeta apabiBookMeta = apabiBookMetaList.get(i);
                     if (apabiBookMeta != null) {
                         // 如果apabiBookMeta不为null，则将apabiBookMeta的属性值拷贝到新创建的apabiBookMetaTemp
                         ApabiBookMetaDataTemp apabiBookMetaTemp = new ApabiBookMetaDataTemp();
@@ -741,7 +738,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
                 metaId = apabiBookMetaTempList.get(0).getMetaId();
             }
             // 查询meta_data表中是否有该数据
-            List<ApabiBookMetaData> apabiBookMetaList = apabiBookMetaDataDao.findByIsbn13(isbn13);
+            List<ApabiBookMeta> apabiBookMetaList = apabiBookMetaRepository.findApabiBookMetasByIsbn13Is(isbn13);
             // 首先查出meta_data表中hasFlow和hasCebx字段的值
             Integer hasFlow = 0;
             Integer hasCebx = 0;
@@ -757,7 +754,7 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
             if (apabiBookMetaList != null && apabiBookMetaList.size() != 0) {
                 // 遍历apabiBookMetaList
                 for (int i = 0; i < apabiBookMetaList.size(); i++) {
-                    ApabiBookMetaData apabiBookMeta = apabiBookMetaList.get(i);
+                    ApabiBookMeta apabiBookMeta = apabiBookMetaList.get(i);
                     if (apabiBookMeta != null) {
                         // 如果apabiBookMeta不为null，则将apabiBookMeta的属性值拷贝到新创建的apabiBookMetaTemp
                         ApabiBookMetaDataTemp apabiBookMetaTemp = new ApabiBookMetaDataTemp();

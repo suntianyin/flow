@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,10 +46,7 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                 amazonMeta = amazonMetaDao.findByIsbn10(isbn).get(0);
             }
             if (isbn.length() == 13) {
-                List<AmazonMeta> byIsbn13 = amazonMetaDao.findByIsbn13(isbn);
-                if (byIsbn13 != null && byIsbn13.size() > 0) {
-                    amazonMeta = amazonMetaDao.findByIsbn13(isbn).get(0);
-                }
+                amazonMeta = amazonMetaDao.findByIsbn13(isbn).get(0);
             }
             if (amazonMeta == null) {
                 // 如果在表中查询不到数据，则去爬取
@@ -150,11 +146,7 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
                 if (BasicInformation.select("b").text().equals("出版社:") && BasicInformation.text().contains(";")) {
                     bean.setPublisher(BasicInformation.text().replace("出版社:", "").split(";")[0]);
                     bean.setEditionOrder(BasicInformation.text().replace("出版社:", "").split(";")[1].split("\\(")[0]);
-                    try {
                     bean.setIssuedDate(BasicInformation.text().replace("出版社:", "").split(";")[1].split("\\(")[1].replace(")", ""));
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
                 } else if (BasicInformation.select("b").text().equals("出版社:") && !BasicInformation.text().contains(";")) {
                     bean.setPublisher(BasicInformation.text().replace("出版社:", "").split("\\(")[0]);
                     bean.setIssuedDate(BasicInformation.text().replace("出版社:", "").split("\\(")[1].replace(")", ""));
@@ -307,10 +299,8 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
             }
             return bean;
         } catch (NullPointerException e1) {
-            e1.printStackTrace();
             throw new NullPointerException();
         } catch (Exception e2) {
-            e2.printStackTrace();
             throw new Exception();
         }
     }
