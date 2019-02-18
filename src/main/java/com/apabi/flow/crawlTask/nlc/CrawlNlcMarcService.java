@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.CountDownLatch;
@@ -26,9 +24,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2018/10/12 14:18
  **/
-// 先注释掉，不执行爬虫操作
-@Order(1)
-@Component
+//@Order(1)
+//@Component
 public class CrawlNlcMarcService implements ApplicationRunner {
     private static Logger logger = LoggerFactory.getLogger(CrawlNlcMarcService.class);
     @Autowired

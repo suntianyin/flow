@@ -79,7 +79,7 @@
         select
         <include refid="Base_Column_List"/>
         from JD_METADATA
-        where META_ID IS NULL
+        where META_ID IS NULL AND ISBN13 IS NOT NULL
     </select>
 
 

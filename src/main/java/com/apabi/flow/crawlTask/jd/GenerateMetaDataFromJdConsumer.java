@@ -31,7 +31,7 @@ public class GenerateMetaDataFromJdConsumer implements Runnable {
     private CloseableHttpClient httpClient;
     private JdMetadataDao jdMetadataDao;
 
-    public GenerateMetaDataFromJdConsumer(LinkedBlockingQueue<JdMetadata> jdMetadataQueue,  JdMetadataDao jdMetadataDao, CountDownLatch countDownLatch, CloseableHttpClient httpClient) {
+    public GenerateMetaDataFromJdConsumer(LinkedBlockingQueue<JdMetadata> jdMetadataQueue, JdMetadataDao jdMetadataDao, CountDownLatch countDownLatch, CloseableHttpClient httpClient) {
         this.jdMetadataQueue = jdMetadataQueue;
         this.countDownLatch = countDownLatch;
         this.httpClient = httpClient;
@@ -45,20 +45,24 @@ public class GenerateMetaDataFromJdConsumer implements Runnable {
         try {
             jdMetadata = jdMetadataQueue.take();
             isbn = jdMetadata.getIsbn13();
-            HttpGet httpGet = new HttpGet("http://flow.apabi.com/flow/meta/find/" + isbn);
-            CloseableHttpResponse response = httpClient.execute(httpGet);
-            String html = EntityUtils.toString(response.getEntity());
-            ResultEntity resultEntity = JSONObject.parseObject(html, ResultEntity.class);
-            if (resultEntity != null && resultEntity.getStatus() == HttpStatus.SC_OK) {
-                List<ApabiBookMetaData> apabiBookMetaDataList = JSONObject.parseArray(resultEntity.getBody().toString(), ApabiBookMetaData.class);
-                if (apabiBookMetaDataList != null && apabiBookMetaDataList.size() == 1) {
-                    ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
-                    if (apabiBookMetaData != null && StringUtils.isNotEmpty(apabiBookMetaData.getMetaId())) {
-                        jdMetadata.setMetaId(apabiBookMetaData.getMetaId());
+            if (StringUtils.isNotEmpty(isbn)) {
+                HttpGet httpGet = new HttpGet("http://flow.apabi.com/flow/meta/find/" + isbn);
+                CloseableHttpResponse response = httpClient.execute(httpGet);
+                String html = EntityUtils.toString(response.getEntity());
+                ResultEntity resultEntity = JSONObject.parseObject(html, ResultEntity.class);
+                if (resultEntity != null && resultEntity.getStatus() == HttpStatus.SC_OK) {
+                    List<ApabiBookMetaData> apabiBookMetaDataList = JSONObject.parseArray(resultEntity.getBody().toString(), ApabiBookMetaData.class);
+                    if (apabiBookMetaDataList != null && apabiBookMetaDataList.size() == 1) {
+                        ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
+                        if (apabiBookMetaData != null && StringUtils.isNotEmpty(apabiBookMetaData.getMetaId())) {
+                            jdMetadata.setMetaId(apabiBookMetaData.getMetaId());
+                        }
+                        jdMetadataDao.update(jdMetadata);
+                        LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在jd生成" + jdMetadata.getIsbn13() + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                     }
-                    jdMetadataDao.update(jdMetadata);
-                    LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在jd生成" + jdMetadata.getIsbn13() + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
                 }
+            } else {
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "在jd生成" + jdMetadata.getIsbn13() + "成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (Exception e) {
             e.printStackTrace();

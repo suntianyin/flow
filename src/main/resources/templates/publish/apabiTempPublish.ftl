@@ -54,10 +54,11 @@
                     + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
         }
 
+        var index = 270;
         //对比
         function btn_compare(metaId) {
-            loading();
-            window.location.href = "compareTempAndStandard?" + "metaId=" + metaId;
+            AddTabMenu2('R' + index, '${ctx}/publish/compareTempAndStandard?metaId='+metaId, metaId, 'true');
+            // window.location.href = "compareTempAndStandard?" + "metaId=" + metaId;
         }
         // 查看发布记录
         function checkExportData() {

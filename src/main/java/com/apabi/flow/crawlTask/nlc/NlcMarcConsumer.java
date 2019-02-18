@@ -45,30 +45,33 @@ public class NlcMarcConsumer implements Runnable {
         String port = "";
         List<String> isoList = new ArrayList<>();
         NlcBookMarc nlcBookMarc = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             // 从阻塞队列中获取isbn
             isbn = isbnQueue.take();
-            // 根据ip配置文件解析ip和port
-            String host = ipPoolUtils.getIp();
-            ip = host.split(":")[0];
-            port = host.split(":")[1];
-            // 从国图抓取iso内容
-            isoList = CrawlNlcMarcUtil.crawlNlcMarc(isbn, ip, port);
-            if (isoList != null && isoList.size() > 0) {
-                for (String isoContent : isoList) {
-                    // 解析marc数据
-                    nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(isoContent);
-                    if (nlcBookMarc != null && nlcBookMarc.getNlcMarcId() != null) {
-                        // 将解析好的NlcBookMarc数据插入到数据库
-                        nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
-                        // 在nlc_crawl_isbn中把该isbn标记为hasCrawled = 1
-                        nlcCrawlIsbnDao.updateHasCrawled(isbn);
-                        Date date = new Date();
-                        String time = simpleDateFormat.format(date);
-                        LOGGER.info(time + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+            List<NlcBookMarc> result = nlcBookMarcDao.findByIsbn(isbn);
+            if (result == null || result.size() == 0) {
+                // 根据ip配置文件解析ip和port
+                String host = ipPoolUtils.getIp();
+                ip = host.split(":")[0];
+                port = host.split(":")[1];
+                // 从国图抓取iso内容
+                isoList = CrawlNlcMarcUtil.crawlNlcMarc(isbn, ip, port);
+                if (isoList != null && isoList.size() > 0) {
+                    for (String isoContent : isoList) {
+                        // 解析marc数据
+                        nlcBookMarc = ParseMarcUtil.parseNlcBookMarc(isoContent);
+                        if (nlcBookMarc != null && nlcBookMarc.getNlcMarcId() != null) {
+                            // 将解析好的NlcBookMarc数据插入到数据库
+                            nlcBookMarcDao.insertNlcMarc(nlcBookMarc);
+                            // 在nlc_crawl_isbn中把该isbn标记为hasCrawled = 1
+                            nlcCrawlIsbnDao.updateHasCrawled(isbn);
+                            Date date = new Date();
+                            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + nlcBookMarc.getIsbn() + "并添加至数据库成功，列表中剩余：" + countDownLatch.getCount() + "个数据...");
+                        }
                     }
                 }
+            }else {
+                LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "使用" + ip + ":" + port + "在nlc抓取" + isbn + "在数据库中已存在，列表中剩余：" + countDownLatch.getCount() + "个数据...");
             }
         } catch (InterruptedException e) {
         } catch (IOException e) {
@@ -76,8 +79,7 @@ public class NlcMarcConsumer implements Runnable {
             // 如果国图数据库中没有该条isbn，则把该数据标记为可疑数据
             nlcCrawlIsbnDao.markIsbnSuspect(isbn);
             Date date = new Date();
-            String time = simpleDateFormat.format(date);
-            LOGGER.info(time + "  " + Thread.currentThread().getName() + "国图中可能没有" + isbn + "这条数据...");
+            LOGGER.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "  " + Thread.currentThread().getName() + "国图中可能没有" + isbn + "这条数据...");
         } finally {
             countDownLatch.countDown();
         }
