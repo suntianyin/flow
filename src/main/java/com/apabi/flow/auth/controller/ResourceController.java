@@ -219,6 +219,8 @@ public class ResourceController {
             List<Resource> list = resourceService.listResource1(paramsMap);
             if (list == null || list.isEmpty()){
                 return "<script type='text/javascript'>alert('当前条件查询结果为空！');history.back();</script>";
+            }else if(list.size()>=1000){
+                return "<script type='text/javascript'>alert('当前条件查询结果大于1000条,不提供导出！');history.back();</script>";
             }
             // 设置文件名
             Date date = new Date();
