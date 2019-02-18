@@ -89,7 +89,7 @@ public class JdController {
             jdMetadata = jdService.findById(jdItemId);
         }
         Class clazz = Class.forName("com.apabi.flow.jd.model.JdMetadata");
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         Field[] fields = clazz.getDeclaredFields();
         // 数据库中的数据 -> Date
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
