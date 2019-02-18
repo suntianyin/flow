@@ -1150,13 +1150,13 @@ public class BookController {
         return resultEntity;
     }
 
-    @ResponseBody
-    @RequestMapping("/autoFetchPageDataAgain2")
-    public Object autoFetchPageDataAgain2() {
-        String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
-//        String cebxData = getCebxData("http://localhost:8083/flow/book/autoFetchPageDataAgain");
-        return cebxData;
-    }
+//    @ResponseBody
+//    @RequestMapping("/autoFetchPageDataAgain2")
+//    public Object autoFetchPageDataAgain2() {
+//        String cebxData = getCebxData("http://flow.apabi.com/flow/book/autoFetchPageDataAgain");
+////        String cebxData = getCebxData("http://localhost:8083/flow/book/autoFetchPageDataAgain");
+//        return cebxData;
+//    }
 
     /**
      * 重新采集加密流式内容
@@ -1164,7 +1164,7 @@ public class BookController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/autoFetchPageDataAgain")
+    @RequestMapping("/autoFetchPageDataAgain2")
     public Object autoFetchPageDataAgain() {
         ResultEntity resultEntity = new ResultEntity();
 

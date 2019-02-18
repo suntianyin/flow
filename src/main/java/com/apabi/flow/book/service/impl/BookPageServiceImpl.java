@@ -358,12 +358,13 @@ public class BookPageServiceImpl implements BookPageService {
             int totalNum = 0;
             for (PageAssemblyQueue pageAssemblyQueue : list) {
                 try {
+                    log.info("metaId：{}章节拼装开始",pageAssemblyQueue.getId());
                     long a = System.currentTimeMillis();
                     totalNum += processBookFromPage2Chapter(pageAssemblyQueue.getId(),isCover);
                     long b = System.currentTimeMillis();
                     log.info("metaId：{},章节拼装一共耗时{}ms", pageAssemblyQueue.getId(), b - a);
                 } catch (Exception e) {
-                    log.error("metaid = {} 的图书组装出错，错误信息：{}", pageAssemblyQueue.getId(), e);
+                    log.info("metaid = {} 的图书组装出错，错误信息：{}", pageAssemblyQueue.getId(), e);
                 }
             }
 
@@ -506,7 +507,7 @@ public class BookPageServiceImpl implements BookPageService {
                 // 从本地数据源中获取当前metaid 的所有页面内容信息列表
                 List<BookPage> bookPageList = bookPageMapper.findAllByMetaIdOrderByPageIdWithContent(metaId);
                 int cebxPage = 0;
-                if (StringUtils.isBlank(meta.getCebxPage())) {
+                if (StringUtils.isBlank(meta.getCebxPage())||meta.getCebxPage().equals("null")) {
                     log.info("图书meta表中 metaid = {} 的cebxPage不存在", metaId);
                     cebxPage = CebxUtils.getCebxPage(metaId, BookMetaServiceImpl.shuyuanOrgCode);
                     if (cebxPage == 0) {
@@ -531,19 +532,19 @@ public class BookPageServiceImpl implements BookPageService {
                     log.info("图书分页表中 metaid = {} 的每页数据不全", metaId);
                     return 0;
                 }
-                String foamatCatalog = "";
+                String streamCatalog = "";
                 //递归获取目录结构的页码
                 if (meta != null) {
-                    foamatCatalog = meta.getFoamatCatalog();
-                    if (StringUtils.isBlank(foamatCatalog)) {
+                    streamCatalog = meta.getStreamCatalog();
+                    if (StringUtils.isBlank(streamCatalog)) {
                         log.info("图书meta表中 metaid = {} 的目录结构不存在", metaId);
-                        foamatCatalog = CebxUtils.getStreamCatalog(metaId, BookMetaServiceImpl.shuyuanOrgCode);
-                        if ("[]".equalsIgnoreCase(foamatCatalog) || StringUtils.isBlank(foamatCatalog)) {
+                        streamCatalog = CebxUtils.getStreamCatalog(metaId, BookMetaServiceImpl.shuyuanOrgCode);
+                        if ("[]".equalsIgnoreCase(streamCatalog) || StringUtils.isBlank(streamCatalog)) {
                             log.info("书院接口获取 metaid = {} 的目录结构不存在", metaId);
                             return 0;
                         }
                     }
-                    JSONArray jsonArray = JSONArray.fromObject(foamatCatalog);
+                    JSONArray jsonArray = JSONArray.fromObject(streamCatalog);
                     getPageNums(jsonArray, pageNums);
                 }
                 pageNums.add(bookPageList.size());
@@ -715,7 +716,7 @@ public class BookPageServiceImpl implements BookPageService {
                     meta.setHasFlow(1);
                     meta.setContentNum(wordSum);
                     meta.setChapterNum(chapterNum);
-                    meta.setStreamCatalog(foamatCatalog);
+                    meta.setStreamCatalog(streamCatalog);
                     meta.setUpdateTime(new Date());
                     meta.setCebxPage(Integer.toString(cebxPage));
                     meta.setFlowSource("cebx");
@@ -723,7 +724,7 @@ public class BookPageServiceImpl implements BookPageService {
                     metaDataTemp.setHasFlow(1);
                     metaDataTemp.setContentNum(wordSum);
                     metaDataTemp.setChapterNum(chapterNum);
-                    metaDataTemp.setStreamCatalog(foamatCatalog);
+                    metaDataTemp.setStreamCatalog(streamCatalog);
                     metaDataTemp.setUpdateTime(new Date());
                     metaDataTemp.setCebxPage(Integer.toString(cebxPage));
                     metaDataTemp.setFlowSource("cebx");
