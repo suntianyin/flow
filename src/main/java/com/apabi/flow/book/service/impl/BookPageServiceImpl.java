@@ -349,6 +349,7 @@ public class BookPageServiceImpl implements BookPageService {
             }
             return flag;
         }).collect(Collectors.toList());
+        log.info("开始章节拼装,拼装列表有{}条数据",list.size());
         if (list.size() == 0) {
             return -1;
         }

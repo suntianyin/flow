@@ -126,7 +126,7 @@
                     Loading(true, "正在提交数据...");
                     window.setTimeout(function () {
                         try {
-                            window.location.href = "${ctx}/resource/exportData?booklistNum=" + booklistNum + "&startDate=" + startDate + "&startDate1=" + startDate1 + "&endDate=" + endDate + "&endDate1=" + endDate1 + "&title=" + title + "&creator=" + creator + "&metaId=" + metaId + "&copyrightOwner=" + copyrightOwner + "&isbn=" + isbn + "&status=" + status;
+                            window.location.href = "${ctx}/resource/exportData?booklistNum=" + booklistNum + "&startDate=" + startDate + "&endDate=" + endDate  + "&title=" + title + "&creator=" + creator + "&metaId=" + metaId + "&copyrightOwner=" + copyrightOwner + "&isbn=" + isbn + "&status=" + status;
                         } catch (e) {
                         }
                     }, 200);

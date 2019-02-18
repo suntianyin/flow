@@ -196,10 +196,8 @@ public class ResourceController {
                              @RequestParam(value = "publisher", required = false) String publisher,
                              @RequestParam(value = "isbn", required = false) String isbn,
                              @RequestParam(value = "status", required = false) Integer status,
-                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate1,
-                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate1,
+                             @RequestParam(value = "startDate", required = false) String startDate,
+                             @RequestParam(value = "endDate", required = false) String endDate,
                              HttpServletResponse response) throws IOException {
         try {
             // 设置响应头
@@ -212,12 +210,12 @@ public class ResourceController {
             paramsMap.put("startDate", startDate);
             paramsMap.put("endDate", endDate);
             paramsMap.put("status", status);
-            if (startDate1 != null) {
-                paramsMap.put("startDate1", new Date(new DateTime(startDate1.getTime()).plusDays(1).getMillis()));
-            }
-            if (endDate1 != null) {
-                paramsMap.put("endDate1", new Date(new DateTime(endDate1.getTime()).plusDays(1).getMillis()));
-            }
+//            if (startDate1 != null) {
+//                paramsMap.put("startDate1", new Date(new DateTime(startDate1.getTime()).plusDays(1).getMillis()));
+//            }
+//            if (endDate1 != null) {
+//                paramsMap.put("endDate1", new Date(new DateTime(endDate1.getTime()).plusDays(1).getMillis()));
+//            }
             List<Resource> list = resourceService.listResource1(paramsMap);
             if (list == null || list.isEmpty()){
                 return "<script type='text/javascript'>alert('当前条件查询结果为空！');history.back();</script>";

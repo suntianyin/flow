@@ -61,6 +61,7 @@ public class FetchPageAgainConsumer implements Runnable {
             i = pageCrawledTemp.getPage();
             Thread.sleep(sleepTime);
             url = EbookUtil.makePageUrl(confvalue, BookMetaServiceImpl.shuyuanOrgCode, metaId, BookMetaServiceImpl.urlType, BookMetaServiceImpl.serviceType, width, height, i);
+            log.info(url);
             long a = System.currentTimeMillis();
             httpEntity = HttpUtils.doGetEntity(url);
             String tmp = EntityUtils.toString(httpEntity);
