@@ -536,7 +536,7 @@ public class BookPageServiceImpl implements BookPageService {
                 //递归获取目录结构的页码
                 if (meta != null) {
                     streamCatalog = meta.getStreamCatalog();
-                    if (StringUtils.isBlank(streamCatalog)) {
+                    if (StringUtils.isBlank(streamCatalog)||meta.getStreamCatalog().equals("null")) {
                         log.info("图书meta表中 metaid = {} 的目录结构不存在", metaId);
                         streamCatalog = CebxUtils.getStreamCatalog(metaId, BookMetaServiceImpl.shuyuanOrgCode);
                         if ("[]".equalsIgnoreCase(streamCatalog) || StringUtils.isBlank(streamCatalog)) {
