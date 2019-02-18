@@ -1936,7 +1936,7 @@ public class BookMetaServiceImpl implements BookMetaService {
                 //表格路径
                 List<String> results = new ArrayList<>();
                 results.add(resultPath);
-                //将发送结果发送邮件
+                //将上下架结果发送邮件
                 EMailUtil eMailUtil = new EMailUtil(systemConfMapper);
                 eMailUtil.createSender();
                 eMailUtil.sendAttachmentsMail(results, "批量资源上下架结果", toEmail);

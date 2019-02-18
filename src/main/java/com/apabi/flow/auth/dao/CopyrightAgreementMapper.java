@@ -28,5 +28,8 @@ public interface CopyrightAgreementMapper {
 
     List<CopyrightAgreement> findByCopyrightOwnerId(String copyrightOwnerId);
 
+    //获取当前所有版权期内的协议
+    List<CopyrightAgreement> findAgreementValidity();
+
     int updateStatusByPrimaryKeySelective(CopyrightAgreement record);
 }

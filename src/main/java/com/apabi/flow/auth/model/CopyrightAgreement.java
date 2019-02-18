@@ -83,6 +83,9 @@ public class CopyrightAgreement {
     //协议类型
     private AgreementTypeEnum agreementType;
 
+    //通知状态 0-未通知
+    private Integer noticeState;
+
     public AgreementTypeEnum getAgreementType() {
         return agreementType;
     }
@@ -385,5 +388,13 @@ public class CopyrightAgreement {
 
     public void setCopyrightOwnerId(String copyrightOwnerId) {
         this.copyrightOwnerId = copyrightOwnerId;
+    }
+
+    public Integer getNoticeState() {
+        return noticeState;
+    }
+
+    public void setNoticeState(Integer noticeState) {
+        this.noticeState = noticeState;
     }
 }

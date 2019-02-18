@@ -202,6 +202,7 @@
                         <th>内容合作经理</th>
                         <th>协议签署时间</th>
                         <th>协议状态</th>
+                        <th>邮件通知</th>
                         <th>操作人</th>
                         <th>操作时间</th>
                         <th>操作</th>
@@ -224,6 +225,7 @@
                             <td align="center">${(list.contentManagerName) !''}</td>
                             <td align="center">${(list.signDate?datetime)! '' }</td>
                             <td align="center">${((list.status==1)?string('版权期内','版权到期'))}</td>
+                            <td align="center">${((list.noticeState==0)?string('未通知','已通知'))}</td>
                             <td align="center">${(list.operator)! '' }</td>
                             <td align="center">${(list.operatedate?datetime)! '' }</td>
                             <td align="center">
