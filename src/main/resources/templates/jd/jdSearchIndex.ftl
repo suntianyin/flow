@@ -16,14 +16,13 @@
             //分页
             var metaId = $("#metaId").val();
             var title = $("#title").val();
-            var author = $("#author").val();
+            var jdItemId = $("#jdItemId").val();
             var publisher = $("#publisher").val();
-            var isbn = $("#isbn").val();
-            var isbnVal = $("#isbnVal").val();
+            var isbn13 = $("#isbn13").val();
 
             var pathurl = "searchIndex?metaId=" + metaId
-                    + "&title=" + title + "&author=" + author
-                    + "&publisher=" + publisher + "&isbn=" + isbn + "&isbnVal=" + isbnVal;
+                    + "&title=" + title + "&jdItemId=" + jdItemId
+                    + "&publisher=" + publisher + "&isbn13=" + isbn13;
             var totalPages = 1;
             var currentPages = 1;
             <#if page??>
@@ -35,16 +34,14 @@
 
         //检索
         function btn_Search() {
-            var author = $("#author").val();
+            var jdItemId = $("#jdItemId").val();
             var title = $("#title").val();
             var publisher = $("#publisher").val();
-            var isbn = $("#isbn").val();
-            var isbnVal = $("#isbnVal").val();
+            var isbn13 = $("#isbn13").val();
             loading();
             window.location.href = "searchIndex?pageNumber=1"
-                    + "&title=" + title + "&author=" + author
-                    + "&publisher=" + publisher + "&isbn=" + isbn
-                    + "&isbnVal=" + isbnVal;
+                    + "&title=" + title + "&jdItemId=" + jdItemId
+                    + "&publisher=" + publisher + "&isbn13=" + isbn13;
         }
 
         //jd元数据查看
@@ -72,9 +69,9 @@
             <div class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
                 <table border="0" class="form-find" style="height: 45px;">
                     <tr>
-                        <th>作者：</th>
+                        <th>id：</th>
                         <td>
-                            <input id="author" type="text" value="${author! ''}" class="txt" style="width: 200px"/>
+                            <input id="jdItemId" type="text" value="${jdItemId! ''}" class="txt" style="width: 200px"/>
                         </td>
 
                         <th>书名：</th>
@@ -88,29 +85,9 @@
                                    style="width: 200px"/>
                         </td>
 
-                        <th>ISBN：</th>
+                        <th>ISBN13：</th>
                         <td>
-                            <select id="isbn" name="isbn" class="txtselect">
-                                <#if isbn??>
-                                    <#if isbn =="isbn" || isbn =="">
-                                        <option value="isbn10">isbn10</option>
-                                        <option value="isbn13" selected="selected">isbn13</option>
-                                    </#if>
-                                    <#if isbn =="isbn10">
-                                        <option value="isbn10" selected="selected">isbn10</option>
-                                        <option value="isbn13">isbn13</option>
-                                    </#if>
-                                    <#if isbn =="isbn13">
-                                        <option value="isbn10">isbn10</option>
-                                        <option value="isbn13" selected="selected">isbn13</option>
-                                    </#if>
-                                <#else>
-                                    <option value="isbn" >isbn</option>
-                                    <option value="isbn10">isbn10</option>
-                                    <option value="isbn13" selected="selected">isbn13</option>
-                                </#if>
-                            </select>
-                            <input id="isbnVal" type="text" value="${isbnVal!''}" class="txt" style="width: 200px"/>
+                            <input id="isbn13" type="text" value="${isbn13!''}" class="txt" style="width: 200px"/>
                         </td>
                         <td>
                             <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()"/>
@@ -125,7 +102,6 @@
                         <thead>
                         <tr role="row">
                             <th>id</th>
-                            <th>作者</th>
                             <th>书名</th>
                             <th>出版社</th>
                             <th>出版日期</th>
@@ -139,7 +115,6 @@
                             <#list jdMetaModelList as list>
                                 <tr class="gradeA odd" role="row">
                                     <td align="center">${list.jdItemId! '' }</td>
-                                    <td align="center">${list.author! '' }</td>
                                     <td align="center">${list.title! '' }</td>
                                     <td align="center">${list.publisher! '' }</td>
                                     <td align="center">${list.issuedDate! '' }</td>

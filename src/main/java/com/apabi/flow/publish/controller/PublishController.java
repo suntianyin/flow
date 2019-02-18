@@ -491,9 +491,6 @@ public class PublishController {
      */
     private String getFieldValueByFieldName(String key, Object obj) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = obj.getClass();
-        if (("hasPublish".equalsIgnoreCase(key)) && (obj instanceof ApabiBookMetaData)) {
-            return null;
-        }
         Field field = clazz.getDeclaredField(key);
         field.setAccessible(true);
         Object o = field.get(obj);
