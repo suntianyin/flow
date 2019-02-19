@@ -112,7 +112,7 @@
                         </td>
                         <th class="formTitle">E-mail：</th>
                         <td class="formValue">
-                            <input id="email" readonly="readonly" name="email" type="text" value="${au.email!''}" class="txt" datacol="yes" err="E-mail" checkexpession="EmailOrNull"/>
+                            <input id="email" name="email" type="text" value="${au.email!''}" class="txt" datacol="yes" err="E-mail" checkexpession="EmailOrNull"/>
                         </td>
                     </tr>
                     <tr>

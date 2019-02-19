@@ -47,12 +47,26 @@
                     <#if compareEntity.fieldName == '流式目录' || compareEntity.fieldName == '标签' || compareEntity.fieldName == '样式url'>
                         <td>${compareEntity.metaValue}</td>
                         <td><textarea name="${compareEntity.fieldName}" id="${compareEntity.fieldName}" cols="100" rows="5" readonly="readonly" hidden="hidden">${compareEntity.tempValue}</textarea>${compareEntity.tempValue}</td>
-                    <#elseif compareEntity.fieldName == '是否有cebx' || compareEntity.fieldName = '是否有流式内容' || compareEntity.fieldName = '是否发布' ||  compareEntity.fieldName = '流式内容是否优化' || compareEntity.fieldName = '更新时间' || compareEntity.fieldName = '创建时间' || compareEntity.fieldName = '是否公版'>
+                    <#elseif compareEntity.fieldName == '是否有cebx' || compareEntity.fieldName = '是否发布' ||  compareEntity.fieldName = '流式内容是否优化' || compareEntity.fieldName = '更新时间' || compareEntity.fieldName = '创建时间' || compareEntity.fieldName = '是否公版'>
                         <td>${compareEntity.metaValue}</td>
                         <td><input type="text" name="${compareEntity.fieldName}" value="${compareEntity.tempValue}" readonly="readonly" hidden="hidden">${compareEntity.tempValue}</td>
                     <#elseif compareEntity.fieldName == '作者简介' || compareEntity.fieldName = '内容提要' || compareEntity.fieldName = '序言' || compareEntity.fieldName = '后记' || compareEntity.fieldName = '版式目录'>
                         <td>${compareEntity.metaValue}</td>
                         <td><textarea name="${compareEntity.fieldName}" id="${compareEntity.fieldName}" cols="100" rows="10">${compareEntity.tempValue}</textarea></td>
+                    <#elseif compareEntity.fieldName = '是否有流式内容'>
+                        <td>${(compareEntity.metaValue=='0'||compareEntity.metaValue=='')?string("未优化","手动编辑优化")}</td>
+                        <td>
+                            <select name="${compareEntity.fieldName}" class="txtselect">
+                            <#if compareEntity.tempValue=='0'||compareEntity.tempValue==''>
+                                <option value="0" selected ="selected">未优化</option>
+                                <option value="1">手动编辑优化</option>
+                            </#if>
+                            <#if compareEntity.tempValue=='1'>
+                                <option value="0">未优化</option>
+                                <option value="1" selected ="selected">手动编辑优化</option>
+                            </#if>
+                            </select>
+                        </td>
                     <#else >
                         <td>${compareEntity.metaValue}</td>
                         <td><input type="text" name="${compareEntity.fieldName}" value="${compareEntity.tempValue}"></td>
@@ -64,12 +78,26 @@
                     <#if compareEntity.fieldName == '流式目录' || compareEntity.fieldName == '标签' || compareEntity.fieldName == '样式url'>
                         <td>${compareEntity.metaValue}</td>
                         <td><textarea name="${compareEntity.fieldName}" id="${compareEntity.fieldName}" cols="100" rows="5" readonly="readonly" hidden="hidden">${compareEntity.tempValue}</textarea>${compareEntity.tempValue}</td>
-                    <#elseif compareEntity.fieldName == '是否有cebx' || compareEntity.fieldName = '是否有流式内容' || compareEntity.fieldName = '是否发布' ||  compareEntity.fieldName = '流式内容是否优化' || compareEntity.fieldName = '更新时间' || compareEntity.fieldName = '创建时间' || compareEntity.fieldName = '是否公版'>
+                    <#elseif compareEntity.fieldName == '是否有cebx' || compareEntity.fieldName = '是否发布' ||  compareEntity.fieldName = '流式内容是否优化' || compareEntity.fieldName = '更新时间' || compareEntity.fieldName = '创建时间' || compareEntity.fieldName = '是否公版'>
                         <td>${compareEntity.metaValue}</td>
                         <td><input type="text" name="${compareEntity.fieldName}" value="${compareEntity.tempValue}" readonly="readonly" hidden="hidden">${compareEntity.tempValue}</td>
                     <#elseif compareEntity.fieldName == '作者简介' || compareEntity.fieldName = '内容提要' || compareEntity.fieldName = '序言' || compareEntity.fieldName = '后记' || compareEntity.fieldName = '版式目录'>
                         <td>${compareEntity.metaValue}</td>
                         <td><textarea name="${compareEntity.fieldName}" id="${compareEntity.fieldName}" cols="100" rows="10">${compareEntity.tempValue}</textarea></td>
+                    <#elseif compareEntity.fieldName = '是否有流式内容'>
+                        <td>${(compareEntity.metaValue=='0'||compareEntity.metaValue=="")?string("未优化","手动编辑优化")}</td>
+                        <td>
+                            <select name="${compareEntity.fieldName}" class="txtselect">
+                            <#if compareEntity.tempValue=='0'||compareEntity.tempValue==''>
+                                <option value="0" selected ="selected">未优化</option>
+                                <option value="1">手动编辑优化</option>
+                            </#if>
+                            <#if compareEntity.tempValue=='1'>
+                                <option value="0">未优化</option>
+                                <option value="1" selected ="selected">手动编辑优化</option>
+                            </#if>
+                            </select>
+                        </td>
                     <#else >
                         <td>${compareEntity.metaValue}</td>
                         <td><input type="text" name="${compareEntity.fieldName}" value="${compareEntity.tempValue}"></td>

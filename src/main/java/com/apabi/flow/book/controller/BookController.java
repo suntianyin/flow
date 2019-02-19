@@ -358,7 +358,15 @@ public class BookController {
                             value = sdf1.format(value);
                         }
                     }
-                    commEntity.setFiledValue(value);
+                    if (commEntity.getFiledName().toLowerCase().equals("isoptimize")) {
+                        if (value == null || (int) value == 0) {
+                            commEntity.setFiledValue("未优化");
+                        } else if ((int) value == 1) {
+                            commEntity.setFiledValue("手动编辑优化");
+                        }
+                    } else {
+                        commEntity.setFiledValue(value);
+                    }
                 }
                 entityList.add(commEntity);
             }
@@ -1041,12 +1049,12 @@ public class BookController {
             log2 = ReadLog.smbGet1(filename, len);
         }
         if (org.apache.commons.lang3.StringUtils.isNotBlank(time) && type == 3) {
-            logPath=System.getProperty("user.dir")+File.separator+"log";
-            String filename = logPath +File.separator+ "fetchPage2"+File.separator+"fetchPage2." + time + ".log";
-            log3 = ReadLog.read(filename,"utf-8", len);
+            logPath = System.getProperty("user.dir") + File.separator + "log";
+            String filename = logPath + File.separator + "fetchPage2" + File.separator + "fetchPage2." + time + ".log";
+            log3 = ReadLog.read(filename, "utf-8", len);
         }
         if (org.apache.commons.lang3.StringUtils.isBlank(time)) {
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd_HH");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH");
             time = simpleDateFormat.format(new Date());
         }
         model.addAttribute("time", time);
@@ -1356,7 +1364,7 @@ public class BookController {
         ResultEntity resultEntity = new ResultEntity();
         int sucNum = 0;
         int failNum = 0;
-        int i=0;
+        int i = 0;
         try {
             if (metaIds != null && metaIds != "") {
                 String[] split = metaIds.split(",");
@@ -1365,17 +1373,17 @@ public class BookController {
                     PageAssemblyQueue pageAssemblyQueue = new PageAssemblyQueue();
                     pageAssemblyQueue.setId(b);
                     try {
-                    i = pageAssemblyQueueMapper.insert(pageAssemblyQueue);
+                        i = pageAssemblyQueueMapper.insert(pageAssemblyQueue);
                     } catch (Exception e) {
                         e.printStackTrace();
                         failNum++;
                     }
                     sucNum += i;
                 }
-                if(failNum==0){
+                if (failNum == 0) {
                     resultEntity.setMsg("上传数据成功" + sucNum + "条");
-                }else {
-                    resultEntity.setMsg("上传数据成功" + sucNum + "条,有重复数据"+failNum+"条");
+                } else {
+                    resultEntity.setMsg("上传数据成功" + sucNum + "条,有重复数据" + failNum + "条");
                 }
                 resultEntity.setStatus(1);
                 return resultEntity;

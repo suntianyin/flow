@@ -307,8 +307,24 @@ public class PublishController {
                 }
             }
             compareEntity.setFieldName(fieldName);
-            compareEntity.setMetaValue(metaValue);
-            compareEntity.setTempValue(tempValue);
+            //流式内容优化，特定值
+            if (compareEntity.getFieldName().equals("是否有流式内容")) {
+                //meta表
+                if (StringUtils.isEmpty(metaValue) || metaValue.equals("0")) {
+                    compareEntity.setMetaValue("未优化");
+                } else if (metaValue.equals("1")) {
+                    compareEntity.setMetaValue("手动编辑优化");
+                }
+                //temp表
+                if (StringUtils.isEmpty(tempValue) || tempValue.equals("0")) {
+                    compareEntity.setTempValue("未优化");
+                } else if (tempValue.equals("1")) {
+                    compareEntity.setTempValue("手动编辑优化");
+                }
+            } else {
+                compareEntity.setMetaValue(metaValue);
+                compareEntity.setTempValue(tempValue);
+            }
             // 如果两个库中相同字段的值相等，则将info设置为1，否则设置为0
             if (tempValue.equalsIgnoreCase(metaValue)) {
                 compareEntity.setInfo("1");
@@ -462,7 +478,7 @@ public class PublishController {
                         } else {
                             Date date = null;
                             if (!"".equalsIgnoreCase(fieldValue)) {
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy",Locale.ENGLISH);
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
                                 date = simpleDateFormat.parse(fieldValue);
                             }
                             field.set(apabiBookMetaTempPublish, date);
