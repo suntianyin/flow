@@ -34,4 +34,6 @@ public interface JdMetadataDao {
     Page<String> findAllIsbn13ByPage();
 
     Page<JdMetadata> findByPage(Map<String,String> params);
+
+    JdMetadata findByIsbn13(String isbn13);
 }

@@ -52,7 +52,7 @@ public class GenerateMetaDataFromJdConsumer implements Runnable {
                 ResultEntity resultEntity = JSONObject.parseObject(html, ResultEntity.class);
                 if (resultEntity != null && resultEntity.getStatus() == HttpStatus.SC_OK) {
                     List<ApabiBookMetaData> apabiBookMetaDataList = JSONObject.parseArray(resultEntity.getBody().toString(), ApabiBookMetaData.class);
-                    if (apabiBookMetaDataList != null && apabiBookMetaDataList.size() == 1) {
+                    if (apabiBookMetaDataList != null && apabiBookMetaDataList.size() > 0) {
                         ApabiBookMetaData apabiBookMetaData = apabiBookMetaDataList.get(0);
                         if (apabiBookMetaData != null && StringUtils.isNotEmpty(apabiBookMetaData.getMetaId())) {
                             jdMetadata.setMetaId(apabiBookMetaData.getMetaId());

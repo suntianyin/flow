@@ -13,9 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -26,8 +24,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2019-1-14 14:27
  **/
-@Order(6)
-@Component
+//@Order(6)
+//@Component
 public class GenerateMetaDataFromJdService implements ApplicationRunner {
     @Autowired
     private JdMetadataDao jdMetadataDao;
@@ -51,8 +49,18 @@ public class GenerateMetaDataFromJdService implements ApplicationRunner {
         CloseableHttpClient httpClient = getCloseableHttpClient();
         PageHelper.startPage(1, create_meta_from_jd_data_list_size);
         Page<JdMetadata> jdMetadataList = jdMetadataDao.findShouldCrawl();
+
+
+        /*LinkedBlockingQueue<JdMetadata> jdMetadataQueue = new LinkedBlockingQueue<>(jdMetadataList);
+        List<JdMetadata> jdMetadataList = new ArrayList<>();
+        JdMetadata jdMetadata = jdMetadataDao.findByIsbn13("9787201102559");
+        jdMetadataList.add(jdMetadata);*/
+
+
+
         LinkedBlockingQueue<JdMetadata> jdMetadataQueue = new LinkedBlockingQueue<>(jdMetadataList);
         ExecutorService executorService = Executors.newFixedThreadPool(create_meta_from_jd_data_thread_pool_size);
+//        ExecutorService executorService = Executors.newFixedThreadPool(1);
         int listSize = jdMetadataList.size();
         CountDownLatch countDownLatch = new CountDownLatch(listSize);
         GenerateMetaDataFromJdConsumer consumer = new GenerateMetaDataFromJdConsumer(jdMetadataQueue, jdMetadataDao, countDownLatch, httpClient);

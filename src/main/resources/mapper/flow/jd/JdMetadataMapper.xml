@@ -82,6 +82,14 @@
         where META_ID IS NULL AND ISBN13 IS NOT NULL
     </select>
 
+    <!-- 查询isbn13查询数据 -->
+    <select id="findByIsbn13" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from JD_METADATA
+        where ISBN13 = #{isbn13,jdbcType=VARCHAR}
+    </select>
+
 
     <!-- 查询京东数据个数 -->
     <select id="count" resultType="java.lang.Integer">

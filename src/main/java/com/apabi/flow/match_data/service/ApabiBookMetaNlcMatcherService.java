@@ -7,8 +7,8 @@ import com.apabi.flow.nlcmarc.model.NlcBookMarc;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Author pipi
  * @Date 2019-1-7 17:39
  **/
-@Controller
+@RestController
 @RequestMapping("apabiNlcMatcher")
 public class ApabiBookMetaNlcMatcherService {
     @Autowired
@@ -52,6 +52,6 @@ public class ApabiBookMetaNlcMatcherService {
             }
         }
         executorService.shutdown();
-        return "success";
+        return "国图匹配meta数据结束...";
     }
 }

@@ -112,7 +112,7 @@ public class ApabiBookMetaNlcCheckerService {
                 }
             }
         }
-        return "success";
+        return "第一轮数据入库完毕...";
     }
 
     /**
@@ -126,7 +126,7 @@ public class ApabiBookMetaNlcCheckerService {
     @ResponseBody
     public String secondCheck() {
         int count = apabiBookMetaNlcCheckerDao.deleteHasSameAuthorAndTitle();
-        return "第二轮清洗数据共删除了" + count + "条数据";
+        return "第二轮清洗数据共删除了" + count + "条数据...";
     }
 
     /**
@@ -176,7 +176,7 @@ public class ApabiBookMetaNlcCheckerService {
                 break;
             }
         }
-        return "第三轮清洗数据共删除了" + roundCount + "轮，共计" + totalCount + "条数据";
+        return "第三轮清洗数据共删除了" + roundCount + "轮，共计" + totalCount + "条数据...";
     }
 
     /**
@@ -221,7 +221,7 @@ public class ApabiBookMetaNlcCheckerService {
                 break;
             }
         }
-        return "第四轮清洗数据共删除了"+roundCount+"轮，共计" + totalCount + "条数据";
+        return "第四轮清洗数据共删除了"+roundCount+"轮，共计" + totalCount + "条数据...";
     }
 
     /**
@@ -249,7 +249,7 @@ public class ApabiBookMetaNlcCheckerService {
                 }
             }
         }
-        return "第五轮清洗更新了apabi_book_metadata表中nlibraryid的数据" + hitCount + "条";
+        return "第五轮清洗更新了apabi_book_metadata表中nlibraryid的数据" + hitCount + "条...";
     }
 
     /**

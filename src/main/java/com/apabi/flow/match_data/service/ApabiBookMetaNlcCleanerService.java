@@ -1,7 +1,9 @@
 package com.apabi.flow.match_data.service;
 
 import com.apabi.flow.douban.dao.ApabiBookMetaDataDao;
+import com.apabi.flow.douban.dao.ApabiBookMetaDataTempDao;
 import com.apabi.flow.douban.model.ApabiBookMetaData;
+import com.apabi.flow.douban.model.ApabiBookMetaDataTemp;
 import com.apabi.flow.nlcmarc.dao.ApabiBookMetadataAuthorDao;
 import com.apabi.flow.nlcmarc.dao.ApabiBookMetadataTitleDao;
 import com.apabi.flow.nlcmarc.dao.NlcBookMarcDao;
@@ -11,6 +13,7 @@ import com.apabi.flow.nlcmarc.model.NlcBookMarc;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +36,8 @@ public class ApabiBookMetaNlcCleanerService {
     private ApabiBookMetadataAuthorDao apabiBookMetadataAuthorDao;
     @Autowired
     private NlcBookMarcDao nlcBookMarcDao;
+    @Autowired
+    private ApabiBookMetaDataTempDao apabiBookMetaDataTempDao;
 
     @RequestMapping("updateApabiBookMetaData")
     public void updateApabiBookMetaData() {
@@ -50,9 +55,15 @@ public class ApabiBookMetaNlcCleanerService {
                 NlcBookMarc nlcBookMarc = nlcBookMarcDao.findByNlcMarcId(nlibraryId);
                 // 利用国图的数据更新apabiBookMetaData的数据
                 apabiBookMetaData = updateApabiBookMetadataByNlc(apabiBookMetaData, apabiBookMetadataTitleList, apabiBookMetadataAuthorList, nlcBookMarc);
+                ApabiBookMetaDataTemp apabiBookMetaDataTemp = new ApabiBookMetaDataTemp();
+                BeanUtils.copyProperties(apabiBookMetaData, apabiBookMetaDataTemp);
+                apabiBookMetaDataTemp.setUpdateTime(new Date());
+                apabiBookMetaDataTemp.setHasClean(1);
                 apabiBookMetaData.setUpdateTime(new Date());
                 apabiBookMetaDataDao.updateHasCleaned("1");
                 apabiBookMetaDataDao.update(apabiBookMetaData);
+                apabiBookMetaDataTempDao.update(apabiBookMetaDataTemp);
+
             }
         }
     }
