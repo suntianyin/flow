@@ -165,23 +165,23 @@ public class ApabiBookMetaPublish {
     private Integer hasFlow;
 
     private String postScript;
-    
+
     private String isOptimize;
-    
+
     private String donor;
-    
+
     private String libraryId;
-    
+
     private String bookId;
-    
+
     private String styleClass;
-    
+
     private String styleUrl;
-    
+
     private String chapterNum;
-    
+
     private String bookPages;
-    
+
     private String tags;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
@@ -189,11 +189,11 @@ public class ApabiBookMetaPublish {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT+8")
     private Date updateTime;
-    
+
     private String contentNum;
-    
+
     private String foamatCatalog;
-    
+
     private String streamCatalog;
 
     private Integer hasPublish;

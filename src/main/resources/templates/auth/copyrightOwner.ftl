@@ -147,6 +147,9 @@
                     </tbody>
                 </table>
             </div>
+            <ul class="pagination">
+                <li>每页 ${pageSize!0} 条记录，共 ${pages!0} 页，共 ${total!0} 条记录</li>
+            </ul>
             <ul class="pagination" style="float:right;" id="pagination"></ul>
         </div>
     </div>

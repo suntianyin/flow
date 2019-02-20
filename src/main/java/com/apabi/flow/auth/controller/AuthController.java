@@ -117,6 +117,7 @@ public class AuthController {
                 model.addAttribute("CopyrightAgreementList", page.getResult());
                 model.addAttribute("pages", page.getPages());
                 model.addAttribute("pageNum", page.getPageNum());
+                model.addAttribute("total", page.getTotal());
             } else {
                 model.addAttribute("CopyrightAgreementList", Collections.emptyList());
                 model.addAttribute("pages", 1);
