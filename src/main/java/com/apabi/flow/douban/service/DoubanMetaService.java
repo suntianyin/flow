@@ -19,9 +19,11 @@ public interface DoubanMetaService {
     // douban查询功能
     DoubanMeta searchDoubanMetaById(String doubanId);
     Page<DoubanMeta> searchDoubanMetaByPage(Map<String,String> params);
+    Page<DoubanMeta> searchDoubanMetaByPageOrderByUpdateTime(Map<String,String> params);
     void addDoubanMeta(DoubanMeta doubanMeta);
     void deleteDoubanMeta(String doubanId);
     void updateDoubanMeta(DoubanMeta doubanMeta);
     List<ApabiBookMetaDataTemp> searchMetaDataTempsByISBNMultiThread(String isbn13);
     void reUpdateDoubanByCrawl();
+    int countTotal();
 }

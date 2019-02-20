@@ -35,5 +35,7 @@ public interface JdMetadataDao {
 
     Page<JdMetadata> findByPage(Map<String,String> params);
 
+    Page<JdMetadata> findByPageOrderByUpdateTime(Map<String,String> params);
+
     JdMetadata findByIsbn13(String isbn13);
 }

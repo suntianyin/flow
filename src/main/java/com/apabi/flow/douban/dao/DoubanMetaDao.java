@@ -23,6 +23,7 @@ public interface DoubanMetaDao {
     void insert(DoubanMeta doubanMeta);
     void deleteById(String doubanId);
     Page<DoubanMeta> findByPage(Map<String,String> params);
+    Page<DoubanMeta> findByPageOrderByUpdateTime(Map<String,String> params);
     Page<DoubanMeta> findByPageOrderByDoubanId();
     List<DoubanMeta> findByIsbn13(String isbn13);
     List<DoubanMeta> findByIsbn10(String isbn10);

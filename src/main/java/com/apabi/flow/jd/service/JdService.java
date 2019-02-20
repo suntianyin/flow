@@ -188,8 +188,15 @@ public class JdService {
         return jdMetadataDao.findByPage(params);
     }
 
+    public Page<JdMetadata> findJdMetaByPageOrderByUpdateTime(Map<String,String> params){
+        return jdMetadataDao.findByPageOrderByUpdateTime(params);
+    }
+
     public JdMetadata findById(String jdItemId){
         return jdMetadataDao.findById(jdItemId);
     }
 
+    public int countTotal(){
+        return jdMetadataDao.count();
+    }
 }

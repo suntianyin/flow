@@ -63,6 +63,13 @@ public interface AmazonMetaDao {
     Page<AmazonMeta> findByPage(Map<String, String> params);
 
     /**
+     *
+     * @param params
+     * @return
+     */
+    Page<AmazonMeta> findByPageOrderByUpdateTime(Map<String, String> params);
+
+    /**
      * 统计数据数量
      *
      * @return

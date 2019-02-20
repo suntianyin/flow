@@ -52,18 +52,26 @@ public class ApabiBookMetaNlcCheckerService {
      */
     @RequestMapping("firstCheck")
     public String firstCheck() {
+        LOGGER.info("第一轮数据清洗开始...");
         int count = apabiBookMetaDataDao.countHasNLibraryId();
         int processCount = 0;
         int pageSize = 10000;
         int pageNum = (count / pageSize) + 1;
-        for (int i = 82; i <= pageNum; i++) {
+        for (int i = 1; i <= pageNum; i++) {
             PageHelper.startPage(i, pageSize);
+            long start0 = System.currentTimeMillis();
             Page<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findApabiBookMetaDataWithNlibraryId();
+            long end0 = System.currentTimeMillis();
+            LOGGER.info("查询第" + i + "页耗时" + (end0 - start0) + "ms");
             for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
                 processCount++;
-                System.out.println("共" + count + "个，正在处理第" + (i * pageSize + processCount) + "个");
+                LOGGER.info("共" + count + "个，正在处理第" + ((i - 1) * pageSize) + "个至" + (i * pageSize) + "个，总第" + ((i - 1) * pageSize + processCount) + "个");
                 try {
+                    long start1 = System.currentTimeMillis();
                     NlcBookMarc nlcBookMarc = nlcBookMarcDao.findByNlcMarcId(apabiBookMetaData.getNlibraryId());
+                    long end1 = System.currentTimeMillis();
+                    LOGGER.info(apabiBookMetaData.getMetaId() + "查询国图数据耗时" + (end1 - start1) + "ms");
+                    long start2 = System.currentTimeMillis();
                     String nlcBookMarcTitle = nlcBookMarc.getTitle();
                     String apabiBookMetaDataTitle = apabiBookMetaData.getTitle();
                     String nlcBookMarcAuthor = nlcBookMarc.getAuthor();
@@ -100,18 +108,26 @@ public class ApabiBookMetaNlcCheckerService {
                         String nlcAuthorClean = cleanAuthor(nlcBookMarcAuthor);
                         nlcAuthorClean = nlcAuthorClean == null ? null : nlcAuthorClean.trim();
                         apabiBookMetaNlcChecker.setNlcAuthorClean(nlcAuthorClean);
-                        // TODO 插入数据
+                        long end2 = System.currentTimeMillis();
+                        LOGGER.info(apabiBookMetaData.getMetaId() + "解析耗时" + (end2 - start2) + "ms");
                         try {
+                            long start3 = System.currentTimeMillis();
                             apabiBookMetaNlcCheckerDao.insert(apabiBookMetaNlcChecker);
+                            long end3 = System.currentTimeMillis();
+                            LOGGER.info(apabiBookMetaData.getMetaId() + "插入耗时" + (end3 - start3) + "ms");
+                            LOGGER.info("插入" + apabiBookMetaNlcChecker.getMetaId() + "成功...");
                         } catch (Exception e) {
                             e.printStackTrace();
+                            LOGGER.info("插入" + apabiBookMetaNlcChecker.getMetaId() + "失败...原因为" + e.getMessage());
                         }
                     }
                 } catch (Exception e) {
+                    LOGGER.info("解析checker报错，原因为：" + e.getMessage());
                     e.printStackTrace();
                 }
             }
         }
+        LOGGER.info("第一轮数据清洗完毕...");
         return "第一轮数据入库完毕...";
     }
 
@@ -125,7 +141,9 @@ public class ApabiBookMetaNlcCheckerService {
     @RequestMapping("secondCheck")
     @ResponseBody
     public String secondCheck() {
+        LOGGER.info("第二轮数据清洗开始...");
         int count = apabiBookMetaNlcCheckerDao.deleteHasSameAuthorAndTitle();
+        LOGGER.info("第二轮数据清洗结束...");
         return "第二轮清洗数据共删除了" + count + "条数据...";
     }
 
@@ -140,6 +158,7 @@ public class ApabiBookMetaNlcCheckerService {
      */
     @RequestMapping("thirdCheck")
     public String thirdCheck() {
+        LOGGER.info("第三轮数据清洗开始...");
         // 删除的轮数
         int roundCount = 0;
         // 删除的总数量
@@ -176,6 +195,7 @@ public class ApabiBookMetaNlcCheckerService {
                 break;
             }
         }
+        LOGGER.info("第三轮数据清洗结束...");
         return "第三轮清洗数据共删除了" + roundCount + "轮，共计" + totalCount + "条数据...";
     }
 
@@ -189,6 +209,7 @@ public class ApabiBookMetaNlcCheckerService {
      */
     @RequestMapping("fourthCheck")
     public String fourthCheck() {
+        LOGGER.info("第四轮数据清洗开始...");
         int totalCount = 0;
         int roundCount = 0;
         while (true) {
@@ -221,7 +242,8 @@ public class ApabiBookMetaNlcCheckerService {
                 break;
             }
         }
-        return "第四轮清洗数据共删除了"+roundCount+"轮，共计" + totalCount + "条数据...";
+        LOGGER.info("第四轮数据清洗开始...");
+        return "第四轮清洗数据共删除了" + roundCount + "轮，共计" + totalCount + "条数据...";
     }
 
     /**
@@ -232,6 +254,7 @@ public class ApabiBookMetaNlcCheckerService {
      */
     @RequestMapping("fifthCheck")
     public String fifthCheck() {
+        LOGGER.info("第五轮数据清洗开始...");
         int hitCount = 0;
         int count = apabiBookMetaNlcCheckerDao.count();
         int pageSize = 10000;
@@ -249,6 +272,7 @@ public class ApabiBookMetaNlcCheckerService {
                 }
             }
         }
+        LOGGER.info("第五轮数据清洗开始...");
         return "第五轮清洗更新了apabi_book_metadata表中nlibraryid的数据" + hitCount + "条...";
     }
 

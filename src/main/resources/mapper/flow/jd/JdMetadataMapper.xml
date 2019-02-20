@@ -74,6 +74,59 @@
         </if>
     </select>
 
+
+    <!-- 分页查询京东数据 -->
+    <select id="findByPageOrderByUpdateTime" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from JD_METADATA
+        where
+        1=1
+        <if test="jdItemId != null and jdItemId != ''">
+            and JD_ITEM_ID = #{jdItemId,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            and TITLE = #{title,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn13 != null and isbn13 != ''">
+            and ISBN13 = #{isbn13,jdbcType=VARCHAR}
+        </if>
+        <if test="publisher != null and publisher != ''">
+            and PUBLISHER = #{publisher,jdbcType=VARCHAR}
+        </if>
+        <if test="editionOrder != null and editionOrder != ''">
+            and EDITION_ORDER = #{editionOrder,jdbcType=VARCHAR}
+        </if>
+        <if test="issuedDate != null and issuedDate != ''">
+            and ISSUED_DATE = #{issuedDate,jdbcType=VARCHAR}
+        </if>
+        <if test="binding != null and binding != ''">
+            and BINDING = #{binding,jdbcType=VARCHAR}
+        </if>
+        <if test="pages != null and pages != ''">
+            and PAGES = #{pages,jdbcType=VARCHAR}
+        </if>
+        <if test="language != null and language != ''">
+            and LANGUAGE = #{language,jdbcType=VARCHAR}
+        </if>
+        <if test="format != null and format != ''">
+            and FORMAT = #{format,jdbcType=VARCHAR}
+        </if>
+        <if test="brand != null and brand != ''">
+            and BRAND = #{brand,jdbcType=VARCHAR}
+        </if>
+        <if test="metaId != null and metaId != ''">
+            and META_ID = #{metaId,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            and CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            and UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+        order by UPDATE_TIME desc
+    </select>
+
     <!-- 查询需要抓取的京东数据 -->
     <select id="findShouldCrawl" resultMap="BaseResultMap">
         select

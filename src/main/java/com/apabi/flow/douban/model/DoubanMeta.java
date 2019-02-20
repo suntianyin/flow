@@ -2,7 +2,6 @@ package com.apabi.flow.douban.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,17 +11,26 @@ import java.util.Date;
  * @description
  */
 public class DoubanMeta implements Serializable {
+
     private String doubanId;
+
+    private String metaId;
+
+    private String isbn10;
 
     private String isbn13;
 
     private String title;
 
+    private String originTitle;
+
+    private String altTitle;
+
+    private String subTitle;
+
     private String author;
 
     private String publisher;
-
-    private String altTitle;
 
     private String translator;
 
@@ -32,6 +40,8 @@ public class DoubanMeta implements Serializable {
     private String pages;
 
     private String price;
+
+    private String ebookPrice;
 
     private String binding;
 
@@ -47,31 +57,21 @@ public class DoubanMeta implements Serializable {
 
     private String tags;
 
-    private String hasCrawled;
-
-    private String subTitle;
-
-    private String originTitle;
-
-    private String ebookPrice;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-
     private String smallCover;
 
     private String mediumCover;
 
     private String largeCover;
 
-    private String isbn10;
-
     private Integer hasPublish;
 
-    private String metaId;
+    private String hasCrawled;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 
     public String getIsbn13() {
         return isbn13;

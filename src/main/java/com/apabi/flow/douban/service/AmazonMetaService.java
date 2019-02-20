@@ -12,5 +12,7 @@ public interface AmazonMetaService {
     AmazonMeta findOrCrawlAmazonMetaByIsbn(String isbn) throws Exception;
     void updateAmazon(AmazonMeta amazonMeta);
     Page<AmazonMeta> findAmazonMetaByPage(Map<String,String> params);
+    Page<AmazonMeta> findAmazonMetaByPageOrderByUpdateTime(Map<String,String> params);
     AmazonMeta findById(String amazonId);
+    int countTotal();
 }

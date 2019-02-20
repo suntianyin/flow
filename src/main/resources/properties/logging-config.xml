@@ -555,7 +555,7 @@
     </logger>
 
     <!-- 针对dangdang定时任务抓取配置的日志 -->
-    <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="ERROR" additivity="false">
+    <logger name="com.apabi.flow.crawlTask.dangdang.DangdangConsumer" level="INFO" additivity="false">
         <!-- 对于dangdang全局抓取日志配置 -->
         <!--<appender-ref ref="STDOUT"/>-->
         <!-- 对于dangdang定时任务输出至日志文件的日志配置 -->

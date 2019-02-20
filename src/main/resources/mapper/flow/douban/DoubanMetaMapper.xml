@@ -188,6 +188,96 @@
         </if>
     </select>
 
+    <!-- 根据更新时间，分页查询数据 -->
+    <select id="findByPageOrderByUpdateTime" parameterType="Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM DOUBAN_METADATA
+        WHERE 1=1
+        <if test="doubanId != null and doubanId != ''">
+            AND DOUBANID = #{doubanId,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn13 != null and isbn13 != ''">
+            AND ISBN13 = #{isbn13,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            AND TO_CHAR(TITLE) = #{title,jdbcType=NCLOB}
+        </if>
+        <if test="author != null and author != ''">
+            AND AUTHOR = #{author,jdbcType=VARCHAR}
+        </if>
+        <if test="publisher != null and publisher != ''">
+            AND PUBLISHER = #{publisher,jdbcType=VARCHAR}
+        </if>
+        <if test="altTitle != null and altTitle != ''">
+            AND ALT_TITLE = #{altTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="translator != null and translator != ''">
+            AND TRANSLATOR = #{translator,jdbcType=VARCHAR}
+        </if>
+        <if test="issueddate != null and issueddate != ''">
+            AND ISSUEDDATE = #{issueddate,jdbcType=VARCHAR}
+        </if>
+        <if test="pages != null and pages != ''">
+            AND PAGES = #{pages,jdbcType=VARCHAR}
+        </if>
+        <if test="price != null and price != ''">
+            AND PRICE = #{price,jdbcType=VARCHAR}
+        </if>
+        <if test="binding != null and binding != ''">
+            AND BINDING = #{binding,jdbcType=VARCHAR}
+        </if>
+        <if test="series != null and series != ''">
+            AND SERIES = #{series,jdbcType=VARCHAR}
+        </if>
+        <if test="average != null and average != ''">
+            AND AVERAGE = #{average,jdbcType=VARCHAR}
+        </if>
+        <if test="summary != null and summary != ''">
+            AND TO_CHAR(SUMMARY) = #{summary,jdbcType=NCLOB}
+        </if>
+        <if test="authorIntro != null and authorIntro != ''">
+            AND TO_CHAR(AUTHOR_INTRO) = #{authorIntro,jdbcType=NCLOB}
+        </if>
+        <if test="catalog != null and catalog != ''">
+            AND TO_CHAR(CATALOG) = #{catalog,jdbcType=NCLOB}
+        </if>
+        <if test="tags != null and tags != ''">
+            AND TO_CHAR(TAGS) = #{tags,jdbcType=NCLOB}
+        </if>
+        <if test="hasCrawled != null and hasCrawled != ''">
+            AND HASCRAWLED = #{hasCrawled,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn10 != null and isbn10 != ''">
+            AND ISBN10 = #{isbn10,jdbcType=VARCHAR}
+        </if>
+        <if test="subTitle != null and subTitle != ''">
+            AND SUBTITLE = #{subTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="originTitle != null and originTitle != ''">
+            AND ORIGIN_TITLE = #{originTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="ebookPrice != null and ebookPrice != ''">
+            AND EBOOK_PRICE = #{ebookPrice,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND CREATETIME = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND UPDATETIME = #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="smallCover != null and smallCover != ''">
+            AND SMALL_COVER = #{smallCover,jdbcType=VARCHAR}
+        </if>
+        <if test="mediumCover != null and mediumCover != ''">
+            AND MEDIUM_COVER = #{mediumCover,jdbcType=VARCHAR}
+        </if>
+        <if test="largeCover != null and largeCover != ''">
+            AND LARGE_COVER = #{largeCover,jdbcType=VARCHAR}
+        </if>
+        order by UPDATETIME desc
+    </select>
+
     <!-- 根据doubanId删除数据 -->
     <delete id="deleteById" parameterType="java.lang.String">
         delete from DOUBAN_METADATA
