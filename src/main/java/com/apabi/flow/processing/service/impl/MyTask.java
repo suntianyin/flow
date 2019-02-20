@@ -73,9 +73,12 @@ public class MyTask implements Runnable {
             }
 //            String target =f.getAbsolutePath();
             String target = config.getTargetCopyRightDir() + File.separator + batchId + File.separator + f.getName().split("[.]")[0] + ".xml";
+            String targetLog = config.getTargetCopyRightDir() + File.separator + batchId ;
             String cmd = config.getCopyRightExtractExe() +
                     " -i " + "\"" + f.getAbsolutePath() + "\"" +
-                    " -o " + "\"" + target + "\"";
+                    " -o " + "\"" + target + "\""+
+                    " -w " + "\"" + targetLog + "\"";
+
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
 
