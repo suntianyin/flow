@@ -78,7 +78,6 @@ public class MyTask implements Runnable {
                     " -i " + "\"" + f.getAbsolutePath() + "\"" +
                     " -o " + "\"" + target + "\""+
                     " -w " + "\"" + targetLog + "\"";
-
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(cmd);
 
