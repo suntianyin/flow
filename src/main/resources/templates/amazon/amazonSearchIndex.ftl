@@ -158,7 +158,7 @@
                         </tbody>
                     </table>
                 </div>
-                <ul class="pagination" style="float:right;" id="pagination"></ul>
+                共${total}条；共${totalPageNum}页<ul class="pagination" style="float:right;" id="pagination"></ul>
             </div>
         </div>
     </div>

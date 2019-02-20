@@ -56,12 +56,12 @@ public class ApabiBookMetaNlcCheckerService {
         int processCount = 0;
         int pageSize = 10000;
         int pageNum = (count / pageSize) + 1;
-        for (int i = 82; i <= pageNum; i++) {
+        for (int i = 1; i <= pageNum; i++) {
             PageHelper.startPage(i, pageSize);
             Page<ApabiBookMetaData> apabiBookMetaDataList = apabiBookMetaDataDao.findApabiBookMetaDataWithNlibraryId();
             for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataList) {
                 processCount++;
-                System.out.println("共" + count + "个，正在处理第" + (i * pageSize + processCount) + "个");
+                LOGGER.info("共" + count + "个，正在处理第" + ((i - 1) * pageSize + processCount) + "个");
                 try {
                     NlcBookMarc nlcBookMarc = nlcBookMarcDao.findByNlcMarcId(apabiBookMetaData.getNlibraryId());
                     String nlcBookMarcTitle = nlcBookMarc.getTitle();
@@ -100,11 +100,12 @@ public class ApabiBookMetaNlcCheckerService {
                         String nlcAuthorClean = cleanAuthor(nlcBookMarcAuthor);
                         nlcAuthorClean = nlcAuthorClean == null ? null : nlcAuthorClean.trim();
                         apabiBookMetaNlcChecker.setNlcAuthorClean(nlcAuthorClean);
-                        // TODO 插入数据
                         try {
                             apabiBookMetaNlcCheckerDao.insert(apabiBookMetaNlcChecker);
+                            LOGGER.info("插入" + apabiBookMetaNlcChecker.getMetaId() + "成功...");
                         } catch (Exception e) {
                             e.printStackTrace();
+                            LOGGER.info("插入" + apabiBookMetaNlcChecker.getMetaId() + "失败...原因为" + e.getMessage());
                         }
                     }
                 } catch (Exception e) {
@@ -221,7 +222,7 @@ public class ApabiBookMetaNlcCheckerService {
                 break;
             }
         }
-        return "第四轮清洗数据共删除了"+roundCount+"轮，共计" + totalCount + "条数据...";
+        return "第四轮清洗数据共删除了" + roundCount + "轮，共计" + totalCount + "条数据...";
     }
 
     /**

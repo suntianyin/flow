@@ -83,10 +83,12 @@ public class AmazonMetaSearchController {
             params.put("isbn10", "");
             params.put("isbn13", "");
         }
+        int total = amazonMetaService.countTotal();
+        int totalPageNum = (total / DEFAULT_PAGE_SIZE) + 1;
         PageHelper.startPage(pageNum, DEFAULT_PAGE_SIZE);
         Page<AmazonMeta> page = null;
         if (parameterMap != null && parameterMap.size() > 0) {
-            page = amazonMetaService.findAmazonMetaByPage(params);
+            page = amazonMetaService.findAmazonMetaByPageOrderByUpdateTime(params);
         }
         if (page != null && !page.isEmpty()) {
             model.addAttribute("amazonMetaModelList", page.getResult());
@@ -97,6 +99,8 @@ public class AmazonMetaSearchController {
             model.addAttribute("pages", 1);
             model.addAttribute("pageNum", 1);
         }
+        model.addAttribute("total", total);
+        model.addAttribute("totalPageNum", totalPageNum);
         model.addAttribute("amazonId", amazonId);
         model.addAttribute("title", title);
         model.addAttribute("publisher", publisher);
@@ -115,7 +119,7 @@ public class AmazonMetaSearchController {
             amazonMeta = amazonMetaService.findById(amazonId);
         }
         Class clazz = Class.forName("com.apabi.flow.douban.model.AmazonMeta");
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         Field[] fields = clazz.getDeclaredFields();
         // 数据库中的数据 -> Date
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
@@ -180,7 +184,7 @@ public class AmazonMetaSearchController {
                 // 普通字段值
                 value = getFieldValueByFieldName(field.getName(), amazonMeta);
             }
-                map.put(key, value);
+            map.put(key, value);
         }
         model.addAttribute("amazonMetaMap", map);
         return "amazon/amazonMetaEdit";

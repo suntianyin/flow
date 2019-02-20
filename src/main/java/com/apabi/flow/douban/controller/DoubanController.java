@@ -128,10 +128,12 @@ public class DoubanController {
             params.put("isbn10", "");
             params.put("isbn13", "");
         }
+        int total = doubanMetaService.countTotal();
+        int totalPageNum = (total/DEFAULT_PAGE_SIZE)+1;
         PageHelper.startPage(pageNum, DEFAULT_PAGE_SIZE);
         Page<DoubanMeta> page = null;
         if (parameterMap != null && parameterMap.size() > 0) {
-            page = doubanMetaService.searchDoubanMetaByPage(params);
+            page = doubanMetaService.searchDoubanMetaByPageOrderByUpdateTime(params);
         }
         if (page != null && !page.isEmpty()) {
             model.addAttribute("doubanMetaModelList", page.getResult());
@@ -143,6 +145,8 @@ public class DoubanController {
             model.addAttribute("pageNum", 1);
         }
 
+        model.addAttribute("total", total);
+        model.addAttribute("totalPageNum", totalPageNum);
         model.addAttribute("doubanId", doubanId);
         model.addAttribute("title", title);
         model.addAttribute("publisher", publisher);
@@ -162,7 +166,7 @@ public class DoubanController {
             doubanMeta = doubanMetaService.searchDoubanMetaById(doubanId);
         }
         Class clazz = Class.forName("com.apabi.flow.douban.model.DoubanMeta");
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         Field[] fields = clazz.getDeclaredFields();
         /*for (Field field : fields) {
             String key = field.getName();

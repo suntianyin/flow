@@ -725,6 +725,11 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
     }
 
     @Override
+    public int countTotal() {
+        return doubanMetaDao.count();
+    }
+
+    @Override
     public List<ApabiBookMetaDataTemp> searchMetaDataTempsByISBN(String isbn13) {
         // 创建ApabiBookMetaTempReturnedList
         List<ApabiBookMetaDataTemp> apabiBookMetaTempReturnedList = new ArrayList<>();
@@ -1085,6 +1090,11 @@ public class DoubanMetaServiceImpl implements DoubanMetaService {
     @Override
     public Page<DoubanMeta> searchDoubanMetaByPage(Map<String, String> params) {
         return doubanMetaDao.findByPage(params);
+    }
+
+    @Override
+    public Page<DoubanMeta> searchDoubanMetaByPageOrderByUpdateTime(Map<String, String> params) {
+        return doubanMetaDao.findByPageOrderByUpdateTime(params);
     }
 
     @Override

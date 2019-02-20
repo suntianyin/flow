@@ -1,7 +1,6 @@
 package com.apabi.flow.jd.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
@@ -17,11 +16,13 @@ import java.util.Date;
 public class JdMetadata {
     private String jdItemId;
 
+    private String metaId;
+
     private String title;
 
-    private String isbn13;
-
     private String publisher;
+
+    private String isbn13;
 
     private String editionOrder;
 
@@ -36,8 +37,6 @@ public class JdMetadata {
     private String format;
 
     private String brand;
-
-    private String metaId;
 
     private Date createTime;
 

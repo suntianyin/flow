@@ -77,14 +77,14 @@
     <!-- 查询所有数据 -->
     <select id="findAll" resultMap="BaseResultMap">
         select
-        *
+        <include refid="Base_Column_List"/>
         from AMAZON_METADATA
     </select>
 
     <!-- 分页条件查询数据 -->
     <select id="findByPage" parameterType="Map" resultMap="BaseResultMap">
         select
-        *
+        <include refid="Base_Column_List"/>
         from AMAZON_METADATA
         where 1=1
         <if test="amazonId != null and amazonId != ''">
@@ -105,6 +105,33 @@
         <if test="isbn10 != null and isbn10 != ''">
             and ISBN10 = #{isbn10,jdbcType=VARCHAR}
         </if>
+    </select>
+
+    <!-- 分页条件查询数据 -->
+    <select id="findByPageOrderByUpdateTime" parameterType="Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from AMAZON_METADATA
+        where 1=1
+        <if test="amazonId != null and amazonId != ''">
+            and AMAZONID = #{amazonId,jdbcType=VARCHAR}
+        </if>
+        <if test="author != null and author != ''">
+            and AUTHOR = #{author,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null and title != ''">
+            and TITLE = #{title,jdbcType=VARCHAR}
+        </if>
+        <if test="publisher != null and publisher != ''">
+            and PUBLISHER = #{publisher,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn13 != null and isbn13 != ''">
+            and ISBN13 = #{isbn13,jdbcType=VARCHAR}
+        </if>
+        <if test="isbn10 != null and isbn10 != ''">
+            and ISBN10 = #{isbn10,jdbcType=VARCHAR}
+        </if>
+        order by UPDATETIME desc
     </select>
 
     <!-- 删除数据 -->

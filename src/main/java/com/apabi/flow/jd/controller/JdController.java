@@ -37,6 +37,7 @@ public class JdController {
         Map<String, String[]> parameterMap = request.getParameterMap();
         Map<String, String> params = new HashMap<>();
         String jdItemId = "";
+        int total = jdService.countTotal();
         if (parameterMap.get("jdItemId") != null) {
             jdItemId = parameterMap.get("jdItemId")[0].trim();
         }
@@ -59,11 +60,12 @@ public class JdController {
             isbn13 = parameterMap.get("isbn13")[0].trim();
         }
         params.put("isbn13", isbn13);
-
+        // 计算总页数
+        int totalPageNum = (total / DEFAULT_PAGE_SIZE) + 1;
         PageHelper.startPage(pageNum, DEFAULT_PAGE_SIZE);
         Page<JdMetadata> page = null;
         if (parameterMap != null && parameterMap.size() > 0) {
-            page = jdService.findJdMetaByPage(params);
+            page = jdService.findJdMetaByPageOrderByUpdateTime(params);
         }
         if (page != null && !page.isEmpty()) {
             model.addAttribute("jdMetaModelList", page.getResult());
@@ -74,6 +76,8 @@ public class JdController {
             model.addAttribute("pages", 1);
             model.addAttribute("pageNum", 1);
         }
+        model.addAttribute("totalPageNum", totalPageNum);
+        model.addAttribute("total", total);
         model.addAttribute("jdItemId", jdItemId);
         model.addAttribute("title", title);
         model.addAttribute("publisher", publisher);

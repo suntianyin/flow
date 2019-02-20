@@ -47,13 +47,13 @@
                     + "&isbnVal=" + isbnVal;
         }
 
-        var index = 250;
         //douban元数据查看
         function btn_detail(doubanId) {
-            AddTabMenu2('R' + index, '${ctx}/douban/doubanDetail?doubanId=' + doubanId, doubanId, 'true');
-            index++;
+            loading();
+            window.location.href = "doubanDetail?doubanId=" + doubanId;
         }
 
+        var index = 250;
         //douban元数据编辑
         // 标记tag标签的id，保证不同tag的id不一样
         function btn_edit(doubanId) {
@@ -160,7 +160,7 @@
                         </tbody>
                     </table>
                 </div>
-                <ul class="pagination" style="float:right;" id="pagination"></ul>
+                共${total}条；共${totalPageNum}页<ul class="pagination" style="float:right;" id="pagination"></ul>
             </div>
         </div>
     </div>

@@ -27,6 +27,8 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
     @Autowired
     private AmazonMetaDao amazonMetaDao;
 
+
+
     /**
      * 根据isbn在表AMAZON_METADATA中查询数据，如果没有，则去AMAZON爬取
      *
@@ -119,8 +121,18 @@ public class AmazonMetaServiceImpl implements AmazonMetaService {
     }
 
     @Override
+    public Page<AmazonMeta> findAmazonMetaByPageOrderByUpdateTime(Map<String, String> params) {
+        return amazonMetaDao.findByPageOrderByUpdateTime(params);
+    }
+
+    @Override
     public AmazonMeta findById(String amazonId) {
         return amazonMetaDao.findById(amazonId);
+    }
+
+    @Override
+    public int countTotal() {
+        return amazonMetaDao.count();
     }
 
     /**
