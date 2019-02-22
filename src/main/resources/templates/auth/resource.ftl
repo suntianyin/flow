@@ -206,11 +206,11 @@
                         <span><i class="fa"></i>&nbsp;返回</span></button>
                     <div class="tools_separator"></div>
             </div>
-            <div class="PartialButton">
-                <button id="batch-import" title="导出授权资源" class="tools_btn" onclick="btn_exportData()">
-                    <span><i class="fa fa-outdent"></i>&nbsp;导出授权资源</span></button>
-                <div class="tools_separator"></div>
-            </div>
+            <#--<div class="PartialButton">-->
+                <#--<button id="batch-import" title="导出授权资源" class="tools_btn" onclick="btn_exportData()">-->
+                    <#--<span><i class="fa fa-outdent"></i>&nbsp;导出授权资源</span></button>-->
+                <#--<div class="tools_separator"></div>-->
+            <#--</div>-->
             <div class="PartialButton">
                 <input id="importFile" type="file" class="tools_btn"
                        accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
