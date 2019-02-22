@@ -195,6 +195,7 @@ public class ResourceController {
                              @RequestParam(value = "metaId", required = false) String metaId,
                              @RequestParam(value = "publisher", required = false) String publisher,
                              @RequestParam(value = "isbn", required = false) String isbn,
+                             @RequestParam(value = "copyrightOwner", required = false) String copyrightOwner,
                              @RequestParam(value = "status", required = false) Integer status,
                              @RequestParam(value = "startDate", required = false) String startDate,
                              @RequestParam(value = "endDate", required = false) String endDate,
@@ -206,7 +207,7 @@ public class ResourceController {
             response.setContentType("multipart/form-data");
             // 获取所有的isbn列表
             Map<String, Object> paramsMap = new HashMap<>();
-            ParamsUtils.checkParameterAndPut2Map(paramsMap, "booklistNum", booklistNum, "title", title,"creator",creator,"metaId",metaId,"publisher",publisher,"isbn", isbn);
+            ParamsUtils.checkParameterAndPut2Map(paramsMap, "booklistNum", booklistNum, "title", title,"creator",creator,"metaId",metaId,"publisher",publisher,"isbn", isbn,"copyrightOwner",copyrightOwner);
             paramsMap.put("startDate", startDate);
             paramsMap.put("endDate", endDate);
             paramsMap.put("status", status);
@@ -219,7 +220,8 @@ public class ResourceController {
             List<Resource> list = resourceService.listResource1(paramsMap);
             if (list == null || list.isEmpty()){
                 return "<script type='text/javascript'>alert('当前条件查询结果为空！');history.back();</script>";
-            }else if(list.size()>=1000){
+            }
+            else if(list.size()>=10000){
                 return "<script type='text/javascript'>alert('当前条件查询结果大于1000条,不提供导出！');history.back();</script>";
             }
             // 设置文件名

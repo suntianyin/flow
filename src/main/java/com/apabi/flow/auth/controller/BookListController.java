@@ -335,6 +335,9 @@ public class BookListController {
             String path = bookList.getFilePath();
             // path是指欲下载的文件的路径。
             File file = new File(path);
+            if(!file.exists()){
+                return "<script type='text/javascript'>alert('文件不存在，下载失败！');history.back();</script>";
+            }
             // 取得文件名。
             String filename = file.getName();
             // 取得文件的后缀名。
