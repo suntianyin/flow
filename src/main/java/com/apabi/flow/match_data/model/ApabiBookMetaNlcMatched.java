@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 /**
  * @Author pipi
- * @Date 2019-1-7 17:12
+ * @Date 2019-2-21 11:23
  **/
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApabiBookMetaNlcMatcher {
+public class ApabiBookMetaNlcMatched {
     private String metaId;
 
     private String nlcMarcId;

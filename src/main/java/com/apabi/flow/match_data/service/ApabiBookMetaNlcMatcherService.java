@@ -41,7 +41,7 @@ public class ApabiBookMetaNlcMatcherService {
             int listSize = nlcBookMarcList.size();
             CountDownLatch countDownLatch = new CountDownLatch(listSize);
             LinkedBlockingQueue<NlcBookMarc> marcQueue = new LinkedBlockingQueue<>(nlcBookMarcList);
-            ApabiBookMetaNlcMatcherIsbnConsumer consumer = new ApabiBookMetaNlcMatcherIsbnConsumer(marcQueue, countDownLatch, apabiBookMetaDataDao, apabiBookMetaNlcMatcherDao, i);
+            ApabiBookMetaNlcMatcherIsbnConsumer consumer = new ApabiBookMetaNlcMatcherIsbnConsumer(marcQueue, countDownLatch, apabiBookMetaDataDao, apabiBookMetaNlcMatcherDao);
             for (int j = 0; j < listSize; j++) {
                 executorService.execute(consumer);
             }

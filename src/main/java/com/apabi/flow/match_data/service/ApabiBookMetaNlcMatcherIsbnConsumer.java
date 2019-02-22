@@ -25,14 +25,12 @@ public class ApabiBookMetaNlcMatcherIsbnConsumer implements Runnable {
     private CountDownLatch countDownLatch;
     private ApabiBookMetaDataDao apabiBookMetaDataDao;
     private ApabiBookMetaNlcMatcherDao apabiBookMetaNlcMatcherDao;
-    private int pageNum;
 
-    public ApabiBookMetaNlcMatcherIsbnConsumer(LinkedBlockingQueue<NlcBookMarc> marcQueue, CountDownLatch countDownLatch, ApabiBookMetaDataDao apabiBookMetaDataDao, ApabiBookMetaNlcMatcherDao apabiBookMetaNlcMatcherDao, int pageNum) {
+    public ApabiBookMetaNlcMatcherIsbnConsumer(LinkedBlockingQueue<NlcBookMarc> marcQueue, CountDownLatch countDownLatch, ApabiBookMetaDataDao apabiBookMetaDataDao, ApabiBookMetaNlcMatcherDao apabiBookMetaNlcMatcherDao) {
         this.marcQueue = marcQueue;
         this.countDownLatch = countDownLatch;
         this.apabiBookMetaDataDao = apabiBookMetaDataDao;
         this.apabiBookMetaNlcMatcherDao = apabiBookMetaNlcMatcherDao;
-        this.pageNum = pageNum;
     }
 
     @Override
@@ -58,11 +56,11 @@ public class ApabiBookMetaNlcMatcherIsbnConsumer implements Runnable {
                                 e.printStackTrace();
                             }
                         }
-                    } else {
+                    } else if (apabiBookMetaDataListByIsbn.size() > 1){
                         // 匹配了多个
                         for (ApabiBookMetaData apabiBookMetaData : apabiBookMetaDataListByIsbn) {
                             ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher = new ApabiBookMetaNlcMatcher();
-                            apabiBookMetaNlcMatcher.setIsbn10(isbn);
+                            apabiBookMetaNlcMatcher.setIsbn(isbn);
                             apabiBookMetaNlcMatcher.setMetaId(apabiBookMetaData.getMetaId());
                             apabiBookMetaNlcMatcher.setApabiAuthor(apabiBookMetaData.getCreator());
                             apabiBookMetaNlcMatcher.setApabiPublisher(apabiBookMetaData.getPublisher());
