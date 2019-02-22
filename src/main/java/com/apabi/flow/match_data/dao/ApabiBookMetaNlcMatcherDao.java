@@ -1,6 +1,7 @@
 package com.apabi.flow.match_data.dao;
 
 import com.apabi.flow.match_data.model.ApabiBookMetaNlcMatcher;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -25,5 +26,7 @@ public interface ApabiBookMetaNlcMatcherDao {
     int update(ApabiBookMetaNlcMatcher apabiBookMetaNlcMatcher);
 
     int count();
+
+    Page<ApabiBookMetaNlcMatcher> findByPage();
 
 }
