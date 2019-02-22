@@ -28,6 +28,12 @@
         from APABI_BOOK_META_NLC_MATCHER
     </select>
 
+    <select id="findByPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from APABI_BOOK_META_NLC_MATCHER
+    </select>
+
     <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

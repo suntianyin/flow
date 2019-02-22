@@ -54,4 +54,11 @@ public class ApabiBookMetaNlcMatcherService {
         executorService.shutdown();
         return "国图匹配meta数据结束...";
     }
+
+
+    @RequestMapping("countMatcher")
+    public String countMatcher(){
+        int count = apabiBookMetaNlcMatcherDao.count();
+        return "matcher表中有"+count+"条数据";
+    }
 }
